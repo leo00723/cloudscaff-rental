@@ -1,0 +1,7 @@
+{
+  "name": "Cloudscaff",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
