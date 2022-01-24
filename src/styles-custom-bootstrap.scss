@@ -1,0 +1,196 @@
+@import "./styles-variables.scss";
+
+$body-bg: $light;
+$body-color: $dark;
+$form-file-button-bg: $primary;
+
+$box-shadow: 0 0.5rem 1rem rgba($dark, 0.25);
+$box-shadow-sm: 0 0.125rem 0.25rem rgba($dark, 0.2);
+$box-shadow-lg: 0 1rem 3rem rgba($dark, 0.4);
+
+$font-family-sans-serif:
+  // Cross-platform generic font family (default user interface font)
+  system-ui,
+  // Safari for macOS and iOS (San Francisco)
+  -apple-system,
+  // Windows
+  "Segoe UI",
+  // Android
+  Roboto,
+  // Basic web fallback
+  "Helvetica Neue",
+  Arial,
+  // Linux
+  "Noto Sans",
+  "Liberation Sans",
+  // Sans serif fallback
+  sans-serif,
+  // Emoji fonts
+  "Apple Color Emoji",
+  "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+//social colors
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1450px,
+) !default;
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 1024px,
+  xl: 1140px,
+  xxl: 1620px,
+);
+
+$fill-colors: (
+  (
+    facebook: $facebook,
+    twitter: $twitter,
+    linkedin: $linkedin,
+    google-plus: $google-plus,
+    instagram: $instagram,
+    pinterest: $pinterest,
+    youtube: $youtube,
+    reddit: $reddit,
+    primary: $primary,
+    secondary: $secondary,
+    dark: $dark,
+    accent-light: $accent-light,
+    accent: $accent,
+    info: $info,
+    success: $success,
+    warning: $warning,
+    danger: $danger,
+    light: $light,
+    darker: $darker,
+    white: $white,
+  )
+);
+
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $secondary,
+  "success": $success,
+  "info": $info,
+  "warning": $warning,
+  "danger": $danger,
+  "light": $light,
+  "dark": $dark,
+  "darker": $darker,
+  "white": $white,
+  "facebook": $facebook,
+  "twitter": $twitter,
+  "linkedin": $linkedin,
+  "google": $google-plus,
+  "pinterest": $pinterest,
+  "instagram": $instagram,
+  "youtube": $youtube,
+  "reddit": $reddit,
+  "accent": $accent,
+  "accent-light": $accent-light,
+);
+$utilities: () !default;
+
+$utilities: map-merge(
+  $utilities,
+  (
+    "border": (
+      property: border,
+      responsive: true,
+      values: (
+        null: $border-width solid $border-color,
+        0: 0,
+      ),
+    ),
+    "border-top": (
+      property: border-top,
+      responsive: true,
+      values: (
+        null: $border-width solid $border-color,
+        0: 0,
+      ),
+    ),
+    "border-end": (
+      property: border-right,
+      class: border-end,
+      responsive: true,
+      values: (
+        null: $border-width solid $border-color,
+        0: 0,
+      ),
+    ),
+    "border-bottom": (
+      property: border-bottom,
+      responsive: true,
+      values: (
+        null: $border-width solid $border-color,
+        0: 0,
+      ),
+    ),
+    "border-start": (
+      property: border-left,
+      class: border-start,
+      responsive: true,
+      values: (
+        null: $border-width solid $border-color,
+        0: 0,
+      ),
+    ),
+    "border-color": (
+      property: border-color,
+      class: border,
+      responsive: true,
+      values: $fill-colors,
+    ),
+    "border-width": (
+      property: border-width,
+      class: border,
+      responsive: true,
+      values: $border-widths,
+    ),
+    "drop": (
+      property: filter,
+      class: drop-shadow,
+      values: (
+        null: drop-shadow(0 0.5rem 0.3rem rgba($dark, 0.25)),
+        dark: drop-shadow(0 0.5rem 0.3rem rgba($dark, 0.6)),
+        sm: drop-shadow(0 0.125rem 0.15rem rgba($dark, 0.2)),
+        lg: drop-shadow(0 1rem 1rem rgba($dark, 0.4)),
+      ),
+    ),
+    "fill": (
+      property: fill,
+      values: $fill-colors,
+    ),
+    "round": (
+      property: border-radius,
+      class: rounded,
+      values: (
+        sm: 0.3rem,
+        md: 0.5rem,
+        lg: 1rem,
+      ),
+    ),
+    "object": (
+      property: object-fit,
+      class: of,
+      values: cover contain fill,
+    ),
+    "vh": (
+      property: min-height,
+      class: vh,
+      values: (
+        100: 100vh,
+        85: 85vh,
+        75: 75vh,
+      ),
+    ),
+  )
+);
+
+@import "~bootstrap/scss/bootstrap";

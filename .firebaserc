@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "cloudscaff-178c8": {
+      "hosting": {
+        "app": [
+          "cloudscaff-178c8"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "cloudscaff-178c8"
+  }
+}

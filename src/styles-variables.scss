@@ -1,0 +1,33 @@
+// Required
+$facebook: #3b5999 !default;
+$twitter: #1da1f2 !default;
+$linkedin: #0077b5 !default;
+$google-plus: #dd4b39 !default;
+$instagram: #e4405f !default;
+$pinterest: #bd081c !default;
+$youtube: #cd201f !default;
+$reddit: #ff4500 !default;
+
+$primary: #feb508;
+$secondary: #707070;
+$dark: #0d1b1e;
+$accent-light: #f8f0eb;
+$accent: #ba7140;
+$info: #bdd5df;
+$success: #2cac76;
+$warning: #ff7b00;
+$danger: #d62518;
+$light: #eeeeee;
+$darker: #191919;
+$white: #ffffff;
+$gray-300: #dee2e6 !default;
+$border-width: 1px !default;
+$border-widths: (
+  1: 1px,
+  2: 2px,
+  3: 3px,
+  4: 4px,
+  5: 5px,
+) !default;
+
+$border-color: $gray-300 !default;

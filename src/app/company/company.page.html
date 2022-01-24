@@ -1,0 +1,271 @@
+<app-header title="Business Settings"></app-header>
+
+<ion-content fullscreen="true">
+  <app-header-condensed title=""></app-header-condensed>
+  <form (ngSubmit)="save()" name="company" [formGroup]="form" *ngIf="!isLoading else loadingT">
+    <div class="container py-5">
+      <h2>
+        Business Details
+      </h2>
+      <ion-row class="mt-5">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Business info
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Your business name is displayed across many areas including on your all generated documents
+              and messages to clients
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <ion-row>
+            <ion-col size="12">
+              <app-input-text title="Business Name" placeholder="Cloudscaff Scaffold Management" controlName="name"
+                [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Business Prefix" placeholder="CSM" controlName="code" [form]="form">
+              </app-input-text>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Contact info
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Add your contact info that you want to display on all your documents
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <ion-row>
+            <ion-col size="12">
+              <app-input-text title="Email address" type="email" placeholder="info@cloudscaff.com" controlName="email"
+                [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Phone number" type="tel" placeholder="+14844731125" controlName="phone"
+                [form]="form">
+              </app-input-text>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Business Address
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Add your business address that you want to display on all your documents
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <ion-row>
+            <ion-col size="12">
+              <app-input-text title="Address" controlName="address" [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Suburb" controlName="suburb" [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="State/City" controlName="city" [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Zip Code" controlName="zip" [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Country" controlName="country" [form]="form">
+              </app-input-text>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Banking Details
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Add your banking details that you want to display on all your documents
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <ion-row>
+            <ion-col size="12">
+              <app-input-text title="Bank Name" controlName="bankName" [form]="form"></app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Bank Account Number" controlName="accountNum" type='number' [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Branch Code" controlName="branchCode" type='number' [form]="form">
+              </app-input-text>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-text title="Swift Code" controlName="swiftCode" type='number' [form]="form">
+              </app-input-text>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            General information
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Choose your currency aswell as units of meaure that the platform and documents will display.
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <ion-row>
+            <ion-col size="12">
+              <ion-item class="rounded-3" mode="md">
+                <ion-label position="stacked">
+                  Currency
+                </ion-label>
+                <ion-select mode="ios" formControlName="currency" [selectedText]="field('currency').value.symbol">
+                  <ion-select-option [value]="currency" *ngFor="let currency of currencies">
+                    {{currency.symbol}} -
+                    {{currency.name}}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+
+            </ion-col>
+            <!-- <ion-col size="12">
+              <ion-item class="rounded-3" mode="md">
+                <ion-label position="stacked">Unit of Measure</ion-label>
+                <ion-select mode='ios' formControlName="measurement">
+                  <ion-select-option value="brown">Imperial</ion-select-option>
+                  <ion-select-option value="blonde">Metric</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col> -->
+
+          </ion-row>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+
+        <ion-col size="12" class="text-center" *ngIf="!loading">
+          <ion-button shape="round" color="primary" type="submit" [disabled]="form.invalid">Save Settings</ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+  </form>
+  <ng-template #loadingT>
+    <div class="container py-5">
+      <h2>
+        Business Details
+      </h2>
+      <ion-row class="mt-5">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Business info
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Your business name is displayed across many areas including on your all generated documents
+              and messages to clients
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Contact info
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Add your contact info that you want to display on all your documents
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Business Address
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Add your business address that you want to display on all your documents
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            Banking Details
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Add your banking details that you want to display on all your documents
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+        </ion-col>
+      </ion-row>
+      <ion-row class="mt-4">
+        <ion-col sizeLg="6" size="12">
+          <h4>
+            General information
+          </h4>
+          <ion-text color="medium">
+            <p>
+              Choose your currency aswell as units of meaure that the platform and documents will display.
+            </p>
+          </ion-text>
+        </ion-col>
+        <ion-col sizeLg="6" size="12">
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+        </ion-col>
+      </ion-row>
+    </div>
+  </ng-template>
+</ion-content>
