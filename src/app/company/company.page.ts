@@ -1,12 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Company } from '../models/company.model';
 import { Currencies } from '../models/currencies.model';
 import { MasterService } from '../services/master.service';
@@ -16,42 +15,20 @@ import { MasterService } from '../services/master.service';
   templateUrl: './company.page.html',
   styleUrls: ['./company.page.scss'],
 })
-export class CompanyPage implements OnInit, OnDestroy {
+export class CompanyPage implements OnDestroy {
   company: Company;
-  user$: Observable<any>;
   currencies = new Currencies().currencies;
   form: FormGroup;
   loading = false;
   isLoading = true;
-  company$;
-  constructor(
-    private fb: FormBuilder,
-    private masterSvc: MasterService,
-    private activatedRoute: ActivatedRoute
-  ) {
-    this.company$ = this.masterSvc
-      .edit()
-      .getCompany(this.activatedRoute.snapshot.paramMap.get('id'))
-      .subscribe((company) => {
-        if (company) {
-          this.company = company;
-          this.initFrom();
-          this.isLoading = false;
-        } else {
-          this.masterSvc.router().navigate(['/home'], { replaceUrl: true });
-        }
-      });
-  }
+  subs = new Subscription();
+  constructor(private fb: FormBuilder, private masterSvc: MasterService) {}
   ngOnDestroy(): void {
-    this.company$.unsubscribe();
+    this.subs.unsubscribe();
   }
-  ngOnInit() {}
 
   field(field: string) {
     return this.form.get(field) as FormControl;
-  }
-  checkStatus(field: FormControl) {
-    return field.invalid && !field.pristine;
   }
 
   save() {
@@ -61,6 +38,7 @@ export class CompanyPage implements OnInit, OnDestroy {
       .edit()
       .updateCompany(this.company.id, this.company)
       .then(() => {
+        this.masterSvc.auth().company$.next(this.company);
         this.masterSvc
           .notification()
           .successToast('Settings saved successfully')
@@ -77,6 +55,18 @@ export class CompanyPage implements OnInit, OnDestroy {
             this.loading = false;
           });
       });
+  }
+
+  ionViewWillEnter() {
+    this.subs.add(
+      this.masterSvc.auth().company$.subscribe((company) => {
+        if (company) {
+          this.company = company;
+          this.initFrom();
+          this.isLoading = false;
+        }
+      })
+    );
   }
   private initFrom() {
     this.form = this.fb.group({

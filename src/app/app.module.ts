@@ -15,13 +15,20 @@ import {
   UserTrackingService,
 } from '@angular/fire/analytics';
 import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import {
+  provideFirestore,
+  getFirestore,
+  enableMultiTabIndexedDbPersistence,
+} from '@angular/fire/firestore';
 import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MasterService } from './services/master.service';
 import { SplashPage } from './splash/splash.page';
-
+let resolvePersistenceEnabled: (enabled: boolean) => void;
+export const persistenceEnabled = new Promise<boolean>((resolve) => {
+  resolvePersistenceEnabled = resolve;
+});
 @NgModule({
   declarations: [AppComponent, SplashPage],
   entryComponents: [],
@@ -32,7 +39,14 @@ import { SplashPage } from './splash/splash.page';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAnalytics(() => getAnalytics()),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      enableMultiTabIndexedDbPersistence(firestore).then(
+        () => resolvePersistenceEnabled(true),
+        () => resolvePersistenceEnabled(false)
+      );
+      return firestore;
+    }),
     provideFunctions(() => getFunctions()),
     provideStorage(() => getStorage()),
     ServiceWorkerModule.register('ngsw-worker.js', {

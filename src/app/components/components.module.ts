@@ -7,6 +7,8 @@ import { InputTextComponent } from './input-text/input-text.component';
 import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 import { HeaderComponent } from './header/header.component';
 import { HeaderCondensedComponent } from './header-condensed/header-condensed.component';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { HttpClientModule } from '@angular/common/http';
 
 const COMPONENTS = [
   InputTextComponent,
@@ -15,7 +17,14 @@ const COMPONENTS = [
   HeaderComponent,
   HeaderCondensedComponent,
 ];
-const IMPORTS = [CommonModule, FormsModule, ReactiveFormsModule, IonicModule];
+const IMPORTS = [
+  CommonModule,
+  FormsModule,
+  ReactiveFormsModule,
+  IonicModule,
+  HttpClientModule,
+  NgxDatatableModule,
+];
 
 @NgModule({
   declarations: [COMPONENTS],

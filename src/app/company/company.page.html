@@ -2,8 +2,8 @@
 
 <ion-content fullscreen="true">
   <app-header-condensed title=""></app-header-condensed>
-  <form (ngSubmit)="save()" name="company" [formGroup]="form" *ngIf="!isLoading else loadingT">
-    <div class="container py-5">
+  <div class="container py-5" *ngIf="!isLoading else loadingT">
+    <form (ngSubmit)="save()" name="company" [formGroup]="form">
       <h2>
         Business Details
       </h2>
@@ -173,8 +173,8 @@
           <ion-button shape="round" color="primary" type="submit" [disabled]="form.invalid">Save Settings</ion-button>
         </ion-col>
       </ion-row>
-    </div>
-  </form>
+    </form>
+  </div>
   <ng-template #loadingT>
     <div class="container py-5">
       <h2>

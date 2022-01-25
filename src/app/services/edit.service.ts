@@ -10,6 +10,7 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
+import { traceUntilFirst } from '@angular/fire/performance';
 import { collectionData, docData } from 'rxfire/firestore';
 import { Observable } from 'rxjs';
 import { Company } from '../models/company.model';
@@ -46,14 +47,11 @@ export class EditService {
       idField: 'id',
     }) as Observable<Company>;
   }
-  getCompany2(id: string) {
+  getCustomers(id: string) {
     return collectionData(
-      query(
-        this.collectionRef('company'),
-        where('users', 'array-contains', id)
-      ),
+      query(this.collectionRef('customers'), where('company', '==', id)),
       { idField: 'id' }
-    ) as Observable<Company[]>;
+    ) as Observable<any[]>;
   }
 
   private docRef(collectionName: string, id: string) {

@@ -27,9 +27,16 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'company/:id',
+        path: 'company',
         loadChildren: () =>
           import('../company/company.module').then((m) => m.CompanyPageModule),
+      },
+      {
+        path: 'addEstimate',
+        loadChildren: () =>
+          import('../add-estimate/add-estimate.module').then(
+            (m) => m.AddEstimatePageModule
+          ),
       },
     ],
   },

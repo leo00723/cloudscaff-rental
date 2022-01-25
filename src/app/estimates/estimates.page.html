@@ -1,5 +1,18 @@
 <app-header title="Estimates"></app-header>
-
 <ion-content fullscreen="true">
   <app-header-condensed title="Estimates"></app-header-condensed>
+
+
+  <div class="ion-padding">
+    <!-- Theme classes dark, material, bootstrap -->
+    <!-- <ngx-datatable class="bootstrap" [limit]="13" [rows]="rows" [rowHeight]="50" [columns]="columns"
+      [columnMode]="'force'" [sortType]="sortType" [headerHeight]="50" [footerHeight]="50">
+    </ngx-datatable> -->
+
+  </div>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/home/addEstimate">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

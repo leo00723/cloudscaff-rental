@@ -15,7 +15,7 @@ import {
   Firestore,
 } from '@angular/fire/firestore';
 import { authState } from 'rxfire/auth';
-import { EMPTY, Observable, of } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from '../models/company.model';
 
@@ -24,7 +24,7 @@ import { Company } from '../models/company.model';
 })
 export class AuthService {
   user$: Observable<any | null> = EMPTY;
-  company$: Observable<Company | null> = EMPTY;
+  company$ = new BehaviorSubject<Company>(null);
 
   constructor(private auth: Auth, private firestore: Firestore) {
     this.checkUser();
@@ -35,7 +35,6 @@ export class AuthService {
       this.user$ = authState(this.auth).pipe(
         switchMap((user) => {
           if (user) {
-            localStorage.setItem('UID', user.uid);
             return this.getUserProfile(user.uid);
           } else {
             return of(null);
@@ -46,7 +45,7 @@ export class AuthService {
   }
 
   getCompany(id: string) {
-    this.company$ = docData(doc(this.firestore, `company/${id}`), {
+    return docData(doc(this.firestore, `company/${id}`), {
       idField: 'id',
     }) as Observable<Company>;
   }
@@ -63,6 +62,7 @@ export class AuthService {
   }
 
   async logout() {
+    this.company$.next(null);
     return await signOut(this.auth);
   }
 
