@@ -3,6 +3,6 @@
     {{title}}
   </ion-label>
   <ion-input placeholder="{{placeholder}}" type="{{type}}" id="{{controlName}}" name="{{controlName}}"
-    formControlName="{{controlName}}">
+    formControlName="{{controlName}}" (change)="update()" [readonly]="readonly">
   </ion-input>
 </ion-item>

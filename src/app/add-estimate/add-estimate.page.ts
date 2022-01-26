@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import {
+  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -22,6 +23,7 @@ export class AddEstimatePage implements OnInit {
   form: FormGroup;
   loading = false;
   isLoading = true;
+  active = 'customer';
   constructor(private masterSvc: MasterService, private fb: FormBuilder) {
     this.company$ = this.masterSvc.auth().company$;
     this.customers$ = this.masterSvc.auth().user$.pipe(
@@ -34,6 +36,9 @@ export class AddEstimatePage implements OnInit {
       })
     ) as Observable<any[]>;
   }
+  get scaffoldsForms() {
+    return this.form.get('scaffolds') as FormArray;
+  }
 
   ngOnInit() {
     this.initFrom();
@@ -41,6 +46,55 @@ export class AddEstimatePage implements OnInit {
 
   field(field: string) {
     return this.form.get(field) as FormControl;
+  }
+
+  segmentChanged(ev: any) {
+    this.active = ev.detail.value;
+  }
+
+  nextView(page: string) {
+    this.active = page;
+  }
+
+  addScaffold() {
+    const scaffold = this.fb.group({
+      rate: ['', [Validators.required]],
+      hirePercentage: [0, [Validators.min(0), Validators.max(100)]],
+      length: ['', [Validators.required]],
+      width: ['', Validators.required],
+      height: ['', Validators.required],
+      noPlatforms: ['', Validators.required],
+      weeksStanding: ['', Validators.required],
+      hireCost: [''],
+      totalExHire: [''],
+      volume: [''],
+      area: [''],
+      total: [''],
+    });
+    this.scaffoldsForms.push(scaffold);
+  }
+
+  getScaffold(i: number) {
+    return this.scaffoldsForms[i];
+  }
+  deleteScaffold(i: number) {
+    this.scaffoldsForms.removeAt(i);
+  }
+
+  updateDimension(i: any) {
+    this.calcRate(i);
+  }
+
+  private calcRate(i: string | number) {
+    const ref = this.scaffoldsForms.controls[i] as FormControl;
+    ref
+      .get('total')
+      .setValue(
+        ref.get('length').value *
+          ref.get('width').value *
+          ref.get('height').value *
+          ref.get('rate').value
+      );
   }
 
   private initFrom() {
@@ -52,6 +106,8 @@ export class AddEstimatePage implements OnInit {
         Validators.required,
       ],
       siteName: ['', Validators.required],
+      scaffolds: this.fb.array([]),
     });
+    this.addScaffold();
   }
 }

@@ -10,100 +10,268 @@
 
 
 <ion-content fullscreen="true">
-  <div class="ion-padding" *ngIf="company$ | async as company">
-    {{form.value | json}}
-  </div>
   <div class="ion-padding">
-    <form name="estimate" [formGroup]="form">
-      <ion-row>
-        <ion-col size="12">
-          <ion-text color="medium">
-            <p>
-              Customer Information
-            </p>
-          </ion-text>
-        </ion-col>
-      </ion-row>
-      <ion-row class="border rounded-lg p-2 shadow">
-        <ion-col size="12">
-          <ion-item class="rounded-3">
-            <ion-label position="stacked">Customer</ion-label>
-            <ion-select mode='ios' *ngIf="customers$ | async as customers" formControlName="customer"
-              [selectedText]="field('customer').value.name" placeholder="Select Customer">
-              <ion-select-option [value]="customer" *ngFor="let customer of customers">{{customer.name}}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-col>
-        <ion-col size="12">
-          <ion-item class="rounded-3">
-            <ion-label position="stacked" placeholder="">Message</ion-label>
-            <ion-textarea formControlName="message" autoGrow="true"></ion-textarea>
-          </ion-item>
-        </ion-col>
-        <ion-col size="12">
-          <app-input-text title="Site Name" controlName="siteName" [form]="form" placeholder="Enter Site Name">
-          </app-input-text>
-        </ion-col>
-      </ion-row>
+    <ion-toolbar class="rounded-lg">
+      <ion-segment (ionChange)="segmentChanged($event)" selectOnFocus="true" [value]="active">
+        <ion-segment-button value="customer">
+          <ion-label>Overview</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="scaffolds">
+          <ion-label>Scaffolds</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="additionals">
+          <ion-label>Additionals</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="summary">
+          <ion-label>Summary</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+    <form class="mt-5" name="estimate" [formGroup]="form">
+      <ion-grid fixed='true' *ngIf="active === 'customer'">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>
+                Customer Information
+              </h4>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="12">
+            <ion-item class="rounded-3">
+              <ion-label position="stacked">Customer</ion-label>
+              <ion-select mode='ios' *ngIf="customers$ | async as customers" formControlName="customer"
+                [selectedText]="field('customer').value.name" placeholder="Select Customer">
+                <ion-select-option [value]="customer" *ngFor="let customer of customers">{{customer.name}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12">
+            <ion-item class="rounded-3">
+              <ion-label position="stacked" placeholder="">Message</ion-label>
+              <ion-textarea formControlName="message" autoGrow="true"></ion-textarea>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12">
+            <app-input-text title="Site Name" controlName="siteName" [form]="form" placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="12" class="text-end">
+            <ion-button shape="round" (click)="nextView('scaffolds')">Next</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid *ngIf="active === 'scaffolds'">
+        <ion-row class="mt-3">
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>
+                Scaffold Information
+              </h4>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row formArrayName="scaffolds" *ngFor="let scaffold of scaffoldsForms.controls; let i = index">
+          <ion-col size='12' [formGroupName]="i">
+            <ion-row>
+              <ion-col size="12">
+                <ion-note>
+                  Scaffold {{i+1}}
+                </ion-note>
+                <ion-chip outline color="danger" class="ion-float-end" (click)="deleteScaffold(i)">
+                  <ion-label>Delete</ion-label>
+                </ion-chip>
+              </ion-col>
+              <ion-col sizeXl="1" size='4'>
+                <app-input-text (fieldChange)="updateDimension(i)" title="Length" type="number" controlName="length"
+                  [form]="scaffold" placeholder="L">
+                </app-input-text>
+              </ion-col>
+              <ion-col sizeXl="1" size='4'>
+                <app-input-text (fieldChange)="updateDimension(i)" title="Width" type="number" controlName="width"
+                  [form]="scaffold" placeholder="W">
+                </app-input-text>
+              </ion-col>
+              <ion-col sizeXl="1" size='4'>
+                <app-input-text (fieldChange)="updateDimension(i)" title="Height" type="number" controlName="height"
+                  [form]="scaffold" placeholder="H">
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-text title="No. Platforms" type="number" controlName="noPlatforms" [form]="scaffold"
+                  placeholder="No. of platforms">
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-text title="Weeks Standing" type="number" controlName="weeksStanding" [form]="scaffold"
+                  placeholder="No. of weeks">
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-text (fieldChange)="updateDimension(i)" title="Rate Profile" controlName="rate"
+                  [form]="scaffold" placeholder="Enter rate">
+                </app-input-text>
+              </ion-col>
+
+              <ion-col>
+                <app-input-text title="Hire %" type="number" controlName="hirePercentage" [form]="scaffold"
+                  placeholder="Enter % for hire">
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-text title="Total" type="number" controlName="total" [form]="scaffold" [readonly]="true"
+                  placeholder="Enter Site Name">
+                </app-input-text>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="1" class="text-end m-auto">
+            <!-- <ion-button shape="round" color="success" (click)="addScaffold()">Add Scaffold</ion-button> -->
+            <ion-fab-button color="success" (click)="addScaffold()">
+              <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
+          </ion-col>
+        </ion-row>
 
 
-      <ion-row class="mt-3">
-        <ion-col size="12">
-          <ion-text color="medium">
-            <p>
-              Scaffold Information
-            </p>
-          </ion-text>
-        </ion-col>
-      </ion-row>
+        <ion-row>
+          <ion-col size="12" class="text-end">
+            <ion-button shape="round" (click)="nextView('additionals')">Next</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 
-      <ion-row class='rounded-lg mb-3 border p-2 shadow' *ngFor="let item of [1,2,3,4]">
-        <ion-col size="12">
-          <ion-note>
-            Scaffold {{item}}
-          </ion-note>
-        </ion-col>
-        <ion-col sizeXl="1" size='4'>
-          <app-input-text title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
-          </app-input-text>
-        </ion-col>
-        <ion-col sizeXl="1" size='4'>
-          <app-input-text title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
-          </app-input-text>
-        </ion-col>
-        <ion-col sizeXl="1" size='4'>
-          <app-input-text title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
-          </app-input-text>
-        </ion-col>
-        <ion-col>
-          <app-input-text title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
-          </app-input-text>
-        </ion-col>
-        <ion-col>
-          <app-input-text title="Rate Override" type="number" controlName="siteName" [form]="form"
-            placeholder="Enter Site Name">
-          </app-input-text>
-        </ion-col>
-        <ion-col>
-          <app-input-text title="Hire %" type="number" controlName="siteName" [form]="form"
-            placeholder="Enter Site Name">
-          </app-input-text>
-        </ion-col>
-        <ion-col>
-          <app-input-text title="Total" type="number" controlName="siteName" [form]="form"
-            placeholder="Enter Site Name">
-          </app-input-text>
-        </ion-col>
-      </ion-row>
+      <ion-grid fixed='true' *ngIf="active === 'additionals'">
+        <ion-row class="mt-3">
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>
+                Additionals Information
+              </h4>
+            </ion-text>
+          </ion-col>
+        </ion-row>
 
-      <ion-row>
-        <ion-col size="12" class="text-end">
-          <ion-button shape="round">Create Estimate</ion-button>
-        </ion-col>
-      </ion-row>
+
+        <ion-row *ngFor="let item of [1,2,3,4]">
+          <ion-col size="12">
+            <ion-note>
+              Scaffold {{item}}
+            </ion-note>
+          </ion-col>
+          <ion-col sizeXl="1" size='4'>
+            <app-input-text title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
+            </app-input-text>
+          </ion-col>
+          <ion-col sizeXl="1" size='4'>
+            <app-input-text title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
+            </app-input-text>
+          </ion-col>
+          <ion-col sizeXl="1" size='4'>
+            <app-input-text title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Rate Override" type="number" controlName="siteName" [form]="form"
+              placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Hire %" type="number" controlName="siteName" [form]="form"
+              placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Total" type="number" controlName="siteName" [form]="form"
+              placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+        </ion-row>
+
+
+        <ion-row>
+          <ion-col size="12" class="text-end">
+            <ion-button shape="round" (click)="nextView('summary')">Next</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid fixed='true' *ngIf="active === 'summary'">
+        <ion-row class="mt-3">
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>
+                Estimate Summary
+              </h4>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+
+
+        <ion-row *ngFor="let item of [1,2,3,4]">
+          <ion-col size="12">
+            <ion-note>
+              Scaffold {{item}}
+            </ion-note>
+          </ion-col>
+          <ion-col sizeXl="1" size='4'>
+            <app-input-text title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
+            </app-input-text>
+          </ion-col>
+          <ion-col sizeXl="1" size='4'>
+            <app-input-text title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
+            </app-input-text>
+          </ion-col>
+          <ion-col sizeXl="1" size='4'>
+            <app-input-text title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Rate Override" type="number" controlName="siteName" [form]="form"
+              placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Hire %" type="number" controlName="siteName" [form]="form"
+              placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-text title="Total" type="number" controlName="siteName" [form]="form"
+              placeholder="Enter Site Name">
+            </app-input-text>
+          </ion-col>
+        </ion-row>
+
+
+        <ion-row>
+          <ion-col size="12" class="text-end">
+            <ion-button shape="round" fill="outline" color="dark">Save Estimate</ion-button>
+            <ion-button shape="round">Create Estimate</ion-button>
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
     </form>
   </div>
-
-
+  <!-- <div class="ion-padding" *ngIf="company$ | async as company">
+    {{form.value | json}}
+  </div> -->
 </ion-content>

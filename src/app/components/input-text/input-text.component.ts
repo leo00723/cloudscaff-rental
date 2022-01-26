@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
@@ -17,8 +19,14 @@ export class InputTextComponent implements OnInit {
   @Input() placeholder: string;
   @Input() type = 'text';
   @Input() controlName: string;
-  @Input() form: FormGroup;
+  @Input() readonly = false;
+  @Input() form;
+  @Output() fieldChange = new EventEmitter<boolean>();
   constructor() {}
 
   ngOnInit() {}
+
+  update() {
+    this.fieldChange.emit(true);
+  }
 }
