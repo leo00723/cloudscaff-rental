@@ -1,8 +1,8 @@
-<ion-item class="rounded-3" [formGroup]='form' mode="md">
+<ion-item class="rounded-3 mb-3" mode="md">
   <ion-label position="stacked">
-    {{title}}
+    {{title}} {{optional ? '(optional)' : ''}}
   </ion-label>
-  <ion-input placeholder="{{placeholder}}" type="{{type}}" id="{{controlName}}" name="{{controlName}}"
-    formControlName="{{controlName}}" (change)="update()" [readonly]="readonly">
+  <ion-input placeholder="{{placeholder}}" type="{{type}}" id="{{title}}" name="{{title}}" [(ngModel)]="value"
+    (change)="update()" [readonly]="readonly">
   </ion-input>
 </ion-item>

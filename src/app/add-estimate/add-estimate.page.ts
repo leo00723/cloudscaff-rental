@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -6,16 +6,16 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from '../models/company.model';
+import { Customer } from '../models/customer.model';
 import { MasterService } from '../services/master.service';
 
 @Component({
   selector: 'app-add-estimate',
   templateUrl: './add-estimate.page.html',
   styleUrls: ['./add-estimate.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddEstimatePage implements OnInit {
   company$: Observable<Company>;
@@ -24,12 +24,16 @@ export class AddEstimatePage implements OnInit {
   loading = false;
   isLoading = true;
   active = 'customer';
+  show = '';
+  selectedCustomer: Customer;
   constructor(private masterSvc: MasterService, private fb: FormBuilder) {
     this.company$ = this.masterSvc.auth().company$;
     this.customers$ = this.masterSvc.auth().user$.pipe(
       switchMap((user) => {
         if (user) {
-          return this.masterSvc.edit().getCustomers(user.company);
+          return this.masterSvc
+            .edit()
+            .getDocsByCompanyId('customers', user.company);
         } else {
           return of(false);
         }
@@ -83,6 +87,22 @@ export class AddEstimatePage implements OnInit {
 
   updateDimension(i: any) {
     this.calcRate(i);
+  }
+
+  changeCustomer(args) {
+    this.show = '';
+    if (args !== 'add') {
+      setTimeout(() => {
+        this.show = 'editCustomer';
+      }, 1);
+    } else {
+      this.show = 'addCustomer';
+    }
+  }
+
+  newCustomer(args) {
+    this.field('customer').setValue({ ...args });
+    this.show = 'editCustomer';
   }
 
   private calcRate(i: string | number) {

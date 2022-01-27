@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from './auth.service';
@@ -13,13 +14,17 @@ export class MasterService {
     private authSvc: AuthService,
     private editSvc: EditService,
     private notificationSvc: NotificationService,
-    private routing: Router
+    private routing: Router,
+    private formBuilder: FormBuilder
   ) {}
   auth() {
     return this.authSvc;
   }
   edit() {
     return this.editSvc;
+  }
+  fb() {
+    return this.formBuilder;
   }
   notification() {
     return this.notificationSvc;

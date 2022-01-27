@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  addDoc,
   collection,
   doc,
   DocumentReference,
@@ -10,10 +9,11 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { traceUntilFirst } from '@angular/fire/performance';
+import { addDoc, deleteDoc } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
 import { Observable } from 'rxjs';
 import { Company } from '../models/company.model';
+import { Customer } from '../models/customer.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,12 +21,49 @@ import { Company } from '../models/company.model';
 export class EditService {
   constructor(private firestore: Firestore) {}
 
-  // SET FUNCTIONS
-  setCompany(company: Company) {
-    return setDoc(this.docRef('company', this.createUID('company')), {
-      ...company,
+  //----ADD FUNCTIONS----
+
+  addDocument(collectionName: string, data) {
+    return addDoc(this.collectionRef(collectionName), { ...data });
+  }
+
+  //----SET FUNCTIONS----
+
+  setDoc(collectionName: string, data) {
+    return setDoc(this.docRef(collectionName, this.createUID(collectionName)), {
+      ...data,
     });
   }
+
+  //----UPDATE FUNCTIONS----
+
+  updateDoc(collectionName: string, id: string, data) {
+    return updateDoc(this.docRef(collectionName, id), { ...data });
+  }
+
+  //----GET FUNCTIONS----
+
+  getDocById(collectionName: string, id: string) {
+    return docData(this.docRef(collectionName, id), {
+      idField: 'id',
+    });
+  }
+  getDocsByCompanyId(collectionName: string, collectionId: string) {
+    return collectionData(
+      query(
+        this.collectionRef(collectionName),
+        where('company', '==', collectionId)
+      ),
+      { idField: 'id' }
+    ) as Observable<any[]>;
+  }
+
+  //----DELETE FUNCTIONS----
+  deleteDocById(collectionName: string, id: string) {
+    return deleteDoc(this.docRef(collectionName, id));
+  }
+
+  //----UTILITY FUNCTIONS----
 
   createUID(collectionName: string) {
     const docRef = doc<any>(
@@ -34,26 +71,6 @@ export class EditService {
     ) as DocumentReference<any>;
     return docRef.id;
   }
-
-  // UPDATE FUNCTIONS
-  updateCompany(id: string, company: Company) {
-    return updateDoc(this.docRef('company', id), { ...company });
-  }
-
-  //GET FUNCTIONS
-
-  getCompany(id: string) {
-    return docData(this.docRef('company', id), {
-      idField: 'id',
-    }) as Observable<Company>;
-  }
-  getCustomers(id: string) {
-    return collectionData(
-      query(this.collectionRef('customers'), where('company', '==', id)),
-      { idField: 'id' }
-    ) as Observable<any[]>;
-  }
-
   private docRef(collectionName: string, id: string) {
     return doc(this.firestore, `${collectionName}/${id}`);
   }

@@ -36,7 +36,7 @@ export class CompanyPage implements OnDestroy {
     Object.assign(this.company, this.form.value);
     this.masterSvc
       .edit()
-      .updateCompany(this.company.id, this.company)
+      .updateDoc('company', this.company.id, this.company)
       .then(() => {
         this.masterSvc.auth().company$.next(this.company);
         this.masterSvc

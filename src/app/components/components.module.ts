@@ -9,6 +9,9 @@ import { HeaderComponent } from './header/header.component';
 import { HeaderCondensedComponent } from './header-condensed/header-condensed.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { HttpClientModule } from '@angular/common/http';
+import { InputTextReactiveComponent } from './input-text-reactive/input-text-reactive.component';
+import { CustomerComponent } from './customer/customer.component';
+import { InputSelectReactiveComponent } from './input-select-reactive/input-select-reactive.component';
 
 const COMPONENTS = [
   InputTextComponent,
@@ -16,6 +19,9 @@ const COMPONENTS = [
   SkeletonTextComponent,
   HeaderComponent,
   HeaderCondensedComponent,
+  InputTextReactiveComponent,
+  CustomerComponent,
+  InputSelectReactiveComponent,
 ];
 const IMPORTS = [
   CommonModule,

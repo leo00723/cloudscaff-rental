@@ -1,0 +1,41 @@
+<form [formGroup]="form">
+  <ion-row>
+    <ion-col size='12' sizeXl="6">
+      <app-input-reactive title='Customer name' [form]="form" controlName="name"></app-input-reactive>
+      <app-input-reactive title='Email address' [form]="form" controlName="email"></app-input-reactive>
+      <app-input-reactive title='Representative' [form]="form" controlName="rep"></app-input-reactive>
+      <app-input-reactive title='Contact Number' [form]="form" controlName="phone"></app-input-reactive>
+    </ion-col>
+    <ion-col size='12' sizeXl='6'>
+      <app-input-reactive title='Address' [form]="form" controlName="address">
+      </app-input-reactive>
+      <app-input-reactive title='suburb' [form]="form" controlName="suburb" [optional]="true">
+      </app-input-reactive>
+      <ion-row>
+        <ion-col class="py-0 ps-0">
+          <app-input-reactive title='State/City' [form]="form" controlName="city"></app-input-reactive>
+        </ion-col>
+        <ion-col class="py-0 pe-0">
+          <app-input-reactive title='Zip' [form]="form" controlName="zip" [optional]="true"></app-input-reactive>
+        </ion-col>
+      </ion-row>
+      <app-input-reactive title='Country' [form]="form" controlName="country"></app-input-reactive>
+    </ion-col>
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+    <ion-col size="12" class="text-end">
+
+      <ion-button *ngIf="!loading && isDelete" shape="round" color="danger" type="submit" [disabled]="form.invalid"
+        (click)="delete()">
+        Delete Customer
+      </ion-button>
+      <ion-button *ngIf="!loading && isUpdate" shape="round" color="success" type="submit" [disabled]="form.invalid"
+        (click)="update()">
+        Update Customer
+      </ion-button>
+      <ion-button *ngIf="!loading && !isUpdate && !isDelete" shape="round" type="submit" [disabled]="form.invalid"
+        (click)="create()">Create
+        Customer
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</form>

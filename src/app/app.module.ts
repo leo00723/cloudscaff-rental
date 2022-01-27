@@ -25,6 +25,7 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MasterService } from './services/master.service';
 import { SplashPage } from './splash/splash.page';
+import { FormBuilder } from '@angular/forms';
 let resolvePersistenceEnabled: (enabled: boolean) => void;
 export const persistenceEnabled = new Promise<boolean>((resolve) => {
   resolvePersistenceEnabled = resolve;
@@ -61,6 +62,7 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     ScreenTrackingService,
     UserTrackingService,
     MasterService,
+    FormBuilder,
   ],
   bootstrap: [AppComponent],
 })

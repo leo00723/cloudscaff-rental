@@ -22,13 +22,13 @@
         <ion-col sizeLg="6" size="12">
           <ion-row>
             <ion-col size="12">
-              <app-input-text title="Business Name" placeholder="Cloudscaff Scaffold Management" controlName="name"
+              <app-input-reactive title="Business Name" placeholder="Cloudscaff Scaffold Management" controlName="name"
                 [form]="form">
-              </app-input-text>
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Business Prefix" placeholder="CSM" controlName="code" [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Business Prefix" placeholder="CSM" controlName="code" [form]="form">
+              </app-input-reactive>
             </ion-col>
           </ion-row>
         </ion-col>
@@ -47,14 +47,14 @@
         <ion-col sizeLg="6" size="12">
           <ion-row>
             <ion-col size="12">
-              <app-input-text title="Email address" type="email" placeholder="info@cloudscaff.com" controlName="email"
-                [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Email address" type="email" placeholder="info@cloudscaff.com"
+                controlName="email" [form]="form">
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Phone number" type="tel" placeholder="+14844731125" controlName="phone"
+              <app-input-reactive title="Phone number" type="tel" placeholder="+14844731125" controlName="phone"
                 [form]="form">
-              </app-input-text>
+              </app-input-reactive>
             </ion-col>
           </ion-row>
         </ion-col>
@@ -73,24 +73,24 @@
         <ion-col sizeLg="6" size="12">
           <ion-row>
             <ion-col size="12">
-              <app-input-text title="Address" controlName="address" [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Address" controlName="address" [form]="form">
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Suburb" controlName="suburb" [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Suburb" controlName="suburb" [form]="form">
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="State/City" controlName="city" [form]="form">
-              </app-input-text>
+              <app-input-reactive title="State/City" controlName="city" [form]="form">
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Zip Code" controlName="zip" [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Zip Code" controlName="zip" [form]="form">
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Country" controlName="country" [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Country" controlName="country" [form]="form">
+              </app-input-reactive>
             </ion-col>
           </ion-row>
         </ion-col>
@@ -109,19 +109,19 @@
         <ion-col sizeLg="6" size="12">
           <ion-row>
             <ion-col size="12">
-              <app-input-text title="Bank Name" controlName="bankName" [form]="form"></app-input-text>
+              <app-input-reactive title="Bank Name" controlName="bankName" [form]="form"></app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Bank Account Number" controlName="accountNum" type='number' [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Bank Account Number" controlName="accountNum" type='number' [form]="form">
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Branch Code" controlName="branchCode" type='number' [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Branch Code" controlName="branchCode" type='number' [form]="form">
+              </app-input-reactive>
             </ion-col>
             <ion-col size="12">
-              <app-input-text title="Swift Code" controlName="swiftCode" type='number' [form]="form">
-              </app-input-text>
+              <app-input-reactive title="Swift Code" controlName="swiftCode" type='number' [form]="form">
+              </app-input-reactive>
             </ion-col>
           </ion-row>
         </ion-col>
@@ -140,18 +140,13 @@
         <ion-col sizeLg="6" size="12">
           <ion-row>
             <ion-col size="12">
-              <ion-item class="rounded-3" mode="md">
-                <ion-label position="stacked">
-                  Currency
-                </ion-label>
-                <ion-select mode="ios" formControlName="currency" [selectedText]="field('currency').value.symbol">
-                  <ion-select-option [value]="currency" *ngFor="let currency of currencies">
-                    {{currency.symbol}} -
-                    {{currency.name}}
-                  </ion-select-option>
-                </ion-select>
-              </ion-item>
-
+              <app-input-select-reactive title="Currency" controlName="currency" [form]='form'
+                [selectedText]="field('currency').value.symbol">
+                <ion-select-option [value]="currency" *ngFor="let currency of currencies">
+                  {{currency.symbol}} -
+                  {{currency.name}}
+                </ion-select-option>
+              </app-input-select-reactive>
             </ion-col>
             <!-- <ion-col size="12">
               <ion-item class="rounded-3" mode="md">

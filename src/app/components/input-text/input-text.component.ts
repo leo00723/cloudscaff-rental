@@ -3,10 +3,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-input-text',
@@ -14,17 +12,14 @@ import { FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./input-text.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InputTextComponent implements OnInit {
+export class InputTextComponent {
   @Input() title: string;
   @Input() placeholder: string;
   @Input() type = 'text';
-  @Input() controlName: string;
+  @Input() value: string;
   @Input() readonly = false;
-  @Input() form;
+  @Input() optional = false;
   @Output() fieldChange = new EventEmitter<boolean>();
-  constructor() {}
-
-  ngOnInit() {}
 
   update() {
     this.fieldChange.emit(true);

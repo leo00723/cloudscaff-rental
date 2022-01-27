@@ -39,16 +39,29 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="12">
-            <ion-item class="rounded-3">
-              <ion-label position="stacked">Customer</ion-label>
-              <ion-select mode='ios' *ngIf="customers$ | async as customers" formControlName="customer"
-                [selectedText]="field('customer').value.name" placeholder="Select Customer">
+          <ion-col size='12'>
+            <app-input-select-reactive (fieldChange)="changeCustomer($event)" title="Customer"
+              placeholder="Select Customer" controlName="customer" [form]='form'
+              [selectedText]="field('customer').value.name">
+              <ng-container *ngIf="customers$ | async as customers">
                 <ion-select-option [value]="customer" *ngFor="let customer of customers">{{customer.name}}
                 </ion-select-option>
-              </ion-select>
-            </ion-item>
+                <ion-select-option value="add">Add Customer
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
           </ion-col>
+          <ion-col size='12' *ngIf="show === 'editCustomer'">
+            <app-customer *ngIf="company$ | async as company; " [customer]="field('customer').value" [isUpdate]="true"
+              [companyId]="company.id">
+            </app-customer>
+          </ion-col>
+          <ion-col size='12' *ngIf="show === 'addCustomer'">
+            <app-customer *ngIf="company$ | async as company; " [companyId]="company.id"
+              (newCustomer)="newCustomer($event)">
+            </app-customer>
+          </ion-col>
+
           <ion-col size="12">
             <ion-item class="rounded-3">
               <ion-label position="stacked" placeholder="">Message</ion-label>
@@ -56,9 +69,10 @@
             </ion-item>
           </ion-col>
           <ion-col size="12">
-            <app-input-text title="Site Name" controlName="siteName" [form]="form" placeholder="Enter Site Name">
-            </app-input-text>
+            <app-input-reactive title="Site Name" controlName="siteName" [form]="form" placeholder="Enter Site Name">
+            </app-input-reactive>
           </ion-col>
+
         </ion-row>
         <ion-row>
           <ion-col size="12" class="text-end">
@@ -90,45 +104,45 @@
                 </ion-chip>
               </ion-col>
               <ion-col sizeXl="1" size='4'>
-                <app-input-text (fieldChange)="updateDimension(i)" title="Length" type="number" controlName="length"
+                <app-input-reactive (fieldChange)="updateDimension(i)" title="Length" type="number" controlName="length"
                   [form]="scaffold" placeholder="L">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
               <ion-col sizeXl="1" size='4'>
-                <app-input-text (fieldChange)="updateDimension(i)" title="Width" type="number" controlName="width"
+                <app-input-reactive (fieldChange)="updateDimension(i)" title="Width" type="number" controlName="width"
                   [form]="scaffold" placeholder="W">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
               <ion-col sizeXl="1" size='4'>
-                <app-input-text (fieldChange)="updateDimension(i)" title="Height" type="number" controlName="height"
+                <app-input-reactive (fieldChange)="updateDimension(i)" title="Height" type="number" controlName="height"
                   [form]="scaffold" placeholder="H">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
               <ion-col>
-                <app-input-text title="No. Platforms" type="number" controlName="noPlatforms" [form]="scaffold"
+                <app-input-reactive title="No. Platforms" type="number" controlName="noPlatforms" [form]="scaffold"
                   placeholder="No. of platforms">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
               <ion-col>
-                <app-input-text title="Weeks Standing" type="number" controlName="weeksStanding" [form]="scaffold"
+                <app-input-reactive title="Weeks Standing" type="number" controlName="weeksStanding" [form]="scaffold"
                   placeholder="No. of weeks">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
               <ion-col>
-                <app-input-text (fieldChange)="updateDimension(i)" title="Rate Profile" controlName="rate"
+                <app-input-reactive (fieldChange)="updateDimension(i)" title="Rate Profile" controlName="rate"
                   [form]="scaffold" placeholder="Enter rate">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
 
               <ion-col>
-                <app-input-text title="Hire %" type="number" controlName="hirePercentage" [form]="scaffold"
+                <app-input-reactive title="Hire %" type="number" controlName="hirePercentage" [form]="scaffold"
                   placeholder="Enter % for hire">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
               <ion-col>
-                <app-input-text title="Total" type="number" controlName="total" [form]="scaffold" [readonly]="true"
+                <app-input-reactive title="Total" type="number" controlName="total" [form]="scaffold" [readonly]="true"
                   placeholder="Enter Site Name">
-                </app-input-text>
+                </app-input-reactive>
               </ion-col>
             </ion-row>
           </ion-col>
@@ -169,35 +183,35 @@
             </ion-note>
           </ion-col>
           <ion-col sizeXl="1" size='4'>
-            <app-input-text title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
-            </app-input-text>
+            <app-input-reactive title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
+            </app-input-reactive>
           </ion-col>
           <ion-col sizeXl="1" size='4'>
-            <app-input-text title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
-            </app-input-text>
+            <app-input-reactive title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
+            </app-input-reactive>
           </ion-col>
           <ion-col sizeXl="1" size='4'>
-            <app-input-text title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
-            </app-input-text>
+            <app-input-reactive title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
-            </app-input-text>
+            <app-input-reactive title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Rate Override" type="number" controlName="siteName" [form]="form"
+            <app-input-reactive title="Rate Override" type="number" controlName="siteName" [form]="form"
               placeholder="Enter Site Name">
-            </app-input-text>
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Hire %" type="number" controlName="siteName" [form]="form"
+            <app-input-reactive title="Hire %" type="number" controlName="siteName" [form]="form"
               placeholder="Enter Site Name">
-            </app-input-text>
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Total" type="number" controlName="siteName" [form]="form"
+            <app-input-reactive title="Total" type="number" controlName="siteName" [form]="form"
               placeholder="Enter Site Name">
-            </app-input-text>
+            </app-input-reactive>
           </ion-col>
         </ion-row>
 
@@ -228,35 +242,35 @@
             </ion-note>
           </ion-col>
           <ion-col sizeXl="1" size='4'>
-            <app-input-text title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
-            </app-input-text>
+            <app-input-reactive title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
+            </app-input-reactive>
           </ion-col>
           <ion-col sizeXl="1" size='4'>
-            <app-input-text title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
-            </app-input-text>
+            <app-input-reactive title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
+            </app-input-reactive>
           </ion-col>
           <ion-col sizeXl="1" size='4'>
-            <app-input-text title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
-            </app-input-text>
+            <app-input-reactive title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
-            </app-input-text>
+            <app-input-reactive title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Rate Override" type="number" controlName="siteName" [form]="form"
+            <app-input-reactive title="Rate Override" type="number" controlName="siteName" [form]="form"
               placeholder="Enter Site Name">
-            </app-input-text>
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Hire %" type="number" controlName="siteName" [form]="form"
+            <app-input-reactive title="Hire %" type="number" controlName="siteName" [form]="form"
               placeholder="Enter Site Name">
-            </app-input-text>
+            </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-text title="Total" type="number" controlName="siteName" [form]="form"
+            <app-input-reactive title="Total" type="number" controlName="siteName" [form]="form"
               placeholder="Enter Site Name">
-            </app-input-text>
+            </app-input-reactive>
           </ion-col>
         </ion-row>
 
