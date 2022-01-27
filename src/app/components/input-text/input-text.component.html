@@ -2,7 +2,7 @@
   <ion-label position="stacked">
     {{title}} {{optional ? '(optional)' : ''}}
   </ion-label>
-  <ion-input placeholder="{{placeholder}}" type="{{type}}" id="{{title}}" name="{{title}}" [(ngModel)]="value"
-    (change)="update()" [readonly]="readonly">
+  <ion-input debounce="200" placeholder="{{placeholder}}" type="{{type}}" id="{{title}}" name="{{title}}"
+    [(ngModel)]="value" (ionChange)="update($event)" [readonly]="readonly">
   </ion-input>
 </ion-item>

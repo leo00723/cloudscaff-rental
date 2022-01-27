@@ -9,19 +9,18 @@ import {
 @Component({
   selector: 'app-input-text',
   templateUrl: './input-text.component.html',
-  styleUrls: ['./input-text.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InputTextComponent {
   @Input() title: string;
   @Input() placeholder: string;
   @Input() type = 'text';
-  @Input() value: string;
+  @Input() value: number;
   @Input() readonly = false;
   @Input() optional = false;
-  @Output() fieldChange = new EventEmitter<boolean>();
+  @Output() fieldChange = new EventEmitter<any>();
 
-  update() {
-    this.fieldChange.emit(true);
+  update(args) {
+    this.fieldChange.emit(args.detail.value);
   }
 }

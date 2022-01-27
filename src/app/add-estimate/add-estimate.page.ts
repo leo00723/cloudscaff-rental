@@ -19,11 +19,12 @@ import { MasterService } from '../services/master.service';
 })
 export class AddEstimatePage implements OnInit {
   company$: Observable<Company>;
-  customers$: Observable<any[]>;
+  customers$: Observable<Customer[]>;
+  rates$: Observable<any[]>;
   form: FormGroup;
   loading = false;
   isLoading = true;
-  active = 'customer';
+  active = 'overview';
   show = '';
   selectedCustomer: Customer;
   constructor(private masterSvc: MasterService, private fb: FormBuilder) {
@@ -33,7 +34,18 @@ export class AddEstimatePage implements OnInit {
         if (user) {
           return this.masterSvc
             .edit()
-            .getDocsByCompanyId('customers', user.company);
+            .getDocsByCompanyId(`company/${user.company}/customers`);
+        } else {
+          return of(false);
+        }
+      })
+    ) as Observable<Customer[]>;
+    this.rates$ = this.masterSvc.auth().user$.pipe(
+      switchMap((user) => {
+        if (user) {
+          return this.masterSvc
+            .edit()
+            .getDocsByCompanyId(`company/${user.company}/rateProfiles`);
         } else {
           return of(false);
         }
@@ -51,6 +63,12 @@ export class AddEstimatePage implements OnInit {
   field(field: string) {
     return this.form.get(field) as FormControl;
   }
+  arr(field: string) {
+    return this.form.get(field) as FormArray;
+  }
+  arrField(arr: string, index: number, field: string) {
+    return this.arr(arr).controls[index].get(field) as FormControl;
+  }
 
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -62,13 +80,13 @@ export class AddEstimatePage implements OnInit {
 
   addScaffold() {
     const scaffold = this.fb.group({
-      rate: ['', [Validators.required]],
+      rate: ['', Validators.required],
       hirePercentage: [0, [Validators.min(0), Validators.max(100)]],
-      length: ['', [Validators.required]],
-      width: ['', Validators.required],
-      height: ['', Validators.required],
+      length: ['', [Validators.required, Validators.min(1)]],
+      width: ['', [Validators.required, Validators.min(1)]],
+      height: ['', [Validators.required, Validators.min(1)]],
       noPlatforms: ['', Validators.required],
-      weeksStanding: ['', Validators.required],
+      weeksStanding: ['', [Validators.required, Validators.min(1)]],
       hireCost: [''],
       totalExHire: [''],
       volume: [''],
@@ -87,6 +105,16 @@ export class AddEstimatePage implements OnInit {
 
   updateDimension(i: any) {
     this.calcRate(i);
+  }
+  updateRate(i: any, args) {
+    // console.log(this.arrField('scaffolds', i, 'rate').value.rate !== +args);
+    // if (this.arrField('scaffolds', i, 'rate').value.rate !== +args) {
+    this.arrField('scaffolds', i, 'rate').patchValue({
+      ...this.arrField('scaffolds', i, 'rate').value,
+      rate: +args,
+    });
+    this.calcRate(i);
+    // }
   }
 
   changeCustomer(args) {
@@ -107,14 +135,37 @@ export class AddEstimatePage implements OnInit {
 
   private calcRate(i: string | number) {
     const ref = this.scaffoldsForms.controls[i] as FormControl;
-    ref
-      .get('total')
-      .setValue(
-        ref.get('length').value *
-          ref.get('width').value *
-          ref.get('height').value *
-          ref.get('rate').value
-      );
+
+    switch (ref.get('rate').value.code) {
+      case 1:
+        {
+          ref
+            .get('total')
+            .setValue(ref.get('length').value * ref.get('rate').value.rate);
+        }
+        break;
+      case 2:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('width').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 3: {
+        ref
+          .get('total')
+          .setValue(
+            ref.get('length').value *
+              ref.get('width').value *
+              ref.get('height').value *
+              ref.get('rate').value.rate
+          );
+      }
+    }
   }
 
   private initFrom() {

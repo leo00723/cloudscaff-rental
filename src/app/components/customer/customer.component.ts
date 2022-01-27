@@ -38,7 +38,7 @@ export class CustomerComponent implements OnInit {
     Object.assign(this.customer, this.form.value);
     this.masterSvc
       .edit()
-      .addDocument('customers', this.customer)
+      .addDocument(`company/${this.customer.company}/customers`, this.customer)
       .then(() => {
         this.loading = false;
         this.masterSvc
@@ -64,7 +64,11 @@ export class CustomerComponent implements OnInit {
     Object.assign(this.customer, this.form.value);
     this.masterSvc
       .edit()
-      .updateDoc('customers', this.customer.id, this.customer)
+      .updateDoc(
+        `company/${this.customer.company}/`,
+        this.customer.id,
+        this.customer
+      )
       .then(() => {
         this.loading = false;
         this.masterSvc
@@ -85,7 +89,10 @@ export class CustomerComponent implements OnInit {
     this.loading = true;
     this.masterSvc
       .edit()
-      .deleteDocById('customers', this.customer.id)
+      .deleteDocById(
+        `company/${this.customer.company}/customers`,
+        this.customer.id
+      )
       .then(() => {
         this.loading = false;
         this.masterSvc

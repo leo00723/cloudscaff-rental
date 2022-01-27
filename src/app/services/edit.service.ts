@@ -48,14 +48,10 @@ export class EditService {
       idField: 'id',
     });
   }
-  getDocsByCompanyId(collectionName: string, collectionId: string) {
-    return collectionData(
-      query(
-        this.collectionRef(collectionName),
-        where('company', '==', collectionId)
-      ),
-      { idField: 'id' }
-    ) as Observable<any[]>;
+  getDocsByCompanyId(collectionPath: string) {
+    return collectionData(this.collectionRef(collectionPath), {
+      idField: 'id',
+    }) as Observable<any[]>;
   }
 
   //----DELETE FUNCTIONS----
