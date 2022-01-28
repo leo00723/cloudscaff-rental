@@ -115,7 +115,7 @@
                   [form]="field('scaffold')" [selectedText]="field('scaffold.rate').value.name"
                   (fieldChange)="update('scaffold')">
                   <ng-container *ngIf="rates$ | async as rates">
-                    <ion-select-option [value]="rate" *ngFor="let rate of rates">{{rate.name}}
+                    <ion-select-option [value]="rate" *ngFor="let rate of rates.scaffoldRates">{{rate.name}}
                     </ion-select-option>
                   </ng-container>
                 </app-input-select-reactive>
@@ -192,39 +192,28 @@
             </ion-text>
           </ion-col>
           <ion-col size='12'>
-            <ion-row formGroupName="boards">
+            <ion-row formGroupName="hire">
               <ion-col>
-                <app-input-reactive title="Length" type="number" controlName="length" [form]="field('boards')"
-                  placeholder="L" (fieldChange)="update('boards')">
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive title="Width" type="number" controlName="width" [form]="field('boards')"
-                  placeholder="W" (fieldChange)="update('boards')">
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive title="Qty" type="number" controlName="qty" [form]="field('boards')"
-                  placeholder="Enter Qty" (fieldChange)="update('boards')">
+                <app-input-reactive title="Days Standing" type="number" controlName="daysStanding"
+                  [form]="field('hire')" placeholder="Enter days" (fieldChange)="update('hire')">
                 </app-input-reactive>
               </ion-col>
               <ion-col>
                 <app-input-select-reactive title="Rate Profile" placeholder="Select Rate" controlName="rate"
-                  [form]="field('boards')" [selectedText]="field('boards.rate').value.name"
-                  (fieldChange)="update('boards')">
-                  <ng-container *ngIf="boardRates$ | async as rates">
-                    <ion-select-option [value]="rate" *ngFor="let rate of rates.boardRates">{{rate.name}}
+                  [form]="field('hire')" [selectedText]="field('hire.rate').value.name" (fieldChange)="update('hire')">
+                  <ng-container *ngIf="hireRates$ | async as rates">
+                    <ion-select-option [value]="rate" *ngFor="let rate of rates.hireRates">{{rate.name}}
                     </ion-select-option>
                   </ng-container>
                 </app-input-select-reactive>
               </ion-col>
-              <ion-col *ngIf="field('boards.rate').value">
-                <app-input-text title="Rate overide" type="number" [value]="field('boards.rate').value.rate"
-                  placeholder="Enter rate" (fieldChange)="updateRate('boards',$event)">
+              <ion-col *ngIf="field('hire.rate').value">
+                <app-input-text title="Rate overide" type="number" [value]="field('hire.rate').value.rate"
+                  placeholder="Enter rate" (fieldChange)="updateRate('hire',$event)">
                 </app-input-text>
               </ion-col>
               <ion-col>
-                <app-input-reactive title="Total" type="number" controlName="total" [form]="field('boards')"
+                <app-input-reactive title="Total" type="number" controlName="total" [form]="field('hire')"
                   [readonly]="true" placeholder="Total">
                 </app-input-reactive>
               </ion-col>

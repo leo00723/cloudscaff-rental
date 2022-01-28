@@ -20,8 +20,9 @@ import { MasterService } from '../services/master.service';
 export class AddEstimatePage implements OnInit {
   company$: Observable<Company>;
   customers$: Observable<Customer[]>;
-  rates$: Observable<any[]>;
+  rates$: Observable<any>;
   boardRates$: Observable<any>;
+  hireRates$: Observable<any>;
   form: FormGroup;
   loading = false;
   isLoading = true;
@@ -46,18 +47,29 @@ export class AddEstimatePage implements OnInit {
         if (user) {
           return this.masterSvc
             .edit()
-            .getDocsByCompanyId(`company/${user.company}/rateProfiles`);
+            .getDocById(`company/${user.company}/rateProfiles`, 'scaffold');
         } else {
           return of(false);
         }
       })
-    ) as Observable<any[]>;
+    ) as Observable<any>;
     this.boardRates$ = this.masterSvc.auth().user$.pipe(
       switchMap((user) => {
         if (user) {
           return this.masterSvc
             .edit()
             .getDocById(`company/${user.company}/rateProfiles`, 'boards');
+        } else {
+          return of(false);
+        }
+      })
+    ) as Observable<any>;
+    this.hireRates$ = this.masterSvc.auth().user$.pipe(
+      switchMap((user) => {
+        if (user) {
+          return this.masterSvc
+            .edit()
+            .getDocById(`company/${user.company}/rateProfiles`, 'hire');
         } else {
           return of(false);
         }
@@ -112,8 +124,13 @@ export class AddEstimatePage implements OnInit {
           this.calcScaffoldRate();
         }
         break;
-      case 'boards': {
-        this.calcBoardRate();
+      case 'boards':
+        {
+          this.calcBoardRate();
+        }
+        break;
+      case 'hire': {
+        this.calcHireRate();
       }
     }
   }
@@ -128,12 +145,21 @@ export class AddEstimatePage implements OnInit {
           this.calcScaffoldRate();
         }
         break;
-      case 'boards': {
-        this.field('boards.rate').patchValue({
-          ...this.field('boards.rate').value,
+      case 'boards':
+        {
+          this.field('boards.rate').patchValue({
+            ...this.field('boards.rate').value,
+            rate: +args,
+          });
+          this.calcBoardRate();
+        }
+        break;
+      case 'hire': {
+        this.field('hire.rate').patchValue({
+          ...this.field('hire.rate').value,
           rate: +args,
         });
-        this.calcBoardRate();
+        this.calcHireRate();
       }
     }
   }
@@ -151,18 +177,59 @@ export class AddEstimatePage implements OnInit {
       case 2:
         {
           this.field('scaffold.total').setValue(
+            this.field('scaffold.width').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
+      case 3:
+        {
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.height').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
+      case 4:
+        {
+          this.field('scaffold.total').setValue(
             this.field('scaffold.length').value *
               this.field('scaffold.width').value *
               this.field('scaffold.rate').value.rate
           );
         }
         break;
-      case 3: {
-        this.field('scaffold.total').setValue(
-          this.field('scaffold.length').value *
-            this.field('scaffold.width').value *
+      case 5:
+        {
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.length').value *
+              this.field('scaffold.height').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
+      case 6:
+        {
+          this.field('scaffold.total').setValue(
             this.field('scaffold.height').value *
-            this.field('scaffold.rate').value.rate
+              this.field('scaffold.width').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
+      case 7:
+        {
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.length').value *
+              this.field('scaffold.width').value *
+              this.field('scaffold.height').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
+      case 8: {
+        this.field('scaffold.total').setValue(
+          this.field('scaffold.rate').value.rate
         );
       }
     }
@@ -188,13 +255,36 @@ export class AddEstimatePage implements OnInit {
           );
         }
         break;
-      case 3: {
+      case 3:
+        {
+          this.field('boards.total').setValue(
+            this.field('boards.length').value *
+              this.field('boards.width').value *
+              this.field('boards.qty').value *
+              this.field('boards.rate').value.rate
+          );
+        }
+        break;
+      case 4: {
         this.field('boards.total').setValue(
-          this.field('boards.length').value *
-            this.field('boards.width').value *
-            this.field('boards.qty').value *
-            this.field('boards.rate').value.rate
+          this.field('boards.qty').value * this.field('boards.rate').value.rate
         );
+      }
+    }
+  }
+
+  private calcHireRate() {
+    switch (this.field('hire.rate').value.code) {
+      case 1:
+        {
+          this.field('hire.total').setValue(
+            this.field('hire.daysStanding').value *
+              this.field('hire.rate').value.rate
+          );
+        }
+        break;
+      case 2: {
+        this.field('hire.total').setValue(this.field('hire.rate').value.rate);
       }
     }
   }
