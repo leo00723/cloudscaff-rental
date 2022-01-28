@@ -10,7 +10,7 @@
 
 
 <ion-content fullscreen="true">
-  <div class="ion-padding">
+  <div class="ion-padding" *ngIf="company$ | async as company">
     <ion-toolbar class="rounded-lg">
       <ion-segment (ionChange)="segmentChanged($event)" selectOnFocus="true" [value]="active">
         <ion-segment-button value="overview">
@@ -30,7 +30,7 @@
     <form class="mt-5" name="estimate" [formGroup]="form">
       <!-- OVERVIEW TAB -->
 
-      <ion-grid fixed='true' *ngIf="active === 'overview'">
+      <ion-grid *ngIf="active === 'overview'">
         <ion-row>
           <ion-col size="12">
             <ion-text color="medium">
@@ -54,13 +54,11 @@
             </app-input-select-reactive>
           </ion-col>
           <ion-col size='12' *ngIf="show === 'editCustomer'">
-            <app-customer *ngIf="company$ | async as company; " [customer]="field('customer').value" [isUpdate]="true"
-              [companyId]="company.id">
+            <app-customer [customer]="field('customer').value" [isUpdate]="true" [companyId]="company.id">
             </app-customer>
           </ion-col>
           <ion-col size='12' *ngIf="show === 'addCustomer'">
-            <app-customer *ngIf="company$ | async as company; " [companyId]="company.id"
-              (newCustomer)="newCustomer($event)">
+            <app-customer [companyId]="company.id" (newCustomer)="newCustomer($event)">
             </app-customer>
           </ion-col>
 
@@ -86,98 +84,159 @@
       <!-- SCAFFOLDS TAB -->
 
       <ion-grid *ngIf="active === 'scaffolds'">
-        <ion-row class="mt-3">
+        <!-- SCAFFOLDS -->
+        <ion-row>
           <ion-col size="12">
             <ion-text color="medium">
               <h4>
-                Scaffold Information
+                {{company.terminology.scaffold}} Details
               </h4>
             </ion-text>
           </ion-col>
-        </ion-row>
-
-        <ion-row formArrayName="scaffolds" *ngFor="let scaffold of scaffoldsForms.controls; let i = index">
-          <ion-col size='12' [formGroupName]="i">
-            <ion-row>
-              <ion-col size="12">
-                <ion-note>
-                  Scaffold {{i+1}}
-                </ion-note>
-                <ion-chip outline color="danger" class="ion-float-end" (click)="deleteScaffold(i)">
-                  <ion-label>Delete</ion-label>
-                </ion-chip>
-              </ion-col>
-              <ion-col sizeXl="1" size='4'>
-                <app-input-reactive (fieldChange)="updateDimension(i)" title="Length" type="number" controlName="length"
-                  [form]="scaffold" placeholder="L">
-                </app-input-reactive>
-              </ion-col>
-              <ion-col sizeXl="1" size='4'>
-                <app-input-reactive (fieldChange)="updateDimension(i)" title="Width" type="number" controlName="width"
-                  [form]="scaffold" placeholder="W">
-                </app-input-reactive>
-              </ion-col>
-              <ion-col sizeXl="1" size='4'>
-                <app-input-reactive (fieldChange)="updateDimension(i)" title="Height" type="number" controlName="height"
-                  [form]="scaffold" placeholder="H">
-                </app-input-reactive>
-              </ion-col>
-              <!-- <ion-col>
-                <app-input-reactive title="No. Platforms" type="number" controlName="noPlatforms" [form]="scaffold"
-                  placeholder="No. of platforms">
-                </app-input-reactive>
-              </ion-col> -->
+          <ion-col size='12'>
+            <ion-row formGroupName="scaffold">
               <ion-col>
-                <app-input-reactive title="Weeks Standing" type="number" controlName="weeksStanding" [form]="scaffold"
-                  placeholder="No. of weeks">
+                <app-input-reactive title="Length" type="number" controlName="length" [form]="field('scaffold')"
+                  placeholder="L" (fieldChange)="update('scaffold')">
                 </app-input-reactive>
               </ion-col>
               <ion-col>
-                <!-- (fieldChange)="changeCustomer($event)" -->
-                <app-input-select-reactive title="Rate Profile" (fieldChange)="updateDimension(i)"
-                  placeholder="Select Rate" controlName="rate" [form]='scaffold'
-                  [selectedText]="arrField('scaffolds',i,'rate').value.name">
+                <app-input-reactive title="Width" type="number" controlName="width" [form]="field('scaffold')"
+                  placeholder="W" (fieldChange)="update('scaffold')">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Height" type="number" controlName="height" [form]="field('scaffold')"
+                  placeholder="H" (fieldChange)="update('scaffold')">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-select-reactive title="Rate Profile" placeholder="Select Rate" controlName="rate"
+                  [form]="field('scaffold')" [selectedText]="field('scaffold.rate').value.name"
+                  (fieldChange)="update('scaffold')">
                   <ng-container *ngIf="rates$ | async as rates">
                     <ion-select-option [value]="rate" *ngFor="let rate of rates">{{rate.name}}
                     </ion-select-option>
                   </ng-container>
                 </app-input-select-reactive>
               </ion-col>
-              <ion-col *ngIf="arrField('scaffolds',i,'rate').value">
-                <app-input-text title="Rate overide" (fieldChange)="updateRate(i,$event)" type="number"
-                  [value]="arrField('scaffolds',i,'rate').value.rate" placeholder="Enter rate">
+              <ion-col *ngIf="field('scaffold.rate').value">
+                <app-input-text title="Rate overide" type="number" [value]="field('scaffold.rate').value.rate"
+                  placeholder="Enter rate" (fieldChange)="updateRate('scaffold',$event)">
                 </app-input-text>
               </ion-col>
               <ion-col>
-                <app-input-reactive title="Hire %" type="number" controlName="hirePercentage" [form]="scaffold"
-                  placeholder="Enter % for hire">
+                <app-input-reactive title="Total" type="number" controlName="total" [form]="field('scaffold')"
+                  [readonly]="true" placeholder="Total">
+                </app-input-reactive>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+        <!-- BOARDS -->
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>
+                {{company.terminology.boards}} Details
+              </h4>
+            </ion-text>
+          </ion-col>
+          <ion-col size='12'>
+            <ion-row formGroupName="boards">
+              <ion-col>
+                <app-input-reactive title="Length" type="number" controlName="length" [form]="field('boards')"
+                  placeholder="L" (fieldChange)="update('boards')">
                 </app-input-reactive>
               </ion-col>
               <ion-col>
-                <app-input-reactive title="Total" type="number" controlName="total" [form]="scaffold" [readonly]="true"
-                  placeholder="Enter Site Name">
+                <app-input-reactive title="Width" type="number" controlName="width" [form]="field('boards')"
+                  placeholder="W" (fieldChange)="update('boards')">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Qty" type="number" controlName="qty" [form]="field('boards')"
+                  placeholder="Enter Qty" (fieldChange)="update('boards')">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-select-reactive title="Rate Profile" placeholder="Select Rate" controlName="rate"
+                  [form]="field('boards')" [selectedText]="field('boards.rate').value.name"
+                  (fieldChange)="update('boards')">
+                  <ng-container *ngIf="boardRates$ | async as rates">
+                    <ion-select-option [value]="rate" *ngFor="let rate of rates.boardRates">{{rate.name}}
+                    </ion-select-option>
+                  </ng-container>
+                </app-input-select-reactive>
+              </ion-col>
+              <ion-col *ngIf="field('boards.rate').value">
+                <app-input-text title="Rate overide" type="number" [value]="field('boards.rate').value.rate"
+                  placeholder="Enter rate" (fieldChange)="updateRate('boards',$event)">
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Total" type="number" controlName="total" [form]="field('boards')"
+                  [readonly]="true" placeholder="Total">
+                </app-input-reactive>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
+        <!-- HIRE -->
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>
+                {{company.terminology.hire}} Details
+              </h4>
+            </ion-text>
+          </ion-col>
+          <ion-col size='12'>
+            <ion-row formGroupName="boards">
+              <ion-col>
+                <app-input-reactive title="Length" type="number" controlName="length" [form]="field('boards')"
+                  placeholder="L" (fieldChange)="update('boards')">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Width" type="number" controlName="width" [form]="field('boards')"
+                  placeholder="W" (fieldChange)="update('boards')">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Qty" type="number" controlName="qty" [form]="field('boards')"
+                  placeholder="Enter Qty" (fieldChange)="update('boards')">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-select-reactive title="Rate Profile" placeholder="Select Rate" controlName="rate"
+                  [form]="field('boards')" [selectedText]="field('boards.rate').value.name"
+                  (fieldChange)="update('boards')">
+                  <ng-container *ngIf="boardRates$ | async as rates">
+                    <ion-select-option [value]="rate" *ngFor="let rate of rates.boardRates">{{rate.name}}
+                    </ion-select-option>
+                  </ng-container>
+                </app-input-select-reactive>
+              </ion-col>
+              <ion-col *ngIf="field('boards.rate').value">
+                <app-input-text title="Rate overide" type="number" [value]="field('boards.rate').value.rate"
+                  placeholder="Enter rate" (fieldChange)="updateRate('boards',$event)">
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Total" type="number" controlName="total" [form]="field('boards')"
+                  [readonly]="true" placeholder="Total">
                 </app-input-reactive>
               </ion-col>
             </ion-row>
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="1" class="text-end m-auto">
-            <!-- <ion-button shape="round" color="success" (click)="addScaffold()">Add Scaffold</ion-button> -->
-            <ion-fab-button color="success" (click)="addScaffold()">
-              <ion-icon name="add"></ion-icon>
-            </ion-fab-button>
-          </ion-col>
-        </ion-row>
-
-
-        <ion-row>
           <ion-col size="12" class="text-end">
             <ion-button shape="round" (click)="nextView('additionals')">Next</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
-
       <!-- ADDITIONALS TAB -->
 
       <ion-grid fixed='true' *ngIf="active === 'additionals'">

@@ -1,3 +1,10 @@
+import { CurrencyData } from './currencies.model';
+
+export interface Terminology {
+  scaffold: string;
+  boards: string;
+  hire: string;
+}
 export interface Company {
   id: string;
   name: string;
@@ -13,5 +20,6 @@ export interface Company {
   accountNum: string;
   branchCode: string;
   swiftCode: string;
-  currency: string;
+  currency: CurrencyData;
+  terminology: Terminology;
 }

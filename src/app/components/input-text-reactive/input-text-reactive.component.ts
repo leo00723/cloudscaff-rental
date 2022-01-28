@@ -16,6 +16,7 @@ import { FormControl } from '@angular/forms';
 export class InputTextReactiveComponent {
   @Input() title: string;
   @Input() placeholder: string;
+  @Input() color: string;
   @Input() type = 'text';
   @Input() controlName: string;
   @Input() readonly = false;
@@ -33,9 +34,5 @@ export class InputTextReactiveComponent {
   }
   checkStatus(field: FormControl) {
     return field.invalid && field.touched;
-  }
-
-  checkRender() {
-    console.log('checkRender');
   }
 }

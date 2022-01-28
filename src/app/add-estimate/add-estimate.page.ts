@@ -21,6 +21,7 @@ export class AddEstimatePage implements OnInit {
   company$: Observable<Company>;
   customers$: Observable<Customer[]>;
   rates$: Observable<any[]>;
+  boardRates$: Observable<any>;
   form: FormGroup;
   loading = false;
   isLoading = true;
@@ -51,70 +52,29 @@ export class AddEstimatePage implements OnInit {
         }
       })
     ) as Observable<any[]>;
-  }
-  get scaffoldsForms() {
-    return this.form.get('scaffolds') as FormArray;
+    this.boardRates$ = this.masterSvc.auth().user$.pipe(
+      switchMap((user) => {
+        if (user) {
+          return this.masterSvc
+            .edit()
+            .getDocById(`company/${user.company}/rateProfiles`, 'boards');
+        } else {
+          return of(false);
+        }
+      })
+    ) as Observable<any>;
   }
 
   ngOnInit() {
     this.initFrom();
   }
 
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
   arr(field: string) {
     return this.form.get(field) as FormArray;
   }
+
   arrField(arr: string, index: number, field: string) {
     return this.arr(arr).controls[index].get(field) as FormControl;
-  }
-
-  segmentChanged(ev: any) {
-    this.active = ev.detail.value;
-  }
-
-  nextView(page: string) {
-    this.active = page;
-  }
-
-  addScaffold() {
-    const scaffold = this.fb.group({
-      rate: ['', Validators.required],
-      hirePercentage: [0, [Validators.min(0), Validators.max(100)]],
-      length: ['', [Validators.required, Validators.min(1)]],
-      width: ['', [Validators.required, Validators.min(1)]],
-      height: ['', [Validators.required, Validators.min(1)]],
-      noPlatforms: ['', Validators.required],
-      weeksStanding: ['', [Validators.required, Validators.min(1)]],
-      hireCost: [''],
-      totalExHire: [''],
-      volume: [''],
-      area: [''],
-      total: [''],
-    });
-    this.scaffoldsForms.push(scaffold);
-  }
-
-  getScaffold(i: number) {
-    return this.scaffoldsForms[i];
-  }
-  deleteScaffold(i: number) {
-    this.scaffoldsForms.removeAt(i);
-  }
-
-  updateDimension(i: any) {
-    this.calcRate(i);
-  }
-  updateRate(i: any, args) {
-    // console.log(this.arrField('scaffolds', i, 'rate').value.rate !== +args);
-    // if (this.arrField('scaffolds', i, 'rate').value.rate !== +args) {
-    this.arrField('scaffolds', i, 'rate').patchValue({
-      ...this.arrField('scaffolds', i, 'rate').value,
-      rate: +args,
-    });
-    this.calcRate(i);
-    // }
   }
 
   changeCustomer(args) {
@@ -128,42 +88,113 @@ export class AddEstimatePage implements OnInit {
     }
   }
 
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+
   newCustomer(args) {
     this.field('customer').setValue({ ...args });
     this.show = 'editCustomer';
   }
 
-  private calcRate(i: string | number) {
-    const ref = this.scaffoldsForms.controls[i] as FormControl;
+  nextView(page: string) {
+    this.active = page;
+  }
 
-    switch (ref.get('rate').value.code) {
+  segmentChanged(ev: any) {
+    this.active = ev.detail.value;
+  }
+
+  update(type: string) {
+    switch (type) {
+      case 'scaffold':
+        {
+          this.calcScaffoldRate();
+        }
+        break;
+      case 'boards': {
+        this.calcBoardRate();
+      }
+    }
+  }
+  updateRate(type: string, args) {
+    switch (type) {
+      case 'scaffold':
+        {
+          this.field('scaffold.rate').patchValue({
+            ...this.field('scaffold.rate').value,
+            rate: +args,
+          });
+          this.calcScaffoldRate();
+        }
+        break;
+      case 'boards': {
+        this.field('boards.rate').patchValue({
+          ...this.field('boards.rate').value,
+          rate: +args,
+        });
+        this.calcBoardRate();
+      }
+    }
+  }
+
+  private calcScaffoldRate() {
+    switch (this.field('scaffold.rate').value.code) {
       case 1:
         {
-          ref
-            .get('total')
-            .setValue(ref.get('length').value * ref.get('rate').value.rate);
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.length').value *
+              this.field('scaffold.rate').value.rate
+          );
         }
         break;
       case 2:
         {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('rate').value.rate
-            );
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.length').value *
+              this.field('scaffold.width').value *
+              this.field('scaffold.rate').value.rate
+          );
         }
         break;
       case 3: {
-        ref
-          .get('total')
-          .setValue(
-            ref.get('length').value *
-              ref.get('width').value *
-              ref.get('height').value *
-              ref.get('rate').value.rate
+        this.field('scaffold.total').setValue(
+          this.field('scaffold.length').value *
+            this.field('scaffold.width').value *
+            this.field('scaffold.height').value *
+            this.field('scaffold.rate').value.rate
+        );
+      }
+    }
+  }
+
+  private calcBoardRate() {
+    switch (this.field('boards.rate').value.code) {
+      case 1:
+        {
+          this.field('boards.total').setValue(
+            this.field('boards.length').value *
+              this.field('boards.qty').value *
+              this.field('boards.rate').value.rate
           );
+        }
+        break;
+      case 2:
+        {
+          this.field('boards.total').setValue(
+            this.field('boards.width').value *
+              this.field('boards.qty').value *
+              this.field('boards.rate').value.rate
+          );
+        }
+        break;
+      case 3: {
+        this.field('boards.total').setValue(
+          this.field('boards.length').value *
+            this.field('boards.width').value *
+            this.field('boards.qty').value *
+            this.field('boards.rate').value.rate
+        );
       }
     }
   }
@@ -177,8 +208,25 @@ export class AddEstimatePage implements OnInit {
         Validators.required,
       ],
       siteName: ['', Validators.required],
-      scaffolds: this.fb.array([]),
+      scaffold: this.fb.group({
+        rate: ['', Validators.required],
+        length: ['', [Validators.required, Validators.min(1)]],
+        width: ['', [Validators.required, Validators.min(1)]],
+        height: ['', [Validators.required, Validators.min(1)]],
+        total: [''],
+      }),
+      boards: this.fb.group({
+        rate: ['', Validators.required],
+        length: ['', [Validators.required, Validators.min(1)]],
+        width: ['', [Validators.required, Validators.min(1)]],
+        qty: ['', [Validators.required, Validators.min(1)]],
+        total: [''],
+      }),
+      hire: this.fb.group({
+        rate: ['', Validators.required],
+        daysStanding: ['', [Validators.required, Validators.min(1)]],
+        total: [''],
+      }),
     });
-    this.addScaffold();
   }
 }

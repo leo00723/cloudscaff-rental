@@ -1,4 +1,4 @@
-<ion-item class="rounded-3 mb-3" [formGroup]='form' mode="md">
+<ion-item class="rounded-3 mb-3" [formGroup]='form' mode="md" [color]="color">
   <ion-label position="stacked">
     {{title}} {{optional ? '(optional)' : ''}}
   </ion-label>
@@ -9,4 +9,3 @@
     Please enter a valid {{title}}
   </ion-note>
 </ion-item>
-{{checkRender()}}
