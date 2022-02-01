@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor(private toastController: ToastController) {}
+  constructor(
+    private toastController: ToastController,
+    public alertController: AlertController
+  ) {}
 
   async successToast(header: string, duration?: number) {
     const toast = await this.toastController.create({
@@ -29,5 +32,28 @@ export class NotificationService {
       duration: duration ? duration : 1000,
     });
     return await toast.present();
+  }
+
+  async presentAlertConfirm(callback?) {
+    const alert = await this.alertController.create({
+      header: 'Are you sure you want to continue?',
+      message: 'click Yes to proceed',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          id: 'cancel-button',
+        },
+        {
+          text: 'Yes',
+          id: 'confirm-button',
+          handler: () => {
+            callback();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }

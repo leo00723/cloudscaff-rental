@@ -4,29 +4,31 @@
       <ion-back-button color="primary"></ion-back-button>
     </ion-buttons>
     <ion-title>Create Estimate </ion-title>
-
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment scrollable (ionChange)="segmentChanged($event)" selectOnFocus="true" [value]="active">
+      <ion-segment-button value="overview">
+        <ion-label>Overview</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="scaffolds">
+        <ion-label>Scaffolds</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="labour">
+        <ion-label>Labour</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="additionals">
+        <ion-label>Additionals</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="summary">
+        <ion-label>Summary</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 
 <ion-content fullscreen="true">
   <div class="ion-padding" *ngIf="company$ | async as company">
-    <ion-toolbar class="rounded-lg">
-      <ion-segment (ionChange)="segmentChanged($event)" selectOnFocus="true" [value]="active">
-        <ion-segment-button value="overview">
-          <ion-label>Overview</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="scaffolds">
-          <ion-label>Scaffolds</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="additionals">
-          <ion-label>Additionals</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="summary">
-          <ion-label>Summary</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </ion-toolbar>
     <form class="mt-5" name="estimate" [formGroup]="form">
       <!-- OVERVIEW TAB -->
 
@@ -222,13 +224,124 @@
         </ion-row>
         <ion-row>
           <ion-col size="12" class="text-end">
+            <ion-button shape="round" (click)="nextView('labour')">Next</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- LABOUR TAB -->
+
+      <ion-grid *ngIf="active === 'labour'">
+        <ion-row class="mt-3">
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>
+                Labour Information
+              </h4>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <app-input-select-reactive title="Broker name" placeholder="Select Labour Broker" controlName="broker"
+              [form]='form' [selectedText]="field('broker').value.name">
+              <ng-container *ngIf="brokers$ | async as brokers">
+                <ion-select-option [value]="broker" *ngFor="let broker of brokers">{{broker.name}}
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+        </ion-row>
+
+        <ng-container *ngIf="field('broker').value">
+          <ion-row formArrayName="labour" *ngFor="let labour of labourForms.controls; let i = index">
+            <ion-col size="12">
+              <ion-note>
+                Item {{i+1}}
+              </ion-note>
+              <ion-chip outline color="danger" class="ion-float-end" (click)="deleteLabour(i)">
+                <ion-label>Delete</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col>
+              <app-input-select-reactive title="Type" placeholder="Select Labour Type" controlName="type"
+                [form]='labour' [selectedText]="arrField('labour',i,'type').value.name"
+                (fieldChange)="update('labour',i)">
+                <ng-container>
+                  <ion-select-option [value]="broker" *ngFor="let broker of field('broker').value.types">
+                    {{broker.name}}
+                  </ion-select-option>
+                </ng-container>
+              </app-input-select-reactive>
+            </ion-col>
+            <ng-container *ngIf="arrField('labour',i,'type').value">
+              <ion-col>
+                <app-input-reactive title="Hours per day" type="number" controlName="hours" [form]="labour"
+                  placeholder="Enter hours" (fieldChange)="update('labour',i)">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Days needed" type="number" controlName="days" [form]="labour"
+                  placeholder="Enter days" (fieldChange)="update('labour',i)">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Qty" type="number" controlName="qty" [form]="labour" placeholder="Qty"
+                  (fieldChange)="update('labour',i)">
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-select-reactive title="Rate Profile" placeholder="Select Rate" controlName="rate"
+                  [form]='labour' (fieldChange)="update('labour',i)"
+                  [selectedText]="arrField('labour',i,'rate').value.name">
+                  <ng-container>
+                    <ion-select-option [value]="{name:'NT',rate:arrField('labour',i,'type').value.nt}">
+                      Normal time
+                    </ion-select-option>
+                    <ion-select-option [value]="{name:'OT1',rate:arrField('labour',i,'type').value.ot1}">
+                      Over time 1
+                    </ion-select-option>
+                    <ion-select-option [value]="{name:'OT2',rate:arrField('labour',i,'type').value.ot2}">
+                      Over time 2
+                    </ion-select-option>
+                    <ion-select-option [value]="{name:'PH',rate:arrField('labour',i,'type').value.ph}">
+                      Public holiday
+                    </ion-select-option>
+                  </ng-container>
+                </app-input-select-reactive>
+              </ion-col>
+              <ion-col *ngIf="arrField('labour',i,'rate').value">
+                <app-input-text title="Rate overide" type="number" [value]="arrField('labour',i,'rate').value.rate"
+                  placeholder="Enter rate" (fieldChange)="updateRate('labour',$event,i)">
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive title="Total" type="number" controlName="total" [form]="labour" placeholder="Total"
+                  [readonly]="true">
+                </app-input-reactive>
+              </ion-col>
+            </ng-container>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="1" class="text-end m-auto">
+              <ion-fab-button color="success" (click)="addLabour()">
+                <ion-icon name="add"></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ng-container>
+        <ion-row>
+          <ion-col size="12" class="text-end">
             <ion-button shape="round" (click)="nextView('additionals')">Next</ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
+
       <!-- ADDITIONALS TAB -->
 
-      <ion-grid fixed='true' *ngIf="active === 'additionals'">
+      <ion-grid *ngIf="active === 'additionals'">
         <ion-row class="mt-3">
           <ion-col size="12">
             <ion-text color="medium">
@@ -240,45 +353,57 @@
         </ion-row>
 
 
-        <ion-row *ngFor="let item of [1,2,3,4]">
+        <ion-row formArrayName="additionals" *ngFor="let additional of additionalForms.controls; let i = index">
           <ion-col size="12">
             <ion-note>
-              Scaffold {{item}}
+              Item {{i+1}}
             </ion-note>
+            <ion-chip outline color="danger" class="ion-float-end" (click)="deleteAdditional(i)">
+              <ion-label>Delete</ion-label>
+            </ion-chip>
           </ion-col>
-          <ion-col sizeXl="1" size='4'>
-            <app-input-reactive title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col sizeXl="1" size='4'>
-            <app-input-reactive title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col sizeXl="1" size='4'>
-            <app-input-reactive title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
+          <ion-col>
+            <app-input-reactive title="Name" controlName="name" [form]="additional" placeholder="Item Name">
             </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-reactive title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
+            <app-input-reactive title="Qty" type="number" controlName="qty" [form]="additional" placeholder="Qty"
+              (fieldChange)="update('additionals',i)">
             </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-reactive title="Rate Override" type="number" controlName="siteName" [form]="form"
-              placeholder="Enter Site Name">
+            <app-input-reactive title="Days on Hire" type="number" controlName="daysStanding" [form]="additional"
+              placeholder="Days on hire" (fieldChange)="update('additionals',i)">
             </app-input-reactive>
           </ion-col>
           <ion-col>
-            <app-input-reactive title="Hire %" type="number" controlName="siteName" [form]="form"
-              placeholder="Enter Site Name">
-            </app-input-reactive>
+            <app-input-select-reactive title="Rate Profile" placeholder="Select Rate" controlName="rate"
+              [form]='additional' (fieldChange)="update('additionals',i)"
+              [selectedText]="arrField('additionals',i,'rate').value.name">
+              <ng-container *ngIf="additionalRates$ | async as rates">
+                <ion-select-option [value]="rate" *ngFor="let rate of rates.additionalRates">{{rate.name}}
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+          <ion-col *ngIf="arrField('additionals',i,'rate').value">
+            <app-input-text title="Rate overide" type="number" [value]="arrField('additionals',i,'rate').value.rate"
+              placeholder="Enter rate" (fieldChange)="updateRate('additionals',$event,i)">
+            </app-input-text>
           </ion-col>
           <ion-col>
-            <app-input-reactive title="Total" type="number" controlName="siteName" [form]="form"
-              placeholder="Enter Site Name">
+            <app-input-reactive title="Total" type="number" controlName="total" [form]="additional" placeholder="Total"
+              [readonly]="true">
             </app-input-reactive>
           </ion-col>
         </ion-row>
-
+        <ion-row>
+          <ion-col size="1" class="text-end m-auto">
+            <ion-fab-button color="success" (click)="addAdditional()">
+              <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
+          </ion-col>
+        </ion-row>
 
         <ion-row>
           <ion-col size="12" class="text-end">
@@ -289,7 +414,7 @@
 
       <!-- SUMMARY TAB -->
 
-      <ion-grid fixed='true' *ngIf="active === 'summary'">
+      <ion-grid *ngIf="active === 'summary'">
         <ion-row class="mt-3">
           <ion-col size="12">
             <ion-text color="medium">
@@ -300,58 +425,20 @@
           </ion-col>
         </ion-row>
 
-
-        <ion-row *ngFor="let item of [1,2,3,4]">
-          <ion-col size="12">
-            <ion-note>
-              Scaffold {{item}}
-            </ion-note>
-          </ion-col>
-          <ion-col sizeXl="1" size='4'>
-            <app-input-reactive title="Length" type="number" controlName="siteName" [form]="form" placeholder="L">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col sizeXl="1" size='4'>
-            <app-input-reactive title="Width" type="number" controlName="siteName" [form]="form" placeholder="W">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col sizeXl="1" size='4'>
-            <app-input-reactive title="Height" type="number" controlName="siteName" [form]="form" placeholder="H">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col>
-            <app-input-reactive title="Rate Profile" controlName="siteName" [form]="form" placeholder="Enter Site Name">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col>
-            <app-input-reactive title="Rate Override" type="number" controlName="siteName" [form]="form"
-              placeholder="Enter Site Name">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col>
-            <app-input-reactive title="Hire %" type="number" controlName="siteName" [form]="form"
-              placeholder="Enter Site Name">
-            </app-input-reactive>
-          </ion-col>
-          <ion-col>
-            <app-input-reactive title="Total" type="number" controlName="siteName" [form]="form"
-              placeholder="Enter Site Name">
-            </app-input-reactive>
-          </ion-col>
-        </ion-row>
+        <ng-container *ngIf="company$ | async as company">
+          <app-estimate-summary [estimate]="estimate"></app-estimate-summary>
+        </ng-container>
 
 
         <ion-row>
+          <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+
           <ion-col size="12" class="text-end">
-            <ion-button shape="round" fill="outline" color="dark">Save Estimate</ion-button>
-            <ion-button shape="round">Create Estimate</ion-button>
+            <ion-button shape="round" [disabled]="form.invalid" (click)="createEstimate()">Create Estimate</ion-button>
           </ion-col>
         </ion-row>
 
       </ion-grid>
     </form>
   </div>
-  <!-- <div class="ion-padding" *ngIf="company$ | async as company">
-    {{form.value | json}}
-  </div> -->
 </ion-content>

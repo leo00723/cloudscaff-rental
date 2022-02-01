@@ -1,0 +1,60 @@
+<ion-grid>
+  <ion-row>
+    <ion-col size="12">
+      <app-input-text title="Broker name" [value]="labour.name" placeholder="Enter a Broker Name"
+        (fieldChange)="labour.name = $event" [readonly]="isUpdate">
+      </app-input-text>
+    </ion-col>
+  </ion-row>
+  <ion-row *ngFor="let member of labour.types; let i = index">
+    <ion-col size="12">
+      <ion-chip outline color="danger" class="ion-float-end" (click)="delete(i)">
+        <ion-label>Delete</ion-label>
+      </ion-chip>
+    </ion-col>
+    <ion-col>
+      <app-input-text title="Rate Name" [value]="member.name" placeholder="Enter a Rate Name">
+      </app-input-text>
+    </ion-col>
+    <ion-col>
+      <app-input-text title="Normal Time" type="number" [value]="member.nt" placeholder="Enter a Normal time rate."
+        (fieldChange)="calcRates(i,$event)">
+      </app-input-text>
+    </ion-col>
+    <ion-col>
+      <app-input-text title="Over Time 1" type="number" [value]="member.ot1" placeholder="Enter a Over time 1 rate.">
+      </app-input-text>
+    </ion-col>
+    <ion-col>
+      <app-input-text title="Over Time 2" type="number" [value]="member.ot2" placeholder="Enter a Over time 2 rate.">
+      </app-input-text>
+    </ion-col>
+    <ion-col>
+      <app-input-text title="Public Holiday" type="number" [value]="member.ph"
+        placeholder="Enter a Public holiday rate.">
+      </app-input-text>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="1" class="text-end m-auto">
+      <ion-fab-button color="success" (click)="add()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+    <ion-col size="12" class="text-end">
+      <ion-button *ngIf="!loading && isUpdate" shape="round" color="danger" type="submit" (click)="removeLabour()">
+        Delete Rate
+      </ion-button>
+      <ion-button *ngIf="!loading && isUpdate" shape="round" color="success" type="submit" (click)="removeLabour()">
+        Update Rate
+      </ion-button>
+      <ion-button *ngIf="!loading && !isUpdate" shape="round" type="submit" (click)="createLabour()"
+        [disabled]="!labour.name">Create
+        Rate
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>

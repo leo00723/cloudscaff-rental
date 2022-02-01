@@ -15,7 +15,7 @@ export class InputTextComponent {
   @Input() title: string;
   @Input() placeholder: string;
   @Input() type = 'text';
-  @Input() value: number;
+  @Input() value: number | string;
   @Input() readonly = false;
   @Input() optional = false;
   @Output() fieldChange = new EventEmitter<any>();

@@ -33,81 +33,90 @@ export class CustomerComponent implements OnInit {
   }
 
   create() {
-    this.loading = true;
-    this.customer.company = this.companyId;
-    Object.assign(this.customer, this.form.value);
-    this.masterSvc
-      .edit()
-      .addDocument(`company/${this.customer.company}/customers`, this.customer)
-      .then(() => {
-        this.loading = false;
-        this.masterSvc
-          .notification()
-          .successToast('Customer added successfully!');
-        this.newCustomer.emit(this.customer);
-        this.form.reset();
-      })
-      .catch(() => {
-        this.loading = false;
-        this.masterSvc
-          .notification()
-          .errorToast(
-            'Something went wrong creating your customer, try again!',
-            2000
-          );
-      });
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.loading = true;
+      this.customer.company = this.companyId;
+      Object.assign(this.customer, this.form.value);
+      this.masterSvc
+        .edit()
+        .addDocument(
+          `company/${this.customer.company}/customers`,
+          this.customer
+        )
+        .then(() => {
+          this.loading = false;
+          this.masterSvc
+            .notification()
+            .successToast('Customer added successfully!');
+          this.newCustomer.emit(this.customer);
+          this.form.reset();
+        })
+        .catch(() => {
+          this.loading = false;
+          this.masterSvc
+            .notification()
+            .errorToast(
+              'Something went wrong creating your customer, try again!',
+              2000
+            );
+        });
+    });
   }
 
   update() {
-    this.loading = true;
-    this.customer.company = this.companyId;
-    Object.assign(this.customer, this.form.value);
-    this.masterSvc
-      .edit()
-      .updateDoc(
-        `company/${this.customer.company}/`,
-        this.customer.id,
-        this.customer
-      )
-      .then(() => {
-        this.loading = false;
-        this.masterSvc
-          .notification()
-          .successToast('Customer updated successfully!');
-      })
-      .catch((err) => {
-        this.loading = false;
-        this.masterSvc
-          .notification()
-          .errorToast(
-            'Something went wrong updating your customer, try again!',
-            2000
-          );
-      });
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.loading = true;
+      this.customer.company = this.companyId;
+      Object.assign(this.customer, this.form.value);
+      this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.customer.company}/`,
+          this.customer.id,
+          this.customer
+        )
+        .then(() => {
+          this.loading = false;
+          this.masterSvc
+            .notification()
+            .successToast('Customer updated successfully!');
+        })
+        .catch((err) => {
+          this.loading = false;
+          this.masterSvc
+            .notification()
+            .errorToast(
+              'Something went wrong updating your customer, try again!',
+              2000
+            );
+        });
+    });
   }
   delete() {
-    this.loading = true;
-    this.masterSvc
-      .edit()
-      .deleteDocById(
-        `company/${this.customer.company}/customers`,
-        this.customer.id
-      )
-      .then(() => {
-        this.loading = false;
-        this.masterSvc
-          .notification()
-          .successToast('Customer deleted successfully!');
-      })
-      .catch((err) => {
-        this.loading = false;
-        this.form.reset();
-        this.masterSvc
-          .notification()
-          .errorToast(
-            'Something went wrong deleting your customer, try again!',
-            2000
-          );
-      });
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.loading = true;
+      this.masterSvc
+        .edit()
+        .deleteDocById(
+          `company/${this.customer.company}/customers`,
+          this.customer.id
+        )
+        .then(() => {
+          this.loading = false;
+          this.masterSvc
+            .notification()
+            .successToast('Customer deleted successfully!');
+        })
+        .catch((err) => {
+          this.loading = false;
+          this.form.reset();
+          this.masterSvc
+            .notification()
+            .errorToast(
+              'Something went wrong deleting your customer, try again!',
+              2000
+            );
+        });
+    });
   }
 }
