@@ -5,6 +5,7 @@ export interface Terminology {
   boards: string;
   hire: string;
 }
+
 export interface Company {
   id: string;
   name: string;
@@ -22,4 +23,7 @@ export interface Company {
   swiftCode: string;
   currency: CurrencyData;
   terminology: Terminology;
+  totalEstimates: number;
+  vat: number;
+  salesTax: number;
 }

@@ -21,6 +21,10 @@ export class InputSelectReactiveComponent {
   @Output() fieldChange = new EventEmitter<any>();
 
   update(args) {
-    this.fieldChange.emit(args.detail.value);
+    if (this.type === 'number') {
+      this.fieldChange.emit(+args.detail.value);
+    } else {
+      this.fieldChange.emit(args.detail.value);
+    }
   }
 }

@@ -14,6 +14,8 @@ import { CustomerComponent } from './customer/customer.component';
 import { InputSelectReactiveComponent } from './input-select-reactive/input-select-reactive.component';
 import { BrokerComponent } from './broker/broker.component';
 import { EstimateSummaryComponent } from './estimate-summary/estimate-summary.component';
+import { EstimateTableComponent } from './estimate-table/estimate-table.component';
+import { RateProfilesComponent } from './rate-profiles/rate-profiles.component';
 
 const COMPONENTS = [
   BrokerComponent,
@@ -26,6 +28,8 @@ const COMPONENTS = [
   ShowHidePasswordComponent,
   SkeletonTextComponent,
   EstimateSummaryComponent,
+  EstimateTableComponent,
+  RateProfilesComponent,
 ];
 const IMPORTS = [
   CommonModule,

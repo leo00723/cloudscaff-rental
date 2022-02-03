@@ -1,4 +1,4 @@
-<ion-menu contentId="main-content" type="overlay" *ngIf="authSvc.user$ |async as user">
+<ion-menu contentId="main-content" mode="md" type="overlay" *ngIf="authSvc.user$ |async as user">
   <ion-content>
     <ion-list id="inbox-list">
       <ion-list-header>{{user.name}}</ion-list-header>
@@ -11,7 +11,6 @@
         </ion-item>
       </ion-menu-toggle>
     </ion-list>
-
     <ion-list id="labels-list">
       <ion-menu-toggle auto-hide="false">
         <ion-item routerDirection="root" routerLinkActive="selected" routerLink="/home/company" lines="none"

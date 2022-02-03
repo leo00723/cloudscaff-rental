@@ -1,0 +1,58 @@
+<ion-searchbar
+  debounce="250"
+  mode="ios"
+  placeholder="Search by code, company, site name or total"
+  (ionChange)="updateFilter($event)"
+>
+</ion-searchbar>
+
+<div class="ion-padding">
+  <!-- Theme classes dark, material, bootstrap -->
+  <ngx-datatable
+    class="bootstrap rounded-lg shadow"
+    [limit]="10"
+    [rows]="temp$ | async"
+    [rowHeight]="50"
+    [columnMode]="'force'"
+    [sortType]="sortType.multi"
+    [headerHeight]="50"
+    [footerHeight]="50"
+    [selectionType]="selectionType.checkbox"
+    trackByProp="code"
+    [scrollbarH]="true"
+  >
+    <ngx-datatable-column
+      name="Code"
+      [checkboxable]="false"
+    ></ngx-datatable-column>
+    <ngx-datatable-column
+      name="Company"
+      prop="company.name"
+    ></ngx-datatable-column>
+    <ngx-datatable-column name="Site Name"></ngx-datatable-column>
+    <ngx-datatable-column name="Date" prop="date">
+      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+        {{ value.toDate() | date: "dd MMM yyyy" }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column
+      name="Amount"
+      prop="total"
+      cellClass="text-end"
+      headerClass="text-end"
+    >
+      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+        {{ row.company.currency }} {{ value | number: "0.2-2" }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column
+      name="Status"
+      cellClass="text-center"
+      headerClass="text-center"
+    >
+      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+        <ion-badge [color]="getStatus(value)" mode="ios">{{ value }}</ion-badge>
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>

@@ -1,27 +1,32 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { SortType } from '@swimlane/ngx-datatable';
-export interface Data {
-  movies: string;
-}
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { Company } from '../models/company.model';
+import { MasterService } from '../services/master.service';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
   styleUrls: ['./estimates.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstimatesPage implements OnInit {
-  public data: Data;
-  public columns: any;
-  public rows: any;
-  sortType: SortType.multi;
-  constructor(private http: HttpClient) {
-    this.columns = [{ name: 'Name' }, { name: 'Company' }, { name: 'Genre' }];
-
-    this.http.get<Data>('../../assets/movies.json').subscribe((res) => {
-      console.log(res);
-      this.rows = res.movies;
-    });
+  estimates$: Observable<any[]>;
+  company$: Observable<Company>;
+  constructor(private masterSvc: MasterService) {
+    this.company$ = this.masterSvc.auth().company$;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.estimates$ = this.masterSvc.auth().user$.pipe(
+      switchMap((user) => {
+        if (user) {
+          return this.masterSvc
+            .edit()
+            .getDocsByCompanyId(`company/${user.company}/estimates`);
+        } else {
+          return of(false);
+        }
+      })
+    ) as Observable<any[]>;
+  }
 }

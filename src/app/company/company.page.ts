@@ -16,7 +16,27 @@ import { MasterService } from '../services/master.service';
   styleUrls: ['./company.page.scss'],
 })
 export class CompanyPage implements OnDestroy {
-  company: Company;
+  company: Company = {
+    id: '',
+    name: '',
+    code: '',
+    email: '',
+    phone: '',
+    address: '',
+    suburb: '',
+    city: '',
+    zip: '',
+    country: '',
+    bankName: '',
+    accountNum: '',
+    branchCode: '',
+    swiftCode: '',
+    currency: { name: '', symbol: '' },
+    terminology: { boards: '', hire: '', scaffold: '' },
+    totalEstimates: 0,
+    vat: 0,
+    salesTax: 0,
+  };
   currencies = new Currencies().currencies;
   form: FormGroup;
   loading = false;
@@ -61,7 +81,10 @@ export class CompanyPage implements OnDestroy {
     this.subs.add(
       this.masterSvc.auth().company$.subscribe((company) => {
         if (company) {
-          this.company = company;
+          Object.assign(this.company, company);
+          this.initFrom();
+          this.isLoading = false;
+        } else {
           this.initFrom();
           this.isLoading = false;
         }
@@ -84,6 +107,19 @@ export class CompanyPage implements OnDestroy {
       branchCode: [this.company.branchCode],
       swiftCode: [this.company.swiftCode],
       currency: [this.company.currency, Validators.required],
+      salesTax: [
+        this.company.salesTax,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
+      vat: [
+        this.company.vat,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
+      terminology: this.fb.group({
+        scaffold: [this.company.terminology.scaffold, Validators.required],
+        boards: [this.company.terminology.boards, Validators.required],
+        hire: [this.company.terminology.hire, Validators.required],
+      }),
       // measurement: ['', Validators.required],
     });
   }

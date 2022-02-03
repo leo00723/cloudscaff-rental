@@ -4,6 +4,7 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
+import { Company } from 'src/app/models/company.model';
 
 @Component({
   selector: 'app-estimate-summary',
@@ -11,6 +12,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstimateSummaryComponent implements OnInit {
+  @Input() company: Company;
   @Input() estimate: any;
   constructor() {}
 

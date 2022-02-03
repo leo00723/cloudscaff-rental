@@ -29,10 +29,13 @@ export class EditService {
 
   //----SET FUNCTIONS----
 
-  setDoc(collectionName: string, data) {
-    return setDoc(this.docRef(collectionName, this.createUID(collectionName)), {
-      ...data,
-    });
+  setDoc(collectionName: string, data, id?: string) {
+    return setDoc(
+      this.docRef(collectionName, id ? id : this.createUID(collectionName)),
+      {
+        ...data,
+      }
+    );
   }
 
   //----UPDATE FUNCTIONS----
@@ -66,6 +69,14 @@ export class EditService {
       this.collectionRef(collectionName)
     ) as DocumentReference<any>;
     return docRef.id;
+  }
+
+  pad(num, size) {
+    let s = num + '';
+    while (s.length < size) {
+      s = '0' + s;
+    }
+    return s;
   }
   private docRef(collectionName: string, id: string) {
     return doc(this.firestore, `${collectionName}/${id}`);

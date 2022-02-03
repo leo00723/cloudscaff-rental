@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { increment } from '@angular/fire/firestore';
 import {
   FormArray,
   FormBuilder,
@@ -21,10 +22,8 @@ export class AddEstimatePage implements OnInit, OnDestroy {
   company$: Observable<Company>;
   customers$: Observable<Customer[]>;
   rates$: Observable<any>;
-  boardRates$: Observable<any>;
-  hireRates$: Observable<any>;
-  additionalRates$: Observable<any>;
   brokers$: Observable<any>;
+  estimateCode$: Observable<any>;
   form: FormGroup;
   loading = false;
   isLoading = true;
@@ -33,6 +32,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
   selectedCustomer: Customer;
   estimate: any = {};
   private subs = new Subscription();
+  private company: Company;
   constructor(private masterSvc: MasterService, private fb: FormBuilder) {
     this.company$ = this.masterSvc.auth().company$;
     this.customers$ = this.masterSvc.auth().user$.pipe(
@@ -51,40 +51,10 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         if (user) {
           return this.masterSvc
             .edit()
-            .getDocById(`company/${user.company}/rateProfiles`, 'scaffold');
-        } else {
-          return of(false);
-        }
-      })
-    ) as Observable<any>;
-    this.boardRates$ = this.masterSvc.auth().user$.pipe(
-      switchMap((user) => {
-        if (user) {
-          return this.masterSvc
-            .edit()
-            .getDocById(`company/${user.company}/rateProfiles`, 'boards');
-        } else {
-          return of(false);
-        }
-      })
-    ) as Observable<any>;
-    this.hireRates$ = this.masterSvc.auth().user$.pipe(
-      switchMap((user) => {
-        if (user) {
-          return this.masterSvc
-            .edit()
-            .getDocById(`company/${user.company}/rateProfiles`, 'hire');
-        } else {
-          return of(false);
-        }
-      })
-    ) as Observable<any>;
-    this.additionalRates$ = this.masterSvc.auth().user$.pipe(
-      switchMap((user) => {
-        if (user) {
-          return this.masterSvc
-            .edit()
-            .getDocById(`company/${user.company}/rateProfiles`, 'additionals');
+            .getDocById(
+              `company/${user.company}/rateProfiles`,
+              'estimateRates'
+            );
         } else {
           return of(false);
         }
@@ -101,6 +71,13 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         }
       })
     ) as Observable<any>;
+    this.subs.add(
+      this.company$.subscribe((company) => {
+        if (company) {
+          this.company = company;
+        }
+      })
+    );
   }
 
   get labourForms() {
@@ -279,11 +256,13 @@ export class AddEstimatePage implements OnInit, OnDestroy {
           this.estimate
         )
         .then(() => {
-          this.loading = false;
+          this.masterSvc.edit().updateDoc('company', this.company.id, {
+            totalEstimates: increment(1),
+          });
           this.masterSvc
             .notification()
             .successToast('Estimate created successfully!');
-          this.form.reset();
+          this.reset();
         })
         .catch(() => {
           this.loading = false;
@@ -295,6 +274,14 @@ export class AddEstimatePage implements OnInit, OnDestroy {
             );
         });
     });
+  }
+
+  private reset() {
+    this.active = 'overview';
+    this.show = '';
+    this.selectedCustomer = null;
+    this.initFrom();
+    this.loading = false;
   }
 
   private updateEstimate() {
@@ -312,19 +299,41 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     this.field('subtotal').setValue(
       scaffold + boards + hire + labour + additionals
     );
-    this.field('tax').setValue(this.field('subtotal').value * 0.15);
+    this.field('tax').setValue(
+      this.field('subtotal').value * (this.company.salesTax / 100)
+    );
+    this.field('vat').setValue(
+      this.field('subtotal').value * (this.company.vat / 100)
+    );
     this.field('total').setValue(
-      this.field('subtotal').value + this.field('tax').value
+      this.field('subtotal').value +
+        this.field('tax').value +
+        this.field('vat').value
     );
-    this.subs.add(
-      this.company$.subscribe((company) => {
-        Object.assign(this.estimate, {
-          ...this.form.value,
-          date: new Date(),
-          company,
-        });
-      })
-    );
+    const code = this.company.totalEstimates + 1;
+    Object.assign(this.estimate, {
+      ...this.form.value,
+      date: new Date(),
+      company: {
+        name: this.company.name,
+        address: this.company.address,
+        suburb: this.company.suburb,
+        city: this.company.city,
+        zip: this.company.zip,
+        country: this.company.country,
+        currency: this.company.currency.symbol,
+        phone: this.company.phone,
+        email: this.company.email,
+        accountNum: this.company.accountNum,
+        bankName: this.company.bankName,
+        swiftCode: this.company.swiftCode,
+        id: this.company.id,
+      },
+      code: `EST${new Date().toLocaleDateString('en', {
+        year: '2-digit',
+      })}${code.toString().padStart(6, '0')}`,
+      status: 'pending',
+    });
   }
 
   private calcScaffoldRate() {
@@ -396,6 +405,9 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         );
       }
     }
+    this.field('scaffold.total').setValue(
+      +this.field('scaffold.total').value.toFixed(2)
+    );
   }
 
   private calcBoardRate() {
@@ -434,6 +446,9 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         );
       }
     }
+    this.field('boards.total').setValue(
+      +this.field('boards.total').value.toFixed(2)
+    );
   }
 
   private calcHireRate() {
@@ -450,6 +465,9 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         this.field('hire.total').setValue(this.field('hire.rate').value.rate);
       }
     }
+    this.field('hire.total').setValue(
+      +this.field('hire.total').value.toFixed(2)
+    );
   }
 
   private calcAdditionalRate(i: string | number) {
@@ -473,6 +491,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
           .setValue(ref.get('qty').value * ref.get('rate').value.rate);
       }
     }
+    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
   }
   private calcLabourRate(i: string | number) {
     const ref = this.labourForms.controls[i] as FormControl;
@@ -480,10 +499,12 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     ref
       .get('total')
       .setValue(
-        ref.get('days').value *
+        +(
+          ref.get('days').value *
           ref.get('hours').value *
           ref.get('qty').value *
           ref.get('rate').value.rate
+        ).toFixed(2)
       );
   }
 
@@ -520,6 +541,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       labour: this.fb.array([]),
       subtotal: [0],
       tax: [0],
+      vat: [0],
       total: [0],
     });
     this.addAdditional();

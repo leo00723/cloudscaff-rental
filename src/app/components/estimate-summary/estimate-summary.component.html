@@ -1,32 +1,24 @@
 <ion-row class="p-2">
   <ion-col size="12">
-    <h3>
-      ESTIMATE
-    </h3>
+    <h3>ESTIMATE</h3>
   </ion-col>
   <ion-col>
     <ion-label>
-      <h6>
-        Code:
-      </h6>
-      <h6>
-        Site name:
-      </h6>
-      <h6>
-        Date Issued:
-      </h6>
+      <h6>Code:</h6>
+      <h6>Site name:</h6>
+      <h6>Date Issued:</h6>
     </ion-label>
   </ion-col>
   <ion-col>
     <ion-label>
       <h6>
-        CSM13212312
+        {{ estimate.code }}
       </h6>
       <h6>
-        {{estimate.siteName}}
+        {{ estimate.siteName }}
       </h6>
       <h6>
-        {{estimate.date | date }}
+        {{ estimate.date | date }}
       </h6>
     </ion-label>
   </ion-col>
@@ -37,39 +29,39 @@
   <ion-col size="12" sizeXl="6">
     <ion-row>
       <ion-col size="12">
-        <ion-text color="medium">
-          To
-        </ion-text>
+        <ion-text color="medium"> To </ion-text>
       </ion-col>
       <ion-col size="6">
         <ion-label>
-          <h6>
-            Company:
-          </h6>
-          <h6>
-            Email:
-          </h6>
-          <h6>
-            Representative:
-          </h6>
-          <h6>
-            Contact No:
-          </h6>
+          <h6>Company:</h6>
+          <h6>Email:</h6>
+          <h6>Representative:</h6>
+          <h6>Contact No:</h6>
+          <br />
+          <h6>Address:</h6>
         </ion-label>
       </ion-col>
       <ion-col size="6">
         <ion-label>
           <h6>
-            {{estimate.customer.name}}
+            {{ estimate.customer.name }}
           </h6>
           <h6>
-            {{estimate.customer.email}}
+            {{ estimate.customer.email }}
           </h6>
           <h6>
-            {{estimate.customer.rep}}
+            {{ estimate.customer.rep }}
           </h6>
           <h6>
-            {{estimate.customer.phone}}
+            {{ estimate.customer.phone }}
+          </h6>
+          <br />
+          <h6>
+            {{ estimate.customer.address }} <br />
+            {{ estimate.customer.suburb }}<br />{{ estimate.customer.city
+            }}<br />{{ estimate.customer.zip }}<br />{{
+              estimate.customer.country
+            }}
           </h6>
         </ion-label>
       </ion-col>
@@ -79,39 +71,37 @@
   <ion-col size="12" sizeXl="6">
     <ion-row>
       <ion-col size="12">
-        <ion-text color="medium">
-          From
-        </ion-text>
+        <ion-text color="medium"> From </ion-text>
       </ion-col>
       <ion-col size="6">
         <ion-label>
-          <h6>
-            Company:
-          </h6>
-          <h6>
-            Email:
-          </h6>
-          <h6>
-            Representative:
-          </h6>
-          <h6>
-            Contact No:
-          </h6>
+          <h6>Company:</h6>
+          <h6>Email:</h6>
+          <h6>Representative:</h6>
+          <h6>Contact No:</h6>
+          <br />
+          <h6>Address:</h6>
         </ion-label>
       </ion-col>
       <ion-col size="6">
         <ion-label>
           <h6>
-            {{estimate.company.name}}
+            {{ estimate.company.name }}
           </h6>
           <h6>
-            {{estimate.company.email}}
+            {{ estimate.company.email }}
           </h6>
+          <h6>N/A</h6>
           <h6>
-            N/A
+            {{ estimate.company.phone }}
           </h6>
+          <br />
           <h6>
-            {{estimate.company.phone}}
+            {{ estimate.company.address }} <br />
+            {{ estimate.company.suburb }}<br />{{ estimate.company.city
+            }}<br />{{ estimate.company.zip }}<br />{{
+              estimate.company.country
+            }}
           </h6>
         </ion-label>
       </ion-col>
@@ -120,14 +110,11 @@
 </ion-row>
 
 <ion-item-divider></ion-item-divider>
-
 
 <ion-row class="p-2">
   <ion-col size="12">
     <ion-label color="medium">
-      <h6>
-        Message
-      </h6>
+      <h6>Message</h6>
     </ion-label>
   </ion-col>
   <ion-col size="12">
@@ -139,7 +126,7 @@
     <table class="table table-light table-bordered">
       <thead>
         <tr>
-          <th class="text-center" scope="col"> #</th>
+          <th class="text-center" scope="col">#</th>
           <th scope="col">Description</th>
           <th class="text-center" scope="col">Qty</th>
           <th class="text-end" scope="col">Total</th>
@@ -148,26 +135,47 @@
       <tbody>
         <tr>
           <th class="text-center" scope="row">1</th>
-          <td colspan="3">Scaffold Details</td>
+          <td colspan="3">{{ company.terminology.scaffold }} Details</td>
         </tr>
         <tr class="small">
           <th class="text-center" scope="row"></th>
-          <td>Scaffold - ({{estimate.scaffold.length}} x {{estimate.scaffold.width}} x
-            {{estimate.scaffold.height}})</td>
+          <td>
+            {{ company.terminology.scaffold }} - ({{
+              estimate.scaffold.length
+            }}
+            x {{ estimate.scaffold.width }} x {{ estimate.scaffold.height }})
+          </td>
           <td class="text-center">1</td>
-          <td class="text-end">{{estimate.company.currency.symbol}} {{estimate.scaffold.total | number : '0.2-2'}}</td>
+          <td class="text-end">
+            {{ company.currency.symbol }}
+            {{ estimate.scaffold.total | number: "0.2-2" }}
+          </td>
         </tr>
         <tr class="small">
           <th class="text-center" scope="row"></th>
-          <td>Lifts - ({{estimate.boards.length}} x {{estimate.scaffold.width}})</td>
-          <td class="text-center">{{estimate.boards.qty}}</td>
-          <td class="text-end">{{estimate.company.currency.symbol}} {{estimate.boards.total | number : '0.2-2'}}</td>
+          <td>
+            {{ company.terminology.boards }} - ({{ estimate.boards.length }} x
+            {{ estimate.scaffold.width }})
+          </td>
+          <td class="text-center">{{ estimate.boards.qty }}</td>
+          <td class="text-end">
+            {{ company.currency.symbol }}
+            {{ estimate.boards.total | number: "0.2-2" }}
+          </td>
         </tr>
         <tr class="small">
           <th class="text-center" scope="row"></th>
-          <td>Hire - ({{estimate.hire.daysStanding}} days)</td>
+          <td>
+            {{ company.terminology.hire }} - ({{
+              estimate.hire.daysStanding
+            }}
+            days)
+          </td>
           <td class="text-center">1</td>
-          <td class="text-end">{{estimate.company.currency.symbol}} {{estimate.hire.total | number : '0.2-2'}}</td>
+          <td class="text-end">
+            {{ company.currency.symbol }}
+            {{ estimate.hire.total | number: "0.2-2" }}
+          </td>
         </tr>
         <tr>
           <th class="text-center" scope="row">2</th>
@@ -175,38 +183,56 @@
         </tr>
         <tr class="small" *ngFor="let item of estimate.labour; let i = index">
           <th class="text-center" scope="row"></th>
-          <td>{{item.type.name}} - {{item.rate.name}}</td>
-          <td class="text-center">{{item.qty}}</td>
-          <td class="text-end">{{estimate.company.currency.symbol}} {{item.total | number : '0.2-2'}}</td>
+          <td>{{ item.type.name }} - {{ item.rate.name }}</td>
+          <td class="text-center">{{ item.qty }}</td>
+          <td class="text-end">
+            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+          </td>
         </tr>
         <tr>
           <th class="text-center" scope="row">3</th>
           <td colspan="3">Additionals</td>
         </tr>
-        <tr class="small" *ngFor="let item of estimate.additionals; let i = index">
+        <tr
+          class="small"
+          *ngFor="let item of estimate.additionals; let i = index"
+        >
           <th class="text-center" scope="row"></th>
-          <td>{{item.name}}</td>
-          <td class="text-center">{{item.qty}}</td>
-          <td class="text-end">{{estimate.company.currency.symbol}} {{item.total | number : '0.2-2'}}</td>
+          <td>{{ item.name }}</td>
+          <td class="text-center">{{ item.qty }}</td>
+          <td class="text-end">
+            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+          </td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
           <th class="text-end" colspan="3" scope="col">Subtotal</th>
-          <th class="text-end" scope="col">{{estimate.company.currency.symbol}} {{estimate.subtotal | number : '0.2-2'}}
+          <th class="text-end" scope="col">
+            {{ company.currency.symbol }}
+            {{ estimate.subtotal | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="3" scope="col">Sales Tax</th>
-          <th class="text-end" scope="col">{{estimate.company.currency.symbol}} {{estimate.tax | number : '0.2-2'}}</th>
+          <th class="text-end" colspan="3" scope="col">
+            Sales Tax ({{ company.salesTax }}%)
+          </th>
+          <th class="text-end" scope="col">
+            {{ company.currency.symbol }} {{ estimate.tax | number: "0.2-2" }}
+          </th>
         </tr>
-        <!-- <tr>
-          <th class="text-end" colspan="3" scope="col">VAT Total</th>
-          <th class="text-end" scope="col">{{company.currency.symbol}}</th>
-        </tr> -->
+        <tr>
+          <th class="text-end" colspan="3" scope="col">
+            VAT ({{ company.vat }}%)
+          </th>
+          <th class="text-end" scope="col">
+            {{ company.currency.symbol }} {{ estimate.vat | number: "0.2-2" }}
+          </th>
+        </tr>
         <tr>
           <th class="text-end" colspan="3" scope="col">Total</th>
-          <th class="text-end" scope="col">{{estimate.company.currency.symbol}} {{estimate.total | number : '0.2-2'}}
+          <th class="text-end" scope="col">
+            {{ company.currency.symbol }} {{ estimate.total | number: "0.2-2" }}
           </th>
         </tr>
       </tfoot>
