@@ -7,10 +7,12 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from '../models/company.model';
 import { Customer } from '../models/customer.model';
+import { Estimate } from '../models/estimate.model';
 import { MasterService } from '../services/master.service';
 
 @Component({
@@ -30,10 +32,15 @@ export class AddEstimatePage implements OnInit, OnDestroy {
   active = 'overview';
   show = '';
   selectedCustomer: Customer;
-  estimate: any = {};
+  estimate: Estimate;
+  isEdit = false;
   private subs = new Subscription();
   private company: Company;
-  constructor(private masterSvc: MasterService, private fb: FormBuilder) {
+  constructor(
+    private masterSvc: MasterService,
+    private fb: FormBuilder,
+    private activatedRoute: ActivatedRoute
+  ) {
     this.company$ = this.masterSvc.auth().company$;
     this.customers$ = this.masterSvc.auth().user$.pipe(
       switchMap((user) => {
@@ -91,7 +98,22 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
   ngOnInit() {
-    this.initFrom();
+    const id = this.activatedRoute.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEdit = true;
+      this.subs.add(
+        this.masterSvc
+          .edit()
+          .getDocById(`company/${id.split('-')[0]}/estimates`, id.split('-')[1])
+          .subscribe((estimate: Estimate) => {
+            this.estimate = estimate;
+            this.initEditForm();
+          })
+      );
+    } else {
+      this.initFrom();
+      this.isLoading = false;
+    }
   }
 
   arr(field: string) {
@@ -128,7 +150,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
 
   segmentChanged(ev: any) {
     if (ev.detail.value === 'summary') {
-      this.updateEstimate();
+      this.updateEstimateTotal();
       this.active = ev.detail.value;
     } else {
       this.active = ev.detail.value;
@@ -248,7 +270,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
   createEstimate() {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.loading = true;
-      this.updateEstimate();
+      this.updateEstimateTotal();
       this.masterSvc
         .edit()
         .addDocument(
@@ -276,6 +298,36 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     });
   }
 
+  updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.loading = true;
+      this.updateEstimateTotal();
+      this.estimate.status = status;
+      this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/estimates`,
+          this.estimate.id,
+          this.estimate
+        )
+        .then(() => {
+          this.masterSvc
+            .notification()
+            .successToast('Estimate updated successfully!');
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+          this.masterSvc
+            .notification()
+            .errorToast(
+              'Something went wrong updating your estimate, try again!',
+              2000
+            );
+        });
+    });
+  }
+
   private reset() {
     this.active = 'overview';
     this.show = '';
@@ -284,7 +336,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  private updateEstimate() {
+  private updateEstimateTotal() {
     const scaffold = +this.field('scaffold.total').value;
     const boards = +this.field('boards.total').value;
     const hire = +this.field('hire.total').value;
@@ -310,10 +362,13 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         this.field('tax').value +
         this.field('vat').value
     );
-    const code = this.company.totalEstimates + 1;
+    const code = `EST${new Date().toLocaleDateString('en', {
+      year: '2-digit',
+    })}${(this.company.totalEstimates + 1).toString().padStart(6, '0')}`;
+
     Object.assign(this.estimate, {
       ...this.form.value,
-      date: new Date(),
+      date: this.isEdit ? this.estimate.date : new Date(),
       company: {
         name: this.company.name,
         address: this.company.address,
@@ -329,10 +384,8 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         swiftCode: this.company.swiftCode,
         id: this.company.id,
       },
-      code: `EST${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${code.toString().padStart(6, '0')}`,
-      status: 'pending',
+      code: this.isEdit ? this.estimate.code : code,
+      status: this.isEdit ? this.estimate.status : 'pending',
     });
   }
 
@@ -508,7 +561,107 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       );
   }
 
+  private initEditForm() {
+    this.form = this.fb.group({
+      customer: [this.estimate.customer, Validators.required],
+      message: [this.estimate.message, Validators.required],
+      siteName: [this.estimate.siteName, Validators.required],
+      scaffold: this.fb.group({
+        rate: [this.estimate.scaffold.rate, Validators.required],
+        length: [
+          this.estimate.scaffold.length,
+          [Validators.required, Validators.min(1)],
+        ],
+        width: [
+          this.estimate.scaffold.width,
+          [Validators.required, Validators.min(1)],
+        ],
+        height: [
+          this.estimate.scaffold.height,
+          [Validators.required, Validators.min(1)],
+        ],
+        total: [this.estimate.scaffold.total],
+      }),
+      boards: this.fb.group({
+        rate: [this.estimate.boards.rate, Validators.required],
+        length: [
+          this.estimate.boards.length,
+          [Validators.required, Validators.min(1)],
+        ],
+        width: [
+          this.estimate.boards.width,
+          [Validators.required, Validators.min(1)],
+        ],
+        qty: [
+          this.estimate.boards.qty,
+          [Validators.required, Validators.min(1)],
+        ],
+        total: [this.estimate.boards.total],
+      }),
+      hire: this.fb.group({
+        rate: [this.estimate.hire.rate, Validators.required],
+        daysStanding: [
+          this.estimate.hire.daysStanding,
+          [Validators.required, Validators.min(1)],
+        ],
+        total: [this.estimate.hire.total],
+      }),
+      additionals: this.fb.array([]),
+      broker: [this.estimate.broker, Validators.required],
+      labour: this.fb.array(
+        this.estimate.labour.map((labour) =>
+          this.fb.group({
+            type: [labour.type, Validators.required],
+            hours: [labour.hours, Validators.required],
+            days: [labour.days, Validators.required],
+            rate: [labour.rate, [Validators.required]],
+            qty: [labour.qty, Validators.required],
+            total: [labour.total],
+          })
+        )
+      ),
+      subtotal: [this.estimate.subtotal],
+      tax: [this.estimate.tax],
+      vat: [this.estimate.vat],
+      total: [this.estimate.total],
+    });
+    this.estimate.additionals.forEach((add) => {
+      const additional = this.fb.group({
+        rate: [add.rate, Validators.required],
+        qty: [add.qty, [Validators.required, Validators.min(1)]],
+        name: [add.name, Validators.required],
+        daysStanding: [
+          add.daysStanding,
+          [Validators.required, Validators.min(1)],
+        ],
+        total: [add.total],
+      });
+      this.additionalForms.push(additional);
+    });
+    this.isLoading = false;
+  }
+
   private initFrom() {
+    this.estimate = {
+      vat: 0,
+      total: 0,
+      siteName: '',
+      scaffold: undefined,
+      status: '',
+      additionals: [],
+      date: undefined,
+      company: {},
+      broker: undefined,
+      subtotal: 0,
+      hire: undefined,
+      customer: undefined,
+      labour: [],
+      code: '',
+      message: '',
+      tax: 0,
+      boards: undefined,
+      id: '',
+    };
     this.form = this.fb.group({
       customer: ['', Validators.required],
       message: [

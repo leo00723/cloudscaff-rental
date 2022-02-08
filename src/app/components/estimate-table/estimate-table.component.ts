@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import {
@@ -16,14 +18,16 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-estimate-table',
   templateUrl: './estimate-table.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EstimateTableComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Input() estimates$: Observable<any[]>;
+  @Output() selectedItem = new EventEmitter<string>();
   temp$: Observable<any[]>;
   sortType = SortType;
   selectionType = SelectionType;
+  selected = [];
 
   ngOnInit(): void {
     this.temp$ = this.estimates$;
@@ -33,11 +37,17 @@ export class EstimateTableComponent implements OnInit {
     switch (status) {
       case 'accepted':
         return 'success';
+      case 'updated':
+        return 'tertiary';
       case 'pending':
         return 'primary';
       case 'rejected':
         return 'danger';
     }
+  }
+
+  onSelect({ selected }) {
+    this.selectedItem.emit(`${selected[0].company.id}-${selected[0].id}`);
   }
 
   updateFilter(event) {

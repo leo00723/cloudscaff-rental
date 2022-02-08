@@ -14,7 +14,7 @@ import { MasterService } from '../services/master.service';
 })
 export class HomePage implements OnDestroy {
   public appPages = [
-    { title: 'Dashboard', url: '/home/dashboard', icon: 'home' },
+    // { title: 'Dashboard', url: '/home/dashboard', icon: 'home' },
     { title: 'Estimates', url: '/home/estimates', icon: 'options' },
   ];
   private subs = new Subscription();

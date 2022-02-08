@@ -5,7 +5,7 @@ import { HomePage } from './home.page';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'estimates',
     pathMatch: 'full',
   },
   {
@@ -33,6 +33,13 @@ const routes: Routes = [
       },
       {
         path: 'addEstimate',
+        loadChildren: () =>
+          import('../add-estimate/add-estimate.module').then(
+            (m) => m.AddEstimatePageModule
+          ),
+      },
+      {
+        path: 'editEstimate/:id',
         loadChildren: () =>
           import('../add-estimate/add-estimate.module').then(
             (m) => m.AddEstimatePageModule

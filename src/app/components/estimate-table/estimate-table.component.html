@@ -9,17 +9,19 @@
 <div class="ion-padding">
   <!-- Theme classes dark, material, bootstrap -->
   <ngx-datatable
-    class="bootstrap rounded-lg shadow"
-    [limit]="10"
+    class="bootstrap striped rounded-lg shadow"
+    [limit]="15"
     [rows]="temp$ | async"
     [rowHeight]="50"
     [columnMode]="'force'"
     [sortType]="sortType.multi"
     [headerHeight]="50"
     [footerHeight]="50"
-    [selectionType]="selectionType.checkbox"
+    [selectionType]="selectionType.single"
     trackByProp="code"
     [scrollbarH]="true"
+    (select)="onSelect($event)"
+    [selected]="selected"
   >
     <ngx-datatable-column
       name="Code"

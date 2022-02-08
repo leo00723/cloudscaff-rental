@@ -6,7 +6,7 @@
         color="primary"
       ></ion-back-button>
     </ion-buttons>
-    <ion-title>Create Estimate </ion-title>
+    <ion-title>{{isEdit ? 'Update Estimate' : 'Create Estimate'}} </ion-title>
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment
@@ -35,8 +35,8 @@
 </ion-header>
 
 <ion-content fullscreen="true">
-  <div class="ion-padding" *ngIf="company$ | async as company">
-    <form name="estimate" [formGroup]="form">
+  <div class="ion-padding" *ngIf="company$ | async as company;">
+    <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <!-- OVERVIEW TAB -->
       <ion-grid *ngIf="active === 'overview'">
         <ion-row>
@@ -676,6 +676,30 @@
             <ion-button
               shape="round"
               [disabled]="form.invalid"
+              *ngIf="isEdit && estimate.status === 'pending'"
+              (click)="updateEstimate('pending')"
+              >Update Estimate</ion-button
+            >
+            <ion-button
+              shape="round"
+              color="danger"
+              [disabled]="form.invalid"
+              *ngIf="isEdit && estimate.status === 'pending'"
+              (click)="updateEstimate('rejected')"
+              >Rejected</ion-button
+            >
+            <ion-button
+              shape="round"
+              color="success"
+              [disabled]="form.invalid"
+              *ngIf="isEdit && estimate.status === 'pending'"
+              (click)="updateEstimate('accepted')"
+              >Accepted</ion-button
+            >
+            <ion-button
+              shape="round"
+              [disabled]="form.invalid"
+              *ngIf="!isEdit"
               (click)="createEstimate()"
               >Create Estimate</ion-button
             >

@@ -1,14 +1,28 @@
-<app-header title="Estimates"></app-header>
+<app-header
+  title="Estimates"
+  btnName="refresh"
+  (updated)="ngOnInit()"
+></app-header>
 <ion-content fullscreen="true">
   <app-header-condensed title="Estimates"></app-header-condensed>
 
-  <ng-container *ngIf="estimates$">
-    <app-estimate-table [estimates$]="estimates$"></app-estimate-table>
-  </ng-container>
+  <app-estimate-table
+    [estimates$]="estimates$"
+    *ngIf="estimates$ | async; else loading"
+    (selectedItem)="editEstimate($event)"
+  ></app-estimate-table>
 
   <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button routerLink="/home/addEstimate">
+    <ion-fab-button routerLink="/home/addEstimate" routerDirection="root">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
 </ion-content>

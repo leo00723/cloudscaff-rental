@@ -4,12 +4,13 @@ import {
   doc,
   DocumentReference,
   Firestore,
+  orderBy,
   query,
   setDoc,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { addDoc, deleteDoc } from 'firebase/firestore';
+import { addDoc, deleteDoc, OrderByDirection } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
 import { Observable } from 'rxjs';
 import { Company } from '../models/company.model';
@@ -55,6 +56,19 @@ export class EditService {
     return collectionData(this.collectionRef(collectionPath), {
       idField: 'id',
     }) as Observable<any[]>;
+  }
+
+  getDocsByCompanyIdOrdered(
+    collectionPath: string,
+    orderField: string,
+    direction: OrderByDirection
+  ) {
+    return collectionData(
+      query(this.collectionRef(collectionPath), orderBy(orderField, direction)),
+      {
+        idField: 'id',
+      }
+    ) as Observable<any[]>;
   }
 
   //----DELETE FUNCTIONS----

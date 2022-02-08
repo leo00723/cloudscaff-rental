@@ -25,13 +25,22 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
-@import "~@swimlane/ngx-datatable/index.css";
-@import "~@swimlane/ngx-datatable/themes/material.scss";
-@import "~@swimlane/ngx-datatable/themes/bootstrap.scss";
-@import "~@swimlane/ngx-datatable/themes/dark.scss";
-@import "~@swimlane/ngx-datatable/assets/icons.css";
 @import "./styles-custom-bootstrap.scss";
+@import "~@swimlane/ngx-datatable/index.css";
+@import "~@swimlane/ngx-datatable/themes/bootstrap.scss";
+@import "~@swimlane/ngx-datatable/assets/icons.css";
 @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
+
+.datatable-body {
+  .datatable-body-row {
+    &.active {
+      background-color: var(--ion-color-primary-shade) !important;
+    }
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 
 .rounded-lg {
   border-radius: 0.7rem !important;

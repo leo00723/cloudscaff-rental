@@ -34,10 +34,10 @@ export class NotificationService {
     return await toast.present();
   }
 
-  async presentAlertConfirm(callback?) {
+  async presentAlertConfirm(callback?, header?: string, message?: string) {
     const alert = await this.alertController.create({
-      header: 'Are you sure you want to continue?',
-      message: 'click Yes to proceed',
+      header: header ? header : 'Are you sure you want to continue?',
+      message: message ? message : 'click Yes to proceed',
       buttons: [
         {
           text: 'Cancel',

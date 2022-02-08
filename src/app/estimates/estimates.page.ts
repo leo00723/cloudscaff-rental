@@ -22,11 +22,21 @@ export class EstimatesPage implements OnInit {
         if (user) {
           return this.masterSvc
             .edit()
-            .getDocsByCompanyId(`company/${user.company}/estimates`);
+            .getDocsByCompanyIdOrdered(
+              `company/${user.company}/estimates`,
+              'date',
+              'desc'
+            );
         } else {
           return of(false);
         }
       })
     ) as Observable<any[]>;
+  }
+
+  editEstimate(id: string) {
+    this.masterSvc
+      .router()
+      .navigate([`/home/editEstimate/${id}`], { replaceUrl: true });
   }
 }
