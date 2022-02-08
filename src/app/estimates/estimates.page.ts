@@ -6,7 +6,6 @@ import { MasterService } from '../services/master.service';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
-  styleUrls: ['./estimates.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstimatesPage implements OnInit {

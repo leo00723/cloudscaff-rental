@@ -22,7 +22,7 @@
         <ion-label>Scaffolds</ion-label>
       </ion-segment-button>
       <ion-segment-button value="labour">
-        <ion-label>Labour</ion-label>
+        <ion-label>Labor</ion-label>
       </ion-segment-button>
       <ion-segment-button value="additionals">
         <ion-label>Additionals</ion-label>
@@ -35,10 +35,10 @@
 </ion-header>
 
 <ion-content fullscreen="true">
-  <div class="ion-padding" *ngIf="company$ | async as company;">
+  <div class="container ion-padding pt-5" *ngIf="company$ | async as company;">
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <!-- OVERVIEW TAB -->
-      <ion-grid *ngIf="active === 'overview'">
+      <ion-grid *ngIf="active === 'overview'" class="card-outline">
         <ion-row>
           <ion-col size="12">
             <ion-text color="medium">
@@ -114,7 +114,7 @@
 
       <ion-grid *ngIf="active === 'scaffolds'">
         <!-- SCAFFOLDS -->
-        <ion-row>
+        <ion-row class="card-outline mb-3">
           <ion-col size="12">
             <ion-text color="medium">
               <h4>{{company.terminology.scaffold}} Details</h4>
@@ -198,7 +198,7 @@
           </ion-col>
         </ion-row>
         <!-- BOARDS -->
-        <ion-row>
+        <ion-row class="card-outline mb-3">
           <ion-col size="12">
             <ion-text color="medium">
               <h4>{{company.terminology.boards}} Details</h4>
@@ -282,7 +282,7 @@
           </ion-col>
         </ion-row>
         <!-- HIRE -->
-        <ion-row>
+        <ion-row class="card-outline mb-3">
           <ion-col size="12">
             <ion-text color="medium">
               <h4>{{company.terminology.hire}} Details</h4>
@@ -355,19 +355,16 @@
       <!-- LABOUR TAB -->
 
       <ion-grid *ngIf="active === 'labour'">
-        <ion-row class="mt-3">
+        <ion-row class="mt-3" class="card-outline mb-3">
           <ion-col size="12">
             <ion-text color="medium">
-              <h4>Labour Information</h4>
+              <h4>Labor Information</h4>
             </ion-text>
           </ion-col>
-        </ion-row>
-
-        <ion-row>
           <ion-col>
             <app-input-select-reactive
-              title="Labour Profile"
-              placeholder="Select Labour Profile"
+              title="Labor Profile"
+              placeholder="Select Labor Profile"
               controlName="broker"
               [form]="form"
               [selectedText]="field('broker').value.name"
@@ -386,6 +383,7 @@
         <ng-container *ngIf="field('broker').value">
           <ion-row
             formArrayName="labour"
+            class="card-outline mb-3"
             *ngFor="let labour of labourForms.controls; let i = index"
           >
             <ion-col size="12">
@@ -543,6 +541,7 @@
 
         <ion-row
           formArrayName="additionals"
+          class="card-outline mb-3"
           *ngFor="let additional of additionalForms.controls; let i = index"
         >
           <ion-col size="12">
@@ -650,7 +649,7 @@
 
       <!-- SUMMARY TAB -->
 
-      <ion-grid *ngIf="active === 'summary'">
+      <ion-grid *ngIf="active === 'summary'" class="card-outline">
         <ion-row class="mt-3">
           <ion-col size="12">
             <ion-text color="medium">

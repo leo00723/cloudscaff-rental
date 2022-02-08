@@ -4,7 +4,6 @@ import { MasterService } from './services/master.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit {
   constructor(private updates: SwUpdate, private masterSvc: MasterService) {}

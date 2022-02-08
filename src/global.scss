@@ -42,6 +42,10 @@
   }
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .rounded-lg {
   border-radius: 0.7rem !important;
 }
@@ -52,4 +56,10 @@
 .rounded-lg-bottom {
   border-bottom-left-radius: 0.7rem !important;
   border-bottom-right-radius: 0.7rem !important;
+}
+
+.card-outline {
+  @extend.border;
+  @extend.rounded-lg;
+  @extend.p-3;
 }

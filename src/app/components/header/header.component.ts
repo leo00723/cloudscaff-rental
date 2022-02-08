@@ -14,6 +14,8 @@ import {
 })
 export class HeaderComponent implements OnInit {
   @Input() title = '';
+  @Input() showMenu = true;
+  @Input() path = '';
   @Input() btnName: string;
   @Output() updated = new EventEmitter<boolean>();
 

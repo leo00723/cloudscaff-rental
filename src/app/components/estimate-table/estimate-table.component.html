@@ -9,7 +9,7 @@
 <div class="ion-padding">
   <!-- Theme classes dark, material, bootstrap -->
   <ngx-datatable
-    class="bootstrap striped rounded-lg shadow"
+    class="bootstrap striped rounded-lg"
     [limit]="15"
     [rows]="temp$ | async"
     [rowHeight]="50"
@@ -29,16 +29,21 @@
     ></ngx-datatable-column>
     <ngx-datatable-column
       name="Company"
-      prop="company.name"
+      prop="customer.name"
     ></ngx-datatable-column>
     <ngx-datatable-column name="Site Name"></ngx-datatable-column>
-    <ngx-datatable-column name="Date" prop="date">
+    <ngx-datatable-column
+      name="Date Created"
+      prop="date"
+      cellClass="text-center"
+      headerClass="text-center"
+    >
       <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
         {{ value.toDate() | date: "dd MMM yyyy" }}
       </ng-template>
     </ngx-datatable-column>
     <ngx-datatable-column
-      name="Amount"
+      name="Total Amount"
       prop="total"
       cellClass="text-end"
       headerClass="text-end"

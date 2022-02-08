@@ -10,7 +10,6 @@ import { MasterService } from '../services/master.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
   error = false;

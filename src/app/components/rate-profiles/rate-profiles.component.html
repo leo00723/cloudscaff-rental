@@ -1,14 +1,13 @@
 <div class="ion-padding" *ngIf="company$ | async as company">
   <!-- SCAFFOLDS -->
-  <ion-item-group>
-    <ion-item-divider color="light">
-      <ion-label
-        ><h2 class="fw-bold">{{ company.terminology.scaffold }} Rates</h2>
-        <br />Enter the default amount for each type of rate below.</ion-label
-      >
+  <ion-item-group class="card-outline mb-3">
+    <ion-item-divider>
+      <ion-text color="dark">
+        <h5 class="fw-bold">{{ company.terminology.scaffold }} Rates</h5>
+        <br />Enter the default amount for each type of rate below.
+      </ion-text>
     </ion-item-divider>
     <ion-row>
-      <ion-col size="12"> </ion-col>
       <ion-col
         *ngFor="let rate of rateProfiles.scaffoldRates; trackBy: trackItems"
       >
@@ -24,11 +23,11 @@
     </ion-row>
   </ion-item-group>
   <!-- BOARDS -->
-  <ion-item-group>
-    <ion-item-divider color="light">
-      <ion-label
-        ><h2 class="fw-bold">{{ company.terminology.boards }} Rates</h2>
-        <br />Enter the default amount for each type of rate below.</ion-label
+  <ion-item-group class="card-outline mb-3">
+    <ion-item-divider>
+      <ion-text color="dark"
+        ><h5 class="fw-bold">{{ company.terminology.boards }} Rates</h5>
+        <br />Enter the default amount for each type of rate below.</ion-text
       >
     </ion-item-divider>
     <ion-row>
@@ -47,11 +46,11 @@
     </ion-row>
   </ion-item-group>
   <!-- HIRE -->
-  <ion-item-group>
-    <ion-item-divider color="light">
-      <ion-label
-        ><h2 class="fw-bold">{{ company.terminology.hire }} Rates</h2>
-        <br />Enter the default amount for each type of rate below.</ion-label
+  <ion-item-group class="card-outline mb-3">
+    <ion-item-divider>
+      <ion-text color="dark"
+        ><h5 class="fw-bold">{{ company.terminology.hire }} Rates</h5>
+        <br />Enter the default amount for each type of rate below.</ion-text
       >
     </ion-item-divider>
     <ion-row>
@@ -68,15 +67,17 @@
     </ion-row>
   </ion-item-group>
   <!-- ADDITIONALS -->
-  <ion-item-group>
-    <ion-item-divider color="light">
-      <ion-label
-        ><h2 class="fw-bold">Additional Rates</h2>
-        <br />Enter the default amount for each type of rate below.</ion-label
-      >
+  <ion-item-group class="card-outline mb-3">
+    <ion-item-divider>
+      <ion-text color="dark">
+        <h5 class="fw-bold">Additional Rates</h5>
+        <br />Enter the default amount for each type of rate below.
+      </ion-text>
     </ion-item-divider>
     <ion-row>
-      <ion-col *ngFor="let rate of rateProfiles.additionalRates">
+      <ion-col
+        *ngFor="let rate of rateProfiles.additionalRates; trackBy: trackItems"
+      >
         <app-input-text
           [title]="rate.name"
           [value]="rate.rate"
@@ -99,7 +100,7 @@
         type="submit"
         (click)="updateRates(company.id)"
       >
-        Update Rate
+        Update Rates
       </ion-button>
     </ion-col>
   </ion-row>

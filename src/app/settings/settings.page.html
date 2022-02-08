@@ -1,0 +1,42 @@
+<app-header title="Settings"></app-header>
+
+<ion-content fullscreen="true">
+  <app-header-condensed title="Settings"></app-header-condensed>
+  <ion-grid class="ion-padding container">
+    <ion-row>
+      <ion-col sizeXl="6" size="12" *ngFor="let setting of settings">
+        <ion-row class="card-outline">
+          <ion-col sizeMd="10" size="9">
+            <ion-item color="none">
+              <h4>{{setting.title}}</h4>
+            </ion-item>
+            <ion-item lines="none" color="none">
+              <ion-text>
+                <p>{{setting.description}}</p>
+              </ion-text>
+            </ion-item>
+          </ion-col>
+          <ion-col
+            class="m-auto text-center cursor-pointer"
+            sizeMd="2"
+            size="3"
+          >
+            <ion-button
+              fill="clear"
+              shape="round"
+              size="large"
+              [routerLink]="setting.path"
+              routerDirection="forward"
+            >
+              <ion-icon
+                slot="icon-only"
+                size="large"
+                name="chevron-forward-outline"
+              ></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

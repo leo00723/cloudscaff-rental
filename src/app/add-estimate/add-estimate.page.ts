@@ -18,7 +18,6 @@ import { MasterService } from '../services/master.service';
 @Component({
   selector: 'app-add-estimate',
   templateUrl: './add-estimate.page.html',
-  styleUrls: ['./add-estimate.page.scss'],
 })
 export class AddEstimatePage implements OnInit, OnDestroy {
   company$: Observable<Company>;

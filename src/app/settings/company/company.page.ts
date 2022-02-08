@@ -6,14 +6,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { Company } from '../models/company.model';
-import { Currencies } from '../models/currencies.model';
-import { MasterService } from '../services/master.service';
+import { Company } from '../../models/company.model';
+import { Currencies } from '../../models/currencies.model';
+import { MasterService } from '../../services/master.service';
 
 @Component({
   selector: 'app-company',
   templateUrl: './company.page.html',
-  styleUrls: ['./company.page.scss'],
 })
 export class CompanyPage implements OnDestroy {
   company: Company = {

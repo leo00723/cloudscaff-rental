@@ -166,9 +166,7 @@
         <tr class="small">
           <th class="text-center" scope="row"></th>
           <td>
-            {{ company.terminology.hire }} - ({{
-              estimate.hire.daysStanding
-            }}
+            {{ company.terminology.hire }} - ({{ estimate.hire.daysStanding }}
             days)
           </td>
           <td class="text-center">1</td>
@@ -179,7 +177,7 @@
         </tr>
         <tr>
           <th class="text-center" scope="row">2</th>
-          <td colspan="3">Labour</td>
+          <td colspan="3">Labor</td>
         </tr>
         <tr class="small" *ngFor="let item of estimate.labour; let i = index">
           <th class="text-center" scope="row"></th>

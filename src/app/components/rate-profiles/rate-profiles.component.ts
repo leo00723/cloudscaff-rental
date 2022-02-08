@@ -8,7 +8,7 @@ import {
 import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
-import { RateProfiles } from 'src/app/models/rate-profiles.model';
+import { RateProfile, RateProfiles } from 'src/app/models/rate-profiles.model';
 import { MasterService } from 'src/app/services/master.service';
 
 @Component({
@@ -42,8 +42,23 @@ export class RateProfilesComponent implements OnDestroy, OnInit {
   }
   ngOnInit(): void {
     this.subs.add(
-      this.rates$.subscribe((rates) => {
-        this.rateProfiles = rates;
+      this.rates$.subscribe((rates: RateProfiles) => {
+        this.rateProfiles.additionalRates = this.mergeNew(
+          this.rateProfiles.additionalRates,
+          rates.additionalRates
+        );
+        this.rateProfiles.boardRates = this.mergeNew(
+          this.rateProfiles.boardRates,
+          rates.boardRates
+        );
+        this.rateProfiles.hireRates = this.mergeNew(
+          this.rateProfiles.hireRates,
+          rates.hireRates
+        );
+        this.rateProfiles.scaffoldRates = this.mergeNew(
+          this.rateProfiles.scaffoldRates,
+          rates.scaffoldRates
+        );
       })
     );
   }
@@ -80,5 +95,20 @@ export class RateProfilesComponent implements OnDestroy, OnInit {
             );
         });
     });
+  }
+
+  mergeNew(oldArr: RateProfile[], newArr: RateProfile[]) {
+    const hash = Object.create(null);
+    const result = [newArr, oldArr].reduce((r, a) => {
+      a.forEach((o) => {
+        const key = ['code'].map((k) => o[k]).join('|');
+        if (!hash[key]) {
+          r.push(o);
+          hash[key] = true;
+        }
+      });
+      return r;
+    }, []);
+    return result;
   }
 }

@@ -1,7 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button color="primary"></ion-menu-button>
+      <ion-menu-button color="primary" *ngIf="showMenu"></ion-menu-button>
+      <ion-back-button
+        *ngIf="!showMenu"
+        [defaultHref]="path"
+        color="primary"
+      ></ion-back-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end" *ngIf="btnName">

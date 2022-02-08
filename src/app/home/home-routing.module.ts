@@ -27,11 +27,6 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'company',
-        loadChildren: () =>
-          import('../company/company.module').then((m) => m.CompanyPageModule),
-      },
-      {
         path: 'addEstimate',
         loadChildren: () =>
           import('../add-estimate/add-estimate.module').then(
@@ -43,6 +38,13 @@ const routes: Routes = [
         loadChildren: () =>
           import('../add-estimate/add-estimate.module').then(
             (m) => m.AddEstimatePageModule
+          ),
+      },
+      {
+        path: 'settings',
+        loadChildren: () =>
+          import('../settings/settings.module').then(
+            (m) => m.SettingsPageModule
           ),
       },
     ],
