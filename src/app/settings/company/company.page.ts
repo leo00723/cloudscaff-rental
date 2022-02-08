@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -14,7 +14,7 @@ import { MasterService } from '../../services/master.service';
   selector: 'app-company',
   templateUrl: './company.page.html',
 })
-export class CompanyPage implements OnDestroy {
+export class CompanyPage implements OnDestroy, OnInit {
   company: Company = {
     id: '',
     name: '',
@@ -45,51 +45,50 @@ export class CompanyPage implements OnDestroy {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
-
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
-
-  save() {
-    this.loading = true;
-    Object.assign(this.company, this.form.value);
-    this.masterSvc
-      .edit()
-      .updateDoc('company', this.company.id, this.company)
-      .then(() => {
-        this.masterSvc.auth().company$.next(this.company);
-        this.masterSvc
-          .notification()
-          .successToast('Settings saved successfully')
-          .then(() => {
-            this.loading = false;
-          });
-      })
-      .catch((error) => {
-        console.error(error);
-        this.masterSvc
-          .notification()
-          .errorToast('Something went wrong! Try again later.')
-          .then(() => {
-            this.loading = false;
-          });
-      });
-  }
-
-  ionViewWillEnter() {
+  ngOnInit(): void {
     this.subs.add(
       this.masterSvc.auth().company$.subscribe((company) => {
         if (company) {
           Object.assign(this.company, company);
           this.initFrom();
           this.isLoading = false;
-        } else {
-          this.initFrom();
-          this.isLoading = false;
         }
       })
     );
   }
+
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+
+  save() {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.loading = true;
+      Object.assign(this.company, this.form.value);
+      this.masterSvc
+        .edit()
+        .updateDoc('company', this.company.id, this.company)
+        .then(() => {
+          this.masterSvc.auth().company$.next(this.company);
+          this.masterSvc
+            .notification()
+            .successToast('Settings saved successfully')
+            .then(() => {
+              this.loading = false;
+            });
+        })
+        .catch((error) => {
+          console.error(error);
+          this.masterSvc
+            .notification()
+            .errorToast('Something went wrong! Try again later.')
+            .then(() => {
+              this.loading = false;
+            });
+        });
+    });
+  }
+
   private initFrom() {
     this.form = this.fb.group({
       name: [this.company.name, Validators.required],
