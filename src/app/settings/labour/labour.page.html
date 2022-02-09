@@ -6,7 +6,7 @@
 
 <ion-content fullscreen="true">
   <app-header-condensed title="Labor Profiles"></app-header-condensed>
-  <div class="container pt-5">
-    <app-broker></app-broker>
+  <div class="container pt-5" *ngIf="company$ | async as company">
+    <app-broker [companyId]="company.id"></app-broker>
   </div>
 </ion-content>

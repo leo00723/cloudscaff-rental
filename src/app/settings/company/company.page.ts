@@ -18,7 +18,6 @@ export class CompanyPage implements OnDestroy, OnInit {
   company: Company = {
     id: '',
     name: '',
-    code: '',
     email: '',
     phone: '',
     address: '',
@@ -35,6 +34,8 @@ export class CompanyPage implements OnDestroy, OnInit {
     totalEstimates: 0,
     vat: 0,
     salesTax: 0,
+    totalSites: 0,
+    users: [],
   };
   currencies = new Currencies().currencies;
   form: FormGroup;
@@ -92,7 +93,6 @@ export class CompanyPage implements OnDestroy, OnInit {
   private initFrom() {
     this.form = this.fb.group({
       name: [this.company.name, Validators.required],
-      code: [this.company.code, Validators.required],
       email: [this.company.email, [Validators.required, Validators.email]],
       phone: [this.company.phone, Validators.required],
       address: [this.company.address, Validators.required],
@@ -100,8 +100,8 @@ export class CompanyPage implements OnDestroy, OnInit {
       city: [this.company.city, Validators.required],
       zip: [this.company.zip, Validators.required],
       country: [this.company.country, Validators.required],
-      bankName: [this.company.bankName, Validators.required],
-      accountNum: [this.company.accountNum, Validators.required],
+      bankName: [this.company.bankName],
+      accountNum: [this.company.accountNum],
       branchCode: [this.company.branchCode],
       swiftCode: [this.company.swiftCode],
       currency: [this.company.currency, Validators.required],

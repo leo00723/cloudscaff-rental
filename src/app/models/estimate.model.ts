@@ -5,7 +5,7 @@ export interface Estimate {
   scaffold: Boards;
   status: string;
   additionals: Additional[];
-  date: DateClass;
+  date: any;
   company: { [key: string]: string };
   broker: Broker;
   subtotal: number;
@@ -15,7 +15,7 @@ export interface Estimate {
   code: string;
   message: string;
   tax: number;
-  boards: Boards;
+  boards: Boards[];
   id: string;
 }
 
@@ -68,11 +68,6 @@ export interface Customer {
   city: string;
   name: string;
   email: string;
-}
-
-export interface DateClass {
-  seconds: number;
-  nanoseconds: number;
 }
 
 export interface Hire {

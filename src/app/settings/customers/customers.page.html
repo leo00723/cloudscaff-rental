@@ -6,7 +6,7 @@
 
 <ion-content fullscreen="true">
   <app-header-condensed title="Customers"></app-header-condensed>
-  <div class="container pt-5">
-    <app-customer></app-customer>
+  <div class="container pt-5" *ngIf="company$ | async as company">
+    <app-customer [companyId]="company.id"></app-customer>
   </div>
 </ion-content>

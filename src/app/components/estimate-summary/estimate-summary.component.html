@@ -137,6 +137,7 @@
           <th class="text-center" scope="row">1</th>
           <td colspan="3">{{ company.terminology.scaffold }} Details</td>
         </tr>
+        <!-- SCAFFOLD -->
         <tr class="small">
           <th class="text-center" scope="row"></th>
           <td>
@@ -151,18 +152,20 @@
             {{ estimate.scaffold.total | number: "0.2-2" }}
           </td>
         </tr>
-        <tr class="small">
+        <!-- BOARDS -->
+        <tr class="small" *ngFor="let item of estimate.boards; let i = index">
           <th class="text-center" scope="row"></th>
           <td>
-            {{ company.terminology.boards }} - ({{ estimate.boards.length }} x
-            {{ estimate.scaffold.width }})
+            {{ company.terminology.boards }} - ({{ item.length }} x
+            {{ item.width }}) - Height ({{ item.height }})
           </td>
-          <td class="text-center">{{ estimate.boards.qty }}</td>
+          <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ estimate.boards.total | number: "0.2-2" }}
+            {{ item.total | number: "0.2-2" }}
           </td>
         </tr>
+        <!-- HIRE -->
         <tr class="small">
           <th class="text-center" scope="row"></th>
           <td>
@@ -175,6 +178,7 @@
             {{ estimate.hire.total | number: "0.2-2" }}
           </td>
         </tr>
+        <!-- LABOR -->
         <tr>
           <th class="text-center" scope="row">2</th>
           <td colspan="3">Labor</td>
@@ -187,6 +191,7 @@
             {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
           </td>
         </tr>
+        <!-- ADDITIONALS -->
         <tr>
           <th class="text-center" scope="row">3</th>
           <td colspan="3">Additionals</td>
@@ -203,6 +208,7 @@
           </td>
         </tr>
       </tbody>
+      <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
           <th class="text-end" colspan="3" scope="col">Subtotal</th>

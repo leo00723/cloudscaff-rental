@@ -9,7 +9,6 @@ export interface Terminology {
 export interface Company {
   id: string;
   name: string;
-  code: string;
   email: string;
   phone: string;
   address: string;
@@ -24,6 +23,8 @@ export interface Company {
   currency: CurrencyData;
   terminology: Terminology;
   totalEstimates: number;
+  totalSites: number;
+  users: string[];
   vat: number;
   salesTax: number;
 }

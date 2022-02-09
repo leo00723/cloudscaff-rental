@@ -3,28 +3,62 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output,
 } from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-input-text',
   templateUrl: './input-text.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InputTextComponent {
+export class InputTextComponent implements OnInit {
   @Input() title: string;
   @Input() placeholder: string;
   @Input() type = 'text';
-  @Input() value: number | string;
   @Input() readonly = false;
   @Input() optional = false;
   @Output() fieldChange = new EventEmitter<any>();
+  value1: number | string;
+  form: FormGroup;
+  constructor(private fb: FormBuilder) {}
+
+  @Input() set value(val: number | string) {
+    this.value1 = val;
+    if (this.form && val) {
+      this.field('field').setValue(val);
+    }
+  }
+
+  ngOnInit(): void {
+    if (this.type === 'number') {
+      this.form = this.fb.group({
+        field: [this.value1, [Validators.required, Validators.min(0)]],
+      });
+    } else {
+      this.form = this.fb.group({
+        field: [this.value1, Validators.required],
+      });
+    }
+  }
 
   update(args) {
     if (this.type === 'number') {
-      this.fieldChange.emit(+args.detail.value);
+      this.fieldChange.emit(this.form.valid ? +args.detail.value : 0);
     } else {
-      this.fieldChange.emit(args.detail.value);
+      this.fieldChange.emit(this.form.valid ? args.detail.value : '');
     }
+  }
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+  checkStatus(field: FormControl) {
+    return field.invalid && field.touched;
   }
 }

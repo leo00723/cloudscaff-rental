@@ -22,11 +22,14 @@ export class InputTextReactiveComponent {
   @Input() readonly = false;
   @Input() optional = false;
   @Input() form;
-  @Output() fieldChange = new EventEmitter<boolean>();
+  @Output() fieldChange = new EventEmitter<any>();
 
   update(args) {
-    // console.log(args.detail.value);
-    this.fieldChange.emit(true);
+    if (this.type === 'number') {
+      this.fieldChange.emit(+args.detail.value);
+    } else {
+      this.fieldChange.emit(args.detail.value);
+    }
   }
 
   field(field: string) {

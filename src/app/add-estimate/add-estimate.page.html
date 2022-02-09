@@ -69,7 +69,8 @@
           <ion-col size="12" *ngIf="show === 'editCustomer'">
             <app-customer
               [customer]="field('customer').value"
-              [isUpdate]="true"
+              [isUpdate]="!isEdit"
+              [isCreate]="false"
               [companyId]="company.id"
             >
             </app-customer>
@@ -78,6 +79,7 @@
             <app-customer
               [companyId]="company.id"
               (newCustomer)="newCustomer($event)"
+              [isCreate]="!isEdit"
             >
             </app-customer>
           </ion-col>
@@ -198,87 +200,123 @@
           </ion-col>
         </ion-row>
         <!-- BOARDS -->
-        <ion-row class="card-outline mb-3">
+        <ion-row class="px-3">
           <ion-col size="12">
             <ion-text color="medium">
               <h4>{{company.terminology.boards}} Details</h4>
             </ion-text>
           </ion-col>
+        </ion-row>
+        <ion-row
+          formArrayName="boards"
+          class="card-outline mb-3"
+          *ngFor="let board of boardForms.controls; let i = index"
+        >
           <ion-col size="12">
-            <ion-row formGroupName="boards">
-              <ion-col>
-                <app-input-reactive
-                  title="Length"
-                  type="number"
-                  controlName="length"
-                  [form]="field('boards')"
-                  placeholder="L"
-                  (fieldChange)="update('boards')"
-                >
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Width"
-                  type="number"
-                  controlName="width"
-                  [form]="field('boards')"
-                  placeholder="W"
-                  (fieldChange)="update('boards')"
-                >
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Qty"
-                  type="number"
-                  controlName="qty"
-                  [form]="field('boards')"
-                  placeholder="Enter Qty"
-                  (fieldChange)="update('boards')"
-                >
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-select-reactive
-                  title="Rate Profile"
-                  placeholder="Select Rate"
-                  controlName="rate"
-                  [form]="field('boards')"
-                  [selectedText]="field('boards.rate').value.name"
-                  (fieldChange)="update('boards')"
-                >
-                  <ng-container *ngIf="rates$ | async as rates">
-                    <ion-select-option
-                      [value]="rate"
-                      *ngFor="let rate of rates.boardRates"
-                      >{{rate.name}}
-                    </ion-select-option>
-                  </ng-container>
-                </app-input-select-reactive>
-              </ion-col>
-              <ion-col *ngIf="field('boards.rate').value">
-                <app-input-text
-                  title="Rate overide"
-                  type="number"
-                  [value]="field('boards.rate').value.rate"
-                  placeholder="Enter rate"
-                  (fieldChange)="updateRate('boards',$event)"
-                >
-                </app-input-text>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Total"
-                  type="number"
-                  controlName="total"
-                  [form]="field('boards')"
-                  [readonly]="true"
-                  placeholder="Total"
-                >
-                </app-input-reactive>
-              </ion-col>
-            </ion-row>
+            <ion-note> Item {{i+1}} </ion-note>
+            <ion-chip
+              outline
+              color="danger"
+              class="ion-float-end"
+              (click)="deleteBoard(i)"
+            >
+              <ion-label>Delete</ion-label>
+            </ion-chip>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Length"
+              type="number"
+              controlName="length"
+              placeholder="L"
+              [form]="board"
+              (fieldChange)="update('boards',i)"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Width"
+              type="number"
+              controlName="width"
+              placeholder="W"
+              [form]="board"
+              (fieldChange)="update('boards',i)"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Height Off Ground"
+              type="number"
+              controlName="height"
+              placeholder="H"
+              [form]="board"
+              (fieldChange)="update('boards',i)"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Qty"
+              type="number"
+              controlName="qty"
+              placeholder="Enter Qty"
+              [form]="board"
+              (fieldChange)="update('boards',i)"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-select-reactive
+              title="Rate Profile"
+              placeholder="Select Rate"
+              controlName="rate"
+              [form]="board"
+              (fieldChange)="update('boards',i)"
+              [selectedText]="arrField('boards',i,'rate').value.name"
+            >
+              <ng-container *ngIf="rates$ | async as rates">
+                <ion-select-option
+                  [value]="rate"
+                  *ngFor="let rate of rates.boardRates"
+                  >{{rate.name}}
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+          <ion-col *ngIf="arrField('boards',i,'rate').value">
+            <app-input-text
+              title="Rate overide"
+              type="number"
+              [value]="arrField('boards',i,'rate').value.rate"
+              placeholder="Enter rate"
+              (fieldChange)="updateRate('boards',$event,i)"
+            >
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Total"
+              type="number"
+              controlName="total"
+              [form]="board"
+              placeholder="Total"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+        </ion-row>
+        <ion-row class="mb-3">
+          <ion-col>
+            <ion-fab-button
+              size="small"
+              class="m-auto"
+              color="success"
+              (click)="addBoard()"
+            >
+              <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
           </ion-col>
         </ion-row>
         <!-- HIRE -->
@@ -368,6 +406,7 @@
               controlName="broker"
               [form]="form"
               [selectedText]="field('broker').value.name"
+              (fieldChange)="changeBroker()"
             >
               <ng-container *ngIf="brokers$ | async as brokers">
                 <ion-select-option
@@ -510,6 +549,7 @@
           <ion-row>
             <ion-col>
               <ion-fab-button
+                size="small"
                 class="m-auto"
                 color="success"
                 (click)="addLabour()"
@@ -629,6 +669,7 @@
         <ion-row>
           <ion-col>
             <ion-fab-button
+              size="small"
               class="m-auto"
               color="success"
               (click)="addAdditional()"

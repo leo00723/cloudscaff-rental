@@ -1,8 +1,21 @@
-<ion-item class="rounded-3 mb-3" mode="md">
-  <ion-label position="stacked">
-    {{title}} {{optional ? '(optional)' : ''}}
-  </ion-label>
-  <ion-input debounce="200" placeholder="{{placeholder}}" type="{{type}}" id="{{title}}" name="{{title}}"
-    [(ngModel)]="value" (ionChange)="update($event)" [readonly]="readonly">
-  </ion-input>
-</ion-item>
+<form [formGroup]="form">
+  <ion-item class="rounded-3 mb-3" mode="md">
+    <ion-label position="stacked">
+      {{ title }} {{ optional ? "(optional)" : "" }}
+    </ion-label>
+    <ion-input
+      debounce="200"
+      placeholder="{{ placeholder }}"
+      type="{{ type }}"
+      id="{{ title }}"
+      name="{{ title }}"
+      formControlName="field"
+      (ionChange)="update($event)"
+      [readonly]="readonly"
+    >
+    </ion-input>
+    <ion-note color="danger" *ngIf="checkStatus(field('field'))">
+      Please enter a valid {{ title }}
+    </ion-note>
+  </ion-item>
+</form>

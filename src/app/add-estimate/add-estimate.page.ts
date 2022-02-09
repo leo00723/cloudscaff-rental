@@ -86,6 +86,9 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     );
   }
 
+  get boardForms() {
+    return this.form.get('boards') as FormArray;
+  }
   get labourForms() {
     return this.form.get('labour') as FormArray;
   }
@@ -105,7 +108,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
           .edit()
           .getDocById(`company/${id.split('-')[0]}/estimates`, id.split('-')[1])
           .subscribe((estimate: Estimate) => {
-            this.estimate = estimate;
+            this.estimate = { ...estimate, date: estimate.date.toDate() };
             this.initEditForm();
           })
       );
@@ -132,6 +135,10 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     } else {
       this.show = 'addCustomer';
     }
+  }
+  changeBroker() {
+    this.labourForms.clear();
+    this.addLabour();
   }
 
   field(field: string) {
@@ -165,12 +172,11 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         break;
       case 'boards':
         {
-          this.calcBoardRate();
+          this.calcBoardRate(i);
         }
         break;
       case 'hire':
         {
-          this.calcHireRate();
         }
         break;
       case 'additionals':
@@ -182,6 +188,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         this.calcLabourRate(i);
       }
     }
+    this.calcHireRate();
   }
 
   updateRate(type: string, args: any, i?: number) {
@@ -197,11 +204,11 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         break;
       case 'boards':
         {
-          this.field('boards.rate').patchValue({
-            ...this.field('boards.rate').value,
+          this.arrField('boards', i, 'rate').patchValue({
+            ...this.arrField('boards', i, 'rate').value,
             rate: +args,
           });
-          this.calcBoardRate();
+          this.calcBoardRate(i);
         }
         break;
       case 'hire':
@@ -210,7 +217,6 @@ export class AddEstimatePage implements OnInit, OnDestroy {
             ...this.field('hire.rate').value,
             rate: +args,
           });
-          this.calcHireRate();
         }
         break;
       case 'additionals':
@@ -230,6 +236,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         this.calcLabourRate(i);
       }
     }
+    this.calcHireRate();
   }
 
   addLabour() {
@@ -254,7 +261,24 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     });
     this.additionalForms.push(additional);
   }
+  addBoard() {
+    const board = this.fb.group({
+      rate: ['', Validators.required],
+      length: ['', [Validators.required, Validators.min(1)]],
+      width: ['', [Validators.required, Validators.min(1)]],
+      height: ['', [Validators.required, Validators.min(1)]],
+      qty: ['', [Validators.required, Validators.min(1)]],
+      total: [0],
+    });
+    this.boardForms.push(board);
+  }
 
+  deleteBoard(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.boardForms.removeAt(i);
+      this.calcHireRate();
+    });
+  }
   deleteAdditional(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.additionalForms.removeAt(i);
@@ -337,8 +361,11 @@ export class AddEstimatePage implements OnInit, OnDestroy {
 
   private updateEstimateTotal() {
     const scaffold = +this.field('scaffold.total').value;
-    const boards = +this.field('boards.total').value;
     const hire = +this.field('hire.total').value;
+    let boards = 0;
+    this.arr('boards').controls.forEach((c) => {
+      boards += +c.get('total').value;
+    });
     let labour = 0;
     this.arr('labour').controls.forEach((c) => {
       labour += +c.get('total').value;
@@ -451,7 +478,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
           );
         }
         break;
-      case 8: {
+      case 0: {
         this.field('scaffold.total').setValue(
           this.field('scaffold.rate').value.rate
         );
@@ -462,48 +489,68 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     );
   }
 
-  private calcBoardRate() {
-    switch (this.field('boards.rate').value.code) {
+  private calcBoardRate(i: string | number) {
+    const ref = this.boardForms.controls[i] as FormControl;
+    switch (ref.get('rate').value.code) {
       case 1:
         {
-          this.field('boards.total').setValue(
-            this.field('boards.length').value *
-              this.field('boards.qty').value *
-              this.field('boards.rate').value.rate
-          );
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('qty').value *
+                ref.get('rate').value.rate
+            );
         }
         break;
       case 2:
         {
-          this.field('boards.total').setValue(
-            this.field('boards.width').value *
-              this.field('boards.qty').value *
-              this.field('boards.rate').value.rate
-          );
+          ref
+            .get('total')
+            .setValue(
+              ref.get('width').value *
+                ref.get('qty').value *
+                ref.get('rate').value.rate
+            );
         }
         break;
       case 3:
         {
-          this.field('boards.total').setValue(
-            this.field('boards.length').value *
-              this.field('boards.width').value *
-              this.field('boards.qty').value *
-              this.field('boards.rate').value.rate
-          );
+          ref
+            .get('total')
+            .setValue(
+              ref.get('height').value *
+                ref.get('qty').value *
+                ref.get('rate').value.rate
+            );
         }
         break;
-      case 4: {
-        this.field('boards.total').setValue(
-          this.field('boards.qty').value * this.field('boards.rate').value.rate
-        );
+      case 4:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('width').value *
+                ref.get('qty').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 0: {
+        ref
+          .get('total')
+          .setValue(ref.get('qty').value * ref.get('rate').value.rate);
       }
     }
-    this.field('boards.total').setValue(
-      +this.field('boards.total').value.toFixed(2)
-    );
+    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
   }
 
   private calcHireRate() {
+    let boards = 0;
+    this.arr('boards').controls.forEach((c) => {
+      boards += +c.get('total').value;
+    });
     switch (this.field('hire.rate').value.code) {
       case 1:
         {
@@ -513,7 +560,24 @@ export class AddEstimatePage implements OnInit, OnDestroy {
           );
         }
         break;
-      case 2: {
+      case 2:
+        {
+          this.field('hire.total').setValue(
+            (this.field('scaffold.total').value + boards) *
+              (this.field('hire.rate').value.rate / 100)
+          );
+        }
+        break;
+      case 3:
+        {
+          this.field('hire.total').setValue(
+            (this.field('scaffold.total').value + boards) *
+              this.field('hire.daysStanding').value *
+              (this.field('hire.rate').value.rate / 100)
+          );
+        }
+        break;
+      case 0: {
         this.field('hire.total').setValue(this.field('hire.rate').value.rate);
       }
     }
@@ -537,7 +601,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
             );
         }
         break;
-      case 2: {
+      case 0: {
         ref
           .get('total')
           .setValue(ref.get('qty').value * ref.get('rate').value.rate);
@@ -581,22 +645,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         ],
         total: [this.estimate.scaffold.total],
       }),
-      boards: this.fb.group({
-        rate: [this.estimate.boards.rate, Validators.required],
-        length: [
-          this.estimate.boards.length,
-          [Validators.required, Validators.min(1)],
-        ],
-        width: [
-          this.estimate.boards.width,
-          [Validators.required, Validators.min(1)],
-        ],
-        qty: [
-          this.estimate.boards.qty,
-          [Validators.required, Validators.min(1)],
-        ],
-        total: [this.estimate.boards.total],
-      }),
+      boards: this.fb.array([]),
       hire: this.fb.group({
         rate: [this.estimate.hire.rate, Validators.required],
         daysStanding: [
@@ -607,22 +656,33 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       }),
       additionals: this.fb.array([]),
       broker: [this.estimate.broker, Validators.required],
-      labour: this.fb.array(
-        this.estimate.labour.map((labour) =>
-          this.fb.group({
-            type: [labour.type, Validators.required],
-            hours: [labour.hours, Validators.required],
-            days: [labour.days, Validators.required],
-            rate: [labour.rate, [Validators.required]],
-            qty: [labour.qty, Validators.required],
-            total: [labour.total],
-          })
-        )
-      ),
+      labour: this.fb.array([]),
       subtotal: [this.estimate.subtotal],
       tax: [this.estimate.tax],
       vat: [this.estimate.vat],
       total: [this.estimate.total],
+    });
+    this.estimate.boards.forEach((b) => {
+      const board = this.fb.group({
+        rate: [b.rate, Validators.required],
+        length: [b.length, [Validators.required, Validators.min(1)]],
+        width: [b.width, [Validators.required, Validators.min(1)]],
+        height: [b.height, [Validators.required, Validators.min(1)]],
+        qty: [b.qty, [Validators.required, Validators.min(1)]],
+        total: [b.total],
+      });
+      this.boardForms.push(board);
+    });
+    this.estimate.labour.forEach((l) => {
+      const labour = this.fb.group({
+        type: [l.type, Validators.required],
+        hours: [l.hours, Validators.required],
+        days: [l.days, Validators.required],
+        rate: [l.rate, [Validators.required]],
+        qty: [l.qty, Validators.required],
+        total: [l.total],
+      });
+      this.labourForms.push(labour);
     });
     this.estimate.additionals.forEach((add) => {
       const additional = this.fb.group({
@@ -658,7 +718,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       code: '',
       message: '',
       tax: 0,
-      boards: undefined,
+      boards: [],
       id: '',
     };
     this.form = this.fb.group({
@@ -676,18 +736,12 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         height: ['', [Validators.required, Validators.min(1)]],
         total: [0],
       }),
-      boards: this.fb.group({
-        rate: ['', Validators.required],
-        length: ['', [Validators.required, Validators.min(1)]],
-        width: ['', [Validators.required, Validators.min(1)]],
-        qty: ['', [Validators.required, Validators.min(1)]],
-        total: [0],
-      }),
       hire: this.fb.group({
         rate: ['', Validators.required],
         daysStanding: ['', [Validators.required, Validators.min(1)]],
         total: [0],
       }),
+      boards: this.fb.array([]),
       additionals: this.fb.array([]),
       broker: ['', Validators.required],
       labour: this.fb.array([]),
@@ -696,7 +750,8 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       vat: [0],
       total: [0],
     });
-    this.addAdditional();
+    this.addBoard();
     this.addLabour();
+    this.addAdditional();
   }
 }

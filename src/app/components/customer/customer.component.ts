@@ -9,10 +9,23 @@ import { MasterService } from 'src/app/services/master.service';
   styles: [],
 })
 export class CustomerComponent implements OnInit {
-  @Input() customer = new Customer();
+  @Input() customer: Customer = {
+    id: '',
+    name: '',
+    email: '',
+    rep: '',
+    phone: '',
+    address: '',
+    suburb: '',
+    city: '',
+    zip: '',
+    country: '',
+    company: '',
+  };
   @Output() newCustomer = new EventEmitter<Customer>();
   @Input() isUpdate = false;
   @Input() isDelete = false;
+  @Input() isCreate = true;
   @Input() companyId: string;
   form: FormGroup;
   loading = false;

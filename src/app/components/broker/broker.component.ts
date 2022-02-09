@@ -36,7 +36,7 @@ export class BrokerComponent implements OnInit {
         .then(() => {
           this.loading = false;
           this.masterSvc.notification().successToast('Rate has been created.');
-          this.labour = new LabourBroker();
+          this.ngOnInit();
         })
         .catch(() => {
           this.loading = false;

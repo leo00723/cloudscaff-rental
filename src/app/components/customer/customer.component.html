@@ -78,7 +78,7 @@
         Update Customer
       </ion-button>
       <ion-button
-        *ngIf="!loading && !isUpdate && !isDelete"
+        *ngIf="!loading && isCreate"
         shape="round"
         type="submit"
         [disabled]="form.invalid"
