@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Address } from 'src/app/models/address.model';
 import { Company } from '../../models/company.model';
 import { Currencies } from '../../models/currencies.model';
 import { MasterService } from '../../services/master.service';
@@ -61,7 +62,9 @@ export class CompanyPage implements OnDestroy, OnInit {
   field(field: string) {
     return this.form.get(field) as FormControl;
   }
-
+  updateAddress(address: Address) {
+    this.form.patchValue(address);
+  }
   save() {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.loading = true;
@@ -96,7 +99,7 @@ export class CompanyPage implements OnDestroy, OnInit {
       email: [this.company.email, [Validators.required, Validators.email]],
       phone: [this.company.phone, Validators.required],
       address: [this.company.address, Validators.required],
-      suburb: [this.company.suburb, Validators.required],
+      suburb: [this.company.suburb],
       city: [this.company.city, Validators.required],
       zip: [this.company.zip, Validators.required],
       country: [this.company.country, Validators.required],

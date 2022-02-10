@@ -16,6 +16,7 @@ import { BrokerComponent } from './broker/broker.component';
 import { EstimateSummaryComponent } from './estimate-summary/estimate-summary.component';
 import { EstimateTableComponent } from './estimate-table/estimate-table.component';
 import { RateProfilesComponent } from './rate-profiles/rate-profiles.component';
+import { AddressSearchComponent } from './address-search/address-search.component';
 
 const COMPONENTS = [
   BrokerComponent,
@@ -30,6 +31,7 @@ const COMPONENTS = [
   EstimateSummaryComponent,
   EstimateTableComponent,
   RateProfilesComponent,
+  AddressSearchComponent,
 ];
 const IMPORTS = [
   CommonModule,

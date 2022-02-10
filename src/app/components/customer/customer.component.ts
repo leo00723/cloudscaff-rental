@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Address } from 'src/app/models/address.model';
 import { Customer } from 'src/app/models/customer.model';
 import { MasterService } from 'src/app/services/master.service';
 
 @Component({
   selector: 'app-customer',
   templateUrl: './customer.component.html',
-  styles: [],
 })
 export class CustomerComponent implements OnInit {
   @Input() customer: Customer = {
@@ -43,6 +43,13 @@ export class CustomerComponent implements OnInit {
       zip: [this.customer.zip],
       country: [this.customer.country, Validators.required],
     });
+  }
+
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+  checkStatus(field: FormControl) {
+    return field.invalid && field.touched;
   }
 
   create() {
@@ -131,5 +138,9 @@ export class CustomerComponent implements OnInit {
             );
         });
     });
+  }
+
+  updateAddress(address: Address) {
+    this.form.patchValue(address);
   }
 }
