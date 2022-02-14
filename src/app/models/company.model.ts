@@ -26,5 +26,8 @@ export interface Company {
   totalSites: number;
   users: string[];
   vat: number;
+  vatNum: string;
   salesTax: number;
+  logoUrl: string;
+  logoRef: string;
 }

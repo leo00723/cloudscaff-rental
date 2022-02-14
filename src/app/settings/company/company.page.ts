@@ -37,6 +37,9 @@ export class CompanyPage implements OnDestroy, OnInit {
     salesTax: 0,
     totalSites: 0,
     users: [],
+    vatNum: '',
+    logoUrl: '',
+    logoRef: '',
   };
   currencies = new Currencies().currencies;
   form: FormGroup;

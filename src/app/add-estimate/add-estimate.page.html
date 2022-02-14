@@ -692,10 +692,37 @@
 
       <ion-grid *ngIf="active === 'summary'" class="card-outline">
         <ion-row class="mt-3">
-          <ion-col size="12">
+          <ion-col>
             <ion-text color="medium">
-              <h4>Estimate Summary</h4>
+              <h4>Summary</h4>
             </ion-text>
+          </ion-col>
+          <ion-col *ngIf="isEdit">
+            <ion-item lines="none" color="none">
+              <ion-buttons slot="end">
+                <ion-button (click)="preview()">
+                  <ion-icon
+                    slot="icon-only"
+                    name="eye-outline"
+                    color="primary"
+                  ></ion-icon>
+                </ion-button>
+                <ion-button (click)="download()">
+                  <ion-icon
+                    slot="icon-only"
+                    name="cloud-download-outline"
+                    color="primary"
+                  ></ion-icon>
+                </ion-button>
+                <ion-button (click)="print()">
+                  <ion-icon
+                    slot="icon-only"
+                    name="print-outline"
+                    color="primary"
+                  ></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
           </ion-col>
         </ion-row>
 

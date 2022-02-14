@@ -26,6 +26,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { MasterService } from './services/master.service';
 import { SplashPage } from './splash/splash.page';
 import { FormBuilder } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 let resolvePersistenceEnabled: (enabled: boolean) => void;
 export const persistenceEnabled = new Promise<boolean>((resolve) => {
   resolvePersistenceEnabled = resolve;
@@ -63,6 +64,7 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     UserTrackingService,
     MasterService,
     FormBuilder,
+    DecimalPipe,
   ],
   bootstrap: [AppComponent],
 })

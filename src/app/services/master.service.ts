@@ -5,6 +5,7 @@ import { ToastController } from '@ionic/angular';
 import { AuthService } from './auth.service';
 import { EditService } from './edit.service';
 import { NotificationService } from './notification.service';
+import { PdfService } from './pdf.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,8 @@ export class MasterService {
     private editSvc: EditService,
     private notificationSvc: NotificationService,
     private routing: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private pdfService: PdfService
   ) {}
   auth() {
     return this.authSvc;
@@ -28,6 +30,9 @@ export class MasterService {
   }
   notification() {
     return this.notificationSvc;
+  }
+  pdf() {
+    return this.pdfService;
   }
 
   router() {

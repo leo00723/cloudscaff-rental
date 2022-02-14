@@ -96,6 +96,25 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     return this.form.get('additionals') as FormArray;
   }
 
+  async preview() {
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateEstimate(this.estimate, this.company);
+    pdf.open();
+  }
+  async print() {
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateEstimate(this.estimate, this.company);
+    pdf.print();
+  }
+  async download() {
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateEstimate(this.estimate, this.company);
+    pdf.download(this.estimate.code);
+  }
+
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
@@ -360,6 +379,9 @@ export class AddEstimatePage implements OnInit, OnDestroy {
   }
 
   private updateEstimateTotal() {
+    if (this.isEdit && this.estimate.status !== 'pending') {
+      return;
+    }
     const scaffold = +this.field('scaffold.total').value;
     const hire = +this.field('hire.total').value;
     let boards = 0;
@@ -720,6 +742,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       tax: 0,
       boards: [],
       id: '',
+      discountPercentage: 0,
     };
     this.form = this.fb.group({
       customer: ['', Validators.required],
