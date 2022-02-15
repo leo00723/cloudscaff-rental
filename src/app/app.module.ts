@@ -1,32 +1,38 @@
+import { DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouteReuseStrategy } from '@angular/router';
-
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { environment } from '../environments/environment';
 import {
-  provideAnalytics,
   getAnalytics,
+  provideAnalytics,
   ScreenTrackingService,
   UserTrackingService,
 } from '@angular/fire/analytics';
-import { provideAuth, getAuth } from '@angular/fire/auth';
+import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {
-  provideFirestore,
-  getFirestore,
+  getAuth,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  provideAuth,
+} from '@angular/fire/auth';
+import {
   enableMultiTabIndexedDbPersistence,
+  getFirestore,
+  provideFirestore,
 } from '@angular/fire/firestore';
-import { provideFunctions, getFunctions } from '@angular/fire/functions';
-import { provideStorage, getStorage } from '@angular/fire/storage';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { getStorage, provideStorage } from '@angular/fire/storage';
+import { FormBuilder } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouteReuseStrategy } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { Capacitor } from '@capacitor/core';
+import { FileOpener } from '@ionic-native/file-opener/ngx';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { environment } from '../environments/environment';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 import { MasterService } from './services/master.service';
 import { SplashPage } from './splash/splash.page';
-import { FormBuilder } from '@angular/forms';
-import { DecimalPipe } from '@angular/common';
+
 let resolvePersistenceEnabled: (enabled: boolean) => void;
 export const persistenceEnabled = new Promise<boolean>((resolve) => {
   resolvePersistenceEnabled = resolve;
@@ -40,7 +46,15 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     AppRoutingModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAnalytics(() => getAnalytics()),
-    provideAuth(() => getAuth()),
+    provideAuth(() => {
+      if (Capacitor.isNativePlatform()) {
+        return initializeAuth(getApp(), {
+          persistence: indexedDBLocalPersistence,
+        });
+      } else {
+        return getAuth();
+      }
+    }),
     provideFirestore(() => {
       const firestore = getFirestore();
       enableMultiTabIndexedDbPersistence(firestore).then(
@@ -65,6 +79,7 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     MasterService,
     FormBuilder,
     DecimalPipe,
+    FileOpener,
   ],
   bootstrap: [AppComponent],
 })

@@ -96,23 +96,11 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     return this.form.get('additionals') as FormArray;
   }
 
-  async preview() {
+  async download(type: 'print' | 'preview' | 'download') {
     const pdf = await this.masterSvc
       .pdf()
       .generateEstimate(this.estimate, this.company);
-    pdf.open();
-  }
-  async print() {
-    const pdf = await this.masterSvc
-      .pdf()
-      .generateEstimate(this.estimate, this.company);
-    pdf.print();
-  }
-  async download() {
-    const pdf = await this.masterSvc
-      .pdf()
-      .generateEstimate(this.estimate, this.company);
-    pdf.download(this.estimate.code);
+    this.masterSvc.handlePdf(pdf, type, this.estimate.code);
   }
 
   ngOnDestroy(): void {
