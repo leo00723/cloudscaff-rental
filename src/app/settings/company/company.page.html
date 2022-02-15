@@ -4,7 +4,7 @@
   path="/home/settings"
 ></app-header>
 
-<ion-content>
+<ion-content fullscreen="true">
   <app-header-condensed title="Business Settings"></app-header-condensed>
   <ion-grid class="container ion-padding pt-5" *ngIf="!isLoading else loadingT">
     <form (ngSubmit)="save()" name="company" [formGroup]="form">

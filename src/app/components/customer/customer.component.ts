@@ -67,7 +67,7 @@ export class CustomerComponent implements OnInit {
           this.loading = false;
           this.masterSvc
             .notification()
-            .successToast('Customer added successfully!');
+            .toast('Customer added successfully!', 'success');
           this.newCustomer.emit(this.customer);
           this.form.reset();
         })
@@ -75,8 +75,9 @@ export class CustomerComponent implements OnInit {
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong creating your customer, try again!',
+              'danger',
               2000
             );
         });
@@ -99,14 +100,15 @@ export class CustomerComponent implements OnInit {
           this.loading = false;
           this.masterSvc
             .notification()
-            .successToast('Customer updated successfully!');
+            .toast('Customer updated successfully!', 'success');
         })
         .catch((err) => {
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong updating your customer, try again!',
+              'danger',
               2000
             );
         });
@@ -125,15 +127,16 @@ export class CustomerComponent implements OnInit {
           this.loading = false;
           this.masterSvc
             .notification()
-            .successToast('Customer deleted successfully!');
+            .toast('Customer deleted successfully!', 'success');
         })
         .catch((err) => {
           this.loading = false;
           this.form.reset();
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong deleting your customer, try again!',
+              'danger',
               2000
             );
         });

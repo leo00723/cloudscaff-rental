@@ -82,15 +82,18 @@ export class RateProfilesComponent implements OnDestroy, OnInit {
         )
         .then(() => {
           this.loading = false;
-          this.masterSvc.notification().successToast('Rates has been updated.');
+          this.masterSvc
+            .notification()
+            .toast('Rates has been updated.', 'success');
         })
         .catch((error) => {
           console.log(error);
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong updating your rates, try again!',
+              'danger',
               2000
             );
         });

@@ -96,11 +96,11 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     return this.form.get('additionals') as FormArray;
   }
 
-  async download(type: 'print' | 'preview' | 'download') {
+  async download() {
     const pdf = await this.masterSvc
       .pdf()
       .generateEstimate(this.estimate, this.company);
-    this.masterSvc.handlePdf(pdf, type, this.estimate.code);
+    this.masterSvc.handlePdf(pdf, this.estimate.code);
   }
 
   ngOnDestroy(): void {
@@ -313,15 +313,16 @@ export class AddEstimatePage implements OnInit, OnDestroy {
           });
           this.masterSvc
             .notification()
-            .successToast('Estimate created successfully!');
+            .toast('Estimate created successfully!', 'success');
           this.reset();
         })
         .catch(() => {
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong creating your estimate, try again!',
+              'danger',
               2000
             );
         });
@@ -343,15 +344,16 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         .then(() => {
           this.masterSvc
             .notification()
-            .successToast('Estimate updated successfully!');
+            .toast('Estimate updated successfully!', 'success');
           this.loading = false;
         })
         .catch(() => {
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong updating your estimate, try again!',
+              'danger',
               2000
             );
         });

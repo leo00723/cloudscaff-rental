@@ -1,4 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
+import { getAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { of, Subscription } from 'rxjs';

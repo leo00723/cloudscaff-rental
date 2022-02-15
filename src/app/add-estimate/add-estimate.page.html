@@ -700,24 +700,10 @@
           <ion-col *ngIf="isEdit">
             <ion-item lines="none" color="none">
               <ion-buttons slot="end">
-                <ion-button (click)="download('preview')">
-                  <ion-icon
-                    slot="icon-only"
-                    name="eye-outline"
-                    color="primary"
-                  ></ion-icon>
-                </ion-button>
-                <ion-button (click)="download('download')">
+                <ion-button (click)="download()">
                   <ion-icon
                     slot="icon-only"
                     name="cloud-download-outline"
-                    color="primary"
-                  ></ion-icon>
-                </ion-button>
-                <ion-button (click)="download('print')">
-                  <ion-icon
-                    slot="icon-only"
-                    name="print-outline"
                     color="primary"
                   ></ion-icon>
                 </ion-button>

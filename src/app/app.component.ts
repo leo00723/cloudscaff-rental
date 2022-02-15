@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 }
               });
             },
-            'New Update Availiable',
+            'New update availiable!',
             'click Yes to install update'
           );
         }

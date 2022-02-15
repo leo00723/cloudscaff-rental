@@ -8,13 +8,10 @@ import {
   query,
   setDoc,
   updateDoc,
-  where,
 } from '@angular/fire/firestore';
 import { addDoc, deleteDoc, OrderByDirection } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
 import { Observable } from 'rxjs';
-import { Company } from '../models/company.model';
-import { Customer } from '../models/customer.model';
 
 @Injectable({
   providedIn: 'root',

@@ -27,11 +27,7 @@ export class MasterService {
     return this.authSvc;
   }
 
-  handlePdf(
-    pdf: any,
-    type: 'print' | 'preview' | 'download',
-    filename: string
-  ) {
+  handlePdf(pdf: any, filename: string) {
     if (this.platformService.is('cordova')) {
       pdf.getBase64(async (data) => {
         try {
@@ -46,18 +42,14 @@ export class MasterService {
           console.error('Unable to write file', e);
         }
       });
+    } else if (!this.platformService.is('iphone')) {
+      pdf.download(filename);
     } else {
-      switch (type) {
-        case 'print':
-          pdf.print();
-          break;
-        case 'preview':
-          pdf.open();
-          break;
-        case 'download':
-          pdf.download(filename);
-          break;
-      }
+      this.notificationSvc.toast(
+        'Documents can only be downloaded on pc or mobile app',
+        'warning',
+        3000
+      );
     }
   }
 

@@ -35,15 +35,18 @@ export class BrokerComponent implements OnInit {
         )
         .then(() => {
           this.loading = false;
-          this.masterSvc.notification().successToast('Rate has been created.');
+          this.masterSvc
+            .notification()
+            .toast('Rate has been created.', 'success');
           this.ngOnInit();
         })
         .catch(() => {
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong creating your rate, try again!',
+              'danger',
               2000
             );
         });
@@ -60,14 +63,17 @@ export class BrokerComponent implements OnInit {
           this.labour
         )
         .then(() => {
-          this.masterSvc.notification().successToast('Rate has been updated.');
+          this.masterSvc
+            .notification()
+            .toast('Rate has been updated.', 'success');
         })
         .catch(() => {
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong creating your rate, try again!',
+              'danger',
               2000
             );
         });
@@ -82,15 +88,18 @@ export class BrokerComponent implements OnInit {
         .then(() => {
           this.loading = false;
           this.isUpdate = false;
-          this.masterSvc.notification().successToast('Rate has been deleted.');
+          this.masterSvc
+            .notification()
+            .toast('Rate has been deleted.', 'success');
           this.labour = new LabourBroker();
         })
         .catch(() => {
           this.loading = false;
           this.masterSvc
             .notification()
-            .errorToast(
+            .toast(
               'Something went wrong creating your rate, try again!',
+              'danger',
               2000
             );
         });

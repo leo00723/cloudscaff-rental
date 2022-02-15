@@ -30,13 +30,13 @@ export class EstimatesPage implements OnInit {
     setTimeout(() => {
       this.isLoading = false;
     }, 300);
-    this.estimates$ = this.masterSvc.auth().user$.pipe(
-      switchMap((user) => {
-        if (user) {
+    this.estimates$ = this.company$.pipe(
+      switchMap((company) => {
+        if (company) {
           return this.masterSvc
             .edit()
             .getDocsByCompanyIdOrdered(
-              `company/${user.company}/estimates`,
+              `company/${company.id}/estimates`,
               'date',
               'desc'
             );

@@ -79,7 +79,7 @@ export class CompanyPage implements OnDestroy, OnInit {
           this.masterSvc.auth().company$.next(this.company);
           this.masterSvc
             .notification()
-            .successToast('Settings saved successfully')
+            .toast('Settings saved successfully', 'success')
             .then(() => {
               this.loading = false;
             });
@@ -88,7 +88,7 @@ export class CompanyPage implements OnDestroy, OnInit {
           console.error(error);
           this.masterSvc
             .notification()
-            .errorToast('Something went wrong! Try again later.')
+            .toast('Something went wrong! Try again later.', 'danger')
             .then(() => {
               this.loading = false;
             });

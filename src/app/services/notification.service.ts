@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController, ToastOptions } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root',
@@ -7,27 +7,15 @@ import { AlertController, ToastController } from '@ionic/angular';
 export class NotificationService {
   constructor(
     private toastController: ToastController,
-    public alertController: AlertController
+    private alertController: AlertController
   ) {}
 
-  async successToast(header: string, duration?: number) {
+  async toast(header: string, color: string, duration?: number) {
     const toast = await this.toastController.create({
       header,
       icon: 'notifications-outline',
       mode: 'ios',
-      color: 'success',
-      position: 'bottom',
-      duration: duration ? duration : 1000,
-    });
-    return await toast.present();
-  }
-
-  async errorToast(header: string, duration?: number) {
-    const toast = await this.toastController.create({
-      header,
-      icon: 'notifications-outline',
-      mode: 'ios',
-      color: 'danger',
+      color,
       position: 'bottom',
       duration: duration ? duration : 1000,
     });
