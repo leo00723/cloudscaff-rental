@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { catchError, ignoreElements, switchMap } from 'rxjs/operators';
 import { Company } from '../models/company.model';
 import { MasterService } from '../services/master.service';
 @Component({
@@ -26,10 +26,6 @@ export class EstimatesPage implements OnInit {
   }
 
   init() {
-    this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 300);
     this.estimates$ = this.company$.pipe(
       switchMap((company) => {
         if (company) {
