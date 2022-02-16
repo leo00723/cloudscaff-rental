@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { IonRouterOutlet } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
-import { catchError, ignoreElements, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
+import { AddEstimatePage } from '../add-estimate/add-estimate.page';
 import { Company } from '../models/company.model';
 import { MasterService } from '../services/master.service';
 @Component({
@@ -11,7 +13,10 @@ export class EstimatesPage implements OnInit {
   estimates$: Observable<any[]>;
   company$: Observable<Company>;
   isLoading = true;
-  constructor(private masterSvc: MasterService) {
+  constructor(
+    private masterSvc: MasterService,
+    public routerOutlet: IonRouterOutlet
+  ) {
     this.company$ = this.masterSvc.auth().company$;
   }
 
@@ -19,10 +24,27 @@ export class EstimatesPage implements OnInit {
     this.init();
   }
 
-  editEstimate(id: string) {
-    this.masterSvc
-      .router()
-      .navigate([`/home/editEstimate/${id}`], { replaceUrl: true });
+  async editEstimate(id: string) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddEstimatePage,
+      componentProps: {
+        id,
+      },
+      showBackdrop: false,
+      id: 'editEstimate',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async presentModal() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddEstimatePage,
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addEstimate',
+    });
+    return await modal.present();
   }
 
   init() {

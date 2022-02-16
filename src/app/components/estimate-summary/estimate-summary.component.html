@@ -219,13 +219,22 @@
         </tr>
         <tr>
           <th class="text-end" colspan="3" scope="col">
+            Discount ({{ estimate.discountPercentage }}%)
+          </th>
+          <th class="text-end text-danger" scope="col">
+            - {{ company.currency.symbol }}
+            {{ estimate.discount | number: "0.2-2" }}
+          </th>
+        </tr>
+        <tr *ngIf="company.salesTax">
+          <th class="text-end" colspan="3" scope="col">
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th class="text-end" scope="col">
             {{ company.currency.symbol }} {{ estimate.tax | number: "0.2-2" }}
           </th>
         </tr>
-        <tr>
+        <tr *ngIf="company.vat">
           <th class="text-end" colspan="3" scope="col">
             VAT ({{ company.vat }}%)
           </th>

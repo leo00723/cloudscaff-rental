@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import {
   FormArray,
@@ -7,9 +7,11 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { IonTextarea } from '@ionic/angular';
+import { sub } from 'date-fns';
 import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { DatepickerComponent } from '../components/datepicker/datepicker.component';
 import { Company } from '../models/company.model';
 import { Customer } from '../models/customer.model';
 import { Estimate } from '../models/estimate.model';
@@ -20,6 +22,8 @@ import { MasterService } from '../services/master.service';
   templateUrl: './add-estimate.page.html',
 })
 export class AddEstimatePage implements OnInit, OnDestroy {
+  @Input() id: string;
+  @ViewChild('message') message: IonTextarea;
   company$: Observable<Company>;
   customers$: Observable<Customer[]>;
   rates$: Observable<any>;
@@ -35,11 +39,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
   isEdit = false;
   private subs = new Subscription();
   private company: Company;
-  constructor(
-    private masterSvc: MasterService,
-    private fb: FormBuilder,
-    private activatedRoute: ActivatedRoute
-  ) {
+  constructor(private masterSvc: MasterService, private fb: FormBuilder) {
     this.company$ = this.masterSvc.auth().company$;
     this.customers$ = this.masterSvc.auth().user$.pipe(
       switchMap((user) => {
@@ -103,17 +103,34 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     this.masterSvc.handlePdf(pdf, this.estimate.code);
   }
 
+  async setDate(field: string) {
+    const modal = await this.masterSvc.modal().create({
+      component: DatepickerComponent,
+      id: field,
+      cssClass: 'date',
+      showBackdrop: false,
+    });
+    await modal.present();
+    return this.field(field).setValue((await modal.onDidDismiss()).data);
+  }
+
+  close() {
+    this.masterSvc.modal().dismiss();
+  }
+
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
   ngOnInit() {
-    const id = this.activatedRoute.snapshot.paramMap.get('id');
-    if (id) {
+    if (this.id) {
       this.isEdit = true;
       this.subs.add(
         this.masterSvc
           .edit()
-          .getDocById(`company/${id.split('-')[0]}/estimates`, id.split('-')[1])
+          .getDocById(
+            `company/${this.id.split('-')[0]}/estimates`,
+            this.id.split('-')[1]
+          )
           .subscribe((estimate: Estimate) => {
             this.estimate = { ...estimate, date: estimate.date.toDate() };
             this.initEditForm();
@@ -123,6 +140,10 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       this.initFrom();
       this.isLoading = false;
     }
+  }
+
+  ionViewDidEnter() {
+    if (this.message) this.message.autoGrow = true;
   }
 
   arr(field: string) {
@@ -386,20 +407,14 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     this.arr('additionals').controls.forEach((c) => {
       additionals += +c.get('total').value;
     });
-    this.field('subtotal').setValue(
-      scaffold + boards + hire + labour + additionals
-    );
-    this.field('tax').setValue(
-      this.field('subtotal').value * (this.company.salesTax / 100)
-    );
-    this.field('vat').setValue(
-      this.field('subtotal').value * (this.company.vat / 100)
-    );
-    this.field('total').setValue(
-      this.field('subtotal').value +
-        this.field('tax').value +
-        this.field('vat').value
-    );
+
+    const subtotal = scaffold + boards + hire + labour + additionals;
+    const discount = subtotal * (+this.field('discountPercentage').value / 100);
+    const totalAfterDiscount = subtotal - discount;
+    const tax = totalAfterDiscount * (this.company.salesTax / 100);
+    const vat = totalAfterDiscount * (this.company.vat / 100);
+    const total = totalAfterDiscount + tax + vat;
+
     const code = `EST${new Date().toLocaleDateString('en', {
       year: '2-digit',
     })}${(this.company.totalEstimates + 1).toString().padStart(6, '0')}`;
@@ -424,6 +439,11 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       },
       code: this.isEdit ? this.estimate.code : code,
       status: this.isEdit ? this.estimate.status : 'pending',
+      subtotal,
+      discount,
+      tax,
+      vat,
+      total,
     });
   }
 
@@ -641,6 +661,12 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       customer: [this.estimate.customer, Validators.required],
       message: [this.estimate.message, Validators.required],
       siteName: [this.estimate.siteName, Validators.required],
+      startDate: [this.estimate.startDate, Validators.required],
+      endDate: [this.estimate.endDate, Validators.required],
+      discountPercentage: [
+        this.estimate.discountPercentage,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
       scaffold: this.fb.group({
         rate: [this.estimate.scaffold.rate, Validators.required],
         length: [
@@ -669,10 +695,6 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       additionals: this.fb.array([]),
       broker: [this.estimate.broker, Validators.required],
       labour: this.fb.array([]),
-      subtotal: [this.estimate.subtotal],
-      tax: [this.estimate.tax],
-      vat: [this.estimate.vat],
-      total: [this.estimate.total],
     });
     this.estimate.boards.forEach((b) => {
       const board = this.fb.group({
@@ -721,6 +743,8 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       status: '',
       additionals: [],
       date: undefined,
+      startDate: undefined,
+      endDate: undefined,
       company: {},
       broker: undefined,
       subtotal: 0,
@@ -733,6 +757,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       boards: [],
       id: '',
       discountPercentage: 0,
+      discount: 0,
     };
     this.form = this.fb.group({
       customer: ['', Validators.required],
@@ -742,6 +767,12 @@ export class AddEstimatePage implements OnInit, OnDestroy {
         Validators.required,
       ],
       siteName: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      discountPercentage: [
+        0,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
       scaffold: this.fb.group({
         rate: ['', Validators.required],
         length: ['', [Validators.required, Validators.min(1)]],
@@ -758,10 +789,6 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       additionals: this.fb.array([]),
       broker: ['', Validators.required],
       labour: this.fb.array([]),
-      subtotal: [0],
-      tax: [0],
-      vat: [0],
-      total: [0],
     });
     this.addBoard();
     this.addLabour();

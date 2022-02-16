@@ -46,6 +46,16 @@
   cursor: pointer;
 }
 
+ion-modal.fullscreen {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0;
+}
+ion-modal.date {
+  --background: transparent;
+  --box-shadow: none;
+}
+
 .rounded-lg {
   border-radius: 0.7rem !important;
 }

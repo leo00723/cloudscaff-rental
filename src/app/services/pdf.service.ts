@@ -123,7 +123,7 @@ const stylesCS = {
 };
 const defaultCS = {
   fontSize: 8,
-  lineHeight: 1,
+  lineHeight: 1.5,
   color: 'black',
   // alignment: 'justify'
 };
@@ -259,8 +259,18 @@ export class PdfService {
                   alignment: 'left',
                 },
                 '',
+                '',
                 {
-                  text: 'Total:',
+                  text: 'TOTAL AMOUNT',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -273,32 +283,16 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Bank:', style: 'h6b', alignment: 'left' },
-                { text: company.bankName, alignment: 'left' },
-                {
-                  text: 'Discount',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(0)}`,
-                  alignment: 'right',
-                  style: 'h6b',
-                },
-              ],
-              [
                 { text: 'Account Name:', style: 'h6b', alignment: 'left' },
                 { text: company.name, alignment: 'left' },
                 {
-                  text: company.vat
-                    ? `${company.vat}% VAT:`
-                    : `${company.salesTax}% Tax:`,
+                  text: `Discount (${estimate.discountPercentage}%):`,
                   style: 'h6b',
                   alignment: 'right',
                 },
                 {
-                  text: `${company.currency.symbol} ${this.format(
-                    estimate.vat
+                  text: `- ${company.currency.symbol} ${this.format(
+                    estimate.discount
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -307,6 +301,31 @@ export class PdfService {
               [
                 { text: 'Account Number:', style: 'h6b', alignment: 'left' },
                 { text: company.accountNum, alignment: 'left' },
+                {
+                  text: company.vat
+                    ? `VAT (${company.vat}%):`
+                    : `Tax (${company.salesTax}%):`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.vat
+                  )}`,
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
                 {
                   text: 'Grand Total:',
                   style: 'h3',
@@ -321,19 +340,6 @@ export class PdfService {
                   alignment: 'right',
                   margin: [0, 5],
                 },
-              ],
-              [
-                {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
-                  style: 'h6b',
-                  alignment: 'left',
-                },
-                {
-                  text: company.swiftCode ? company.swiftCode : '',
-                  alignment: 'left',
-                },
-                '',
-                '',
               ],
             ],
           },

@@ -27,20 +27,6 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'addEstimate',
-        loadChildren: () =>
-          import('../add-estimate/add-estimate.module').then(
-            (m) => m.AddEstimatePageModule
-          ),
-      },
-      {
-        path: 'editEstimate/:id',
-        loadChildren: () =>
-          import('../add-estimate/add-estimate.module').then(
-            (m) => m.AddEstimatePageModule
-          ),
-      },
-      {
         path: 'settings',
         loadChildren: () =>
           import('../settings/settings.module').then(

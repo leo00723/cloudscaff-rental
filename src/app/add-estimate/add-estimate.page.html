@@ -1,10 +1,13 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button
-        defaultHref="home/estimates"
-        color="primary"
-      ></ion-back-button>
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>{{isEdit ? 'Update Estimate' : 'Create Estimate'}} </ion-title>
   </ion-toolbar>
@@ -87,10 +90,7 @@
           <ion-col size="12">
             <ion-item class="rounded-3">
               <ion-label position="stacked" placeholder="">Message</ion-label>
-              <ion-textarea
-                formControlName="message"
-                autoGrow="true"
-              ></ion-textarea>
+              <ion-textarea #message formControlName="message"></ion-textarea>
             </ion-item>
           </ion-col>
           <ion-col size="12">
@@ -101,6 +101,33 @@
               placeholder="Enter Site Name"
             >
             </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Discount %"
+              controlName="discountPercentage"
+              [form]="form"
+              placeholder="Enter a discount %"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-label position="stacked"> Start Date </ion-label>
+              <ion-input formControlName="startDate" readonly="true">
+                <ion-button fill="clear" (click)="setDate('startDate')">
+                  <ion-icon icon="calendar"></ion-icon> </ion-button
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-label position="stacked"> End Date </ion-label>
+              <ion-input formControlName="endDate" readonly="true">
+                <ion-button fill="clear" (click)="setDate('endDate')">
+                  <ion-icon icon="calendar"></ion-icon> </ion-button
+              ></ion-input>
+            </ion-item>
           </ion-col>
         </ion-row>
         <ion-row>

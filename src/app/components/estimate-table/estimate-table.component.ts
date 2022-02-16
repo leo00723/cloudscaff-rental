@@ -57,7 +57,7 @@ export class EstimateTableComponent {
           (d) =>
             d.code.toLowerCase().indexOf(val) !== -1 ||
             d.siteName.toLowerCase().indexOf(val) !== -1 ||
-            d.company.name.toLowerCase().indexOf(val) !== -1 ||
+            d.customer.name.toLowerCase().indexOf(val) !== -1 ||
             d.status.toLowerCase().indexOf(val) !== -1 ||
             d.total.toString().toLowerCase().indexOf(val) !== -1 ||
             !val

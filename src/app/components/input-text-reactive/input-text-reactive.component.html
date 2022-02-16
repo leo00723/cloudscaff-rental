@@ -1,11 +1,19 @@
-<ion-item class="rounded-3 mb-3" [formGroup]='form' mode="md" [color]="color">
+<ion-item class="rounded-3 mb-3" [formGroup]="form" mode="md" [color]="color">
   <ion-label position="stacked">
-    {{title}} {{optional ? '(optional)' : ''}}
+    {{ title }} {{ optional ? "(optional)" : "" }}
   </ion-label>
-  <ion-input debounce="200" placeholder="{{placeholder}}" type="{{type}}" id="{{controlName}}" name="{{controlName}}"
-    formControlName="{{controlName}}" (ionChange)="update($event)" [readonly]="readonly">
+  <ion-input
+    debounce="200"
+    placeholder="{{ placeholder }}"
+    type="{{ type }}"
+    id="{{ controlName }}"
+    name="{{ controlName }}"
+    formControlName="{{ controlName }}"
+    (ionChange)="update($event)"
+    [readonly]="readonly"
+  >
   </ion-input>
   <ion-note color="danger" *ngIf="checkStatus(field(controlName))">
-    Please enter a valid {{title}}
+    Please enter a valid {{ title }}
   </ion-note>
 </ion-item>

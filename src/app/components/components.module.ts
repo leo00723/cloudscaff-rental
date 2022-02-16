@@ -17,6 +17,7 @@ import { EstimateSummaryComponent } from './estimate-summary/estimate-summary.co
 import { EstimateTableComponent } from './estimate-table/estimate-table.component';
 import { RateProfilesComponent } from './rate-profiles/rate-profiles.component';
 import { AddressSearchComponent } from './address-search/address-search.component';
+import { DatepickerComponent } from './datepicker/datepicker.component';
 
 const COMPONENTS = [
   BrokerComponent,
@@ -32,6 +33,7 @@ const COMPONENTS = [
   EstimateTableComponent,
   RateProfilesComponent,
   AddressSearchComponent,
+  DatepickerComponent,
 ];
 const IMPORTS = [
   CommonModule,

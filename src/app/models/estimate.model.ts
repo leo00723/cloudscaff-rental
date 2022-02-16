@@ -25,4 +25,7 @@ export interface Estimate {
   boards: Item[];
   id: string;
   discountPercentage: number;
+  discount: number;
+  startDate: any;
+  endDate: any;
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
-import { Platform } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { AuthService } from './auth.service';
 import { EditService } from './edit.service';
 import { NotificationService } from './notification.service';
@@ -21,7 +21,8 @@ export class MasterService {
     private formBuilder: FormBuilder,
     private pdfService: PdfService,
     private fileOpenerService: FileOpener,
-    private platformService: Platform
+    private platformService: Platform,
+    private modalController: ModalController
   ) {}
   auth() {
     return this.authSvc;
@@ -61,6 +62,9 @@ export class MasterService {
   }
   fileOpener() {
     return this.fileOpenerService;
+  }
+  modal() {
+    return this.modalController;
   }
   notification() {
     return this.notificationSvc;
