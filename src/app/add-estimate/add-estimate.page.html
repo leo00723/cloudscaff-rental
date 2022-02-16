@@ -22,7 +22,7 @@
         <ion-label>Overview</ion-label>
       </ion-segment-button>
       <ion-segment-button value="scaffolds">
-        <ion-label>Scaffolds</ion-label>
+        <ion-label>Scaffold</ion-label>
       </ion-segment-button>
       <ion-segment-button value="labour">
         <ion-label>Labor</ion-label>
@@ -88,7 +88,7 @@
           </ion-col>
 
           <ion-col size="12">
-            <ion-item class="rounded-3">
+            <ion-item class="rounded-3 mb-3" mode="md">
               <ion-label position="stacked" placeholder="">Message</ion-label>
               <ion-textarea #message formControlName="message"></ion-textarea>
             </ion-item>
@@ -102,7 +102,7 @@
             >
             </app-input-reactive>
           </ion-col>
-          <ion-col>
+          <ion-col sizeMd="4" size="12">
             <app-input-reactive
               title="Discount %"
               controlName="discountPercentage"
@@ -111,22 +111,26 @@
             >
             </app-input-reactive>
           </ion-col>
-          <ion-col>
-            <ion-item>
+          <ion-col sizeMd="4" size="6">
+            <ion-item class="rounded-3 mb-3" mode="md">
               <ion-label position="stacked"> Start Date </ion-label>
-              <ion-input formControlName="startDate" readonly="true">
-                <ion-button fill="clear" (click)="setDate('startDate')">
-                  <ion-icon icon="calendar"></ion-icon> </ion-button
-              ></ion-input>
+              <ion-input
+                formControlName="startDate"
+                readonly="true"
+                (click)="setDate('startDate')"
+              >
+              </ion-input>
             </ion-item>
           </ion-col>
-          <ion-col>
-            <ion-item>
+          <ion-col sizeMd="4" size="6">
+            <ion-item class="rounded-3 mb-3" mode="md">
               <ion-label position="stacked"> End Date </ion-label>
-              <ion-input formControlName="endDate" readonly="true">
-                <ion-button fill="clear" (click)="setDate('endDate')">
-                  <ion-icon icon="calendar"></ion-icon> </ion-button
-              ></ion-input>
+              <ion-input
+                formControlName="endDate"
+                readonly="true"
+                (click)="setDate('endDate')"
+              >
+              </ion-input>
             </ion-item>
           </ion-col>
         </ion-row>

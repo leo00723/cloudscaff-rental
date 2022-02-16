@@ -47,7 +47,7 @@ export class MasterService {
       pdf.download(filename);
     } else {
       this.notificationSvc.toast(
-        'Documents can only be downloaded on pc or mobile app',
+        'Documents can only be downloaded on pc or web',
         'warning',
         3000
       );

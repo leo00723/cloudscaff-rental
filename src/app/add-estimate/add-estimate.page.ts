@@ -143,7 +143,10 @@ export class AddEstimatePage implements OnInit, OnDestroy {
   }
 
   ionViewDidEnter() {
-    if (this.message) this.message.autoGrow = true;
+    if (this.message) {
+      this.message.autoGrow = true;
+      this.message.rows = 4;
+    }
   }
 
   arr(field: string) {
