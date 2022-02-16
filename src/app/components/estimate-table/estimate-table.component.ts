@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -18,19 +17,19 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'app-estimate-table',
   templateUrl: './estimate-table.component.html',
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EstimateTableComponent implements OnInit {
+export class EstimateTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Input() estimates$: Observable<any[]>;
   @Output() selectedItem = new EventEmitter<string>();
+  estimates$: Observable<any[]>;
   temp$: Observable<any[]>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
-
-  ngOnInit(): void {
-    this.temp$ = this.estimates$;
+  @Input() set value(estimates: Observable<any>) {
+    this.temp$ = estimates;
+    this.estimates$ = estimates;
   }
 
   getStatus(status: string) {

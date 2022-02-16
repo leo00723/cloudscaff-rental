@@ -3,13 +3,13 @@
   <app-header-condensed title="Estimates"></app-header-condensed>
 
   <app-estimate-table
-    [estimates$]="estimates$"
-    *ngIf="!isLoading else loading"
+    [value]="estimates$"
+    *ngIf="estimates$ | async else loading"
     (selectedItem)="editEstimate($event)"
   ></app-estimate-table>
 
   <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button routerLink="/home/addEstimate" routerDirection="root">
+    <ion-fab-button routerLink="/home/addEstimate" routerDirection="forward">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
