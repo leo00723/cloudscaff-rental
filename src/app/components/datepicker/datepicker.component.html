@@ -1,7 +1,19 @@
 <ion-datetime
+  *ngIf="value"
   class="m-auto rounded-lg"
   mode="ios"
-  #popoverDatetime2
+  [value]="value"
+  #date
   presentation="date"
-  (ionChange)="update(popoverDatetime2.value)"
-></ion-datetime>
+  firstDayOfWeek="1"
+  showDefaultButtons="true"
+>
+  <ion-buttons slot="buttons">
+    <ion-button fill="clear" color="danger" (click)="cancel()"
+      >Cancel</ion-button
+    >
+    <ion-button fill="clear" color="primary" (click)="confirm()"
+      >Done</ion-button
+    >
+  </ion-buttons>
+</ion-datetime>

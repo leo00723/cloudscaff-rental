@@ -226,4 +226,8 @@
 
     --ion-card-background: #1e1e1e;
   }
+
+  ion-datetime {
+    color: var(--ion-color-dark) !important;
+  }
 }

@@ -108,6 +108,10 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       component: DatepickerComponent,
       id: field,
       cssClass: 'date',
+      componentProps: {
+        value: this.field(field).value,
+        field,
+      },
       showBackdrop: false,
     });
     await modal.present();
