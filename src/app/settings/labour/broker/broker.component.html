@@ -6,7 +6,7 @@
         [value]="labour.name"
         placeholder="Enter a Broker Name"
         (fieldChange)="labour.name = $event"
-        [readonly]="isUpdate"
+        [readonly]="isEdit"
       >
       </app-input-text>
     </ion-col>
@@ -79,7 +79,7 @@
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
     <ion-col size="12" class="text-end">
       <ion-button
-        *ngIf="!loading && isUpdate"
+        *ngIf="!loading && isDelete"
         shape="round"
         color="danger"
         type="submit"
@@ -88,16 +88,16 @@
         Delete Rate
       </ion-button>
       <ion-button
-        *ngIf="!loading && isUpdate"
+        *ngIf="!loading && isEdit"
         shape="round"
         color="success"
         type="submit"
-        (click)="removeLabour()"
+        (click)="updateLabour()"
       >
         Update Rate
       </ion-button>
       <ion-button
-        *ngIf="!loading && !isUpdate"
+        *ngIf="!loading && isCreate"
         shape="round"
         type="submit"
         (click)="createLabour()"

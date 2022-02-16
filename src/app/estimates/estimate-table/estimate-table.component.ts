@@ -13,6 +13,7 @@ import {
 } from '@swimlane/ngx-datatable';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Estimate } from 'src/app/models/estimate.model';
 
 @Component({
   selector: 'app-estimate-table',
@@ -22,12 +23,12 @@ import { map } from 'rxjs/operators';
 export class EstimateTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<string>();
-  estimates$: Observable<any[]>;
-  temp$: Observable<any[]>;
+  estimates$: Observable<Estimate[]>;
+  temp$: Observable<Estimate[]>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
-  @Input() set value(estimates: Observable<any>) {
+  @Input() set value(estimates: Observable<Estimate[]>) {
     this.temp$ = estimates;
     this.estimates$ = estimates;
   }

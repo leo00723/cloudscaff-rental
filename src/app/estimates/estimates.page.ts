@@ -2,21 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { AddEstimatePage } from '../add-estimate/add-estimate.page';
+import { AddEstimatePage } from './add-estimate/add-estimate.page';
 import { Company } from '../models/company.model';
 import { MasterService } from '../services/master.service';
+import { Estimate } from '../models/estimate.model';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
 })
 export class EstimatesPage implements OnInit {
-  estimates$: Observable<any[]>;
+  estimates$: Observable<Estimate[] | any>;
   company$: Observable<Company>;
   isLoading = true;
-  constructor(
-    private masterSvc: MasterService,
-    public routerOutlet: IonRouterOutlet
-  ) {
+  constructor(private masterSvc: MasterService) {
     this.company$ = this.masterSvc.auth().company$;
   }
 
@@ -62,6 +60,6 @@ export class EstimatesPage implements OnInit {
           return of(false);
         }
       })
-    ) as Observable<any[]>;
+    ) as Observable<any>;
   }
 }

@@ -87,12 +87,12 @@ export class CustomerComponent implements OnInit {
   update() {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.loading = true;
-      this.customer.company = this.companyId;
+
       Object.assign(this.customer, this.form.value);
       this.masterSvc
         .edit()
         .updateDoc(
-          `company/${this.customer.company}/`,
+          `company/${this.customer.company}/customers`,
           this.customer.id,
           this.customer
         )

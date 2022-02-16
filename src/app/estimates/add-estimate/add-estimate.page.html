@@ -72,7 +72,7 @@
           <ion-col size="12" *ngIf="show === 'editCustomer'">
             <app-customer
               [customer]="field('customer').value"
-              [isUpdate]="!isEdit"
+              [isUpdate]="estimate.status === 'pending'"
               [isCreate]="false"
               [companyId]="company.id"
             >
@@ -82,7 +82,7 @@
             <app-customer
               [companyId]="company.id"
               (newCustomer)="newCustomer($event)"
-              [isCreate]="!isEdit"
+              [isCreate]="true"
             >
             </app-customer>
           </ion-col>

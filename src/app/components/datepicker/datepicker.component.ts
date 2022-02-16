@@ -1,14 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
-  OnInit,
-  Output,
   ViewChild,
 } from '@angular/core';
 import { IonDatetime, ModalController } from '@ionic/angular';
-import { format, parseISO, getISODay, getDate } from 'date-fns';
 
 @Component({
   selector: 'app-datepicker',

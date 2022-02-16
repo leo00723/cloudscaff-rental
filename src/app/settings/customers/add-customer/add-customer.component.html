@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? "Update Customer" : "Create Customer" }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <div class="container ion-padding pt-5">
+    <app-customer
+      *ngIf="isCreate"
+      [companyId]="companyId"
+      [isCreate]="true"
+    ></app-customer>
+    <app-customer
+      *ngIf="isEdit"
+      [customer]="customer"
+      [companyId]="companyId"
+      [isUpdate]="true"
+      [isCreate]="false"
+    ></app-customer>
+  </div>
+</ion-content>

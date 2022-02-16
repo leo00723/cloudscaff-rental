@@ -1,26 +1,21 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { ShowHidePasswordComponent } from './show-hide-password/show-hide-password.component';
-import { InputTextComponent } from './input-text/input-text.component';
-import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
-import { HeaderComponent } from './header/header.component';
-import { HeaderCondensedComponent } from './header-condensed/header-condensed.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { HttpClientModule } from '@angular/common/http';
-import { InputTextReactiveComponent } from './input-text-reactive/input-text-reactive.component';
-import { CustomerComponent } from './customer/customer.component';
-import { InputSelectReactiveComponent } from './input-select-reactive/input-select-reactive.component';
-import { BrokerComponent } from './broker/broker.component';
-import { EstimateSummaryComponent } from './estimate-summary/estimate-summary.component';
-import { EstimateTableComponent } from './estimate-table/estimate-table.component';
-import { RateProfilesComponent } from './rate-profiles/rate-profiles.component';
 import { AddressSearchComponent } from './address-search/address-search.component';
+import { CustomerComponent } from './customer/customer.component';
 import { DatepickerComponent } from './datepicker/datepicker.component';
+import { HeaderCondensedComponent } from './header-condensed/header-condensed.component';
+import { HeaderComponent } from './header/header.component';
+import { InputSelectReactiveComponent } from './input-select-reactive/input-select-reactive.component';
+import { InputTextReactiveComponent } from './input-text-reactive/input-text-reactive.component';
+import { InputTextComponent } from './input-text/input-text.component';
+import { ShowHidePasswordComponent } from './show-hide-password/show-hide-password.component';
+import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 
 const COMPONENTS = [
-  BrokerComponent,
   CustomerComponent,
   HeaderComponent,
   HeaderCondensedComponent,
@@ -29,9 +24,6 @@ const COMPONENTS = [
   InputTextReactiveComponent,
   ShowHidePasswordComponent,
   SkeletonTextComponent,
-  EstimateSummaryComponent,
-  EstimateTableComponent,
-  RateProfilesComponent,
   AddressSearchComponent,
   DatepickerComponent,
 ];

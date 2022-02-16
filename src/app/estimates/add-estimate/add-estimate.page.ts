@@ -11,11 +11,11 @@ import { IonTextarea } from '@ionic/angular';
 import { sub } from 'date-fns';
 import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { DatepickerComponent } from '../components/datepicker/datepicker.component';
-import { Company } from '../models/company.model';
-import { Customer } from '../models/customer.model';
-import { Estimate } from '../models/estimate.model';
-import { MasterService } from '../services/master.service';
+import { DatepickerComponent } from '../../components/datepicker/datepicker.component';
+import { Company } from '../../models/company.model';
+import { Customer } from '../../models/customer.model';
+import { Estimate } from '../../models/estimate.model';
+import { MasterService } from '../../services/master.service';
 
 @Component({
   selector: 'app-add-estimate',
@@ -747,7 +747,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       total: 0,
       siteName: '',
       scaffold: undefined,
-      status: '',
+      status: 'pending',
       additionals: [],
       date: undefined,
       startDate: undefined,

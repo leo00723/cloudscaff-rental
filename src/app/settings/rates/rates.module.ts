@@ -1,22 +1,11 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
-import { IonicModule } from '@ionic/angular';
-
-import { RatesPageRoutingModule } from './rates-routing.module';
-
-import { RatesPage } from './rates.page';
 import { ComponentsModule } from 'src/app/components/components.module';
+import { RateProfilesComponent } from './rate-profiles/rate-profiles.component';
+import { RatesPageRoutingModule } from './rates-routing.module';
+import { RatesPage } from './rates.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    RatesPageRoutingModule,
-    ComponentsModule,
-  ],
-  declarations: [RatesPage],
+  imports: [RatesPageRoutingModule, ComponentsModule],
+  declarations: [RatesPage, RateProfilesComponent],
 })
 export class RatesPageModule {}

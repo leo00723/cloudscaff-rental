@@ -2,11 +2,30 @@
   title="Customers"
   [showMenu]="false"
   path="/home/settings"
+  btnName="refresh"
+  (updated)="init()"
 ></app-header>
 
 <ion-content fullscreen="true">
   <app-header-condensed title="Customers"></app-header-condensed>
-  <div class="container pt-5" *ngIf="company$ | async as company">
-    <app-customer [companyId]="company.id"></app-customer>
-  </div>
+  <ng-container *ngIf="company$ |async as company">
+    <app-customer-table
+      [value]="customers$"
+      *ngIf="customers$ | async else loading"
+      (selectedItem)="editCustomer($event,company.id)"
+    ></app-customer-table>
+
+    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addCustomer(company.id)">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    <ng-template #loading>
+      <div class="ion-padding">
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+      </div> </ng-template
+  ></ng-container>
 </ion-content>

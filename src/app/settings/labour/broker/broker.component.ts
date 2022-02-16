@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { LabourBroker } from 'src/app/models/labour-broker.model';
 import { Labour } from 'src/app/models/labour.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -9,14 +9,17 @@ import { MasterService } from 'src/app/services/master.service';
 })
 export class BrokerComponent implements OnInit {
   @Input() labour = new LabourBroker();
-  @Input() isUpdate = false;
+  @Input() isEdit = false;
+  @Input() isDelete = false;
+  @Input() isCreate = true;
   @Input() companyId: string;
+  @Output() completed = new EventEmitter<boolean>();
   loading = false;
 
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit(): void {
-    if (!this.isUpdate) {
+    if (!this.isEdit) {
       this.labour.types = [];
       this.labour.types.push(new Labour('Fixers'));
       this.labour.types.push(new Labour('Labourers'));
@@ -38,7 +41,7 @@ export class BrokerComponent implements OnInit {
           this.masterSvc
             .notification()
             .toast('Rate has been created.', 'success');
-          this.ngOnInit();
+          this.completed.emit(true);
         })
         .catch(() => {
           this.loading = false;
@@ -87,11 +90,11 @@ export class BrokerComponent implements OnInit {
         .deleteDocById(`company/${this.companyId}/brokers`, this.labour.id)
         .then(() => {
           this.loading = false;
-          this.isUpdate = false;
+          this.isEdit = false;
           this.masterSvc
             .notification()
             .toast('Rate has been deleted.', 'success');
-          this.labour = new LabourBroker();
+          this.completed.emit(true);
         })
         .catch(() => {
           this.loading = false;
