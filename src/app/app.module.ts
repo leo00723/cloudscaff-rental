@@ -38,49 +38,46 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
   resolvePersistenceEnabled = resolve;
 });
 @NgModule({
-  declarations: [AppComponent, SplashPage],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(),
-    AppRoutingModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAnalytics(() => getAnalytics()),
-    provideAuth(() => {
-      if (Capacitor.isNativePlatform()) {
-        return initializeAuth(getApp(), {
-          persistence: indexedDBLocalPersistence,
-        });
-      } else {
-        return getAuth();
-      }
-    }),
-    provideFirestore(() => {
-      const firestore = getFirestore();
-      enableMultiTabIndexedDbPersistence(firestore).then(
-        () => resolvePersistenceEnabled(true),
-        () => resolvePersistenceEnabled(false)
-      );
-      return firestore;
-    }),
-    provideFunctions(() => getFunctions()),
-    provideStorage(() => getStorage()),
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-      // Register the ServiceWorker as soon as the app is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000',
-    }),
-  ],
-  providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    ScreenTrackingService,
-    UserTrackingService,
-    MasterService,
-    FormBuilder,
-    DecimalPipe,
-    FileOpener,
-  ],
-  bootstrap: [AppComponent],
+    declarations: [AppComponent, SplashPage],
+    imports: [
+        BrowserModule,
+        IonicModule.forRoot(),
+        AppRoutingModule,
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAnalytics(() => getAnalytics()),
+        provideAuth(() => {
+            if (Capacitor.isNativePlatform()) {
+                return initializeAuth(getApp(), {
+                    persistence: indexedDBLocalPersistence,
+                });
+            }
+            else {
+                return getAuth();
+            }
+        }),
+        provideFirestore(() => {
+            const firestore = getFirestore();
+            enableMultiTabIndexedDbPersistence(firestore).then(() => resolvePersistenceEnabled(true), () => resolvePersistenceEnabled(false));
+            return firestore;
+        }),
+        provideFunctions(() => getFunctions()),
+        provideStorage(() => getStorage()),
+        ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: environment.production,
+            // Register the ServiceWorker as soon as the app is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000',
+        }),
+    ],
+    providers: [
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        ScreenTrackingService,
+        UserTrackingService,
+        MasterService,
+        FormBuilder,
+        DecimalPipe,
+        FileOpener,
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {}
