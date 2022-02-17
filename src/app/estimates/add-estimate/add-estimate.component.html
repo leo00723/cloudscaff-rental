@@ -158,7 +158,7 @@
             <ion-row formGroupName="scaffold">
               <ion-col>
                 <app-input-reactive
-                  title="Length"
+                  title="Length ({{ company.measurement.symbol }})"
                   type="number"
                   controlName="length"
                   [form]="field('scaffold')"
@@ -169,7 +169,7 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
-                  title="Width"
+                  title="Width ({{ company.measurement.symbol }})"
                   type="number"
                   controlName="width"
                   [form]="field('scaffold')"
@@ -180,7 +180,7 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
-                  title="Height"
+                  title="Height ({{ company.measurement.symbol }})"
                   type="number"
                   controlName="height"
                   [form]="field('scaffold')"
@@ -209,7 +209,7 @@
               </ion-col>
               <ion-col *ngIf="field('scaffold.rate').value">
                 <app-input-text
-                  title="Rate overide"
+                  title="Rate overide ({{ company.currency.symbol }})"
                   type="number"
                   [value]="field('scaffold.rate').value.rate"
                   placeholder="Enter rate"
@@ -219,7 +219,7 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
-                  title="Total"
+                  title="Total ({{ company.currency.symbol }})"
                   type="number"
                   controlName="total"
                   [form]="field('scaffold')"
@@ -257,7 +257,7 @@
           </ion-col>
           <ion-col>
             <app-input-reactive
-              title="Length"
+              title="Length ({{ company.measurement.symbol }})"
               type="number"
               controlName="length"
               placeholder="L"
@@ -268,7 +268,7 @@
           </ion-col>
           <ion-col>
             <app-input-reactive
-              title="Width"
+              title="Width ({{ company.measurement.symbol }})"
               type="number"
               controlName="width"
               placeholder="W"
@@ -279,7 +279,7 @@
           </ion-col>
           <ion-col>
             <app-input-reactive
-              title="Height Off Ground"
+              title="Height Off Ground ({{ company.measurement.symbol }})"
               type="number"
               controlName="height"
               placeholder="H"
@@ -319,7 +319,7 @@
           </ion-col>
           <ion-col *ngIf="arrField('boards', i, 'rate').value">
             <app-input-text
-              title="Rate overide"
+              title="Rate overide ({{ company.currency.symbol }})"
               type="number"
               [value]="arrField('boards', i, 'rate').value.rate"
               placeholder="Enter rate"
@@ -329,7 +329,7 @@
           </ion-col>
           <ion-col>
             <app-input-reactive
-              title="Total"
+              title="Total ({{ company.currency.symbol }})"
               type="number"
               controlName="total"
               [form]="board"
@@ -391,7 +391,7 @@
               </ion-col>
               <ion-col *ngIf="field('hire.rate').value">
                 <app-input-text
-                  title="Rate overide"
+                  title="Rate overide ({{ company.currency.symbol }})"
                   type="number"
                   [value]="field('hire.rate').value.rate"
                   placeholder="Enter rate"
@@ -401,7 +401,7 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
-                  title="Total"
+                  title="Total ({{ company.currency.symbol }})"
                   type="number"
                   controlName="total"
                   [form]="field('hire')"
@@ -568,7 +568,7 @@
               </ion-col>
               <ion-col *ngIf="arrField('labour', i, 'rate').value">
                 <app-input-text
-                  title="Rate overide"
+                  title="Rate overide ({{ company.currency.symbol }})"
                   type="number"
                   [value]="arrField('labour', i, 'rate').value.rate"
                   placeholder="Enter rate"
@@ -578,7 +578,7 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
-                  title="Total"
+                  title="Total ({{ company.currency.symbol }})"
                   type="number"
                   controlName="total"
                   [form]="labour"
@@ -690,7 +690,7 @@
           </ion-col>
           <ion-col *ngIf="arrField('additionals', i, 'rate').value">
             <app-input-text
-              title="Rate overide"
+              title="Rate overide ({{ company.currency.symbol }})"
               type="number"
               [value]="arrField('additionals', i, 'rate').value.rate"
               placeholder="Enter rate"
@@ -700,7 +700,7 @@
           </ion-col>
           <ion-col>
             <app-input-reactive
-              title="Total"
+              title="Total ({{ company.currency.symbol }})"
               type="number"
               controlName="total"
               [form]="additional"

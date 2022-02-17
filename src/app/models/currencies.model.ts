@@ -1,9 +1,9 @@
-export interface CurrencyData {
+export interface UnitData {
   name: string;
   symbol: string;
 }
 export class Currencies {
-  currencies: CurrencyData[] = [
+  currencies: UnitData[] = [
     {
       name: 'US Dollar',
       symbol: '$',

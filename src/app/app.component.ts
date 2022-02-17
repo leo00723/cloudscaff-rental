@@ -11,23 +11,25 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private updates: SwUpdate, private masterSvc: MasterService) {}
 
   ngOnInit(): void {
-    this.subs.add(
-      this.updates.versionUpdates.subscribe((event) => {
-        if (event.type === 'VERSION_READY') {
-          this.masterSvc.notification().presentAlertConfirm(
-            () => {
-              this.updates.activateUpdate().then((res) => {
-                if (res) {
-                  document.location.reload();
-                }
-              });
-            },
-            'New update availiable!',
-            'click Yes to install update'
-          );
-        }
-      })
-    );
+    if (!this.masterSvc.platform().is('mobile')) {
+      this.subs.add(
+        this.updates.versionUpdates.subscribe((event) => {
+          if (event.type === 'VERSION_READY') {
+            this.masterSvc.notification().presentAlertConfirm(
+              () => {
+                this.updates.activateUpdate().then((res) => {
+                  if (res) {
+                    document.location.reload();
+                  }
+                });
+              },
+              'New update availiable!',
+              'click Yes to install update'
+            );
+          }
+        })
+      );
+    }
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();

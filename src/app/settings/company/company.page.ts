@@ -31,6 +31,8 @@ export class CompanyPage implements OnDestroy, OnInit {
     branchCode: '',
     swiftCode: '',
     currency: { name: '', symbol: '' },
+    measurement: { name: '', symbol: '' },
+    mass: { name: '', symbol: '' },
     terminology: { boards: '', hire: '', scaffold: '' },
     totalEstimates: 0,
     vat: 0,
@@ -42,6 +44,14 @@ export class CompanyPage implements OnDestroy, OnInit {
     logoRef: '',
   };
   currencies = new Currencies().currencies;
+  measurements = [
+    { name: 'Feet', symbol: 'ft' },
+    { name: 'Meters', symbol: 'm' },
+  ];
+  masses = [
+    { name: 'Pounds', symbol: 'lb' },
+    { name: 'Kilograms', symbol: 'kg' },
+  ];
   form: FormGroup;
   loading = false;
   isLoading = true;
@@ -111,6 +121,8 @@ export class CompanyPage implements OnDestroy, OnInit {
       branchCode: [this.company.branchCode],
       swiftCode: [this.company.swiftCode],
       currency: [this.company.currency, Validators.required],
+      measurement: [this.company.measurement, Validators.required],
+      mass: [this.company.mass, Validators.required],
       salesTax: [
         this.company.salesTax,
         [Validators.required, Validators.min(0), Validators.max(100)],

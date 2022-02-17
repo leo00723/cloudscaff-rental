@@ -52,6 +52,10 @@ export class HomePage implements OnDestroy {
 
   check() {
     this.loading = true;
+    if (this.masterSvc.platform().is('mobile')) {
+      this.masterSvc.notification().toast('No updates availiable', 'danger');
+      this.loading = false;
+    }
     this.updates.checkForUpdate().then((res) => {
       if (res) {
         this.masterSvc.notification().presentAlertConfirm(

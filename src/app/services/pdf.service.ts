@@ -141,7 +141,7 @@ export class PdfService {
       platforms.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.boards} - (${b.length}x${b.width}) - Height (${b.height})`,
+          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Height (${b.height}${company.measurement.symbol})`,
           b.qty,
           b.total
         )
@@ -189,7 +189,7 @@ export class PdfService {
           ],
           this.addEstimateItem(
             company,
-            `${company.terminology.scaffold} - (${estimate.scaffold.length}x${estimate.scaffold.width}x${estimate.scaffold.height})`,
+            `${company.terminology.scaffold} - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol})`,
             1,
             estimate.scaffold.total
           ),

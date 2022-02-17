@@ -741,8 +741,8 @@ export class AddEstimatePage implements OnInit {
       broker: ['', Validators.required],
       labour: this.fb.array([]),
     });
-    this.addBoard();
-    this.addLabour();
-    this.addAdditional();
+    // this.addBoard();
+    // this.addLabour();
+    // this.addAdditional();
   }
 }

@@ -22,12 +22,12 @@ export class LabourPage {
     this.init();
   }
 
-  async editBroker(broker: LabourBroker, companyId: string) {
+  async editBroker(broker: LabourBroker, company: Company) {
     const modal = await this.masterSvc.modal().create({
       component: AddBrokerComponent,
       componentProps: {
         broker,
-        companyId,
+        company,
         isEdit: true,
       },
       showBackdrop: false,
@@ -37,11 +37,11 @@ export class LabourPage {
     return await modal.present();
   }
 
-  async addBroker(companyId: string) {
+  async addBroker(company: Company) {
     const modal = await this.masterSvc.modal().create({
       component: AddBrokerComponent,
       componentProps: {
-        companyId,
+        company,
       },
       cssClass: 'fullscreen',
       showBackdrop: false,

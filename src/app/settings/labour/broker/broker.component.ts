@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Company } from 'src/app/models/company.model';
 import { LabourBroker } from 'src/app/models/labour-broker.model';
 import { Labour } from 'src/app/models/labour.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -12,7 +13,7 @@ export class BrokerComponent implements OnInit {
   @Input() isEdit = false;
   @Input() isDelete = false;
   @Input() isCreate = true;
-  @Input() companyId: string;
+  @Input() company: Company;
   @Output() completed = new EventEmitter<boolean>();
   loading = false;
 
@@ -33,7 +34,7 @@ export class BrokerComponent implements OnInit {
       this.masterSvc
         .edit()
         .addDocument(
-          `company/${this.companyId}/brokers`,
+          `company/${this.company.id}/brokers`,
           JSON.parse(JSON.stringify(this.labour))
         )
         .then(() => {
@@ -61,7 +62,7 @@ export class BrokerComponent implements OnInit {
       this.masterSvc
         .edit()
         .updateDoc(
-          `company/${this.companyId}/brokers`,
+          `company/${this.company.id}/brokers`,
           this.labour.id,
           this.labour
         )
@@ -87,7 +88,7 @@ export class BrokerComponent implements OnInit {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.masterSvc
         .edit()
-        .deleteDocById(`company/${this.companyId}/brokers`, this.labour.id)
+        .deleteDocById(`company/${this.company.id}/brokers`, this.labour.id)
         .then(() => {
           this.loading = false;
           this.isEdit = false;

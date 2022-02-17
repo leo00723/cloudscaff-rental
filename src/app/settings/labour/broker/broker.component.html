@@ -32,7 +32,7 @@
     </ion-col>
     <ion-col>
       <app-input-text
-        title="Normal Time"
+        title="Normal Time ({{ company.currency.symbol }})"
         type="number"
         [value]="member.nt"
         placeholder="Enter a Normal time rate."
@@ -42,7 +42,7 @@
     </ion-col>
     <ion-col>
       <app-input-text
-        title="Over Time 1"
+        title="Over Time 1 ({{ company.currency.symbol }})"
         type="number"
         [value]="member.ot1"
         placeholder="Enter a Over time 1 rate."
@@ -51,7 +51,7 @@
     </ion-col>
     <ion-col>
       <app-input-text
-        title="Over Time 2"
+        title="Over Time 2 ({{ company.currency.symbol }})"
         type="number"
         [value]="member.ot2"
         placeholder="Enter a Over time 2 rate."
@@ -60,7 +60,7 @@
     </ion-col>
     <ion-col>
       <app-input-text
-        title="Public Holiday"
+        title="Public Holiday ({{ company.currency.symbol }})"
         type="number"
         [value]="member.ph"
         placeholder="Enter a Public holiday rate."

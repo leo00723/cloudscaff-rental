@@ -17,13 +17,13 @@
   <div class="container ion-padding pt-5">
     <app-broker
       *ngIf="!isEdit"
-      [companyId]="companyId"
+      [company]="company"
       (completed)="close()"
     ></app-broker>
     <app-broker
       *ngIf="isEdit"
       [labour]="broker"
-      [companyId]="companyId"
+      [company]="company"
       [isEdit]="true"
       [isCreate]="false"
       (completed)="close()"

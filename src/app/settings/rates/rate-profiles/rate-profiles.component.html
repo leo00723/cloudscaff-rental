@@ -13,7 +13,7 @@
           *ngFor="let rate of rateProfiles.scaffoldRates; trackBy: trackItems"
         >
           <app-input-text
-            [title]="rate.name"
+            title="{{ rate.name }} ({{ company.currency.symbol }})"
             [value]="rate.rate"
             type="number"
             placeholder="Enter a Rate"
@@ -36,7 +36,7 @@
           *ngFor="let rate of rateProfiles.boardRates; trackBy: trackItems"
         >
           <app-input-text
-            [title]="rate.name"
+            title="{{ rate.name }} ({{ company.currency.symbol }})"
             [value]="rate.rate"
             type="number"
             placeholder="Enter a Rate"
@@ -59,7 +59,7 @@
           *ngFor="let rate of rateProfiles.hireRates; trackBy: trackItems"
         >
           <app-input-text
-            [title]="rate.name"
+            title="{{ rate.name }} ({{ company.currency.symbol }})"
             [value]="rate.rate"
             type="number"
             placeholder="Enter a Rate"
@@ -82,7 +82,7 @@
           *ngFor="let rate of rateProfiles.additionalRates; trackBy: trackItems"
         >
           <app-input-text
-            [title]="rate.name"
+            title="{{ rate.name }} ({{ company.currency.symbol }})"
             [value]="rate.rate"
             type="number"
             placeholder="Enter a Rate"

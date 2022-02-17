@@ -1,4 +1,4 @@
-import { CurrencyData } from './currencies.model';
+import { UnitData } from './currencies.model';
 
 export interface Terminology {
   scaffold: string;
@@ -20,7 +20,7 @@ export interface Company {
   accountNum: string;
   branchCode: string;
   swiftCode: string;
-  currency: CurrencyData;
+  currency: UnitData;
   terminology: Terminology;
   totalEstimates: number;
   totalSites: number;
@@ -30,4 +30,6 @@ export interface Company {
   salesTax: number;
   logoUrl: string;
   logoRef: string;
+  measurement: UnitData;
+  mass: UnitData;
 }

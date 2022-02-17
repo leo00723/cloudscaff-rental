@@ -141,10 +141,10 @@
         <tr class="small">
           <th class="text-center" scope="row"></th>
           <td>
-            {{ company.terminology.scaffold }} - ({{
-              estimate.scaffold.length
-            }}
-            x {{ estimate.scaffold.width }} x {{ estimate.scaffold.height }})
+            {{ company.terminology.scaffold }} - ({{ estimate.scaffold.length
+            }}{{ company.measurement.symbol }} x {{ estimate.scaffold.width
+            }}{{ company.measurement.symbol }} x {{ estimate.scaffold.height
+            }}{{ company.measurement.symbol }})
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
@@ -156,8 +156,10 @@
         <tr class="small" *ngFor="let item of estimate.boards; let i = index">
           <th class="text-center" scope="row"></th>
           <td>
-            {{ company.terminology.boards }} - ({{ item.length }} x
-            {{ item.width }}) - Height ({{ item.height }})
+            {{ company.terminology.boards }} - ({{ item.length
+            }}{{ company.measurement.symbol }} x {{ item.width
+            }}{{ company.measurement.symbol }}) - Height ({{ item.height
+            }}{{ company.measurement.symbol }})
           </td>
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
