@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import {
   FormArray,
@@ -8,9 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { sub } from 'date-fns';
-import { Observable, of, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { DatepickerComponent } from '../../components/datepicker/datepicker.component';
 import { Company } from '../../models/company.model';
 import { Customer } from '../../models/customer.model';
@@ -19,72 +17,22 @@ import { MasterService } from '../../services/master.service';
 
 @Component({
   selector: 'app-add-estimate',
-  templateUrl: './add-estimate.page.html',
+  templateUrl: './add-estimate.component.html',
 })
-export class AddEstimatePage implements OnInit, OnDestroy {
-  @Input() id: string;
+export class AddEstimatePage implements OnInit {
+  @Input() estimate: Estimate;
+  @Input() company: Company;
+  @Input() isEdit = false;
   @ViewChild('message') message: IonTextarea;
-  company$: Observable<Company>;
   customers$: Observable<Customer[]>;
   rates$: Observable<any>;
   brokers$: Observable<any>;
-  estimateCode$: Observable<any>;
   form: FormGroup;
   loading = false;
   isLoading = true;
   active = 'overview';
   show = '';
-  selectedCustomer: Customer;
-  estimate: Estimate;
-  isEdit = false;
-  private subs = new Subscription();
-  private company: Company;
-  constructor(private masterSvc: MasterService, private fb: FormBuilder) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.customers$ = this.masterSvc.auth().user$.pipe(
-      switchMap((user) => {
-        if (user) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyId(`company/${user.company}/customers`);
-        } else {
-          return of(false);
-        }
-      })
-    ) as Observable<Customer[]>;
-    this.rates$ = this.masterSvc.auth().user$.pipe(
-      switchMap((user) => {
-        if (user) {
-          return this.masterSvc
-            .edit()
-            .getDocById(
-              `company/${user.company}/rateProfiles`,
-              'estimateRates'
-            );
-        } else {
-          return of(false);
-        }
-      })
-    ) as Observable<any>;
-    this.brokers$ = this.masterSvc.auth().user$.pipe(
-      switchMap((user) => {
-        if (user) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyId(`company/${user.company}/brokers`);
-        } else {
-          return of(false);
-        }
-      })
-    ) as Observable<any>;
-    this.subs.add(
-      this.company$.subscribe((company) => {
-        if (company) {
-          this.company = company;
-        }
-      })
-    );
-  }
+  constructor(private masterSvc: MasterService, private fb: FormBuilder) {}
 
   get boardForms() {
     return this.form.get('boards') as FormArray;
@@ -109,7 +57,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
       id: field,
       cssClass: 'date',
       componentProps: {
-        value: this.field(field).value,
+        value: this.field(field).value ? this.field(field).value : undefined,
         field,
       },
       showBackdrop: false,
@@ -122,24 +70,21 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     this.masterSvc.modal().dismiss();
   }
 
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
-  }
   ngOnInit() {
-    if (this.id) {
-      this.isEdit = true;
-      this.subs.add(
-        this.masterSvc
-          .edit()
-          .getDocById(
-            `company/${this.id.split('-')[0]}/estimates`,
-            this.id.split('-')[1]
-          )
-          .subscribe((estimate: Estimate) => {
-            this.estimate = { ...estimate, date: estimate.date.toDate() };
-            this.initEditForm();
-          })
-      );
+    this.customers$ = this.masterSvc
+      .edit()
+      .getDocsByCompanyId(`company/${this.company.id}/customers`);
+    this.rates$ = this.masterSvc
+      .edit()
+      .getDocById(`company/${this.company.id}/rateProfiles`, 'estimateRates');
+    this.brokers$ = this.masterSvc
+      .edit()
+      .getDocsByCompanyId(`company/${this.company.id}/brokers`);
+
+    if (this.isEdit) {
+      this.estimate = { ...this.estimate, date: this.estimate.date.toDate() };
+      this.initEditForm();
+      this.show = 'editCustomer';
     } else {
       this.initFrom();
       this.isLoading = false;
@@ -342,7 +287,7 @@ export class AddEstimatePage implements OnInit, OnDestroy {
           this.masterSvc
             .notification()
             .toast('Estimate created successfully!', 'success');
-          this.reset();
+          this.close();
         })
         .catch(() => {
           this.loading = false;
@@ -388,13 +333,12 @@ export class AddEstimatePage implements OnInit, OnDestroy {
     });
   }
 
-  private reset() {
-    this.active = 'overview';
-    this.show = '';
-    this.selectedCustomer = null;
-    this.initFrom();
-    this.loading = false;
-  }
+  // private reset() {
+  //   this.active = 'overview';
+  //   this.show = '';
+  //   this.initFrom();
+  //   this.loading = false;
+  // }
 
   private updateEstimateTotal() {
     if (this.isEdit && this.estimate.status !== 'pending') {

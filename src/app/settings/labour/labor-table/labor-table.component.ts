@@ -23,7 +23,7 @@ import { LabourBroker } from 'src/app/models/labour-broker.model';
 })
 export class LaborTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<Customer>();
+  @Output() selectedItem = new EventEmitter<LabourBroker>();
   brokers$: Observable<LabourBroker[]>;
   temp$: Observable<LabourBroker[]>;
   sortType = SortType;

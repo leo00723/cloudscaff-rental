@@ -22,7 +22,7 @@ import { Estimate } from 'src/app/models/estimate.model';
 })
 export class EstimateTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<string>();
+  @Output() selectedItem = new EventEmitter<Estimate>();
   estimates$: Observable<Estimate[]>;
   temp$: Observable<Estimate[]>;
   sortType = SortType;
@@ -47,7 +47,7 @@ export class EstimateTableComponent {
   }
 
   onSelect({ selected }) {
-    this.selectedItem.emit(`${selected[0].company.id}-${selected[0].id}`);
+    this.selectedItem.emit(selected[0]);
   }
 
   updateFilter(event) {

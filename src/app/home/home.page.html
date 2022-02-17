@@ -55,6 +55,14 @@
         <ion-note>v0.0.0</ion-note>
       </ion-label>
     </ion-item>
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+    <ion-item lines="none" detail="false" *ngIf="!loading">
+      <ion-label class="ion-text-center">
+        <ion-button shape="round" fill="clear" (click)="check()">
+          check for updates
+        </ion-button>
+      </ion-label>
+    </ion-item>
   </ion-content>
 </ion-menu>
 

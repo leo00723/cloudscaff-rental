@@ -1,6 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { getAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
 import { MenuController } from '@ionic/angular';
 import { of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -19,12 +20,14 @@ export class HomePage implements OnDestroy {
     { title: 'Estimates', url: '/home/estimates', icon: 'options-outline' },
     { title: 'Sites', url: '/home/sites', icon: 'business-outline' },
   ];
+  loading = false;
   private subs = new Subscription();
   constructor(
     public authSvc: AuthService,
     private masterSvc: MasterService,
     private router: Router,
-    private menu: MenuController
+    private menu: MenuController,
+    private updates: SwUpdate
   ) {
     this.subs.add(
       this.masterSvc
@@ -45,6 +48,28 @@ export class HomePage implements OnDestroy {
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+  }
+
+  check() {
+    this.loading = true;
+    this.updates.checkForUpdate().then((res) => {
+      if (res) {
+        this.masterSvc.notification().presentAlertConfirm(
+          () => {
+            this.updates.activateUpdate().then((res) => {
+              if (res) {
+                document.location.reload();
+              }
+            });
+          },
+          'New update availiable!',
+          'click Yes to install update'
+        );
+      } else {
+        this.masterSvc.notification().toast('No updates availiable', 'dark');
+      }
+      this.loading = false;
+    });
   }
 
   async logout() {

@@ -5,6 +5,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { IonDatetime, ModalController } from '@ionic/angular';
+import { format, parseISO } from 'date-fns';
 
 @Component({
   selector: 'app-datepicker',
@@ -13,17 +14,25 @@ import { IonDatetime, ModalController } from '@ionic/angular';
 })
 export class DatepickerComponent {
   @ViewChild('date') date: IonDatetime;
-  @Input() value: string;
+  @Input() value: string | undefined;
   @Input() field: string;
   constructor(private modalController: ModalController) {}
   confirm() {
     this.date.confirm(false).then(() => {
-      this.modalController.dismiss(this.date.value, 'button', this.field);
+      this.modalController.dismiss(
+        format(parseISO(this.date.value), 'yyyy-MM-dd'),
+        'button',
+        this.field
+      );
     });
   }
   cancel() {
     this.date.cancel(false).then(() => {
-      this.modalController.dismiss(this.date.value, 'button', this.field);
+      this.modalController.dismiss(
+        format(parseISO(this.date.value), 'yyyy-MM-dd'),
+        'button',
+        this.field
+      );
     });
   }
 }
