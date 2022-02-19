@@ -1,0 +1,122 @@
+<form [formGroup]="form" class="card-outline m-auto">
+  <ion-row>
+    <ion-col sizeMd="4" size="12">
+      <app-input-reactive
+        title="Site name"
+        [form]="form"
+        controlName="name"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col sizeMd="4" size="12">
+      <app-input-date
+        title="Start Date"
+        [form]="form"
+        controlName="startDate"
+      ></app-input-date>
+    </ion-col>
+    <ion-col sizeMd="4" size="12">
+      <app-input-date
+        title="End Date"
+        [form]="form"
+        controlName="endDate"
+      ></app-input-date>
+    </ion-col>
+    <ion-col size="12" class="card-outline">
+      <app-address-search
+        *ngIf="isCreate"
+        (addressData)="updateAddress($event)"
+        placeholder="Search for Site Address"
+      >
+      </app-address-search>
+      <app-input-reactive title="Address" [form]="form" controlName="address">
+      </app-input-reactive>
+      <app-input-reactive
+        title="suburb"
+        [form]="form"
+        controlName="suburb"
+        [optional]="true"
+      >
+      </app-input-reactive>
+      <ion-row>
+        <ion-col class="py-0 ps-0">
+          <app-input-reactive
+            title="State/City"
+            [form]="form"
+            controlName="city"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col class="py-0 pe-0">
+          <app-input-reactive
+            title="Zip"
+            [form]="form"
+            controlName="zip"
+            [optional]="true"
+          ></app-input-reactive>
+        </ion-col>
+      </ion-row>
+      <app-input-reactive
+        title="Country"
+        [form]="form"
+        controlName="country"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-select-reactive
+        title="Customer"
+        placeholder="Select Customer"
+        controlName="customer"
+        [form]="form"
+        [selectedText]="field('customer').value.name"
+      >
+        <ng-container *ngIf="customers$ | async as customers">
+          <ion-select-option
+            [value]="customer"
+            *ngFor="let customer of customers"
+            >{{ customer.name }}
+          </ion-select-option>
+        </ng-container>
+      </app-input-select-reactive>
+    </ion-col>
+    <ion-col size="12" *ngIf="field('customer').value">
+      <app-customer
+        [customer]="field('customer').value"
+        [isCreate]="false"
+        [companyId]="company.id"
+      >
+      </app-customer>
+    </ion-col>
+
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+    <ion-col size="12" class="text-end">
+      <ion-button
+        *ngIf="!loading && isDelete"
+        shape="round"
+        color="danger"
+        type="submit"
+        [disabled]="form.invalid"
+        (click)="delete()"
+      >
+        Delete Site
+      </ion-button>
+      <ion-button
+        *ngIf="!loading && isUpdate"
+        shape="round"
+        color="success"
+        type="submit"
+        [disabled]="form.invalid"
+        (click)="update()"
+      >
+        Update Site
+      </ion-button>
+      <ion-button
+        *ngIf="!loading && isCreate"
+        shape="round"
+        type="submit"
+        [disabled]="form.invalid"
+        (click)="create()"
+      >
+        Create Site
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</form>

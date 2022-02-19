@@ -46,14 +46,20 @@
   cursor: pointer;
 }
 
-ion-modal.fullscreen {
-  --width: 100%;
-  --height: 100%;
-  --border-radius: 0;
-}
-ion-modal.date {
-  --background: transparent;
-  --box-shadow: none;
+ion-modal {
+  --border-radius: 10px;
+  &.fullscreen {
+    --width: 100%;
+    --height: 100%;
+    --border-radius: 0;
+  }
+  &.date {
+    --background: transparent;
+    --backdrop-opacity: 0.3 !important;
+  }
+  &.accept {
+    --backdrop-opacity: 0.3 !important;
+  }
 }
 
 .rounded-lg {

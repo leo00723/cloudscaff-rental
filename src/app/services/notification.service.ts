@@ -25,6 +25,7 @@ export class NotificationService {
   async presentAlertConfirm(callback?, header?: string, message?: string) {
     const alert = await this.alertController.create({
       header: header ? header : 'Are you sure you want to continue?',
+      mode: 'ios',
       message: message ? message : 'click Yes to proceed',
       buttons: [
         {

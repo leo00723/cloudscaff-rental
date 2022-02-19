@@ -69,12 +69,14 @@
               [selectedText]="field('customer').value.name"
             >
               <ng-container *ngIf="customers$ | async as customers">
+                <ion-select-option class="fw-bold" value="add">
+                  Create new Customer
+                </ion-select-option>
                 <ion-select-option
                   [value]="customer"
                   *ngFor="let customer of customers"
                   >{{ customer.name }}
                 </ion-select-option>
-                <ion-select-option value="add">Add Customer </ion-select-option>
               </ng-container>
             </app-input-select-reactive>
           </ion-col>
@@ -113,26 +115,18 @@
             </app-input-reactive>
           </ion-col>
           <ion-col sizeMd="4" size="6">
-            <ion-item class="rounded-3 mb-3" mode="md">
-              <ion-label position="stacked"> Start Date </ion-label>
-              <ion-input
-                formControlName="startDate"
-                readonly="true"
-                (click)="setDate('startDate')"
-              >
-              </ion-input>
-            </ion-item>
+            <app-input-date
+              [form]="form"
+              controlName="startDate"
+              title="Start Date"
+            ></app-input-date>
           </ion-col>
           <ion-col sizeMd="4" size="6">
-            <ion-item class="rounded-3 mb-3" mode="md">
-              <ion-label position="stacked"> End Date </ion-label>
-              <ion-input
-                formControlName="endDate"
-                readonly="true"
-                (click)="setDate('endDate')"
-              >
-              </ion-input>
-            </ion-item>
+            <app-input-date
+              [form]="form"
+              controlName="endDate"
+              title="End Date"
+            ></app-input-date>
           </ion-col>
         </ion-row>
         <ion-row>
@@ -744,7 +738,10 @@
           <ion-col *ngIf="isEdit">
             <ion-item lines="none" color="none">
               <ion-buttons slot="end">
-                <ion-button (click)="download()">
+                <ion-button
+                  (click)="download(terms)"
+                  *ngIf="terms$ | async as terms"
+                >
                   <ion-icon
                     slot="icon-only"
                     name="cloud-download-outline"
@@ -766,9 +763,30 @@
             type="indeterminate"
             *ngIf="loading"
           ></ion-progress-bar>
-
-          <ion-col size="12" class="text-end">
+          <ion-col *ngIf="isEdit && estimate.status === 'pending'">
             <ion-button
+              size="block"
+              shape="round"
+              color="danger"
+              [disabled]="form.invalid"
+              (click)="updateEstimate('rejected')"
+              >Rejected</ion-button
+            >
+          </ion-col>
+          <ion-col *ngIf="isEdit && estimate.status === 'pending'">
+            <ion-button
+              size="block"
+              shape="round"
+              color="success"
+              [disabled]="form.invalid"
+              (click)="updateEstimate('accepted')"
+            >
+              Accepted
+            </ion-button>
+          </ion-col>
+          <ion-col class="text-end">
+            <ion-button
+              size="block"
               shape="round"
               [disabled]="form.invalid"
               *ngIf="isEdit && estimate.status === 'pending'"
@@ -776,22 +794,7 @@
               >Update Estimate</ion-button
             >
             <ion-button
-              shape="round"
-              color="danger"
-              [disabled]="form.invalid"
-              *ngIf="isEdit && estimate.status === 'pending'"
-              (click)="updateEstimate('rejected')"
-              >Rejected</ion-button
-            >
-            <ion-button
-              shape="round"
-              color="success"
-              [disabled]="form.invalid"
-              *ngIf="isEdit && estimate.status === 'pending'"
-              (click)="updateEstimate('accepted')"
-              >Accepted</ion-button
-            >
-            <ion-button
+              size="block"
               shape="round"
               [disabled]="form.invalid"
               *ngIf="!isEdit"

@@ -13,20 +13,26 @@ import { Estimate } from '../models/estimate.model';
 export class EstimatesPage implements OnInit {
   estimates$: Observable<Estimate[] | any>;
   company$: Observable<Company>;
+  user$: Observable<any>;
   isLoading = true;
   constructor(private masterSvc: MasterService) {
     this.company$ = this.masterSvc.auth().company$;
+    this.user$ = this.masterSvc.auth().user$;
   }
 
   ngOnInit() {
     this.init();
   }
 
-  async editEstimate(estimate: Estimate, company: Company) {
+  async editEstimate(
+    estimate: Estimate,
+    data: { company: Company; user: any }
+  ) {
     const modal = await this.masterSvc.modal().create({
       component: AddEstimatePage,
       componentProps: {
-        company,
+        company: data.company,
+        user: data.user,
         estimate,
         isEdit: true,
       },
@@ -37,11 +43,12 @@ export class EstimatesPage implements OnInit {
     return await modal.present();
   }
 
-  async addEstimate(company) {
+  async addEstimate(data: { company: Company; user: any }) {
     const modal = await this.masterSvc.modal().create({
       component: AddEstimatePage,
       componentProps: {
-        company,
+        company: data.company,
+        user: data.user,
       },
       cssClass: 'fullscreen',
       showBackdrop: false,

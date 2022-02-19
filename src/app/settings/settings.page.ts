@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-settings',
   templateUrl: './settings.page.html',
 })
-export class SettingsPage implements OnInit {
+export class SettingsPage {
   settings = [
     {
       title: 'Business Settings',
@@ -26,8 +26,10 @@ export class SettingsPage implements OnInit {
       description: 'Here you can manage your labor profiles.',
       path: '/home/settings/labor',
     },
+    {
+      title: 'Terms & Conditions',
+      description: "Here you add T's & C's for your documents.",
+      path: '/home/settings/terms',
+    },
   ];
-  constructor() {}
-
-  ngOnInit() {}
 }

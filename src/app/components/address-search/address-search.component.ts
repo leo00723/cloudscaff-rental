@@ -3,6 +3,7 @@ import {
   AfterViewInit,
   Component,
   EventEmitter,
+  Input,
   OnInit,
   Output,
   ViewChild,
@@ -16,6 +17,7 @@ declare const google;
   templateUrl: './address-search.component.html',
 })
 export class AddressSearchComponent implements AfterViewInit {
+  @Input() placeholder = 'Search for location or business';
   @Output() addressData = new EventEmitter<Address>();
   @ViewChild('autocomplete') autocomplete: IonInput;
 

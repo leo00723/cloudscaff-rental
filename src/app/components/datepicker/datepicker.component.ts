@@ -28,11 +28,7 @@ export class DatepickerComponent {
   }
   cancel() {
     this.date.cancel(false).then(() => {
-      this.modalController.dismiss(
-        format(parseISO(this.date.value), 'yyyy-MM-dd'),
-        'button',
-        this.field
-      );
+      this.modalController.dismiss(undefined, this.field);
     });
   }
 }

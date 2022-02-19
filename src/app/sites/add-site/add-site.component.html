@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? "Update Site" : "Create Site" }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <div class="container ion-padding pt-5">
+    <app-site-form
+      *ngIf="isCreate"
+      [company]="company"
+      [user]="user"
+    ></app-site-form>
+    <app-site-form
+      *ngIf="isEdit"
+      [company]="company"
+      [siteData]="siteData"
+      [user]="user"
+      [isUpdate]="true"
+      [isCreate]="false"
+    ></app-site-form>
+  </div>
+</ion-content>

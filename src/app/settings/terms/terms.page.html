@@ -1,0 +1,49 @@
+<app-header
+  title="Terms & Conditions"
+  [showMenu]="false"
+  path="/home/terms"
+></app-header>
+
+<ion-content fullscreen="true">
+  <app-header-condensed title="Terms & Conditions"></app-header-condensed>
+  <ng-container
+    *ngIf="{company: company$ |async, user: user$ | async,terms: terms$ | async} as data"
+  >
+    <ion-grid class="ion-padding container">
+      <ion-row>
+        <ion-col sizeXl="6" size="12" *ngFor="let term of terms">
+          <ion-row class="card-outline">
+            <ion-col sizeMd="10" size="9">
+              <ion-item color="none">
+                <h4>{{term.title}}</h4>
+              </ion-item>
+              <ion-item lines="none" color="none">
+                <ion-text>
+                  <p>{{term.description}}</p>
+                </ion-text>
+              </ion-item>
+            </ion-col>
+            <ion-col
+              class="m-auto text-center cursor-pointer"
+              sizeMd="2"
+              size="3"
+            >
+              <ion-button
+                fill="clear"
+                shape="round"
+                size="large"
+                (click)="editTerms(term.path,data)"
+              >
+                <ion-icon
+                  slot="icon-only"
+                  size="large"
+                  name="chevron-forward-outline"
+                ></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+</ion-content>

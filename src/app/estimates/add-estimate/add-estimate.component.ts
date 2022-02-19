@@ -1,19 +1,14 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Observable } from 'rxjs';
-import { DatepickerComponent } from '../../components/datepicker/datepicker.component';
+import { Term } from 'src/app/models/term.model';
 import { Company } from '../../models/company.model';
 import { Customer } from '../../models/customer.model';
 import { Estimate } from '../../models/estimate.model';
 import { MasterService } from '../../services/master.service';
+import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
 
 @Component({
   selector: 'app-add-estimate',
@@ -22,9 +17,11 @@ import { MasterService } from '../../services/master.service';
 export class AddEstimatePage implements OnInit {
   @Input() estimate: Estimate;
   @Input() company: Company;
+  @Input() user: any;
   @Input() isEdit = false;
   @ViewChild('message') message: IonTextarea;
   customers$: Observable<Customer[]>;
+  terms$: Observable<any>;
   rates$: Observable<any>;
   brokers$: Observable<any>;
   form: FormGroup;
@@ -32,7 +29,8 @@ export class AddEstimatePage implements OnInit {
   isLoading = true;
   active = 'overview';
   show = '';
-  constructor(private masterSvc: MasterService, private fb: FormBuilder) {}
+
+  constructor(private masterSvc: MasterService) {}
 
   get boardForms() {
     return this.form.get('boards') as FormArray;
@@ -44,26 +42,11 @@ export class AddEstimatePage implements OnInit {
     return this.form.get('additionals') as FormArray;
   }
 
-  async download() {
+  async download(terms: Term) {
     const pdf = await this.masterSvc
       .pdf()
-      .generateEstimate(this.estimate, this.company);
+      .generateEstimate(this.estimate, this.company, terms);
     this.masterSvc.handlePdf(pdf, this.estimate.code);
-  }
-
-  async setDate(field: string) {
-    const modal = await this.masterSvc.modal().create({
-      component: DatepickerComponent,
-      id: field,
-      cssClass: 'date',
-      componentProps: {
-        value: this.field(field).value ? this.field(field).value : undefined,
-        field,
-      },
-      showBackdrop: false,
-    });
-    await modal.present();
-    return this.field(field).setValue((await modal.onDidDismiss()).data);
   }
 
   close() {
@@ -77,6 +60,9 @@ export class AddEstimatePage implements OnInit {
     this.rates$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.company.id}/rateProfiles`, 'estimateRates');
+    this.terms$ = this.masterSvc
+      .edit()
+      .getDocById(`company/${this.company.id}/terms`, 'Estimate');
     this.brokers$ = this.masterSvc
       .edit()
       .getDocsByCompanyId(`company/${this.company.id}/brokers`);
@@ -107,11 +93,8 @@ export class AddEstimatePage implements OnInit {
   }
 
   changeCustomer(args) {
-    this.show = '';
     if (args !== 'add') {
-      setTimeout(() => {
-        this.show = 'editCustomer';
-      }, 1);
+      this.show = 'editCustomer';
     } else {
       this.show = 'addCustomer';
     }
@@ -127,7 +110,6 @@ export class AddEstimatePage implements OnInit {
 
   newCustomer(args) {
     this.field('customer').setValue({ ...args });
-    this.show = 'editCustomer';
   }
 
   nextView(page: string) {
@@ -220,7 +202,7 @@ export class AddEstimatePage implements OnInit {
   }
 
   addLabour() {
-    const labour = this.fb.group({
+    const labour = this.masterSvc.fb().group({
       type: ['', Validators.required],
       hours: ['', Validators.required],
       days: ['', Validators.required],
@@ -232,7 +214,7 @@ export class AddEstimatePage implements OnInit {
   }
 
   addAdditional() {
-    const additional = this.fb.group({
+    const additional = this.masterSvc.fb().group({
       rate: ['', Validators.required],
       qty: ['', [Validators.required, Validators.min(1)]],
       name: ['', Validators.required],
@@ -242,7 +224,7 @@ export class AddEstimatePage implements OnInit {
     this.additionalForms.push(additional);
   }
   addBoard() {
-    const board = this.fb.group({
+    const board = this.masterSvc.fb().group({
       rate: ['', Validators.required],
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
@@ -303,34 +285,53 @@ export class AddEstimatePage implements OnInit {
   }
 
   updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.updateEstimateTotal();
-      this.estimate.status = status;
-      this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.company.id}/estimates`,
-          this.estimate.id,
-          this.estimate
-        )
-        .then(() => {
-          this.masterSvc
-            .notification()
-            .toast('Estimate updated successfully!', 'success');
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong updating your estimate, try again!',
-              'danger',
-              2000
-            );
-        });
+    if (status === 'accepted') {
+      this.startAcceptance();
+    } else {
+      this.masterSvc.notification().presentAlertConfirm(() => {
+        this.loading = true;
+        this.updateEstimateTotal();
+        this.estimate.status = status;
+        this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/estimates`,
+            this.estimate.id,
+            this.estimate
+          )
+          .then(() => {
+            this.masterSvc
+              .notification()
+              .toast('Estimate updated successfully!', 'success');
+            this.loading = false;
+          })
+          .catch(() => {
+            this.loading = false;
+            this.masterSvc
+              .notification()
+              .toast(
+                'Something went wrong updating your estimate, try again!',
+                'danger',
+                2000
+              );
+          });
+      });
+    }
+  }
+
+  private async startAcceptance() {
+    const modal = await this.masterSvc.modal().create({
+      component: AcceptEstimateComponent,
+      componentProps: {
+        company: this.company,
+        user: this.user,
+        estimate: this.estimate,
+        form: this.form,
+      },
+      id: 'acceptEstimate',
+      cssClass: 'accept',
     });
+    return await modal.present();
   }
 
   // private reset() {
@@ -395,6 +396,7 @@ export class AddEstimatePage implements OnInit {
       tax,
       vat,
       total,
+      createdBy: this.user.name,
     });
   }
 
@@ -608,7 +610,7 @@ export class AddEstimatePage implements OnInit {
   }
 
   private initEditForm() {
-    this.form = this.fb.group({
+    this.form = this.masterSvc.fb().group({
       customer: [this.estimate.customer, Validators.required],
       message: [this.estimate.message, Validators.required],
       siteName: [this.estimate.siteName, Validators.required],
@@ -618,7 +620,7 @@ export class AddEstimatePage implements OnInit {
         this.estimate.discountPercentage,
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
-      scaffold: this.fb.group({
+      scaffold: this.masterSvc.fb().group({
         rate: [this.estimate.scaffold.rate, Validators.required],
         length: [
           this.estimate.scaffold.length,
@@ -634,8 +636,8 @@ export class AddEstimatePage implements OnInit {
         ],
         total: [this.estimate.scaffold.total],
       }),
-      boards: this.fb.array([]),
-      hire: this.fb.group({
+      boards: this.masterSvc.fb().array([]),
+      hire: this.masterSvc.fb().group({
         rate: [this.estimate.hire.rate, Validators.required],
         daysStanding: [
           this.estimate.hire.daysStanding,
@@ -643,12 +645,14 @@ export class AddEstimatePage implements OnInit {
         ],
         total: [this.estimate.hire.total],
       }),
-      additionals: this.fb.array([]),
+      additionals: this.masterSvc.fb().array([]),
       broker: [this.estimate.broker, Validators.required],
-      labour: this.fb.array([]),
+      labour: this.masterSvc.fb().array([]),
+      poNumber: [this.estimate.poNumber],
+      woNumber: [this.estimate.woNumber],
     });
     this.estimate.boards.forEach((b) => {
-      const board = this.fb.group({
+      const board = this.masterSvc.fb().group({
         rate: [b.rate, Validators.required],
         length: [b.length, [Validators.required, Validators.min(1)]],
         width: [b.width, [Validators.required, Validators.min(1)]],
@@ -659,7 +663,7 @@ export class AddEstimatePage implements OnInit {
       this.boardForms.push(board);
     });
     this.estimate.labour.forEach((l) => {
-      const labour = this.fb.group({
+      const labour = this.masterSvc.fb().group({
         type: [l.type, Validators.required],
         hours: [l.hours, Validators.required],
         days: [l.days, Validators.required],
@@ -670,7 +674,7 @@ export class AddEstimatePage implements OnInit {
       this.labourForms.push(labour);
     });
     this.estimate.additionals.forEach((add) => {
-      const additional = this.fb.group({
+      const additional = this.masterSvc.fb().group({
         rate: [add.rate, Validators.required],
         qty: [add.qty, [Validators.required, Validators.min(1)]],
         name: [add.name, Validators.required],
@@ -710,7 +714,7 @@ export class AddEstimatePage implements OnInit {
       discountPercentage: 0,
       discount: 0,
     };
-    this.form = this.fb.group({
+    this.form = this.masterSvc.fb().group({
       customer: ['', Validators.required],
       message: [
         // eslint-disable-next-line max-len
@@ -724,22 +728,24 @@ export class AddEstimatePage implements OnInit {
         0,
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
-      scaffold: this.fb.group({
+      scaffold: this.masterSvc.fb().group({
         rate: ['', Validators.required],
         length: ['', [Validators.required, Validators.min(1)]],
         width: ['', [Validators.required, Validators.min(1)]],
         height: ['', [Validators.required, Validators.min(1)]],
         total: [0],
       }),
-      hire: this.fb.group({
+      hire: this.masterSvc.fb().group({
         rate: ['', Validators.required],
         daysStanding: ['', [Validators.required, Validators.min(1)]],
         total: [0],
       }),
-      boards: this.fb.array([]),
-      additionals: this.fb.array([]),
+      boards: this.masterSvc.fb().array([]),
+      additionals: this.masterSvc.fb().array([]),
       broker: ['', Validators.required],
-      labour: this.fb.array([]),
+      poNumber: [''],
+      woNumber: [''],
+      labour: this.masterSvc.fb().array([]),
     });
     // this.addBoard();
     // this.addLabour();

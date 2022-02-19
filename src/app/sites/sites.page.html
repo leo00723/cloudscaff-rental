@@ -1,17 +1,25 @@
-<app-header title="Sites" btnName="refresh"></app-header>
+<app-header title="Sites" btnName="refresh" (updated)="init()"></app-header>
 <ion-content fullscreen="true">
   <app-header-condensed title="Sites"></app-header-condensed>
-  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button>
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-  <ng-template #loading>
-    <div class="ion-padding">
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-    </div>
-  </ng-template>
+  <ng-container *ngIf="{company: company$ |async, user: user$ | async} as data">
+    <app-site-table
+      [value]="sites$"
+      *ngIf="sites$ | async else loading"
+      (selectedItem)="viewSite($event,data)"
+    ></app-site-table>
+
+    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addSite(data)">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+    <ng-template #loading>
+      <div class="ion-padding">
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+      </div>
+    </ng-template>
+  </ng-container>
 </ion-content>

@@ -5,6 +5,7 @@ import { EstimatesPage } from './estimates.page';
 import { EstimateTableComponent } from './estimate-table/estimate-table.component';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
 import { EstimateSummaryComponent } from './add-estimate/estimate-summary/estimate-summary.component';
+import { AcceptEstimateComponent } from './add-estimate/accept-estimate/accept-estimate.component';
 
 @NgModule({
   imports: [ComponentsModule, EstimatesPageRoutingModule],
@@ -13,6 +14,7 @@ import { EstimateSummaryComponent } from './add-estimate/estimate-summary/estima
     EstimateTableComponent,
     AddEstimatePage,
     EstimateSummaryComponent,
+    AcceptEstimateComponent,
   ],
 })
 export class EstimatesPageModule {}

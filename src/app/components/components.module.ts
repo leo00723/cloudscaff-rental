@@ -13,7 +13,9 @@ import { InputSelectReactiveComponent } from './input-select-reactive/input-sele
 import { InputTextReactiveComponent } from './input-text-reactive/input-text-reactive.component';
 import { InputTextComponent } from './input-text/input-text.component';
 import { ShowHidePasswordComponent } from './show-hide-password/show-hide-password.component';
+import { SiteFormComponent } from './site-form/site-form.component';
 import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
+import { InputDateComponent } from './input-date/input-date.component';
 
 const COMPONENTS = [
   CustomerComponent,
@@ -26,6 +28,8 @@ const COMPONENTS = [
   SkeletonTextComponent,
   AddressSearchComponent,
   DatepickerComponent,
+  SiteFormComponent,
+  InputDateComponent,
 ];
 const IMPORTS = [
   CommonModule,

@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Accept Estimate </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-row *ngIf="page === 'po'">
+    <ion-col size="12">
+      <ion-text color="medium">
+        <h4>Attach Purchase Order</h4>
+      </ion-text>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-reactive
+        title="Purchase Order"
+        controlName="poNumber"
+        [form]="form"
+        placeholder="Enter Purchase Order Number"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-reactive
+        title="Work Order"
+        [optional]="true"
+        controlName="woNumber"
+        [form]="form"
+        placeholder="Enter Work Order Number"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col size="12">
+      <ion-button
+        size="block"
+        shape="round"
+        color="success"
+        [disabled]="!form.get('poNumber').value"
+        (click)="next('selectSite')"
+      >
+        Next
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  <form name="estimate" [formGroup]="form2">
+    <ion-row *ngIf="page === 'selectSite'">
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>Add Estimate to Site</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-select-reactive
+          (fieldChange)="changeSite($event)"
+          title="Site"
+          placeholder="Select Site"
+          controlName="site"
+          [form]="form2"
+          [selectedText]="field('site', form2).value.name"
+        >
+          <ng-container *ngIf="sites$ | async as sites">
+            <ion-select-option class="fw-bold" value="add"
+              >Create new Site
+            </ion-select-option>
+
+            <ion-select-option [value]="site" *ngFor="let site of sites"
+              >{{ site.name }}
+            </ion-select-option>
+          </ng-container>
+        </app-input-select-reactive>
+      </ion-col>
+      <ion-col size="12" *ngIf="show === 'selectedSite'">
+        <app-site-form
+          [company]="company"
+          [user]="user"
+          [isCreate]="false"
+          [siteData]="field('site', form2).value"
+        ></app-site-form>
+      </ion-col>
+      <ion-col size="12" *ngIf="show === 'addSite'">
+        <app-site-form
+          [company]="company"
+          [user]="user"
+          [siteData]="site"
+          (newSite)="newSite($event)"
+        ></app-site-form>
+      </ion-col>
+      <ion-col size="12" *ngIf="show === 'selectedSite'">
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+        <ion-button
+          *ngIf="!loading"
+          size="block"
+          shape="round"
+          color="success"
+          (click)="next('activate')"
+        >
+          Accept Estimate
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>

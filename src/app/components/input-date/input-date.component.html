@@ -1,0 +1,9 @@
+<ion-item class="rounded-3 mb-3" [formGroup]="form" mode="md">
+  <ion-label position="stacked">{{ title }}</ion-label>
+  <ion-input
+    [formControlName]="controlName"
+    readonly="true"
+    (click)="setDate('endDate')"
+  >
+  </ion-input>
+</ion-item>

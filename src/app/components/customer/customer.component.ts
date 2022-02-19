@@ -8,8 +8,8 @@ import { MasterService } from 'src/app/services/master.service';
   selector: 'app-customer',
   templateUrl: './customer.component.html',
 })
-export class CustomerComponent implements OnInit {
-  @Input() customer: Customer = {
+export class CustomerComponent {
+  private customerData: Customer = {
     id: '',
     name: '',
     email: '',
@@ -27,21 +27,38 @@ export class CustomerComponent implements OnInit {
   @Input() isDelete = false;
   @Input() isCreate = true;
   @Input() companyId: string;
+  @Input() set customer(val: Customer) {
+    this.customerData = val;
+    if (this.form && val) {
+      this.form = this.masterSvc.fb().group({
+        name: [this.customerData.name, Validators.required],
+        email: [
+          this.customerData.email,
+          [Validators.required, Validators.email],
+        ],
+        rep: [this.customerData.rep, Validators.required],
+        phone: [this.customerData.phone, Validators.required],
+        address: [this.customerData.address, Validators.required],
+        suburb: [this.customerData.suburb],
+        city: [this.customerData.city, Validators.required],
+        zip: [this.customerData.zip],
+        country: [this.customerData.country, Validators.required],
+      });
+    }
+  }
   form: FormGroup;
   loading = false;
-  constructor(private masterSvc: MasterService) {}
-
-  ngOnInit(): void {
+  constructor(private masterSvc: MasterService) {
     this.form = this.masterSvc.fb().group({
-      name: [this.customer.name, Validators.required],
-      email: [this.customer.email, [Validators.required, Validators.email]],
-      rep: [this.customer.rep, Validators.required],
-      phone: [this.customer.phone, Validators.required],
-      address: [this.customer.address, Validators.required],
-      suburb: [this.customer.suburb],
-      city: [this.customer.city, Validators.required],
-      zip: [this.customer.zip],
-      country: [this.customer.country, Validators.required],
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      rep: ['', Validators.required],
+      phone: ['', Validators.required],
+      address: ['', Validators.required],
+      suburb: [''],
+      city: ['', Validators.required],
+      zip: [''],
+      country: ['', Validators.required],
     });
   }
 
@@ -55,20 +72,20 @@ export class CustomerComponent implements OnInit {
   create() {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.loading = true;
-      this.customer.company = this.companyId;
-      Object.assign(this.customer, this.form.value);
+      this.customerData.company = this.companyId;
+      Object.assign(this.customerData, this.form.value);
       this.masterSvc
         .edit()
         .addDocument(
-          `company/${this.customer.company}/customers`,
-          this.customer
+          `company/${this.customerData.company}/customers`,
+          this.customerData
         )
         .then(() => {
           this.loading = false;
           this.masterSvc
             .notification()
             .toast('Customer added successfully!', 'success');
-          this.newCustomer.emit(this.customer);
+          this.newCustomer.emit(this.customerData);
           this.form.reset();
         })
         .catch(() => {
@@ -88,13 +105,13 @@ export class CustomerComponent implements OnInit {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.loading = true;
 
-      Object.assign(this.customer, this.form.value);
+      Object.assign(this.customerData, this.form.value);
       this.masterSvc
         .edit()
         .updateDoc(
-          `company/${this.customer.company}/customers`,
-          this.customer.id,
-          this.customer
+          `company/${this.customerData.company}/customers`,
+          this.customerData.id,
+          this.customerData
         )
         .then(() => {
           this.loading = false;
@@ -120,8 +137,8 @@ export class CustomerComponent implements OnInit {
       this.masterSvc
         .edit()
         .deleteDocById(
-          `company/${this.customer.company}/customers`,
-          this.customer.id
+          `company/${this.customerData.company}/customers`,
+          this.customerData.id
         )
         .then(() => {
           this.loading = false;

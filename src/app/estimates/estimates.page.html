@@ -1,15 +1,15 @@
 <app-header title="Estimates" btnName="refresh" (updated)="init()"></app-header>
 <ion-content fullscreen="true">
   <app-header-condensed title="Estimates"></app-header-condensed>
-  <ng-container *ngIf="company$ |async as company">
+  <ng-container *ngIf="{company: company$ |async, user: user$ | async} as data">
     <app-estimate-table
       [value]="estimates$"
       *ngIf="estimates$ | async else loading"
-      (selectedItem)="editEstimate($event,company)"
+      (selectedItem)="editEstimate($event,data)"
     ></app-estimate-table>
 
     <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="addEstimate(company)">
+      <ion-fab-button (click)="addEstimate(data)">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
