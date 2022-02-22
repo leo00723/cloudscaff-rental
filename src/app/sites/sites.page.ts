@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Observable, of, timer } from 'rxjs';
+import { concatMap, filter, switchMap, tap } from 'rxjs/operators';
 import { SiteFormComponent } from '../components/site-form/site-form.component';
 import { AddEstimatePage } from '../estimates/add-estimate/add-estimate.component';
 import { Company } from '../models/company.model';
@@ -18,7 +18,10 @@ export class SitesPage implements OnInit {
   company$: Observable<Company>;
   user$: Observable<any>;
   isLoading = true;
-  constructor(private masterSvc: MasterService) {
+  constructor(
+    private masterSvc: MasterService,
+    private change: ChangeDetectorRef
+  ) {
     this.company$ = this.masterSvc.auth().company$;
     this.user$ = this.masterSvc.auth().user$;
   }
@@ -26,6 +29,7 @@ export class SitesPage implements OnInit {
   ngOnInit() {
     this.init();
   }
+
   async viewSite(siteData: Site, data: { company: Company; user: any }) {
     const modal = await this.masterSvc.modal().create({
       component: AddSiteComponent,
@@ -58,20 +62,23 @@ export class SitesPage implements OnInit {
   }
 
   init() {
-    this.sites$ = this.company$.pipe(
-      switchMap((company) => {
-        if (company) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyIdOrdered(
-              `company/${company.id}/sites`,
-              'code',
-              'desc'
-            );
-        } else {
-          return of(false);
-        }
+    this.sites$ = this.user$.pipe(
+      filter(Boolean),
+      switchMap((user: any) => {
+        return this.masterSvc
+          .edit()
+          .getDocsByCompanyIdOrdered(
+            `company/${user.company}/sites`,
+            'date',
+            'desc'
+          )
+          .pipe(
+            tap((sites) => {
+              this.sites$ = of(sites);
+              this.change.detectChanges();
+            })
+          );
       })
-    ) as Observable<any>;
+    );
   }
 }

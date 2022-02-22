@@ -29,8 +29,10 @@ export class SiteTableComponent {
   selectionType = SelectionType;
   selected = [];
   @Input() set value(sites: Observable<Site[]>) {
-    this.temp$ = sites;
-    this.sites$ = sites;
+    if (sites) {
+      this.temp$ = sites;
+      this.sites$ = sites;
+    }
   }
 
   onSelect({ selected }) {

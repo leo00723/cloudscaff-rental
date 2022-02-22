@@ -1,63 +1,44 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
+  onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from '@angular/fire/auth';
 import { doc, docData, Firestore } from '@angular/fire/firestore';
-import { authState } from 'rxfire/auth';
-import {
-  BehaviorSubject,
-  EMPTY,
-  Observable,
-  of,
-  Subscription,
-  timer,
-} from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 import { Company } from '../models/company.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  user$: Observable<any | null>;
-  company$ = new BehaviorSubject<Company>(null);
-  subs = new Subscription();
+  user$: Observable<any | null> = timer(1);
+  company$: Observable<any | null>;
+  uid = '';
   constructor(private auth: Auth, private firestore: Firestore) {
-    this.subs.add(this.checkUser());
-    this.subs.add(this.init());
+    onAuthStateChanged(this.auth, (user) => {
+      if (user) {
+        try {
+          this.uid = user.uid;
+          this.user$ = this.getUserProfile(this.uid);
+          this.init();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
   }
 
-  init() {
-    this.user$
-      .pipe(
-        switchMap((user) => {
-          if (user) {
-            return this.getCompany(user.company);
-          } else {
-            return timer(1);
-          }
-        })
-      )
-      .subscribe((company: Company) => {
-        this.company$.next(company);
-      });
-  }
-
-  private checkUser() {
-    if (this.auth) {
-      this.user$ = authState(this.auth).pipe(
-        switchMap((user) => {
-          if (user) {
-            return this.getUserProfile(user.uid);
-          } else {
-            return timer(1);
-          }
-        })
-      );
-    }
+  private init() {
+    this.company$ = this.user$.pipe(
+      filter(Boolean),
+      switchMap((user: any) => {
+        return this.getCompany(user.company);
+      })
+    );
   }
 
   private getCompany(id: string) {
@@ -78,11 +59,7 @@ export class AuthService {
   }
 
   async logout() {
-    return await signOut(this.auth).then(() => {
-      this.company$.next(null);
-      this.company$.complete();
-      this.subs.unsubscribe();
-    });
+    return await signOut(this.auth);
   }
 
   async resetPassword(email: string) {

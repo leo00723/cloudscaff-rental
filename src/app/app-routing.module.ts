@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { SplashPage } from './splash/splash.page';
 import {
   AuthGuard,
-  redirectUnauthorizedTo,
   redirectLoggedInTo,
+  redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
+import { RouterModule, Routes } from '@angular/router';
 const redirectUnauthorized = () => redirectUnauthorizedTo(['/login']);
-const redirectAuthorized = () => redirectLoggedInTo(['/test']);
+const redirectAuthorized = () => redirectLoggedInTo(['/home']);
 
 const routes: Routes = [
   {
@@ -30,11 +29,6 @@ const routes: Routes = [
     data: { authGuardPipe: redirectUnauthorized },
   },
   {
-    path: 'test',
-    loadChildren: () =>
-      import('./test/test.module').then((m) => m.TestPageModule),
-  },
-  {
     path: '**',
     pathMatch: 'full',
     redirectTo: 'home',
@@ -42,11 +36,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, {
-      preloadingStrategy: PreloadAllModules,
-    }),
-  ],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

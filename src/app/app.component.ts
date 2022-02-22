@@ -17,25 +17,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.splash().then(async (modal) => {
       this.subs.add(
         this.masterSvc.auth().user$.subscribe(async (user) => {
-          if (user) {
-            this.ngZone.run(() => {
-              this.masterSvc
-                .router()
-                .navigateByUrl('/home', { replaceUrl: true })
-                .then(async () => {
+          let path = '/login';
+          if (user) path = '/sites';
+          this.ngZone.run(() => {
+            this.masterSvc
+              .router()
+              .navigateByUrl(path, { replaceUrl: true })
+              .then(() => {
+                setTimeout(async () => {
                   await modal.dismiss().then(() => {});
-                });
-            });
-          } else {
-            this.ngZone.run(() => {
-              this.masterSvc
-                .router()
-                .navigateByUrl('/login', { replaceUrl: true })
-                .then(async () => {
-                  await modal.dismiss().then(() => {});
-                });
-            });
-          }
+                }, 2000);
+              });
+          });
         })
       );
     });

@@ -28,6 +28,7 @@ export class EditService {
   //----SET FUNCTIONS----
 
   setDoc(collectionName: string, data, id?: string) {
+    console.log(data);
     return setDoc(
       this.docRef(collectionName, id ? id : this.createUID(collectionName)),
       {

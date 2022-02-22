@@ -5,7 +5,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from '../../models/company.model';
 import { Currencies } from '../../models/currencies.model';
@@ -86,7 +86,7 @@ export class CompanyPage implements OnDestroy, OnInit {
         .edit()
         .updateDoc('company', this.company.id, this.company)
         .then(() => {
-          this.masterSvc.auth().company$.next(this.company);
+          this.masterSvc.auth().company$ = of(this.company);
           this.masterSvc
             .notification()
             .toast('Settings saved successfully', 'success')

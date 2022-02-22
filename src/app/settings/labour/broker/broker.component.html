@@ -27,6 +27,7 @@
         title="Rate Name"
         [value]="member.name"
         placeholder="Enter a Rate Name"
+        (fieldChange)="member.name = $event"
       >
       </app-input-text>
     </ion-col>

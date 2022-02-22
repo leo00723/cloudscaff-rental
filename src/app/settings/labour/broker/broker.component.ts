@@ -64,7 +64,7 @@ export class BrokerComponent implements OnInit {
         .updateDoc(
           `company/${this.company.id}/brokers`,
           this.labour.id,
-          this.labour
+          JSON.parse(JSON.stringify(this.labour))
         )
         .then(() => {
           this.masterSvc

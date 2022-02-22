@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
 import { Company } from '../models/company.model';
 import { MasterService } from '../services/master.service';
@@ -15,7 +15,10 @@ export class EstimatesPage implements OnInit {
   company$: Observable<Company>;
   user$: Observable<any>;
   isLoading = true;
-  constructor(private masterSvc: MasterService) {
+  constructor(
+    private masterSvc: MasterService,
+    private change: ChangeDetectorRef
+  ) {
     this.company$ = this.masterSvc.auth().company$;
     this.user$ = this.masterSvc.auth().user$;
   }
@@ -58,20 +61,23 @@ export class EstimatesPage implements OnInit {
   }
 
   init() {
-    this.estimates$ = this.company$.pipe(
-      switchMap((company) => {
-        if (company) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyIdOrdered(
-              `company/${company.id}/estimates`,
-              'date',
-              'desc'
-            );
-        } else {
-          return of(false);
-        }
+    this.estimates$ = this.user$.pipe(
+      filter(Boolean),
+      switchMap((user: any) => {
+        return this.masterSvc
+          .edit()
+          .getDocsByCompanyIdOrdered(
+            `company/${user.company}/estimates`,
+            'date',
+            'desc'
+          )
+          .pipe(
+            tap((estimates) => {
+              this.estimates$ = of(estimates);
+              this.change.detectChanges();
+            })
+          );
       })
-    ) as Observable<any>;
+    );
   }
 }

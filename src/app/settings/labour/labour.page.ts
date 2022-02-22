@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { LabourBroker } from 'src/app/models/labour-broker.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -12,10 +12,15 @@ import { AddBrokerComponent } from './add-broker/add-broker.component';
 })
 export class LabourPage {
   brokers$: Observable<LabourBroker[] | any>;
+  user$: Observable<any>;
   company$: Observable<Company>;
   isLoading = true;
-  constructor(private masterSvc: MasterService) {
+  constructor(
+    private masterSvc: MasterService,
+    private change: ChangeDetectorRef
+  ) {
     this.company$ = this.masterSvc.auth().company$;
+    this.user$ = this.masterSvc.auth().user$;
   }
 
   ngOnInit() {
@@ -51,20 +56,23 @@ export class LabourPage {
   }
 
   init() {
-    this.brokers$ = this.company$.pipe(
-      switchMap((company) => {
-        if (company) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyIdOrdered(
-              `company/${company.id}/brokers`,
-              'name',
-              'asc'
-            );
-        } else {
-          return of(false);
-        }
+    this.brokers$ = this.user$.pipe(
+      filter(Boolean),
+      switchMap((user: any) => {
+        return this.masterSvc
+          .edit()
+          .getDocsByCompanyIdOrdered(
+            `company/${user.company}/brokers`,
+            'name',
+            'desc'
+          )
+          .pipe(
+            tap((brokers) => {
+              this.brokers$ = of(brokers);
+              this.change.detectChanges();
+            })
+          );
       })
-    ) as Observable<any>;
+    );
   }
 }

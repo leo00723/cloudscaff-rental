@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { CustomerComponent } from 'src/app/components/customer/customer.component';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
@@ -13,11 +13,16 @@ import { AddCustomerComponent } from './add-customer/add-customer.component';
   templateUrl: './customers.page.html',
 })
 export class CustomersPage {
+  user$: Observable<any>;
   customers$: Observable<Customer[] | any>;
   company$: Observable<Company>;
   isLoading = true;
-  constructor(private masterSvc: MasterService) {
+  constructor(
+    private masterSvc: MasterService,
+    private change: ChangeDetectorRef
+  ) {
     this.company$ = this.masterSvc.auth().company$;
+    this.user$ = this.masterSvc.auth().user$;
   }
 
   ngOnInit() {
@@ -54,20 +59,23 @@ export class CustomersPage {
   }
 
   init() {
-    this.customers$ = this.company$.pipe(
-      switchMap((company) => {
-        if (company) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyIdOrdered(
-              `company/${company.id}/customers`,
-              'name',
-              'desc'
-            );
-        } else {
-          return of(false);
-        }
+    this.customers$ = this.user$.pipe(
+      filter(Boolean),
+      switchMap((user: any) => {
+        return this.masterSvc
+          .edit()
+          .getDocsByCompanyIdOrdered(
+            `company/${user.company}/customers`,
+            'name',
+            'desc'
+          )
+          .pipe(
+            tap((customers) => {
+              this.customers$ = of(customers);
+              this.change.detectChanges();
+            })
+          );
       })
-    ) as Observable<any>;
+    );
   }
 }

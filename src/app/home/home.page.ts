@@ -37,32 +37,46 @@ export class HomePage implements OnDestroy {
 
   check() {
     this.loading = true;
-    if (this.masterSvc.platform().is('mobile')) {
-      this.masterSvc.notification().toast('No updates availiable', 'danger');
+    if (this.masterSvc.platform().is('cordova')) {
+      this.masterSvc.notification().toast('No updates availiable', 'dark');
       this.loading = false;
+      return;
     }
-    this.updates.checkForUpdate().then((res) => {
-      if (res) {
-        this.masterSvc.notification().presentAlertConfirm(
-          () => {
-            this.updates.activateUpdate().then((res) => {
-              if (res) {
-                document.location.reload();
-              }
-            });
-          },
-          'New update availiable!',
-          'click Yes to install update'
-        );
-      } else {
-        this.masterSvc.notification().toast('No updates availiable', 'dark');
-      }
-      this.loading = false;
-    });
+    this.updates
+      .checkForUpdate()
+      .then((res) => {
+        if (res) {
+          this.masterSvc.notification().presentAlertConfirm(
+            () => {
+              this.updates.activateUpdate().then((res) => {
+                if (res) {
+                  document.location.reload();
+                }
+              });
+            },
+            'New update availiable!',
+            'click Yes to install update'
+          );
+        } else {
+          this.masterSvc.notification().toast('No updates availiable', 'dark');
+        }
+        this.loading = false;
+      })
+      .catch((err) => {
+        setTimeout(() => {
+          this.masterSvc.notification().toast('No updates availiable', 'dark');
+          this.loading = false;
+        }, 2000);
+      });
   }
 
   async logout() {
     await this.menu.close();
-    this.masterSvc.auth().logout();
+    this.masterSvc
+      .auth()
+      .logout()
+      .then(() =>
+        this.masterSvc.router().navigateByUrl('/login', { replaceUrl: true })
+      );
   }
 }
