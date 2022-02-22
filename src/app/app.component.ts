@@ -8,7 +8,9 @@ import { MasterService } from './services/master.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
-  constructor(private updates: SwUpdate, private masterSvc: MasterService) {}
+  constructor(private updates: SwUpdate, private masterSvc: MasterService) {
+    this.subs.add(this.masterSvc.auth().init());
+  }
 
   ngOnInit(): void {
     if (!this.masterSvc.platform().is('mobile')) {

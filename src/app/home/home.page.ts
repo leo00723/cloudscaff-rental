@@ -3,7 +3,7 @@ import { getAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { MenuController } from '@ionic/angular';
-import { of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from '../models/company.model';
 import { AuthService } from '../services/auth.service';
@@ -21,31 +21,16 @@ export class HomePage implements OnDestroy {
     { title: 'Sites', url: '/home/sites', icon: 'business-outline' },
   ];
   loading = false;
+  user$: Observable<any>;
   private subs = new Subscription();
   constructor(
-    public authSvc: AuthService,
     private masterSvc: MasterService,
-    private router: Router,
     private menu: MenuController,
     private updates: SwUpdate
   ) {
-    this.subs.add(
-      this.masterSvc
-        .auth()
-        .user$.pipe(
-          switchMap((user) => {
-            if (user) {
-              return this.masterSvc.auth().getCompany(user.company);
-            } else {
-              return of(false);
-            }
-          })
-        )
-        .subscribe((company: Company) => {
-          this.authSvc.company$.next(company);
-        })
-    );
+    this.user$ = this.masterSvc.auth().user$;
   }
+
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
@@ -78,8 +63,11 @@ export class HomePage implements OnDestroy {
 
   async logout() {
     await this.menu.close();
-    this.authSvc.logout().then(() => {
-      this.router.navigate(['/login'], { replaceUrl: true });
-    });
+    this.masterSvc
+      .auth()
+      .logout()
+      .then(() => {
+        this.masterSvc.router().navigate(['/login'], { replaceUrl: true });
+      });
   }
 }

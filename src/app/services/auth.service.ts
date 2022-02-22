@@ -1,20 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
-  getAuth,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
-  User,
 } from '@angular/fire/auth';
-import {
-  collection,
-  CollectionReference,
-  doc,
-  docData,
-  DocumentData,
-  Firestore,
-} from '@angular/fire/firestore';
+import { doc, docData, Firestore } from '@angular/fire/firestore';
 import { authState } from 'rxfire/auth';
 import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -31,7 +22,23 @@ export class AuthService {
     this.checkUser();
   }
 
-  checkUser() {
+  init() {
+    return this.user$
+      .pipe(
+        switchMap((user) => {
+          if (user) {
+            return this.getCompany(user.company);
+          } else {
+            return of(false);
+          }
+        })
+      )
+      .subscribe((company: Company) => {
+        this.company$.next(company);
+      });
+  }
+
+  private checkUser() {
     if (this.auth) {
       this.user$ = authState(this.auth).pipe(
         switchMap((user) => {
@@ -45,13 +52,13 @@ export class AuthService {
     }
   }
 
-  getCompany(id: string) {
+  private getCompany(id: string) {
     return docData(doc(this.firestore, `company/${id}`), {
       idField: 'id',
     }) as Observable<Company>;
   }
 
-  getUserProfile(uid: string) {
+  private getUserProfile(uid: string) {
     const currentUser$ = docData(doc(this.firestore, `users/${uid}`), {
       idField: 'id',
     });

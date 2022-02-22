@@ -2,7 +2,7 @@
   contentId="main-content"
   mode="md"
   type="overlay"
-  *ngIf="authSvc.user$ |async as user"
+  *ngIf="user$ |async as user"
 >
   <ion-content>
     <ion-list id="inbox-list">
