@@ -10,10 +10,6 @@ import {
   templateUrl: './header-condensed.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderCondensedComponent implements OnInit {
+export class HeaderCondensedComponent {
   @Input() title = '';
-
-  constructor() {}
-
-  ngOnInit() {}
 }

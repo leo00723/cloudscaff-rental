@@ -7,7 +7,14 @@ import {
 } from '@angular/fire/auth';
 import { doc, docData, Firestore } from '@angular/fire/firestore';
 import { authState } from 'rxfire/auth';
-import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
+import {
+  BehaviorSubject,
+  EMPTY,
+  Observable,
+  of,
+  Subscription,
+  timer,
+} from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from '../models/company.model';
 
@@ -15,21 +22,22 @@ import { Company } from '../models/company.model';
   providedIn: 'root',
 })
 export class AuthService {
-  user$: Observable<any | null> = EMPTY;
+  user$: Observable<any | null>;
   company$ = new BehaviorSubject<Company>(null);
-
+  subs = new Subscription();
   constructor(private auth: Auth, private firestore: Firestore) {
-    this.checkUser();
+    this.subs.add(this.checkUser());
+    this.subs.add(this.init());
   }
 
   init() {
-    return this.user$
+    this.user$
       .pipe(
         switchMap((user) => {
           if (user) {
             return this.getCompany(user.company);
           } else {
-            return of(false);
+            return timer(1);
           }
         })
       )
@@ -45,7 +53,7 @@ export class AuthService {
           if (user) {
             return this.getUserProfile(user.uid);
           } else {
-            return of(null);
+            return timer(1);
           }
         })
       );
@@ -70,8 +78,11 @@ export class AuthService {
   }
 
   async logout() {
-    this.company$.next(null);
-    return await signOut(this.auth);
+    return await signOut(this.auth).then(() => {
+      this.company$.next(null);
+      this.company$.complete();
+      this.subs.unsubscribe();
+    });
   }
 
   async resetPassword(email: string) {

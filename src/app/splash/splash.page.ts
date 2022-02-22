@@ -1,29 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { traceUntilFirst } from '@angular/fire/performance';
-import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { MasterService } from '../services/master.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-splash',
-  templateUrl: './splash.page.html',
+  template: `
+    <ion-content>
+      <div class="bg-primary vh-100 d-flex align-items-center">
+        <div class="m-auto">
+          <img
+            class="p-5 fade-in"
+            width="300px"
+            src="assets/icons/icon-512x512.png"
+          />
+        </div>
+      </div>
+    </ion-content>
+  `,
   styleUrls: ['./splash.page.scss'],
 })
-export class SplashPage implements OnDestroy, OnInit {
-  private subs = new Subscription();
-  constructor(private masterSvc: MasterService) {}
-  ngOnInit(): void {
-    this.subs.add(
-      this.masterSvc.auth().user$.subscribe((user) => {
-        if (user) {
-          this.masterSvc.router().navigateByUrl('/home', { replaceUrl: true });
-        } else {
-          this.masterSvc.router().navigate(['/login'], { replaceUrl: true });
-        }
-      })
-    );
-  }
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
-  }
-}
+export class SplashPage {}

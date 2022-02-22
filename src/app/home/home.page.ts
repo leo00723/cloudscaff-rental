@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, NgZone, OnDestroy } from '@angular/core';
 import { getAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
@@ -63,11 +63,6 @@ export class HomePage implements OnDestroy {
 
   async logout() {
     await this.menu.close();
-    this.masterSvc
-      .auth()
-      .logout()
-      .then(() => {
-        this.masterSvc.router().navigate(['/login'], { replaceUrl: true });
-      });
+    this.masterSvc.auth().logout();
   }
 }

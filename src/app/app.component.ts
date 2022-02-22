@@ -1,15 +1,55 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { Subscription } from 'rxjs';
 import { MasterService } from './services/master.service';
+import { SplashPage } from './splash/splash.page';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
-  constructor(private updates: SwUpdate, private masterSvc: MasterService) {
-    this.subs.add(this.masterSvc.auth().init());
+  constructor(
+    private updates: SwUpdate,
+    private masterSvc: MasterService,
+    private ngZone: NgZone
+  ) {
+    this.splash().then(async (modal) => {
+      this.subs.add(
+        this.masterSvc.auth().user$.subscribe(async (user) => {
+          if (user) {
+            this.ngZone.run(() => {
+              this.masterSvc
+                .router()
+                .navigateByUrl('/home', { replaceUrl: true })
+                .then(async () => {
+                  await modal.dismiss().then(() => {});
+                });
+            });
+          } else {
+            this.ngZone.run(() => {
+              this.masterSvc
+                .router()
+                .navigateByUrl('/login', { replaceUrl: true })
+                .then(async () => {
+                  await modal.dismiss().then(() => {});
+                });
+            });
+          }
+        })
+      );
+    });
+  }
+
+  async splash() {
+    const modal = await this.masterSvc.modal().create({
+      component: SplashPage,
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'splash',
+    });
+    await modal.present();
+    return modal;
   }
 
   ngOnInit(): void {

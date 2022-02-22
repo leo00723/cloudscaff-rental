@@ -12,7 +12,7 @@ const redirectAuthorized = () => redirectLoggedInTo(['/test']);
 const routes: Routes = [
   {
     path: '',
-    component: SplashPage,
+    redirectTo: '/login',
     pathMatch: 'full',
   },
   {
