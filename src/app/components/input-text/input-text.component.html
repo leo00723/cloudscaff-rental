@@ -1,5 +1,5 @@
 <form [formGroup]="form">
-  <ion-item class="rounded-3 mb-3" mode="md">
+  <ion-item fill="solid" lines="none" class="rounded-3 mb-3" mode="md">
     <ion-label position="stacked">
       {{ title }} {{ optional ? "(optional)" : "" }}
     </ion-label>
@@ -14,7 +14,7 @@
       [readonly]="readonly"
     >
     </ion-input>
-    <ion-note color="danger" *ngIf="checkStatus(field('field'))">
+    <ion-note slot="error" color="danger" *ngIf="checkStatus(field('field'))">
       Please enter a valid {{ title }}
     </ion-note>
   </ion-item>

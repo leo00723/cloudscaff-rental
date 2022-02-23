@@ -41,15 +41,14 @@
   <div class="container ion-padding pt-5" *ngIf="company">
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <!-- OVERVIEW TAB -->
-      <ion-grid *ngIf="active === 'overview'" class="card-outline">
-        <ion-row>
+      <ion-grid *ngIf="active === 'overview'">
+        <ion-row class="card-outline mb-3">
           <ion-col size="12">
             <ion-text color="medium">
               <h4>Customer Information</h4>
             </ion-text>
           </ion-col>
-        </ion-row>
-        <ion-row>
+
           <ion-col size="12">
             <app-input-reactive
               title="Site Name"
@@ -59,6 +58,8 @@
             >
             </app-input-reactive>
           </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
           <ion-col size="12">
             <app-input-select-reactive
               (fieldChange)="changeCustomer($event)"
@@ -97,10 +98,16 @@
             >
             </app-customer>
           </ion-col>
-
+        </ion-row>
+        <ion-row class="card-outline mb-3">
           <ion-col size="12">
-            <ion-item class="rounded-3 my-3" mode="md">
-              <ion-label position="stacked" placeholder="">Message</ion-label>
+            <ion-item
+              fill="solid"
+              lines="none"
+              class="rounded-3 my-3"
+              mode="md"
+            >
+              <ion-label position="stacked">Message</ion-label>
               <ion-textarea #message formControlName="message"></ion-textarea>
             </ion-item>
           </ion-col>

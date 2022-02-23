@@ -1,5 +1,5 @@
-<ion-grid class="card-outline mb-3">
-  <ion-row>
+<ion-grid>
+  <ion-row class="card-outline mb-3">
     <ion-col size="12">
       <app-input-text
         title="Broker name"
@@ -11,8 +11,12 @@
       </app-input-text>
     </ion-col>
   </ion-row>
-  <ion-row *ngFor="let member of labour.types; let i = index">
+  <ion-row
+    class="card-outline mb-3"
+    *ngFor="let member of labour.types; let i = index"
+  >
     <ion-col size="12">
+      <ion-note> Rate {{ i + 1 }} </ion-note>
       <ion-chip
         outline
         color="danger"

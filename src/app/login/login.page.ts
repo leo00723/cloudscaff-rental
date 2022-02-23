@@ -30,7 +30,7 @@ export class LoginPage implements OnInit {
     this.loading = true;
     this.masterSvc
       .auth()
-      .login(this.field('email').value, this.field('password').value)
+      .login(this.form.value)
       .then(() => {
         this.form.reset();
         this.masterSvc.router().navigateByUrl('/home', { replaceUrl: true });

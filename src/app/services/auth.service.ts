@@ -55,7 +55,7 @@ export class AuthService {
     return currentUser$;
   }
 
-  async login(email: string, password: string) {
+  async login({ email, password }) {
     return await signInWithEmailAndPassword(this.auth, email, password);
   }
 

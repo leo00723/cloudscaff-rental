@@ -1,5 +1,5 @@
-<form [formGroup]="form" class="card-outline m-auto">
-  <ion-row>
+<form [formGroup]="form">
+  <ion-row class="card-outline mb-3">
     <ion-col sizeMd="4" size="12">
       <app-input-reactive
         title="Site name"
@@ -21,9 +21,11 @@
         controlName="endDate"
       ></app-input-date>
     </ion-col>
-    <ion-col size="12" class="card-outline">
+  </ion-row>
+  <ion-row class="card-outline mb-3">
+    <ion-col size="12">
       <app-address-search
-        *ngIf="isCreate"
+        *ngIf="isCreate || isUpdate"
         (addressData)="updateAddress($event)"
         placeholder="Search for Site Address"
       >
@@ -60,6 +62,8 @@
         controlName="country"
       ></app-input-reactive>
     </ion-col>
+  </ion-row>
+  <ion-row class="card-outline mb-3">
     <ion-col size="12">
       <app-input-select-reactive
         title="Customer"
