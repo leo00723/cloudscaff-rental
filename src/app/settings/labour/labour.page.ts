@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { LabourBroker } from 'src/app/models/labour-broker.model';
@@ -56,23 +56,26 @@ export class LabourPage {
   }
 
   init() {
-    this.brokers$ = this.user$.pipe(
-      filter(Boolean),
-      switchMap((user: any) => {
-        return this.masterSvc
-          .edit()
-          .getDocsByCompanyIdOrdered(
-            `company/${user.company}/brokers`,
-            'name',
-            'desc'
-          )
-          .pipe(
-            tap((brokers) => {
-              this.brokers$ = of(brokers);
-              this.change.detectChanges();
-            })
-          );
+    this.brokers$ = this.company$.pipe(
+      switchMap((company) => {
+        if (company) {
+          return this.masterSvc
+            .edit()
+            .getDocsByCompanyIdOrdered(
+              `company/${company.id}/brokers`,
+              'name',
+              'desc'
+            )
+            .pipe(
+              tap(() => {
+                this.isLoading = false;
+                this.change.detectChanges();
+              })
+            );
+        } else {
+          return timer(1);
+        }
       })
-    );
+    ) as Observable<any>;
   }
 }

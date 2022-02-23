@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
-import { Observable, of } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
 import { Company } from '../models/company.model';
@@ -61,23 +61,26 @@ export class EstimatesPage implements OnInit {
   }
 
   init() {
-    this.estimates$ = this.user$.pipe(
-      filter(Boolean),
-      switchMap((user: any) => {
-        return this.masterSvc
-          .edit()
-          .getDocsByCompanyIdOrdered(
-            `company/${user.company}/estimates`,
-            'date',
-            'desc'
-          )
-          .pipe(
-            tap((estimates) => {
-              this.estimates$ = of(estimates);
-              this.change.detectChanges();
-            })
-          );
+    this.estimates$ = this.company$.pipe(
+      switchMap((company) => {
+        if (company) {
+          return this.masterSvc
+            .edit()
+            .getDocsByCompanyIdOrdered(
+              `company/${company.id}/estimates`,
+              'code',
+              'desc'
+            )
+            .pipe(
+              tap(() => {
+                this.isLoading = false;
+                this.change.detectChanges();
+              })
+            );
+        } else {
+          return timer(1);
+        }
       })
-    );
+    ) as Observable<any>;
   }
 }

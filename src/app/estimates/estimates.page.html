@@ -1,10 +1,12 @@
 <app-header title="Estimates" btnName="refresh" (updated)="init()"></app-header>
 <ion-content fullscreen="true">
   <app-header-condensed title="Estimates"></app-header-condensed>
-  <ng-container *ngIf="{company: company$ |async, user: user$ | async} as data">
+  <ng-container
+    *ngIf="{company: company$ |async, user: user$ | async,estimates: estimates$ | async} as data"
+  >
     <app-estimate-table
       [value]="estimates$"
-      *ngIf="estimates$ | async else loading"
+      *ngIf="!isLoading else loading"
       (selectedItem)="editEstimate($event,data)"
     ></app-estimate-table>
 

@@ -1,10 +1,12 @@
 <app-header title="Sites" btnName="refresh" (updated)="init()"></app-header>
 <ion-content fullscreen="true">
   <app-header-condensed title="Sites"></app-header-condensed>
-  <ng-container *ngIf="{company: company$ |async, user: user$ | async} as data">
+  <ng-container
+    *ngIf="{company: company$ |async, user: user$ | async,sites: sites$ | async} as data"
+  >
     <app-site-table
       [value]="sites$"
-      *ngIf="sites$ | async else loading"
+      *ngIf="!isLoading else loading"
       (selectedItem)="viewSite($event,data)"
     ></app-site-table>
 

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { CustomerComponent } from 'src/app/components/customer/customer.component';
 import { Company } from 'src/app/models/company.model';
@@ -59,23 +59,26 @@ export class CustomersPage {
   }
 
   init() {
-    this.customers$ = this.user$.pipe(
-      filter(Boolean),
-      switchMap((user: any) => {
-        return this.masterSvc
-          .edit()
-          .getDocsByCompanyIdOrdered(
-            `company/${user.company}/customers`,
-            'name',
-            'desc'
-          )
-          .pipe(
-            tap((customers) => {
-              this.customers$ = of(customers);
-              this.change.detectChanges();
-            })
-          );
+    this.customers$ = this.company$.pipe(
+      switchMap((company) => {
+        if (company) {
+          return this.masterSvc
+            .edit()
+            .getDocsByCompanyIdOrdered(
+              `company/${company.id}/customers`,
+              'name',
+              'desc'
+            )
+            .pipe(
+              tap(() => {
+                this.isLoading = false;
+                this.change.detectChanges();
+              })
+            );
+        } else {
+          return timer(1);
+        }
       })
-    );
+    ) as Observable<any>;
   }
 }

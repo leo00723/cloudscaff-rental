@@ -8,15 +8,17 @@
 
 <ion-content fullscreen="true">
   <app-header-condensed title="Labour Profiles"></app-header-condensed>
-  <ng-container *ngIf="company$ |async as company">
+  <ng-container
+    *ngIf="{company: company$ |async ,broker: brokers$ | async} as data"
+  >
     <app-labor-table
       [value]="brokers$"
-      *ngIf="brokers$ | async else loading"
-      (selectedItem)="editBroker($event,company)"
+      *ngIf="!isLoading else loading"
+      (selectedItem)="editBroker($event,data.company)"
     ></app-labor-table>
 
     <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="addBroker(company)">
+      <ion-fab-button (click)="addBroker(data.company)">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>

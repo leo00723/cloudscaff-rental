@@ -18,6 +18,7 @@ export class AuthService {
   user$: Observable<any | null> = timer(1);
   company$: Observable<any | null>;
   uid = '';
+  logoutF = false;
   constructor(private auth: Auth, private firestore: Firestore) {
     onAuthStateChanged(this.auth, (user) => {
       if (user) {

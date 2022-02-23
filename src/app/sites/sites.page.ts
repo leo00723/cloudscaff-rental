@@ -62,23 +62,26 @@ export class SitesPage implements OnInit {
   }
 
   init() {
-    this.sites$ = this.user$.pipe(
-      filter(Boolean),
-      switchMap((user: any) => {
-        return this.masterSvc
-          .edit()
-          .getDocsByCompanyIdOrdered(
-            `company/${user.company}/sites`,
-            'date',
-            'desc'
-          )
-          .pipe(
-            tap((sites) => {
-              this.sites$ = of(sites);
-              this.change.detectChanges();
-            })
-          );
+    this.sites$ = this.company$.pipe(
+      switchMap((company) => {
+        if (company) {
+          return this.masterSvc
+            .edit()
+            .getDocsByCompanyIdOrdered(
+              `company/${company.id}/sites`,
+              'code',
+              'desc'
+            )
+            .pipe(
+              tap(() => {
+                this.isLoading = false;
+                this.change.detectChanges();
+              })
+            );
+        } else {
+          return timer(1);
+        }
       })
-    );
+    ) as Observable<any>;
   }
 }
