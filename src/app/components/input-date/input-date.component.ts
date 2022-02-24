@@ -19,6 +19,7 @@ export class InputDateComponent {
   @Input() title: string;
   @Input() form;
   @Input() controlName: string;
+  @Input() min: string | undefined;
   constructor(private masterSvc: MasterService) {}
 
   async setDate(field: string) {
@@ -30,6 +31,7 @@ export class InputDateComponent {
         value: this.form.get(this.controlName).value
           ? this.form.get(this.controlName).value
           : undefined,
+        min: this.min,
         field,
       },
       backdropDismiss: false,

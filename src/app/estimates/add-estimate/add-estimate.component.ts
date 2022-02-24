@@ -742,7 +742,7 @@ export class AddEstimatePage implements OnInit {
       }),
       boards: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),
-      broker: ['', Validators.required],
+      broker: [''],
       poNumber: [''],
       woNumber: [''],
       labour: this.masterSvc.fb().array([]),

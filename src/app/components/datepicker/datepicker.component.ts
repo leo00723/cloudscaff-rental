@@ -15,6 +15,7 @@ import { format, parseISO } from 'date-fns';
 export class DatepickerComponent {
   @ViewChild('date') date: IonDatetime;
   @Input() value: string | undefined;
+  @Input() min: string | undefined;
   @Input() field: string;
   constructor(private modalController: ModalController) {}
   confirm() {

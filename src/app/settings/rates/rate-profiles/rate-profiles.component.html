@@ -59,7 +59,9 @@
           *ngFor="let rate of rateProfiles.hireRates; trackBy: trackItems"
         >
           <app-input-text
-            title="{{ rate.name }} ({{ company.currency.symbol }})"
+            title="{{ rate.name }} ({{
+              !rate.name.startsWith('%') ? company.currency.symbol : '%'
+            }})"
             [value]="rate.rate"
             type="number"
             placeholder="Enter a Rate"
