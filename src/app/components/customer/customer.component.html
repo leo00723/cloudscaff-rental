@@ -26,6 +26,12 @@
         [form]="form"
         controlName="phone"
       ></app-input-reactive>
+      <app-input-reactive
+        title="Registration Number"
+        [optional]="true"
+        [form]="form"
+        controlName="regNumber"
+      ></app-input-reactive>
     </ion-col>
     <ion-col size="12" sizeXl="6">
       <app-input-reactive title="Address" [form]="form" controlName="address">
@@ -37,23 +43,17 @@
         [optional]="true"
       >
       </app-input-reactive>
-      <ion-row>
-        <ion-col class="py-0 ps-0">
-          <app-input-reactive
-            title="State/City"
-            [form]="form"
-            controlName="city"
-          ></app-input-reactive>
-        </ion-col>
-        <ion-col class="py-0 pe-0">
-          <app-input-reactive
-            title="Zip"
-            [form]="form"
-            controlName="zip"
-            [optional]="true"
-          ></app-input-reactive>
-        </ion-col>
-      </ion-row>
+      <app-input-reactive
+        title="State/City"
+        [form]="form"
+        controlName="city"
+      ></app-input-reactive>
+      <app-input-reactive
+        title="Zip"
+        [form]="form"
+        controlName="zip"
+        [optional]="true"
+      ></app-input-reactive>
       <app-input-reactive
         title="Country"
         [form]="form"

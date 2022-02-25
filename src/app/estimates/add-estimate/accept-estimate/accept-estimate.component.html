@@ -95,6 +95,48 @@
         ></app-site-form>
       </ion-col>
       <ion-col size="12" *ngIf="show === 'selectedSite'">
+        <ion-button
+          size="block"
+          shape="round"
+          color="success"
+          (click)="next('activateEstimate')"
+        >
+          Next
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="page === 'activateEstimate'">
+      <ion-col size="12">
+        <app-input-reactive
+          title="Estimate"
+          controlName="code"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+        <ion-text>
+          <h5>Attach to</h5>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-reactive
+          title="Site Name"
+          controlName="siteName"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-reactive
+          title="Purchase Order"
+          controlName="poNumber"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col size="12">
         <ion-progress-bar
           type="indeterminate"
           *ngIf="loading"

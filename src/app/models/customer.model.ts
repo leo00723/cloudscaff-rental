@@ -10,4 +10,5 @@ export interface Customer {
   zip: string;
   country: string;
   company: string;
+  regNumber: string;
 }

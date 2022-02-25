@@ -42,6 +42,7 @@ export class CompanyPage implements OnDestroy, OnInit {
     vatNum: '',
     logoUrl: '',
     logoRef: '',
+    regNumber: '',
   };
   currencies = new Currencies().currencies;
   measurements = [
@@ -118,6 +119,7 @@ export class CompanyPage implements OnDestroy, OnInit {
       country: [this.company.country, Validators.required],
       bankName: [this.company.bankName],
       accountNum: [this.company.accountNum],
+      regNumber: [this.company.regNumber],
       branchCode: [this.company.branchCode],
       swiftCode: [this.company.swiftCode],
       currency: [this.company.currency, Validators.required],

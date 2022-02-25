@@ -37,6 +37,7 @@
           <h6>Email:</h6>
           <h6>Representative:</h6>
           <h6>Contact No:</h6>
+          <h6>Registration No:</h6>
           <br />
           <h6>Address:</h6>
         </ion-label>
@@ -54,6 +55,9 @@
           </h6>
           <h6>
             {{ estimate.customer.phone }}
+          </h6>
+          <h6>
+            {{ estimate.customer.regNumber }}
           </h6>
           <br />
           <h6>
@@ -79,6 +83,7 @@
           <h6>Email:</h6>
           <h6>Representative:</h6>
           <h6>Contact No:</h6>
+          <h6>Registration No:</h6>
           <br />
           <h6>Address:</h6>
         </ion-label>
@@ -86,22 +91,24 @@
       <ion-col size="6">
         <ion-label>
           <h6>
-            {{ estimate.company.name }}
+            {{ company.name }}
           </h6>
           <h6>
-            {{ estimate.company.email }}
+            {{ company.email }}
           </h6>
           <h6>N/A</h6>
           <h6>
-            {{ estimate.company.phone }}
+            {{ company.phone }}
+          </h6>
+          <h6>
+            {{ company.regNumber }}
           </h6>
           <br />
           <h6>
-            {{ estimate.company.address }} <br />
-            {{ estimate.company.suburb }}<br />{{ estimate.company.city
-            }}<br />{{ estimate.company.zip }}<br />{{
-              estimate.company.country
-            }}
+            {{ company.address }} <br />
+            {{ estimate.company.suburb }}<br />{{ company.city }}<br />{{
+              company.zip
+            }}<br />{{ company.country }}
           </h6>
         </ion-label>
       </ion-col>

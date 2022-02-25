@@ -475,12 +475,12 @@ export class PdfService {
               text: company.phone,
             },
           ],
-          // [
-          //   { text: 'VAT No:', style: 'h6b' },
-          //   customer.vatNumber,
-          //   { text: 'VAT No:', style: 'h6b' },
-          //   company.vatNumber,
-          // ],
+          [
+            { text: 'Registration No:', style: 'h6b' },
+            customer.regNumber ? customer.regNumber : 'N/A',
+            { text: 'Registration No:', style: 'h6b' },
+            company.regNumber ? company.regNumber : 'N/A',
+          ],
           [
             { text: 'Address:', style: 'h6b' },
             this.getAddress(customer),

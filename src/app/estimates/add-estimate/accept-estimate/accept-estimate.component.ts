@@ -61,6 +61,8 @@ export class AcceptEstimateComponent implements OnInit {
         this.estimate.poNumber = this.form.get('poNumber').value;
         this.estimate.woNumber = this.form.get('woNumber').value;
         this.estimate.siteId = this.site.id;
+        this.estimate.siteName = this.site.name;
+        this.estimate.customer = this.site.customer;
         this.estimate.acceptedBy = this.user.name;
         this.estimate.status = 'accepted';
         this.loading = true;
@@ -93,6 +95,8 @@ export class AcceptEstimateComponent implements OnInit {
   }
   close() {
     this.masterSvc.modal().dismiss(undefined, 'close', 'acceptEstimate');
+    this.masterSvc.modal().dismiss(undefined, 'close', 'editEstimate');
+    this.masterSvc.router().navigateByUrl('/home/sites', { replaceUrl: true });
   }
   field(field: string, form) {
     return form.get(field) as FormControl;
@@ -105,7 +109,10 @@ export class AcceptEstimateComponent implements OnInit {
       this.show = 'addSite';
     }
   }
-  newSite(args) {
-    this.field('site', this.form2).setValue({ ...args });
+  newSite(site: Site) {
+    this.field('site', this.form2).setValue({ ...site });
+    this.field('siteName', this.form).setValue(site.name);
+    this.field('customer', this.form).setValue(site.customer);
+    this.page = 'activateEstimate';
   }
 }

@@ -28,6 +28,7 @@ export interface Company {
   vat: number;
   vatNum: string;
   salesTax: number;
+  regNumber: string;
   logoUrl: string;
   logoRef: string;
   measurement: UnitData;

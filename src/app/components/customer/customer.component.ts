@@ -21,6 +21,7 @@ export class CustomerComponent {
     zip: '',
     country: '',
     company: '',
+    regNumber: '',
   };
   @Output() newCustomer = new EventEmitter<Customer>();
   @Input() isUpdate = false;
@@ -42,6 +43,7 @@ export class CustomerComponent {
         suburb: [this.customerData.suburb],
         city: [this.customerData.city, Validators.required],
         zip: [this.customerData.zip],
+        regNumber: [this.customerData.regNumber],
         country: [this.customerData.country, Validators.required],
       });
     }
@@ -58,6 +60,7 @@ export class CustomerComponent {
       suburb: [''],
       city: ['', Validators.required],
       zip: [''],
+      regNumber: [''],
       country: ['', Validators.required],
     });
   }
@@ -80,12 +83,12 @@ export class CustomerComponent {
           `company/${this.customerData.company}/customers`,
           this.customerData
         )
-        .then(() => {
+        .then((data) => {
           this.loading = false;
           this.masterSvc
             .notification()
             .toast('Customer added successfully!', 'success');
-          this.newCustomer.emit(this.customerData);
+          this.newCustomer.emit({ ...this.customerData, id: data.id });
           this.form.reset();
         })
         .catch(() => {

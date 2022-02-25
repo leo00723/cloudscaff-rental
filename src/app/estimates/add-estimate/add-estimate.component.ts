@@ -650,6 +650,7 @@ export class AddEstimatePage implements OnInit {
       labour: this.masterSvc.fb().array([]),
       poNumber: [this.estimate.poNumber],
       woNumber: [this.estimate.woNumber],
+      code: [this.estimate.code],
     });
     this.estimate.boards.forEach((b) => {
       const board = this.masterSvc.fb().group({
