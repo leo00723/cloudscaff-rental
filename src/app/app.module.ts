@@ -14,6 +14,7 @@ import {
   provideAuth,
 } from '@angular/fire/auth';
 import {
+  enableIndexedDbPersistence,
   enableMultiTabIndexedDbPersistence,
   getFirestore,
   provideFirestore,
@@ -58,7 +59,7 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
       const firestore = getFirestore();
       enableMultiTabIndexedDbPersistence(firestore).then(
         () => resolvePersistenceEnabled(true),
-        () => resolvePersistenceEnabled(false)
+        () => enableIndexedDbPersistence(firestore)
       );
       return firestore;
     }),

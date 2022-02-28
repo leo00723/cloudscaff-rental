@@ -79,6 +79,10 @@ export class AcceptEstimateComponent implements OnInit {
               .toast('Estimate accepted successfully!', 'success');
             this.loading = false;
             this.close();
+            this.masterSvc.modal().dismiss(undefined, 'close', 'editEstimate');
+            this.masterSvc
+              .router()
+              .navigateByUrl('/home/sites', { replaceUrl: true });
           })
           .catch(() => {
             this.loading = false;
@@ -95,8 +99,6 @@ export class AcceptEstimateComponent implements OnInit {
   }
   close() {
     this.masterSvc.modal().dismiss(undefined, 'close', 'acceptEstimate');
-    this.masterSvc.modal().dismiss(undefined, 'close', 'editEstimate');
-    this.masterSvc.router().navigateByUrl('/home/sites', { replaceUrl: true });
   }
   field(field: string, form) {
     return form.get(field) as FormControl;
