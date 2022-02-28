@@ -6,7 +6,7 @@
   >
     <app-site-table
       [value]="sites$"
-      *ngIf="!isLoading else loading"
+      *ngIf="sites$ | async else loading"
       (selectedItem)="viewSite($event,data)"
     ></app-site-table>
 

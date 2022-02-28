@@ -5,7 +5,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { MasterService } from '../services/master.service';
+import { MasterService } from 'src/app/services/master.service';
 
 @Component({
   selector: 'app-login',

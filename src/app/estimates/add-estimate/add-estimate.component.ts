@@ -4,9 +4,9 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { Term } from 'src/app/models/term.model';
-import { Company } from '../../models/company.model';
-import { Customer } from '../../models/customer.model';
-import { Estimate } from '../../models/estimate.model';
+import { Company } from 'src/app/models/company.model';
+import { Customer } from 'src/app/models/customer.model';
+import { Estimate } from 'src/app/models/estimate.model';
 import { MasterService } from '../../services/master.service';
 import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
 

@@ -28,10 +28,15 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { Capacitor } from '@capacitor/core';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
+import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
+import { NgxsModule } from '@ngxs/store';
+import { MasterService } from 'src/app/services/master.service';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MasterService } from './services/master.service';
+import { RouterState } from './shared/router.state';
+import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
 
 let resolvePersistenceEnabled: (enabled: boolean) => void;
@@ -71,6 +76,11 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    NgxsModule.forRoot([RouterState, UserState], {
+      developmentMode: !environment.production,
+    }),
+    NgxsLoggerPluginModule.forRoot(),
+    NgxsReduxDevtoolsPluginModule.forRoot(),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

@@ -1,8 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
 import { Observable, of, timer } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { LabourBroker } from 'src/app/models/labour-broker.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { AddBrokerComponent } from './add-broker/add-broker.component';
 
@@ -11,17 +13,14 @@ import { AddBrokerComponent } from './add-broker/add-broker.component';
   templateUrl: './labour.page.html',
 })
 export class LabourPage {
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
   brokers$: Observable<LabourBroker[] | any>;
-  user$: Observable<any>;
-  company$: Observable<Company>;
   isLoading = true;
   constructor(
     private masterSvc: MasterService,
     private change: ChangeDetectorRef
-  ) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.user$ = this.masterSvc.auth().user$;
-  }
+  ) {}
 
   ngOnInit() {
     this.init();

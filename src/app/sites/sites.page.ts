@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Observable, of, timer } from 'rxjs';
-import { concatMap, filter, switchMap, tap } from 'rxjs/operators';
-import { SiteFormComponent } from '../components/site-form/site-form.component';
-import { AddEstimatePage } from '../estimates/add-estimate/add-estimate.component';
-import { Company } from '../models/company.model';
-import { Estimate } from '../models/estimate.model';
-import { Site } from '../models/site.model';
-import { MasterService } from '../services/master.service';
+import { Select } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { Company } from 'src/app/models/company.model';
+import { Site } from 'src/app/models/site.model';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from '../shared/company/company.state';
+import { GetSites } from '../shared/sites/sites.actions';
 import { AddSiteComponent } from './add-site/add-site.component';
 
 @Component({
@@ -14,17 +14,14 @@ import { AddSiteComponent } from './add-site/add-site.component';
   templateUrl: './sites.page.html',
 })
 export class SitesPage implements OnInit {
-  sites$: Observable<Site[] | any>;
-  company$: Observable<Company>;
-  user$: Observable<any>;
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
+  @Select() sites$: Observable<Site[]>;
   isLoading = true;
   constructor(
     private masterSvc: MasterService,
     private change: ChangeDetectorRef
-  ) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.user$ = this.masterSvc.auth().user$;
-  }
+  ) {}
 
   ngOnInit() {
     this.init();
@@ -62,26 +59,36 @@ export class SitesPage implements OnInit {
   }
 
   init() {
-    this.sites$ = this.company$.pipe(
-      switchMap((company) => {
-        if (company) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyIdOrdered(
-              `company/${company.id}/sites`,
-              'code',
-              'desc'
-            )
-            .pipe(
-              tap(() => {
-                this.isLoading = false;
-                this.change.detectChanges();
-              })
-            );
-        } else {
-          return timer(1);
-        }
-      })
-    ) as Observable<any>;
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    setTimeout(() => {
+      if (id) {
+        this.masterSvc.store().dispatch(new GetSites(id));
+      } else {
+        console.log('-----------------------try----------------------');
+        this.init();
+      }
+    }, 200);
+
+    // this.sites$ = this.company$.pipe(
+    //   switchMap((company) => {
+    //     if (company) {
+    //       return this.masterSvc
+    //         .edit()
+    //         .getDocsByCompanyIdOrdered(
+    //           `company/${company.id}/sites`,
+    //           'code',
+    //           'desc'
+    //         )
+    //         .pipe(
+    //           tap(() => {
+    //             this.isLoading = false;
+    //             this.change.detectChanges();
+    //           })
+    //         );
+    //     } else {
+    //       return timer(1);
+    //     }
+    //   })
+    // ) as Observable<any>;
   }
 }

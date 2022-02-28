@@ -1,21 +1,24 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { of, Subscription } from 'rxjs';
+import { Select } from '@ngxs/store';
+import { Observable } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
-import { Company } from '../../models/company.model';
-import { Currencies } from '../../models/currencies.model';
+import { Company } from 'src/app/models/company.model';
+import { Currencies } from 'src/app/models/currencies.model';
+import { CompanyState } from 'src/app/shared/company/company.state';
 import { MasterService } from '../../services/master.service';
 
 @Component({
   selector: 'app-company',
   templateUrl: './company.page.html',
 })
-export class CompanyPage implements OnDestroy, OnInit {
+export class CompanyPage implements OnInit {
+  @Select() company$: Observable<Company>;
   company: Company = {
     id: '',
     name: '',
@@ -56,21 +59,16 @@ export class CompanyPage implements OnDestroy, OnInit {
   form: FormGroup;
   loading = false;
   isLoading = true;
-  subs = new Subscription();
+
   constructor(private fb: FormBuilder, private masterSvc: MasterService) {}
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
-  }
+
   ngOnInit(): void {
-    this.subs.add(
-      this.masterSvc.auth().company$.subscribe((company) => {
-        if (company) {
-          Object.assign(this.company, company);
-          this.initFrom();
-          this.isLoading = false;
-        }
-      })
+    Object.assign(
+      this.company,
+      this.masterSvc.store().selectSnapshot(CompanyState.company)
     );
+    this.initFrom();
+    this.isLoading = false;
   }
 
   field(field: string) {
@@ -87,7 +85,6 @@ export class CompanyPage implements OnDestroy, OnInit {
         .edit()
         .updateDoc('company', this.company.id, this.company)
         .then(() => {
-          this.masterSvc.auth().company$ = of(this.company);
           this.masterSvc
             .notification()
             .toast('Settings saved successfully', 'success')

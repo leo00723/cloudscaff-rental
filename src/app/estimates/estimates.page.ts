@@ -1,27 +1,25 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { IonRouterOutlet } from '@ionic/angular';
-import { Observable, of, timer } from 'rxjs';
-import { filter, switchMap, tap } from 'rxjs/operators';
+import { Select } from '@ngxs/store';
+import { Observable, timer } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+import { Company } from 'src/app/models/company.model';
+import { Estimate } from 'src/app/models/estimate.model';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
-import { Company } from '../models/company.model';
-import { MasterService } from '../services/master.service';
-import { Estimate } from '../models/estimate.model';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
 })
 export class EstimatesPage implements OnInit {
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
   estimates$: Observable<Estimate[] | any>;
-  company$: Observable<Company>;
-  user$: Observable<any>;
   isLoading = true;
   constructor(
     private masterSvc: MasterService,
     private change: ChangeDetectorRef
-  ) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.user$ = this.masterSvc.auth().user$;
-  }
+  ) {}
 
   ngOnInit() {
     this.init();

@@ -5,10 +5,12 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { Select } from '@ngxs/store';
 import { Observable, of, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { RateProfile, RateProfiles } from 'src/app/models/rate-profiles.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 
 @Component({
@@ -17,15 +19,14 @@ import { MasterService } from 'src/app/services/master.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RateProfilesComponent implements OnDestroy, OnInit {
-  @Input() companyId: string;
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
   rateProfiles = new RateProfiles();
-  company$: Observable<Company>;
   rates$: Observable<any>;
   loading = false;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.rates$ = this.masterSvc.auth().user$.pipe(
+    this.rates$ = this.user$.pipe(
       switchMap((user) => {
         if (user) {
           return this.masterSvc

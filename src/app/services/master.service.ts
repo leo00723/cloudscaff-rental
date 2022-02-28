@@ -8,6 +8,7 @@ import { EditService } from './edit.service';
 import { NotificationService } from './notification.service';
 import { PdfService } from './pdf.service';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Store } from '@ngxs/store';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,8 @@ export class MasterService {
     private pdfService: PdfService,
     private fileOpenerService: FileOpener,
     private platformService: Platform,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private storeSvc: Store
   ) {}
   auth() {
     return this.authSvc;
@@ -83,5 +85,8 @@ export class MasterService {
 
   sites() {
     return null;
+  }
+  store() {
+    return this.storeSvc;
   }
 }

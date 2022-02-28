@@ -1,10 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
 import { Observable, of, timer } from 'rxjs';
 import { filter, switchMap, tap } from 'rxjs/operators';
 import { CustomerComponent } from 'src/app/components/customer/customer.component';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { LabourBroker } from 'src/app/models/labour-broker.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { AddCustomerComponent } from './add-customer/add-customer.component';
 
@@ -13,17 +15,14 @@ import { AddCustomerComponent } from './add-customer/add-customer.component';
   templateUrl: './customers.page.html',
 })
 export class CustomersPage {
-  user$: Observable<any>;
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
   customers$: Observable<Customer[] | any>;
-  company$: Observable<Company>;
   isLoading = true;
   constructor(
     private masterSvc: MasterService,
     private change: ChangeDetectorRef
-  ) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.user$ = this.masterSvc.auth().user$;
-  }
+  ) {}
 
   ngOnInit() {
     this.init();

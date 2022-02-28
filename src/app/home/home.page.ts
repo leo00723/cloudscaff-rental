@@ -1,13 +1,10 @@
-import { Component, NgZone, OnDestroy } from '@angular/core';
-import { getAuth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import { Component, OnDestroy } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MenuController } from '@ionic/angular';
-import { Observable, of, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { Company } from '../models/company.model';
-import { AuthService } from '../services/auth.service';
-import { MasterService } from '../services/master.service';
+import { Select } from '@ngxs/store';
+import { Observable, Subscription } from 'rxjs';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
 
 @Component({
   selector: 'app-home',
@@ -21,15 +18,13 @@ export class HomePage implements OnDestroy {
     { title: 'Sites', url: '/home/sites', icon: 'business-outline' },
   ];
   loading = false;
-  user$: Observable<any>;
+  @Select() user$: Observable<User>;
   private subs = new Subscription();
   constructor(
     private masterSvc: MasterService,
     private menu: MenuController,
     private updates: SwUpdate
-  ) {
-    this.user$ = this.masterSvc.auth().user$;
-  }
+  ) {}
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
