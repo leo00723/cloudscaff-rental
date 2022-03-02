@@ -13,7 +13,7 @@ const routes: Routes = [
     component: HomePage,
     children: [
       {
-        path: 'dashboard',
+        path: 'overview',
         loadChildren: () =>
           import('../dashboard/dashboard.module').then(
             (m) => m.DashboardPageModule
@@ -30,6 +30,13 @@ const routes: Routes = [
         path: 'sites',
         loadChildren: () =>
           import('../sites/sites.module').then((m) => m.SitesPageModule),
+      },
+      {
+        path: 'site/:id',
+        loadChildren: () =>
+          import('../sites/view-site/view-site.module').then(
+            (m) => m.ViewSitePageModule
+          ),
       },
       {
         path: 'settings',

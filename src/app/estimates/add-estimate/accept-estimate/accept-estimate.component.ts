@@ -4,7 +4,10 @@ import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Site } from 'src/app/models/site.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-accept-estimate',
@@ -12,9 +15,9 @@ import { MasterService } from 'src/app/services/master.service';
 })
 export class AcceptEstimateComponent implements OnInit {
   @Input() form;
-  @Input() company: Company;
-  @Input() user: any;
   @Input() estimate: Estimate;
+  company: Company;
+  user: User;
   page = 'po';
   site: Site;
   sites$: Observable<Site[]>;
@@ -22,12 +25,15 @@ export class AcceptEstimateComponent implements OnInit {
   show = '';
   loading = false;
 
-  constructor(private masterSvc: MasterService) {}
+  constructor(private masterSvc: MasterService) {
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+  }
 
   ngOnInit(): void {
     this.sites$ = this.masterSvc
       .edit()
-      .getDocsByCompanyId(`company/${this.company.id}/sites`);
+      .getCollection(`company/${this.company.id}/sites`);
     this.site = {
       address: '',
       city: '',
@@ -82,7 +88,12 @@ export class AcceptEstimateComponent implements OnInit {
             this.masterSvc.modal().dismiss(undefined, 'close', 'editEstimate');
             this.masterSvc
               .router()
-              .navigateByUrl('/home/sites', { replaceUrl: true });
+              .navigateByUrl(
+                `/dashboard/site/${this.company.id}-${this.site.id}`,
+                {
+                  replaceUrl: true,
+                }
+              );
           })
           .catch(() => {
             this.loading = false;

@@ -9,23 +9,14 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? "Update Customer" : "Create Customer" }} </ion-title>
+    <ion-title> {{ estimate.code }} </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen="true">
   <div class="container ion-padding">
-    <app-customer
-      *ngIf="isCreate"
-      [companyId]="companyId"
-      [isCreate]="true"
-    ></app-customer>
-    <app-customer
-      *ngIf="isEdit"
-      [customer]="customer"
-      [companyId]="companyId"
-      [isUpdate]="true"
-      [isCreate]="false"
-    ></app-customer>
+    <div class="card-outline">
+      <app-estimate-summary [estimate]="estimate"></app-estimate-summary>
+    </div>
   </div>
 </ion-content>

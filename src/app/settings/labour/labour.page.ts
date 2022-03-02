@@ -60,7 +60,7 @@ export class LabourPage {
         if (company) {
           return this.masterSvc
             .edit()
-            .getDocsByCompanyIdOrdered(
+            .getCollectionOrdered(
               `company/${company.id}/brokers`,
               'name',
               'desc'

@@ -1,12 +1,12 @@
 <app-header
   title="Business Settings"
   [showMenu]="false"
-  path="/home/settings"
+  path="/dashboard/settings"
 ></app-header>
 
 <ion-content fullscreen="true">
   <app-header-condensed title="Business Settings"></app-header-condensed>
-  <ion-grid class="container ion-padding pt-5" *ngIf="!isLoading else loadingT">
+  <ion-grid class="container ion-padding" *ngIf="!isLoading else loadingT">
     <form (ngSubmit)="save()" name="company" [formGroup]="form">
       <ion-row class="card-outline mb-3">
         <ion-col sizeLg="6" size="12">

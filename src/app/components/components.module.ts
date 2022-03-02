@@ -16,6 +16,8 @@ import { ShowHidePasswordComponent } from './show-hide-password/show-hide-passwo
 import { SiteFormComponent } from './site-form/site-form.component';
 import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 import { InputDateComponent } from './input-date/input-date.component';
+import { EstimateTableComponent } from '../estimates/estimate-table/estimate-table.component';
+import { EstimateSummaryComponent } from '../estimates/add-estimate/estimate-summary/estimate-summary.component';
 
 const COMPONENTS = [
   CustomerComponent,
@@ -30,6 +32,9 @@ const COMPONENTS = [
   DatepickerComponent,
   SiteFormComponent,
   InputDateComponent,
+  EstimateTableComponent,
+  EstimateSummaryComponent,
+
 ];
 const IMPORTS = [
   CommonModule,

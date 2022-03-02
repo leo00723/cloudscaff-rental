@@ -49,13 +49,10 @@ export class TermsPage {
     this.init();
   }
 
-  async editTerms(
-    id: string,
-    data: { company: Company; user: any; terms: Term[] }
-  ) {
+  async editTerms(id: string, terms: Term[]) {
     let term = null;
-    if (data.terms) {
-      term = data.terms.find((t) => {
+    if (terms) {
+      term = terms.find((t) => {
         return t.id === id;
       });
     }
@@ -68,8 +65,6 @@ export class TermsPage {
               id,
               terms: '',
             },
-        company: data.company,
-        user: data.user,
       },
       showBackdrop: false,
       id,
@@ -84,7 +79,7 @@ export class TermsPage {
         if (company) {
           return this.masterSvc
             .edit()
-            .getDocsByCompanyId(`company/${company.id}/terms`);
+            .getCollection(`company/${company.id}/terms`);
         } else {
           return of(false);
         }

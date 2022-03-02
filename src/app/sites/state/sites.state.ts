@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
+import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { catchError, tap } from 'rxjs/operators';
 import { Site } from 'src/app/models/site.model';
 import { EditService } from 'src/app/services/edit.service';
-import { GetSites, SetSites } from './sites.actions';
+import { GetSites, SetSite, SetSites } from './sites.actions';
 
 @State<Site[]>({
   name: 'sites',
@@ -11,7 +11,7 @@ import { GetSites, SetSites } from './sites.actions';
 })
 @Injectable()
 export class SitesState {
-  constructor(private editSvc: EditService, private store: Store) {}
+  constructor(private editSvc: EditService) {}
   @Action(SetSites)
   setSites({ setState }: StateContext<Site[]>, { payload }: SetSites) {
     setState(payload);
@@ -20,7 +20,7 @@ export class SitesState {
   @Action(GetSites, { cancelUncompleted: true })
   getSites({ dispatch }: StateContext<string>, { payload }: GetSites) {
     return this.editSvc
-      .getDocsByCompanyIdOrdered(`company/${payload}/sites`, 'code', 'desc')
+      .getCollectionOrdered(`company/${payload}/sites`, 'code', 'desc')
       .pipe(
         tap((sites: Site[]) => {
           dispatch(new SetSites(sites));
@@ -31,6 +31,23 @@ export class SitesState {
 
   @Selector()
   static sites(state: Site[]) {
+    return state;
+  }
+}
+
+@State<Site>({
+  name: 'site',
+  defaults: null,
+})
+@Injectable()
+export class SiteState {
+  @Action(SetSite)
+  setSite({ setState }: StateContext<Site>, { payload }: SetSite) {
+    return setState(payload);
+  }
+
+  @Selector()
+  static site(state: Site) {
     return state;
   }
 }

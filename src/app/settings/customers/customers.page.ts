@@ -63,7 +63,7 @@ export class CustomersPage {
         if (company) {
           return this.masterSvc
             .edit()
-            .getDocsByCompanyIdOrdered(
+            .getCollectionOrdered(
               `company/${company.id}/customers`,
               'name',
               'desc'

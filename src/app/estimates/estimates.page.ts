@@ -1,12 +1,14 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
-import { Observable, timer } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from '../shared/company/company.state';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
+import { GetEstimates } from './state/estimate.actions';
+import { EstimatesState } from './state/estimate.state';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
@@ -14,26 +16,18 @@ import { AddEstimatePage } from './add-estimate/add-estimate.component';
 export class EstimatesPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
-  estimates$: Observable<Estimate[] | any>;
+  @Select() estimates$: Observable<Estimate[]>;
   isLoading = true;
-  constructor(
-    private masterSvc: MasterService,
-    private change: ChangeDetectorRef
-  ) {}
+  constructor(private masterSvc: MasterService) {}
 
   ngOnInit() {
     this.init();
   }
 
-  async editEstimate(
-    estimate: Estimate,
-    data: { company: Company; user: any }
-  ) {
+  async editEstimate(estimate: Estimate) {
     const modal = await this.masterSvc.modal().create({
       component: AddEstimatePage,
       componentProps: {
-        company: data.company,
-        user: data.user,
         estimate,
         isEdit: true,
       },
@@ -44,13 +38,9 @@ export class EstimatesPage implements OnInit {
     return await modal.present();
   }
 
-  async addEstimate(data: { company: Company; user: any }) {
+  async addEstimate() {
     const modal = await this.masterSvc.modal().create({
       component: AddEstimatePage,
-      componentProps: {
-        company: data.company,
-        user: data.user,
-      },
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'addEstimate',
@@ -59,26 +49,19 @@ export class EstimatesPage implements OnInit {
   }
 
   init() {
-    this.estimates$ = this.company$.pipe(
-      switchMap((company) => {
-        if (company) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyIdOrdered(
-              `company/${company.id}/estimates`,
-              'code',
-              'desc'
-            )
-            .pipe(
-              tap(() => {
-                this.isLoading = false;
-                this.change.detectChanges();
-              })
-            );
-        } else {
-          return timer(1);
-        }
-      })
-    ) as Observable<any>;
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    setTimeout(() => {
+      if (id) {
+        let estimates = !!this.masterSvc
+          .store()
+          .selectSnapshot(EstimatesState.estimates);
+        if (!estimates) this.masterSvc.store().dispatch(new GetEstimates(id));
+      } else {
+        console.log(
+          '-----------------------try estimates----------------------'
+        );
+        this.init();
+      }
+    }, 200);
   }
 }

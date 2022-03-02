@@ -6,6 +6,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { Select } from '@ngxs/store';
 import {
   DatatableComponent,
   SelectionType,
@@ -23,16 +24,14 @@ import { Site } from 'src/app/models/site.model';
 export class SiteTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<Site>();
-  sites$: Observable<Site[]>;
+  @Select() sites$: Observable<Site[]>;
   temp$: Observable<Site[]>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
-  @Input() set value(sites: Observable<Site[]>) {
-    if (sites) {
-      this.temp$ = sites;
-      this.sites$ = sites;
-    }
+
+  constructor() {
+    this.temp$ = this.sites$;
   }
 
   onSelect({ selected }) {

@@ -4,7 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
 import { GetCompany, SetCompany } from 'src/app/shared/company/company.actions';
-import { GetSites } from '../sites/sites.actions';
+import { GetSites } from '../../sites/state/sites.actions';
 import { GetUser, SetUser } from './user.actions';
 
 @State<User>({

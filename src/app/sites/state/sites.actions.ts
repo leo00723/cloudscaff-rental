@@ -9,3 +9,8 @@ export class GetSites {
   static readonly type = '[companyId] get sites';
   constructor(public payload?: string) {}
 }
+
+export class SetSite {
+  static readonly type = '[site] set current site';
+  constructor(public payload: Site) {}
+}

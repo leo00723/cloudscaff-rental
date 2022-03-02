@@ -14,17 +14,11 @@
 </ion-header>
 
 <ion-content fullscreen="true">
-  <div class="container ion-padding pt-5">
-    <app-site-form
-      *ngIf="isCreate"
-      [company]="company"
-      [user]="user"
-    ></app-site-form>
+  <div class="container ion-padding ">
+    <app-site-form *ngIf="isCreate"></app-site-form>
     <app-site-form
       *ngIf="isEdit"
-      [company]="company"
       [siteData]="siteData"
-      [user]="user"
       [isUpdate]="true"
       [isCreate]="false"
     ></app-site-form>

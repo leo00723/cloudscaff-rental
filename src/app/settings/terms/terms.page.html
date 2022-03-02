@@ -1,14 +1,12 @@
 <app-header
   title="Terms & Conditions"
   [showMenu]="false"
-  path="/home/terms"
+  path="/dashboard/terms"
 ></app-header>
 
 <ion-content fullscreen="true">
   <app-header-condensed title="Terms & Conditions"></app-header-condensed>
-  <ng-container
-    *ngIf="{company: company$ |async, user: user$ | async,terms: terms$ | async} as data"
-  >
+  <ng-container *ngIf="terms$ | async as termsData">
     <ion-grid class="ion-padding container">
       <ion-row>
         <ion-col sizeXl="6" size="12" *ngFor="let term of terms">
@@ -32,7 +30,7 @@
                 fill="clear"
                 shape="round"
                 size="large"
-                (click)="editTerms(term.path,data)"
+                (click)="editTerms(term.path,termsData)"
               >
                 <ion-icon
                   slot="icon-only"
