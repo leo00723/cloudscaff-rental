@@ -1,13 +1,16 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
-import { Subscription } from 'rxjs';
-import { MasterService } from './services/master.service';
+import { Select } from '@ngxs/store';
+import { Observable, Subscription } from 'rxjs';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
 import { SplashPage } from './splash/splash.page';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
+  @Select() user$: Observable<User>;
   private subs = new Subscription();
   constructor(
     private updates: SwUpdate,
@@ -15,22 +18,24 @@ export class AppComponent implements OnInit, OnDestroy {
     private ngZone: NgZone
   ) {
     this.splash().then(async (modal) => {
-      this.subs.add(
-        this.masterSvc.auth().user$.subscribe(async (user) => {
-          let path = '/login';
-          if (user) path = '/sites';
-          this.ngZone.run(() => {
-            this.masterSvc
-              .router()
-              .navigateByUrl(path, { replaceUrl: true })
-              .then(() => {
-                setTimeout(async () => {
-                  await modal.dismiss().then(() => {});
-                }, 2000);
-              });
-          });
-        })
-      );
+      setTimeout(async () => {
+        await modal.dismiss().then(() => {});
+      }, 2000);
+      // this.subs.add(
+      //   this.user$.subscribe(async (user) => {
+      //     const path = user ? '/login' : '/home';
+      //     this.ngZone.run(async () => {
+      //       await this.masterSvc
+      //         .router()
+      //         .navigateByUrl(path, { replaceUrl: true })
+      //         .then(() => {
+      //           setTimeout(async () => {
+      //             await modal.dismiss().then(() => {});
+      //           }, 1000);
+      //         });
+      //     });
+      //   })
+      // );
     });
   }
 

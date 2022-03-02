@@ -6,7 +6,10 @@ import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Site } from 'src/app/models/site.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-site-form',
@@ -36,8 +39,7 @@ export class SiteFormComponent implements OnInit {
   @Input() isUpdate = false;
   @Input() isDelete = false;
   @Input() isCreate = true;
-  @Input() company: Company;
-  @Input() user: any;
+
   @Input() set siteData(val: Site) {
     this.site = val;
     if (this.form && val) {
@@ -54,18 +56,22 @@ export class SiteFormComponent implements OnInit {
       });
     }
   }
+  user: User;
+  company: Company;
   customers$: Observable<Customer[]>;
   form: FormGroup;
   loading = false;
   show = '';
   constructor(private masterSvc: MasterService) {
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.initFrom();
   }
 
   ngOnInit(): void {
     this.customers$ = this.masterSvc
       .edit()
-      .getDocsByCompanyId(`company/${this.company.id}/customers`);
+      .getCollection(`company/${this.company.id}/customers`);
   }
 
   field(field: string) {

@@ -1,27 +1,23 @@
 <app-header title="Estimates" btnName="refresh" (updated)="init()"></app-header>
-<ion-content fullscreen="true">
+<ion-content fullscreen="true" class="ion-padding">
   <app-header-condensed title="Estimates"></app-header-condensed>
-  <ng-container
-    *ngIf="{company: company$ |async, user: user$ | async,estimates: estimates$ | async} as data"
-  >
-    <app-estimate-table
-      [value]="estimates$"
-      *ngIf="!isLoading else loading"
-      (selectedItem)="editEstimate($event,data)"
-    ></app-estimate-table>
+  <app-estimate-table
+    [value]="estimates$"
+    *ngIf="estimates$ | async else loading"
+    (selectedItem)="editEstimate($event)"
+  ></app-estimate-table>
 
-    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="addEstimate(data)">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-    <ng-template #loading>
-      <div class="ion-padding">
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
-      </div>
-    </ng-template>
-  </ng-container>
+  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addEstimate()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
 </ion-content>

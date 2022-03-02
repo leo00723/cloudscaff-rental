@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Select } from '@ngxs/store';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { Term } from 'src/app/models/term.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { AddTermsComponent } from './add-terms/add-terms.component';
 
@@ -12,6 +14,8 @@ import { AddTermsComponent } from './add-terms/add-terms.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TermsPage {
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
   terms = [
     {
       title: "Estimate T's & C's",
@@ -39,23 +43,16 @@ export class TermsPage {
       path: 'Invoice',
     },
   ];
-  company$: Observable<Company>;
   terms$: Observable<Term[] | any>;
-  user$: Observable<any>;
   isLoading = true;
   constructor(private masterSvc: MasterService) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.user$ = this.masterSvc.auth().user$;
     this.init();
   }
 
-  async editTerms(
-    id: string,
-    data: { company: Company; user: any; terms: Term[] }
-  ) {
+  async editTerms(id: string, terms: Term[]) {
     let term = null;
-    if (data.terms) {
-      term = data.terms.find((t) => {
+    if (terms) {
+      term = terms.find((t) => {
         return t.id === id;
       });
     }
@@ -68,8 +65,6 @@ export class TermsPage {
               id,
               terms: '',
             },
-        company: data.company,
-        user: data.user,
       },
       showBackdrop: false,
       id,
@@ -84,7 +79,7 @@ export class TermsPage {
         if (company) {
           return this.masterSvc
             .edit()
-            .getDocsByCompanyId(`company/${company.id}/terms`);
+            .getCollection(`company/${company.id}/terms`);
         } else {
           return of(false);
         }

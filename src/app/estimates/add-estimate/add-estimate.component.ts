@@ -4,11 +4,14 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { Term } from 'src/app/models/term.model';
-import { Company } from '../../models/company.model';
-import { Customer } from '../../models/customer.model';
-import { Estimate } from '../../models/estimate.model';
+import { Company } from 'src/app/models/company.model';
+import { Customer } from 'src/app/models/customer.model';
+import { Estimate } from 'src/app/models/estimate.model';
 import { MasterService } from '../../services/master.service';
 import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { User } from 'src/app/models/user.model';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-add-estimate',
@@ -16,10 +19,10 @@ import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.compo
 })
 export class AddEstimatePage implements OnInit {
   @Input() estimate: Estimate;
-  @Input() company: Company;
-  @Input() user: any;
   @Input() isEdit = false;
   @ViewChild('message') message: IonTextarea;
+  user: User;
+  company: Company;
   customers$: Observable<Customer[]>;
   terms$: Observable<any>;
   rates$: Observable<any>;
@@ -30,7 +33,10 @@ export class AddEstimatePage implements OnInit {
   active = 'overview';
   show = '';
 
-  constructor(private masterSvc: MasterService) {}
+  constructor(private masterSvc: MasterService) {
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+  }
 
   get boardForms() {
     return this.form.get('boards') as FormArray;
@@ -56,7 +62,7 @@ export class AddEstimatePage implements OnInit {
   ngOnInit() {
     this.customers$ = this.masterSvc
       .edit()
-      .getDocsByCompanyId(`company/${this.company.id}/customers`);
+      .getCollection(`company/${this.company.id}/customers`);
     this.rates$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.company.id}/rateProfiles`, 'estimateRates');
@@ -65,10 +71,10 @@ export class AddEstimatePage implements OnInit {
       .getDocById(`company/${this.company.id}/terms`, 'Estimate');
     this.brokers$ = this.masterSvc
       .edit()
-      .getDocsByCompanyId(`company/${this.company.id}/brokers`);
+      .getCollection(`company/${this.company.id}/brokers`);
 
     if (this.isEdit) {
-      this.estimate = { ...this.estimate, date: this.estimate.date.toDate() };
+      this.estimate = { ...this.estimate };
       this.initEditForm();
       this.show = 'editCustomer';
     } else {

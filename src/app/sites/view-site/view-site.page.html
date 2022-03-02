@@ -1,0 +1,42 @@
+<ng-container *ngIf="site$ |async as site">
+  <app-header
+    title="{{site.code}} - {{site.name}}"
+    [showMenu]="false"
+    path="/dashboard/sites"
+  >
+    <ion-toolbar color="primary">
+      <ion-segment
+        (ionChange)="segmentChanged($event)"
+        selectOnFocus="true"
+        [value]="active"
+      >
+        <ion-segment-button value="scaffolds">
+          <ion-label>Scaffolds</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="estimates">
+          <ion-label>Estimates</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </app-header>
+
+  <ion-content fullscreen="true" class="ion-padding">
+    <ng-container [ngSwitch]="active">
+      <div *ngSwitchDefault>scaffolds</div>
+      <div *ngSwitchCase="'estimates'">
+        <app-estimate-table
+          [value]="estimates$"
+          *ngIf="estimates$ | async else loading"
+          (selectedItem)="editEstimate($event)"
+        ></app-estimate-table>
+      </div>
+      <ng-template #loading>
+        <div class="ion-padding">
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+          <app-skeleton-text></app-skeleton-text>
+        </div>
+      </ng-template>
+    </ng-container> </ion-content
+></ng-container>

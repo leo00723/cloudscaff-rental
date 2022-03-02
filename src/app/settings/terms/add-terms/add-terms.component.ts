@@ -1,23 +1,28 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { IonTextarea } from '@ionic/angular';
+import { Component, Input } from '@angular/core';
 import { Company } from 'src/app/models/company.model';
 import { Term } from 'src/app/models/term.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-add-terms',
   templateUrl: './add-terms.component.html',
 })
 export class AddTermsComponent {
-  @Input() company: Company;
-  @Input() user: any;
   @Input() term: Term = {
     id: '',
     terms: '',
   };
+  company: Company;
+  user: User;
   loading = false;
   ready = false;
-  constructor(private masterSvc: MasterService) {}
+  constructor(private masterSvc: MasterService) {
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+  }
   ionViewDidEnter() {
     this.ready = true;
   }

@@ -80,16 +80,12 @@
       </ion-col>
       <ion-col size="12" *ngIf="show === 'selectedSite'">
         <app-site-form
-          [company]="company"
-          [user]="user"
           [isCreate]="false"
           [siteData]="field('site', form2).value"
         ></app-site-form>
       </ion-col>
       <ion-col size="12" *ngIf="show === 'addSite'">
         <app-site-form
-          [company]="company"
-          [user]="user"
           [siteData]="site"
           (newSite)="newSite($event)"
         ></app-site-form>

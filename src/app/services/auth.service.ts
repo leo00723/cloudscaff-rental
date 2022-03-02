@@ -6,53 +6,20 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from '@angular/fire/auth';
-import { doc, docData, Firestore } from '@angular/fire/firestore';
-import { Observable, timer } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
-import { Company } from '../models/company.model';
+import { Store } from '@ngxs/store';
+import { GetUser } from 'src/app/shared/user/user.actions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  user$: Observable<any | null> = timer(1);
-  company$: Observable<any | null>;
-  uid = '';
   logoutF = false;
-  constructor(private auth: Auth, private firestore: Firestore) {
+  constructor(private auth: Auth, private store: Store) {
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
-        try {
-          this.uid = user.uid;
-          this.user$ = this.getUserProfile(this.uid);
-          this.init();
-        } catch (err) {
-          console.error(err);
-        }
+        this.store.dispatch(new GetUser(user.uid));
       }
     });
-  }
-
-  private init() {
-    this.company$ = this.user$.pipe(
-      filter(Boolean),
-      switchMap((user: any) => {
-        return this.getCompany(user.company);
-      })
-    );
-  }
-
-  private getCompany(id: string) {
-    return docData(doc(this.firestore, `company/${id}`), {
-      idField: 'id',
-    }) as Observable<Company>;
-  }
-
-  private getUserProfile(uid: string) {
-    const currentUser$ = docData(doc(this.firestore, `users/${uid}`), {
-      idField: 'id',
-    });
-    return currentUser$;
   }
 
   async login({ email, password }) {

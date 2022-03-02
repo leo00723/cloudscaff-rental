@@ -11,7 +11,7 @@
     </ion-buttons>
     <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
   </ion-toolbar>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-segment
       scrollable
       (ionChange)="segmentChanged($event)"
@@ -38,10 +38,10 @@
 </ion-header>
 
 <ion-content fullscreen="true">
-  <div class="container ion-padding pt-5" *ngIf="company">
+  <div class="container ion-padding" *ngIf="company" [ngSwitch]="active">
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <!-- OVERVIEW TAB -->
-      <ion-grid *ngIf="active === 'overview'">
+      <ion-grid *ngSwitchDefault>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
             <ion-text color="medium">
@@ -148,7 +148,7 @@
 
       <!-- SCAFFOLDS TAB -->
 
-      <ion-grid *ngIf="active === 'scaffolds'">
+      <ion-grid *ngSwitchCase="'scaffolds'">
         <!-- SCAFFOLDS -->
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
@@ -438,7 +438,7 @@
 
       <!-- LABOUR TAB -->
 
-      <ion-grid *ngIf="active === 'labour'">
+      <ion-grid *ngSwitchCase="'labour'">
         <ion-row class="mt-3" class="card-outline mb-3">
           <ion-col size="12">
             <ion-text color="medium">
@@ -632,7 +632,7 @@
 
       <!-- ADDITIONALS TAB -->
 
-      <ion-grid *ngIf="active === 'additionals'">
+      <ion-grid *ngSwitchCase="'additionals'">
         <ion-row class="mt-3">
           <ion-col size="12">
             <ion-text color="medium">
@@ -756,7 +756,7 @@
 
       <!-- SUMMARY TAB -->
 
-      <ion-grid *ngIf="active === 'summary'" class="card-outline">
+      <ion-grid *ngSwitchCase="'summary'" class="card-outline">
         <ion-row class="mt-3">
           <ion-col>
             <ion-text color="medium">
@@ -781,10 +781,7 @@
           </ion-col>
         </ion-row>
 
-        <app-estimate-summary
-          [estimate]="estimate"
-          [company]="company"
-        ></app-estimate-summary>
+        <app-estimate-summary [estimate]="estimate"></app-estimate-summary>
 
         <ion-row>
           <ion-progress-bar

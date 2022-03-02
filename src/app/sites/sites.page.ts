@@ -1,57 +1,61 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Observable, of, timer } from 'rxjs';
-import { concatMap, filter, switchMap, tap } from 'rxjs/operators';
-import { SiteFormComponent } from '../components/site-form/site-form.component';
-import { AddEstimatePage } from '../estimates/add-estimate/add-estimate.component';
-import { Company } from '../models/company.model';
-import { Estimate } from '../models/estimate.model';
-import { Site } from '../models/site.model';
-import { MasterService } from '../services/master.service';
+import { Component, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { Company } from 'src/app/models/company.model';
+import { Site } from 'src/app/models/site.model';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from '../shared/company/company.state';
 import { AddSiteComponent } from './add-site/add-site.component';
+import { GetSites } from './state/sites.actions';
+import { SitesState } from './state/sites.state';
 
 @Component({
   selector: 'app-sites',
   templateUrl: './sites.page.html',
 })
 export class SitesPage implements OnInit {
-  sites$: Observable<Site[] | any>;
-  company$: Observable<Company>;
-  user$: Observable<any>;
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
+  @Select() sites$: Observable<Site[]>;
   isLoading = true;
-  constructor(
-    private masterSvc: MasterService,
-    private change: ChangeDetectorRef
-  ) {
-    this.company$ = this.masterSvc.auth().company$;
-    this.user$ = this.masterSvc.auth().user$;
-  }
+  constructor(private masterSvc: MasterService) {}
 
   ngOnInit() {
     this.init();
   }
 
-  async viewSite(siteData: Site, data: { company: Company; user: any }) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddSiteComponent,
-      componentProps: {
-        company: data.company,
-        user: data.user,
-        siteData,
-        isEdit: true,
-      },
-      showBackdrop: false,
-      id: 'editSite',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
+  async viewSite(siteData: Site) {
+    this.masterSvc
+      .router()
+      .navigateByUrl(
+        `/dashboard/site/${
+          this.masterSvc.store().selectSnapshot(CompanyState.company).id
+        }-${siteData.id}`,
+        {
+          replaceUrl: true,
+        }
+      );
+
+    // const modal = await this.masterSvc.modal().create({
+    //   component: ViewSitePage,
+    //   componentProps: {
+    //     company: data.company,
+    //     user: data.user,
+    //     siteData,
+    //     isEdit: true,
+    //   },
+    //   showBackdrop: false,
+    //   id: 'editSite',
+    //   cssClass: 'fullscreen',
+    // });
+    // return await modal.present();
   }
 
-  async addSite(data: { company: Company; user: any }) {
+  async addSite() {
     const modal = await this.masterSvc.modal().create({
       component: AddSiteComponent,
       componentProps: {
-        company: data.company,
-        user: data.user,
         isCreate: true,
       },
       cssClass: 'fullscreen',
@@ -62,26 +66,16 @@ export class SitesPage implements OnInit {
   }
 
   init() {
-    this.sites$ = this.company$.pipe(
-      switchMap((company) => {
-        if (company) {
-          return this.masterSvc
-            .edit()
-            .getDocsByCompanyIdOrdered(
-              `company/${company.id}/sites`,
-              'code',
-              'desc'
-            )
-            .pipe(
-              tap(() => {
-                this.isLoading = false;
-                this.change.detectChanges();
-              })
-            );
-        } else {
-          return timer(1);
-        }
-      })
-    ) as Observable<any>;
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+
+    setTimeout(() => {
+      if (id) {
+        let sites = !!this.masterSvc.store().selectSnapshot(SitesState.sites);
+        if (!sites) this.masterSvc.store().dispatch(new GetSites(id));
+      } else {
+        console.log('-----------------------try sites----------------------');
+        this.init();
+      }
+    }, 200);
   }
 }

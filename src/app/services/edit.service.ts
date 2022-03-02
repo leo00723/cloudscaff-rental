@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
 import {
+  addDoc,
   collection,
+  collectionData,
+  deleteDoc,
   doc,
+  docData,
   DocumentReference,
   Firestore,
   orderBy,
+  OrderByDirection,
   query,
   setDoc,
   updateDoc,
+  where,
+  WhereFilterOp,
 } from '@angular/fire/firestore';
-import { addDoc, deleteDoc, OrderByDirection } from 'firebase/firestore';
-import { collectionData, docData } from 'rxfire/firestore';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -48,15 +54,27 @@ export class EditService {
   getDocById(collectionName: string, id: string) {
     return docData(this.docRef(collectionName, id), {
       idField: 'id',
-    });
+    }).pipe(
+      map((data: any) => {
+        if (data.date) return { ...data, date: data.date.toDate() };
+        return data;
+      })
+    );
   }
-  getDocsByCompanyId(collectionPath: string) {
+  getCollection(collectionPath: string) {
     return collectionData(this.collectionRef(collectionPath), {
       idField: 'id',
-    }) as Observable<any[]>;
+    }).pipe(
+      map((data: any) => {
+        return data.map((d: any) => {
+          if (d.date) return { ...d, date: d.date.toDate() };
+          return d;
+        });
+      })
+    ) as Observable<any[]>;
   }
 
-  getDocsByCompanyIdOrdered(
+  getCollectionOrdered(
     collectionPath: string,
     orderField: string,
     direction: OrderByDirection
@@ -66,6 +84,36 @@ export class EditService {
       {
         idField: 'id',
       }
+    ).pipe(
+      map((data: any) => {
+        return data.map((d: any) => {
+          if (d.date) return { ...d, date: d.date.toDate() };
+          return d;
+        });
+      })
+    ) as Observable<any[]>;
+  }
+  getCollectionWhere(
+    collectionPath: string,
+    field: string,
+    whereFilter: WhereFilterOp,
+    value: any
+  ) {
+    return collectionData(
+      query(
+        this.collectionRef(collectionPath),
+        where(field, whereFilter, value)
+      ),
+      {
+        idField: 'id',
+      }
+    ).pipe(
+      map((data: any) => {
+        return data.map((d: any) => {
+          if (d.date) return { ...d, date: d.date.toDate() };
+          return d;
+        });
+      })
     ) as Observable<any[]>;
   }
 
@@ -83,13 +131,6 @@ export class EditService {
     return docRef.id;
   }
 
-  pad(num, size) {
-    let s = num + '';
-    while (s.length < size) {
-      s = '0' + s;
-    }
-    return s;
-  }
   private docRef(collectionName: string, id: string) {
     return doc(this.firestore, `${collectionName}/${id}`);
   }
