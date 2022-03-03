@@ -6,8 +6,8 @@ export interface Site {
   code: string;
   country: string;
   customer: Customer;
-  company: string;
-  id: string;
+  companyId: string;
+  id?: string;
   name: string;
   suburb: string;
   totalScaffolds: number;

@@ -17,7 +17,7 @@ export interface Estimate {
   discountPercentage: number;
   endDate: any;
   hire: HireItem;
-  id: string;
+  id?: string;
   labour: LabourItem[];
   message: string;
   scaffold: Item;
@@ -32,7 +32,9 @@ export interface Estimate {
   woNumber?: string;
   siteId?: string;
   scaffoldId?: string;
+  scaffoldCode?: string;
   createdBy?: string;
+  updatedBy?: string;
   acceptedBy?: string;
   rejectedBy?: string;
 }

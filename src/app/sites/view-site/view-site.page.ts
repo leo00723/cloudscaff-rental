@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Estimate } from 'src/app/models/estimate.model';
+import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { MasterService } from 'src/app/services/master.service';
 import { SetSite } from 'src/app/sites/state/sites.actions';
@@ -15,6 +16,7 @@ import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
 export class ViewSitePage implements OnDestroy {
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
+  scaffolds$: Observable<Scaffold[]>;
   active = 'scaffolds';
 
   constructor(
@@ -39,6 +41,14 @@ export class ViewSitePage implements OnDestroy {
         '==',
         ids[1]
       ) as Observable<Estimate[]>;
+    this.scaffolds$ = this.masterSvc
+      .edit()
+      .getCollectionWhere(
+        `company/${ids[0]}/scaffolds`,
+        'siteId',
+        '==',
+        ids[1]
+      ) as Observable<Scaffold[]>;
   }
 
   async editEstimate(estimate: Estimate) {

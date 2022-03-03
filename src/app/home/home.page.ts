@@ -49,7 +49,7 @@ export class HomePage implements OnDestroy {
             () => {
               this.updates.activateUpdate().then((res) => {
                 if (res) {
-                  document.location.reload();
+                  window.location.reload();
                 }
               });
             },

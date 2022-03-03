@@ -17,26 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private masterSvc: MasterService,
     private ngZone: NgZone
   ) {
-    this.splash().then(async (modal) => {
-      setTimeout(async () => {
-        await modal.dismiss().then(() => {});
-      }, 2000);
-      // this.subs.add(
-      //   this.user$.subscribe(async (user) => {
-      //     const path = user ? '/login' : '/home';
-      //     this.ngZone.run(async () => {
-      //       await this.masterSvc
-      //         .router()
-      //         .navigateByUrl(path, { replaceUrl: true })
-      //         .then(() => {
-      //           setTimeout(async () => {
-      //             await modal.dismiss().then(() => {});
-      //           }, 1000);
-      //         });
-      //     });
-      //   })
-      // );
-    });
+    this.splash();
   }
 
   async splash() {
@@ -46,12 +27,11 @@ export class AppComponent implements OnInit, OnDestroy {
       showBackdrop: false,
       id: 'splash',
     });
-    await modal.present();
-    return modal;
+    return await modal.present();
   }
 
   ngOnInit(): void {
-    if (!this.masterSvc.platform().is('mobile')) {
+    if (!this.masterSvc.platform().is('cordova')) {
       this.subs.add(
         this.updates.versionUpdates.subscribe((event) => {
           if (event.type === 'VERSION_READY') {
@@ -59,7 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
               () => {
                 this.updates.activateUpdate().then((res) => {
                   if (res) {
-                    document.location.reload();
+                    window.location.reload();
                   }
                 });
               },

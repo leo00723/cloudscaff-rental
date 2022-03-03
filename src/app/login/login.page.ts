@@ -33,7 +33,9 @@ export class LoginPage implements OnInit {
       .login(this.form.value)
       .then(() => {
         this.form.reset();
-        this.masterSvc.router().navigateByUrl('/home', { replaceUrl: true });
+        this.masterSvc
+          .router()
+          .navigateByUrl('/dashboard', { replaceUrl: true });
         this.loading = !this.loading;
       })
       .catch((error) => {

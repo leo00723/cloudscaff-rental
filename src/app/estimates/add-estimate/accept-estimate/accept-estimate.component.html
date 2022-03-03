@@ -14,45 +14,45 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-row *ngIf="page === 'po'">
-    <ion-col size="12">
-      <ion-text color="medium">
-        <h4>Attach Purchase Order</h4>
-      </ion-text>
-    </ion-col>
-    <ion-col size="12">
-      <app-input-reactive
-        title="Purchase Order"
-        controlName="poNumber"
-        [form]="form"
-        placeholder="Enter Purchase Order Number"
-      >
-      </app-input-reactive>
-    </ion-col>
-    <ion-col size="12">
-      <app-input-reactive
-        title="Work Order"
-        [optional]="true"
-        controlName="woNumber"
-        [form]="form"
-        placeholder="Enter Work Order Number"
-      >
-      </app-input-reactive>
-    </ion-col>
-    <ion-col size="12">
-      <ion-button
-        size="block"
-        shape="round"
-        color="success"
-        [disabled]="!form.get('poNumber').value"
-        (click)="next('selectSite')"
-      >
-        Next
-      </ion-button>
-    </ion-col>
-  </ion-row>
-  <form name="estimate" [formGroup]="form2">
-    <ion-row *ngIf="page === 'selectSite'">
+  <form name="estimate" [formGroup]="form2" [ngSwitch]="page">
+    <ion-row *ngSwitchDefault>
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>Attach Purchase Order</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-reactive
+          title="Purchase Order"
+          controlName="poNumber"
+          [form]="form"
+          placeholder="Enter Purchase Order Number"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-reactive
+          title="Work Order"
+          [optional]="true"
+          controlName="woNumber"
+          [form]="form"
+          placeholder="Enter Work Order Number"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col size="12">
+        <ion-button
+          size="block"
+          shape="round"
+          color="success"
+          [disabled]="!form.get('poNumber').value"
+          (click)="page = 1"
+        >
+          Next
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngSwitchCase="1">
       <ion-col size="12">
         <ion-text color="medium">
           <h4>Add Estimate to Site</h4>
@@ -95,13 +95,13 @@
           size="block"
           shape="round"
           color="success"
-          (click)="next('activateEstimate')"
+          (click)="page = 2"
         >
           Next
         </ion-button>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="page === 'activateEstimate'">
+    <ion-row *ngSwitchCase="2">
       <ion-col size="12">
         <app-input-reactive
           title="Estimate"
@@ -122,11 +122,22 @@
           [readonly]="true"
         >
         </app-input-reactive>
-      </ion-col>
-      <ion-col size="12">
+        <app-input-text
+          title="Scaffold"
+          [value]="field('scaffold', form2).value.code"
+          [readonly]="true"
+        >
+        </app-input-text>
         <app-input-reactive
           title="Purchase Order"
           controlName="poNumber"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+        <app-input-reactive
+          title="Work Order"
+          controlName="woNumber"
           [form]="form"
           [readonly]="true"
         >
@@ -142,7 +153,7 @@
           size="block"
           shape="round"
           color="success"
-          (click)="next('activate')"
+          (click)="activate()"
         >
           Accept Estimate
         </ion-button>

@@ -4,7 +4,7 @@
     [showMenu]="false"
     path="/dashboard/sites"
   >
-    <ion-toolbar color="primary">
+    <ion-toolbar>
       <ion-segment
         (ionChange)="segmentChanged($event)"
         selectOnFocus="true"
@@ -22,7 +22,12 @@
 
   <ion-content fullscreen="true" class="ion-padding">
     <ng-container [ngSwitch]="active">
-      <div *ngSwitchDefault>scaffolds</div>
+      <div *ngSwitchDefault>
+        <app-scaffold-table
+          [value]="scaffolds$"
+          *ngIf="scaffolds$ | async else loading"
+        ></app-scaffold-table>
+      </div>
       <div *ngSwitchCase="'estimates'">
         <app-estimate-table
           [value]="estimates$"

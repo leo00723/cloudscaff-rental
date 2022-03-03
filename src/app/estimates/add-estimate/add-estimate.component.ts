@@ -259,34 +259,33 @@ export class AddEstimatePage implements OnInit {
   }
 
   createEstimate() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.updateEstimateTotal();
-      this.masterSvc
-        .edit()
-        .addDocument(
-          `company/${this.estimate.company.id}/estimates`,
-          this.estimate
-        )
-        .then(() => {
-          this.masterSvc.edit().updateDoc('company', this.company.id, {
-            totalEstimates: increment(1),
-          });
-          this.masterSvc
-            .notification()
-            .toast('Estimate created successfully!', 'success');
-          this.close();
-        })
-        .catch(() => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong creating your estimate, try again!',
-              'danger',
-              2000
-            );
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.updateEstimateTotal();
+        await this.masterSvc
+          .edit()
+          .addDocument(
+            `company/${this.estimate.company.id}/estimates`,
+            this.estimate
+          );
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalEstimates: increment(1),
         });
+        this.masterSvc
+          .notification()
+          .toast('Estimate created successfully!', 'success');
+        this.close();
+      } catch (error) {
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your estimate, try again!',
+            'danger',
+            2000
+          );
+      }
     });
   }
 
@@ -402,7 +401,8 @@ export class AddEstimatePage implements OnInit {
       tax,
       vat,
       total,
-      createdBy: this.user.name,
+      createdBy: this.isEdit ? this.estimate.createdBy : this.user.id,
+      updatedBy: this.user.id,
     });
   }
 
@@ -652,7 +652,7 @@ export class AddEstimatePage implements OnInit {
         total: [this.estimate.hire.total],
       }),
       additionals: this.masterSvc.fb().array([]),
-      broker: [this.estimate.broker, Validators.required],
+      broker: [this.estimate.broker],
       labour: this.masterSvc.fb().array([]),
       poNumber: [this.estimate.poNumber],
       woNumber: [this.estimate.woNumber],

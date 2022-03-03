@@ -31,6 +31,15 @@
   ></ngx-datatable-column>
   <ngx-datatable-column name="Site Name"></ngx-datatable-column>
   <ngx-datatable-column
+    name="Scaffold Code"
+    cellClass="text-center"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value ? value : "" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
     name="Start Date"
     cellClass="text-center"
     headerClass="text-center"

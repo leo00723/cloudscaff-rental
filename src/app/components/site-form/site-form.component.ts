@@ -26,7 +26,7 @@ export class SiteFormComponent implements OnInit {
     suburb: '',
     totalScaffolds: 0,
     zip: '',
-    company: '',
+    companyId: '',
     createdBy: '',
     updatedBy: '',
     customer: undefined,
@@ -84,7 +84,7 @@ export class SiteFormComponent implements OnInit {
   create() {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.loading = true;
-      this.site.company = this.company.id;
+      this.site.companyId = this.company.id;
       this.site.createdBy = this.user.name;
       const code = `SITE${new Date().toLocaleDateString('en', {
         year: '2-digit',
@@ -92,7 +92,7 @@ export class SiteFormComponent implements OnInit {
       Object.assign(this.site, { ...this.form.value, code, date: new Date() });
       this.masterSvc
         .edit()
-        .addDocument(`company/${this.site.company}/sites`, this.site)
+        .addDocument(`company/${this.site.companyId}/sites`, this.site)
         .then((data) => {
           this.loading = false;
           this.masterSvc.edit().updateDoc('company', this.company.id, {
@@ -124,7 +124,7 @@ export class SiteFormComponent implements OnInit {
       this.masterSvc
         .edit()
         .updateDoc(
-          `company/${this.site.company}/sites`,
+          `company/${this.site.companyId}/sites`,
           this.site.id,
           this.site
         )
@@ -151,7 +151,7 @@ export class SiteFormComponent implements OnInit {
       this.loading = true;
       this.masterSvc
         .edit()
-        .deleteDocById(`company/${this.site.company}/sites`, this.site.id)
+        .deleteDocById(`company/${this.site.companyId}/sites`, this.site.id)
         .then(() => {
           this.loading = false;
           this.masterSvc

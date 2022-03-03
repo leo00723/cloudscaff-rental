@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-splash',
@@ -17,4 +18,10 @@ import { Component } from '@angular/core';
   `,
   styleUrls: ['./splash.page.scss'],
 })
-export class SplashPage {}
+export class SplashPage {
+  constructor(private modalSvc: ModalController) {
+    setTimeout(() => {
+      this.modalSvc.dismiss(null, 'close', 'splash');
+    }, 1500);
+  }
+}

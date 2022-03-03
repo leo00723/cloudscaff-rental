@@ -18,6 +18,7 @@ import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 import { InputDateComponent } from './input-date/input-date.component';
 import { EstimateTableComponent } from '../estimates/estimate-table/estimate-table.component';
 import { EstimateSummaryComponent } from '../estimates/add-estimate/estimate-summary/estimate-summary.component';
+import { ImgUploadComponent } from './img-upload/img-upload.component';
 
 const COMPONENTS = [
   CustomerComponent,
@@ -34,7 +35,7 @@ const COMPONENTS = [
   InputDateComponent,
   EstimateTableComponent,
   EstimateSummaryComponent,
-
+  ImgUploadComponent,
 ];
 const IMPORTS = [
   CommonModule,

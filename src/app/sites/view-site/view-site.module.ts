@@ -5,6 +5,7 @@ import { SiteState } from '../state/sites.state';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
+import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.component';
 
 @NgModule({
   imports: [
@@ -12,6 +13,6 @@ import { ViewSitePage } from './view-site.page';
     ViewSitePageRoutingModule,
     NgxsModule.forFeature([SiteState]),
   ],
-  declarations: [ViewSitePage, ViewEstimateComponent],
+  declarations: [ViewSitePage, ViewEstimateComponent, ScaffoldTableComponent],
 })
 export class ViewSitePageModule {}

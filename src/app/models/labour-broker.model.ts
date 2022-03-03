@@ -1,7 +1,7 @@
 import { Labour } from './labour.model';
 
 export class LabourBroker {
-	id: string;
-	name: string;
-	types: Labour[];
+  id?: string;
+  name: string;
+  types: Labour[];
 }
