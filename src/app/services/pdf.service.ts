@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { DecimalPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
+import { Observer, of } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
@@ -238,7 +239,9 @@ export class PdfService {
           estimate.code,
           estimate.siteName,
           estimate.date,
-          'assets/icon/favicon.png'
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png'
         ),
         hr,
         this.getSubHeader(estimate.customer, company),
@@ -537,7 +540,7 @@ export class PdfService {
     };
     return info;
   }
-  private getBase64ImageFromURL(url) {
+  private async getBase64ImageFromURL(url) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.setAttribute('crossOrigin', 'anonymous');
@@ -562,6 +565,7 @@ export class PdfService {
       img.src = url;
     });
   }
+
   private format(value: number) {
     return this.decimalPipe.transform(value, '0.2-2');
   }

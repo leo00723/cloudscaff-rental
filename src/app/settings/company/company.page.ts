@@ -63,12 +63,7 @@ export class CompanyPage implements OnInit {
   constructor(private fb: FormBuilder, private masterSvc: MasterService) {}
 
   ngOnInit(): void {
-    Object.assign(
-      this.company,
-      this.masterSvc.store().selectSnapshot(CompanyState.company)
-    );
-    this.initFrom();
-    this.isLoading = false;
+    this.init();
   }
 
   field(field: string) {
@@ -104,38 +99,72 @@ export class CompanyPage implements OnInit {
     });
   }
 
-  private initFrom() {
-    this.form = this.fb.group({
-      name: [this.company.name, Validators.required],
-      email: [this.company.email, [Validators.required, Validators.email]],
-      phone: [this.company.phone, Validators.required],
-      address: [this.company.address, Validators.required],
-      suburb: [this.company.suburb],
-      city: [this.company.city, Validators.required],
-      zip: [this.company.zip, Validators.required],
-      country: [this.company.country, Validators.required],
-      bankName: [this.company.bankName],
-      accountNum: [this.company.accountNum],
-      regNumber: [this.company.regNumber],
-      branchCode: [this.company.branchCode],
-      swiftCode: [this.company.swiftCode],
-      currency: [this.company.currency, Validators.required],
-      measurement: [this.company.measurement, Validators.required],
-      mass: [this.company.mass, Validators.required],
-      salesTax: [
-        this.company.salesTax,
-        [Validators.required, Validators.min(0), Validators.max(100)],
-      ],
-      vat: [
-        this.company.vat,
-        [Validators.required, Validators.min(0), Validators.max(100)],
-      ],
-      terminology: this.fb.group({
-        scaffold: [this.company.terminology.scaffold, Validators.required],
-        boards: [this.company.terminology.boards, Validators.required],
-        hire: [this.company.terminology.hire, Validators.required],
-      }),
-      // measurement: ['', Validators.required],
-    });
+  async uploadImage(data: any) {
+    try {
+      this.company.logoUrl = data.url;
+      this.company.logoRef = data.ref;
+      await this.masterSvc.edit().updateDoc('company', this.company.id, {
+        logoUrl: data.url,
+        logoRef: data.ref,
+      });
+      this.masterSvc
+        .notification()
+        .toast('Image uploaded successfully', 'success');
+    } catch (e) {
+      console.log(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong uploading you image. Please try again!',
+          'danger'
+        );
+    }
+  }
+  init() {
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    setTimeout(() => {
+      if (id) {
+        Object.assign(
+          this.company,
+          this.masterSvc.store().selectSnapshot(CompanyState.company)
+        );
+        this.form = this.fb.group({
+          name: [this.company.name, Validators.required],
+          email: [this.company.email, [Validators.required, Validators.email]],
+          phone: [this.company.phone, Validators.required],
+          address: [this.company.address, Validators.required],
+          suburb: [this.company.suburb],
+          city: [this.company.city, Validators.required],
+          zip: [this.company.zip, Validators.required],
+          country: [this.company.country, Validators.required],
+          bankName: [this.company.bankName],
+          accountNum: [this.company.accountNum],
+          regNumber: [this.company.regNumber],
+          branchCode: [this.company.branchCode],
+          swiftCode: [this.company.swiftCode],
+          currency: [this.company.currency, Validators.required],
+          measurement: [this.company.measurement, Validators.required],
+          mass: [this.company.mass, Validators.required],
+          salesTax: [
+            this.company.salesTax,
+            [Validators.required, Validators.min(0), Validators.max(100)],
+          ],
+          vat: [
+            this.company.vat,
+            [Validators.required, Validators.min(0), Validators.max(100)],
+          ],
+          terminology: this.fb.group({
+            scaffold: [this.company.terminology.scaffold, Validators.required],
+            boards: [this.company.terminology.boards, Validators.required],
+            hire: [this.company.terminology.hire, Validators.required],
+          }),
+          // measurement: ['', Validators.required],
+        });
+        this.isLoading = false;
+      } else {
+        console.log('-----------------------try company----------------------');
+        this.init();
+      }
+    }, 200);
   }
 }

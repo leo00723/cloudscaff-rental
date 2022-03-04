@@ -1,1 +1,23 @@
-<p>img-upload works!</p>
+<ion-item lines="none" class="mb-3">
+  <ion-img
+    *ngIf="url.length > 0 && !loading; else placeholder"
+    (click)="changeImage()"
+    class="m-auto cursor-pointer"
+    [src]="url"
+  ></ion-img>
+
+  <ng-template #placeholder>
+    <ion-img
+      *ngIf="!loading"
+      (click)="changeImage()"
+      class="m-auto cursor-pointer"
+      src="https://via.placeholder.com/300x100"
+    ></ion-img>
+    <ion-skeleton-text
+      *ngIf="loading"
+      animated
+      class="m-auto rounded-lg"
+      style="width: 300px; height: 100px"
+    ></ion-skeleton-text>
+  </ng-template>
+</ion-item>
