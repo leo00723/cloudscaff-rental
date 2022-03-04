@@ -397,7 +397,7 @@ export class PdfService {
               rowSpan: 4,
               image: await this.getBase64ImageFromURL(url),
 
-              width: 50,
+              width: 150,
               alignment: 'right',
             },
             '',
