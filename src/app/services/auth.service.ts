@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
+  confirmPasswordReset,
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -42,5 +43,9 @@ export class AuthService {
 
   async resetPassword(email: string) {
     return await sendPasswordResetEmail(this.auth, email);
+  }
+
+  async newPassword(oobCode: string, password: string) {
+    return await confirmPasswordReset(this.auth, oobCode, password);
   }
 }

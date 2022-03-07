@@ -16,6 +16,8 @@ export class ForgotPage implements OnInit {
   loading = false;
   errorMessage = 'Something went wrong.Please try again later.';
   form: FormGroup;
+  page = 0;
+  email = '';
   constructor(private masterSvc: MasterService, private fb: FormBuilder) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -28,15 +30,15 @@ export class ForgotPage implements OnInit {
     try {
       this.error = false;
       this.loading = true;
-      await this.masterSvc.auth().resetPassword(this.field('email').value);
+      this.email = this.field('email').value;
+      await this.masterSvc.auth().resetPassword(this.email);
+      this.page = 1;
       this.form.reset();
       this.loading = !this.loading;
     } catch (error) {
       this.loading = !this.loading;
       if (error.code === 'auth/user-not-found') {
         this.errorMessage = `Seems like you dont have an account. Please contact your administrator.`;
-      } else if (error.code === 'auth/wrong-password') {
-        this.errorMessage = `Email address or Password is incorrect.`;
       }
       this.error = true;
     }

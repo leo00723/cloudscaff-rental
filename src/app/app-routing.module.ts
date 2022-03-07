@@ -29,6 +29,13 @@ const routes: Routes = [
     data: { authGuardPipe: redirectAuthorized },
   },
   {
+    path: 'reset',
+    loadChildren: () =>
+      import('./reset/reset.module').then((m) => m.ResetPageModule),
+    canActivate: [AuthGuard],
+    data: { authGuardPipe: redirectAuthorized },
+  },
+  {
     path: 'dashboard',
     loadChildren: () =>
       import('./home/home.module').then((m) => m.HomePageModule),

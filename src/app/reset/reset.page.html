@@ -12,19 +12,29 @@
   <ion-row class="py-5 rounded-lg-top ion-padding" *ngSwitchDefault>
     <ion-col size="12" sizeLg="4" sizeMd="6" class="mx-auto">
       <ion-text color="dark">
-        <h1 class="display-6 my-auto fw-bold">Forgot Password?</h1>
+        <h1 class="display-6 my-auto fw-bold">Reset Password</h1>
         <p class="fw-light my-auto mt-2">
-          Enter your email address and we'll send you a link to reset your
-          password.
+          Enter your new password for your account.
         </p>
       </ion-text>
       <form class="py-5" [formGroup]="form" (ngSubmit)="reset()">
         <app-input-reactive
           [form]="form"
-          title="Email address"
-          controlName="email"
-          placeholder="Email address"
+          title="New Passowrd"
+          controlName="password"
+          type="password"
+          placeholder="New Password"
         ></app-input-reactive>
+        <app-input-reactive
+          [form]="form"
+          title="Confirm Password"
+          controlName="confirm"
+          type="password"
+          placeholder="Confirm Password"
+        ></app-input-reactive>
+        <ion-text *ngIf="form.errors" class="small mb-3" color="danger">
+          <p color="danger">Passwords do not match!</p>
+        </ion-text>
         <ion-text *ngIf="error" class="small mb-3" color="danger">
           <p color="danger">{{errorMessage}}</p>
         </ion-text>
@@ -57,20 +67,11 @@
   <ion-row class="py-5 rounded-lg-top ion-padding" *ngSwitchCase="1">
     <ion-col size="12" sizeLg="4" sizeMd="6" class="mx-auto">
       <ion-text color="dark">
-        <h1 class="display-6 my-auto fw-bold">Email Sent Successfully.</h1>
+        <h1 class="display-6 my-auto fw-bold">Password Reset Successfully.</h1>
         <p class="fw-light my-auto mt-2">
-          Please check your inbox for our reset email. Sometimes our emails may
-          land in spam so please check that too.
+          Your password has been reset. You can now Sign in to your account.
         </p>
       </ion-text>
-      <div class="py-3">
-        <div class="mb-3">
-          <label class="form-label fw-bold" for="email">Email sent to:</label>
-          <hr />
-          <h2 class="fs-5 fw-bold text-center">{{ email }}</h2>
-          <hr />
-        </div>
-      </div>
 
       <ion-button
         expand="block"
@@ -81,12 +82,6 @@
       >
         Sign in
       </ion-button>
-
-      <div class="mt-5 text-primary text-center">
-        <a class="text-decoration-none" (click)="page = 0"
-          >Resend Reset Email
-        </a>
-      </div>
     </ion-col>
   </ion-row>
 </ion-content>
