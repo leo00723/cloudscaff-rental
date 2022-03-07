@@ -7,7 +7,7 @@ import { Term } from 'src/app/models/term.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
-import { MasterService } from '../../services/master.service';
+import { MasterService } from '../../../services/master.service';
 import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { User } from 'src/app/models/user.model';

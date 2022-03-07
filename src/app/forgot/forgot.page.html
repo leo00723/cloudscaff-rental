@@ -1,0 +1,57 @@
+<ion-content>
+  <div class="d-flex justify-content-center bg-primary py-5 px-2">
+    <ion-thumbnail>
+      <ion-img
+        class="img-fluid"
+        width="100px"
+        src="assets/icons/icon-512x512.png"
+        alt="logo"
+      ></ion-img>
+    </ion-thumbnail>
+  </div>
+  <ion-row class="py-5 rounded-lg-top ion-padding">
+    <ion-col size="12" sizeLg="4" sizeMd="6" class="mx-auto">
+      <ion-text color="dark">
+        <h1 class="display-6 my-auto fw-bold">Forgot Password?</h1>
+        <p class="fw-light my-auto mt-2">
+          Enter your email address and we'll send you a link to reset your
+          password.
+        </p>
+      </ion-text>
+      <form class="py-5" [formGroup]="form" (ngSubmit)="reset()">
+        <app-input-reactive
+          [form]="form"
+          title="Email address"
+          controlName="email"
+          placeholder="Email address"
+        ></app-input-reactive>
+        <ion-text *ngIf="error" class="small mb-3" color="danger">
+          <p color="danger">{{errorMessage}}</p>
+        </ion-text>
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+
+        <ion-button
+          expand="block"
+          shape="round"
+          *ngIf="!loading"
+          [disabled]="form.invalid"
+          type="submit"
+        >
+          Reset Password
+        </ion-button>
+
+        <div class="mt-5 text-primary text-center">
+          <a
+            class="text-decoration-none"
+            routerLink="/login"
+            routerDirection="root"
+            >Remember your password? Sign in
+          </a>
+        </div>
+      </form>
+    </ion-col>
+  </ion-row>
+</ion-content>

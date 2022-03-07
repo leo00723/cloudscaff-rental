@@ -11,7 +11,7 @@ import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Currencies } from 'src/app/models/currencies.model';
 import { CompanyState } from 'src/app/shared/company/company.state';
-import { MasterService } from '../../services/master.service';
+import { MasterService } from '../../../services/master.service';
 
 @Component({
   selector: 'app-company',

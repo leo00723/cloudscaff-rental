@@ -5,7 +5,7 @@ import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
-import { CompanyState } from '../shared/company/company.state';
+import { CompanyState } from '../../shared/company/company.state';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
 import { GetEstimates } from './state/estimate.actions';
 import { EstimatesState } from './state/estimate.state';

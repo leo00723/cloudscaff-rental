@@ -7,7 +7,7 @@ import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { MasterService } from 'src/app/services/master.service';
 import { Navigate } from 'src/app/shared/router.state';
-import { SetSite } from 'src/app/sites/state/sites.actions';
+import { SetSite } from 'src/app/home/sites/state/sites.actions';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
 
 @Component({
