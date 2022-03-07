@@ -35,6 +35,7 @@ export class EditprofileComponent implements OnInit {
         image: data.url2,
         imageRef: data.ref,
       });
+      this.user = this.masterSvc.store().selectSnapshot(UserState.user);
       this.masterSvc
         .notification()
         .toast('Image uploaded successfully', 'success');
