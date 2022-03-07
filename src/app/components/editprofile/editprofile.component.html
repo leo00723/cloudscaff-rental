@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="title !== 'Complete Profile'">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ title }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen="true" class="ion-padding">
+  <ion-row *ngIf="user$ | async as user">
+    <ion-col>
+      <app-img-upload
+        [image]="user.thumb ? user.thumb : ''"
+        [deleteRef]="user.imageRef ? user.imageRef : ''"
+        path="users/{{ user.id }}/profile"
+        (result)="uploadImage($event)"
+      ></app-img-upload>
+    </ion-col>
+    <ion-col size="12">
+      <form [formGroup]="form">
+        <app-input-reactive
+          title="Email"
+          [form]="form"
+          controlName="email"
+          [readonly]="true"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Name"
+          [form]="form"
+          controlName="name"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Contact Number"
+          [form]="form"
+          controlName="phone"
+        ></app-input-reactive>
+      </form>
+    </ion-col>
+    <ion-col>
+      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+
+      <ion-button
+        *ngIf="!loading"
+        (click)="update()"
+        expand="block"
+        shape="round"
+        [disabled]="form.invalid"
+      >
+        Update Profile
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-content>

@@ -19,6 +19,7 @@ import { InputDateComponent } from './input-date/input-date.component';
 import { EstimateTableComponent } from '../estimates/estimate-table/estimate-table.component';
 import { EstimateSummaryComponent } from '../estimates/add-estimate/estimate-summary/estimate-summary.component';
 import { ImgUploadComponent } from './img-upload/img-upload.component';
+import { EditprofileComponent } from './editprofile/editprofile.component';
 
 const COMPONENTS = [
   CustomerComponent,
@@ -47,7 +48,7 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS],
+  declarations: [COMPONENTS, EditprofileComponent],
   imports: [IMPORTS],
   exports: [IMPORTS, COMPONENTS],
 })

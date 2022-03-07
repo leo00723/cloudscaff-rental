@@ -9,6 +9,7 @@ import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { Navigate } from 'src/app/shared/router.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
@@ -99,11 +100,12 @@ export class AcceptEstimateComponent implements OnInit {
         this.loading = false;
         this.masterSvc.modal().dismiss(undefined, 'close', 'acceptEstimate');
         this.masterSvc.modal().dismiss(undefined, 'close', 'editEstimate');
+
         this.masterSvc
-          .router()
-          .navigateByUrl(`/dashboard/site/${this.company.id}-${this.site.id}`, {
-            replaceUrl: true,
-          });
+          .store()
+          .dispatch(
+            new Navigate(`/dashboard/site/${this.company.id}-${this.site.id}`)
+          );
       } catch (err) {
         this.loading = false;
         this.masterSvc

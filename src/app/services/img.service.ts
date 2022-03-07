@@ -3,12 +3,12 @@ import { Firestore } from '@angular/fire/firestore';
 import {
   deleteObject,
   getDownloadURL,
+  listAll,
   ref,
   Storage,
   uploadBytes,
-  uploadString,
 } from '@angular/fire/storage';
-import { GalleryPhoto, Photo } from '@capacitor/camera';
+import { Photo } from '@capacitor/camera';
 @Injectable({
   providedIn: 'root',
 })
@@ -32,24 +32,42 @@ export class ImgService {
       return null;
     }
   }
-  async uploadBlob(image: GalleryPhoto, path: string, deleteRef: string) {
-    const storageRef = ref(this.storage, path);
-    if (deleteRef.length > 0) {
-      await deleteObject(ref(this.storage, deleteRef));
-    }
-
-    const blob = await (await fetch(image.webPath)).blob();
-
+  async uploadBlob(image: Blob, path: string, deleteRef?: string) {
     try {
-      await uploadBytes(storageRef, blob);
-      const url = await getDownloadURL(storageRef);
+      if (deleteRef.length > 0) {
+        await this.deletePhoto(`${deleteRef}_100x100.webp`);
+        await this.deletePhoto(`${deleteRef}_300x100.webp`);
+      }
+
+      await uploadBytes(ref(this.storage, `${path}.webp`), image);
+
+      let url1: string;
+      let url2: string;
+
+      while (!url1 && !url2) {
+        try {
+          url1 = await getDownloadURL(
+            ref(this.storage, `${path}_100x100.webp`)
+          );
+          url2 = await getDownloadURL(
+            ref(this.storage, `${path}_300x100.webp`)
+          );
+        } catch (e) {}
+      }
+
       const data = {
-        url,
-        ref: storageRef.fullPath,
+        url1,
+        url2,
+        ref: path,
       };
       return data;
     } catch (e) {
       return null;
     }
+  }
+
+  async deletePhoto(path: string) {
+    const img = ref(this.storage, path);
+    return await deleteObject(img);
   }
 }

@@ -6,6 +6,7 @@ import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from '../shared/company/company.state';
+import { Navigate } from '../shared/router.state';
 import { AddSiteComponent } from './add-site/add-site.component';
 import { GetSites } from './state/sites.actions';
 import { SitesState } from './state/sites.state';
@@ -27,14 +28,13 @@ export class SitesPage implements OnInit {
 
   async viewSite(siteData: Site) {
     this.masterSvc
-      .router()
-      .navigateByUrl(
-        `/dashboard/site/${
-          this.masterSvc.store().selectSnapshot(CompanyState.company).id
-        }-${siteData.id}`,
-        {
-          replaceUrl: true,
-        }
+      .store()
+      .dispatch(
+        new Navigate(
+          `/dashboard/site/${
+            this.masterSvc.store().selectSnapshot(CompanyState.company).id
+          }-${siteData.id}`
+        )
       );
 
     // const modal = await this.masterSvc.modal().create({

@@ -46,7 +46,11 @@ export class EditService {
   //----UPDATE FUNCTIONS----
 
   updateDoc(collectionName: string, id: string, data) {
-    return updateDoc(this.docRef(collectionName, id), { ...data });
+    return setDoc(
+      this.docRef(collectionName, id),
+      { ...data },
+      { merge: true }
+    );
   }
 
   //----GET FUNCTIONS----

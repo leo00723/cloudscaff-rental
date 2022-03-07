@@ -104,7 +104,8 @@ export class CompanyPage implements OnInit {
       this.company.logoUrl = data.url;
       this.company.logoRef = data.ref;
       await this.masterSvc.edit().updateDoc('company', this.company.id, {
-        logoUrl: data.url,
+        thumb: data.url1,
+        logoUrl: data.url2,
         logoRef: data.ref,
       });
       this.masterSvc
@@ -115,7 +116,7 @@ export class CompanyPage implements OnInit {
       this.masterSvc
         .notification()
         .toast(
-          'Something went wrong uploading you image. Please try again!',
+          'Something went wrong uploading your image. Please try again!',
           'danger'
         );
     }

@@ -13,10 +13,12 @@ import { NotificationService } from 'src/app/services/notification.service';
   selector: 'app-img-upload',
   templateUrl: './img-upload.component.html',
   styles: [
-    'ion-img::part(image){border-radius:10px; width:300px; height:100px}',
+    'img{border-radius:10px; height:100px}',
+    'ion-icon{font-size:128px !important}',
   ],
 })
 export class ImgUploadComponent {
+  @Input() icon = 'person-circle-outline';
   @Input() path: string;
   @Input() deleteRef: string;
   @Input() set image(val: string) {
@@ -31,29 +33,58 @@ export class ImgUploadComponent {
   ) {}
 
   async changeImage() {
-    const image = await Camera.pickImages({
-      quality: 75,
-      width: 300,
+    const image = await Camera.getPhoto({
+      quality: 50,
       height: 100,
-      limit: 1,
+      source: CameraSource.Photos,
+      resultType: CameraResultType.Uri,
     });
+
     if (image) {
-      this.loading = true;
-      const res = await this.imgSvc.uploadBlob(
-        image.photos[0],
-        `${this.path}.${image.photos[0].format}`,
-        this.deleteRef
-      );
-      if (res) {
-        this.url = res.url;
-        this.result.emit(res);
+      const blob = await (await fetch(image.webPath)).blob();
+      const type = blob.type.toLowerCase();
+      if (
+        type.includes('webp') ||
+        type.includes('png') ||
+        type.includes('jpeg') ||
+        type.includes('tiff') ||
+        type.includes('jpg')
+      ) {
+        this.loading = true;
+        const res = await this.imgSvc.uploadBlob(
+          blob,
+          this.path,
+          this.deleteRef
+        );
+        if (res) {
+          this.url = res.url1;
+          this.result.emit(res);
+        } else {
+          this.notificationSvc.toast(
+            'Something went wrong selecting your image. Please try again!',
+            'danger'
+          );
+        }
+        this.loading = false;
       } else {
         this.notificationSvc.toast(
-          'Something went wrong selecting your image. Please try again!',
+          'Unsupported Format! Only jpeg, jpg, png, webp, tiff is allowed',
           'danger'
         );
       }
+    }
+  }
+  async removeImage() {
+    try {
+      this.loading = true;
+      await this.imgSvc.deletePhoto(`${this.deleteRef}_100x100.webp`);
+      await this.imgSvc.deletePhoto(`${this.deleteRef}_300x100.webp`);
+      this.url = '';
+      this.deleteRef = '';
+      this.result.emit({ url1: '', url2: '', ref: '' });
       this.loading = false;
+    } catch (e) {
+      console.error(e);
     }
   }
 }

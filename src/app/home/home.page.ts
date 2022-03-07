@@ -5,6 +5,8 @@ import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { EditprofileComponent } from '../components/editprofile/editprofile.component';
+import { UserState } from '../shared/user/user.state';
 
 @Component({
   selector: 'app-home',
@@ -69,13 +71,16 @@ export class HomePage implements OnDestroy {
       });
   }
 
+  async editProfile() {
+    const modal = await this.masterSvc.modal().create({
+      component: EditprofileComponent,
+      id: 'editProfile',
+    });
+    return await modal.present();
+  }
+
   async logout() {
     await this.menu.close();
-    this.masterSvc
-      .auth()
-      .logout()
-      .then(() =>
-        this.masterSvc.router().navigateByUrl('/login', { replaceUrl: true })
-      );
+    this.masterSvc.auth().logout();
   }
 }

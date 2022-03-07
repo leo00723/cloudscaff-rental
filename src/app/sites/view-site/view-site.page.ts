@@ -6,6 +6,7 @@ import { Estimate } from 'src/app/models/estimate.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { MasterService } from 'src/app/services/master.service';
+import { Navigate } from 'src/app/shared/router.state';
 import { SetSite } from 'src/app/sites/state/sites.actions';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
 
@@ -29,7 +30,8 @@ export class ViewSitePage implements OnDestroy {
       .getDocById(`company/${ids[0]}/sites`, ids[1])
       .pipe(
         tap((site: Site) => {
-          if (!site) this.masterSvc.router().navigateByUrl('/dashboard/sites');
+          if (!site)
+            this.masterSvc.store().dispatch(new Navigate('/dashboard/sites'));
           this.masterSvc.store().dispatch(new SetSite(site));
         })
       ) as Observable<Site>;
