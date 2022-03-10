@@ -33,4 +33,5 @@ export interface Company {
   logoRef: string;
   measurement: UnitData;
   mass: UnitData;
+  needsSetup?: boolean;
 }

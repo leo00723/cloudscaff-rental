@@ -1,11 +1,15 @@
 <app-header
-  title="Business Settings"
+  [title]="title"
   [showMenu]="false"
+  [showBack]="showBack"
   path="/dashboard/settings"
 ></app-header>
 
 <ion-content fullscreen="true">
-  <app-header-condensed title="Business Settings"></app-header-condensed>
+  <app-header-condensed
+    [title]="title"
+    *ngIf="showCondensed"
+  ></app-header-condensed>
   <ion-grid class="container ion-padding" *ngIf="!isLoading else loadingT">
     <form (ngSubmit)="save()" name="company" [formGroup]="form">
       <ion-row class="card-outline mb-3">

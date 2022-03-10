@@ -136,7 +136,11 @@ export class PdfService {
   constructor(private decimalPipe: DecimalPipe) {}
 
   // ESTIMATE STANDARD PDF
-  async generateEstimate(estimate: Estimate, company: Company, terms: Term) {
+  async generateEstimate(
+    estimate: Estimate,
+    company: Company,
+    terms: Term | null
+  ) {
     const platforms = [];
     estimate.boards.forEach((b) => {
       platforms.push(

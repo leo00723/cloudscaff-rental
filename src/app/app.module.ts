@@ -8,19 +8,35 @@ import {
 } from '@angular/fire/analytics';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {
+  connectAuthEmulator,
   getAuth,
   indexedDBLocalPersistence,
   initializeAuth,
   provideAuth,
 } from '@angular/fire/auth';
 import {
+  connectFirestoreEmulator,
   enableIndexedDbPersistence,
   enableMultiTabIndexedDbPersistence,
   getFirestore,
   provideFirestore,
 } from '@angular/fire/firestore';
-import { getFunctions, provideFunctions } from '@angular/fire/functions';
-import { getStorage, provideStorage } from '@angular/fire/storage';
+import {
+  connectFunctionsEmulator,
+  getFunctions,
+  provideFunctions,
+} from '@angular/fire/functions';
+import { getMessaging, provideMessaging } from '@angular/fire/messaging';
+import { getPerformance, providePerformance } from '@angular/fire/performance';
+import {
+  getRemoteConfig,
+  provideRemoteConfig,
+} from '@angular/fire/remote-config';
+import {
+  connectStorageEmulator,
+  getStorage,
+  provideStorage,
+} from '@angular/fire/storage';
 import { FormBuilder } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -57,19 +73,37 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
           persistence: indexedDBLocalPersistence,
         });
       } else {
-        return getAuth();
+        const auth = getAuth();
+        if (environment.useEmulators)
+          connectAuthEmulator(auth, 'http://localhost:9099');
+        return auth;
       }
     }),
     provideFirestore(() => {
       const firestore = getFirestore();
+      if (environment.useEmulators)
+        connectFirestoreEmulator(firestore, 'localhost', 8081);
       enableMultiTabIndexedDbPersistence(firestore).then(
         () => resolvePersistenceEnabled(true),
         () => enableIndexedDbPersistence(firestore)
       );
       return firestore;
     }),
-    provideFunctions(() => getFunctions()),
-    provideStorage(() => getStorage()),
+    provideFunctions(() => {
+      const functions = getFunctions();
+      if (environment.useEmulators)
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+      return functions;
+    }),
+    provideStorage(() => {
+      const storage = getStorage();
+      if (environment.useEmulators)
+        connectStorageEmulator(storage, 'localhost', 9199);
+      return storage;
+    }),
+    providePerformance(() => getPerformance()),
+    provideMessaging(() => getMessaging()),
+    provideRemoteConfig(() => getRemoteConfig()),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the app is stable

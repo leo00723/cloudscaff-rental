@@ -1,0 +1,27 @@
+<ion-content
+  *ngIf="{user: user$ | async , company: company$ | async} as data"
+  [ngClass]="data.user.needsSetup ? '':'padding'"
+>
+  <ng-container *ngIf="data.user && data.company else loading">
+    <app-editprofile
+      *ngIf="data.user.needsSetup else company"
+      title="Complete Profile"
+      (updated)="next(data,false)"
+    ></app-editprofile>
+    <ng-template #company>
+      <app-company
+        [showCondensed]="false"
+        [showBack]="false"
+        title="Complete Business Settings"
+        (updated)="next(data,true)"
+      ></app-company>
+    </ng-template>
+  </ng-container>
+  <ng-template #loading>
+    <div class="container ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

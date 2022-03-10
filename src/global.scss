@@ -25,12 +25,23 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+@import "~swiper/scss";
+@import "~swiper/scss/autoplay";
+@import "~swiper/scss/keyboard";
+@import "~swiper/scss/pagination";
+@import "~swiper/scss/scrollbar";
+@import "~swiper/scss/zoom";
+@import "~@ionic/angular/css/ionic-swiper";
+
 @import "./styles-custom-bootstrap.scss";
 @import "~@swimlane/ngx-datatable/index.css";
 @import "~@swimlane/ngx-datatable/themes/bootstrap.scss";
 @import "~@swimlane/ngx-datatable/assets/icons.css";
 @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
 
+.padding {
+  --padding-bottom: 3.5rem !important;
+}
 .datatable-body {
   .datatable-body-row {
     &.active {

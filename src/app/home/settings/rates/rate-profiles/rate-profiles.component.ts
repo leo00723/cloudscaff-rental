@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnDestroy,
@@ -24,8 +25,12 @@ export class RateProfilesComponent implements OnDestroy, OnInit {
   rateProfiles = new RateProfiles();
   rates$: Observable<any>;
   loading = false;
+  isLoading = true;
   private subs = new Subscription();
-  constructor(private masterSvc: MasterService) {
+  constructor(
+    private masterSvc: MasterService,
+    private change: ChangeDetectorRef
+  ) {
     this.rates$ = this.user$.pipe(
       switchMap((user) => {
         if (user) {
@@ -44,22 +49,27 @@ export class RateProfilesComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.subs.add(
       this.rates$.subscribe((rates: RateProfiles) => {
-        this.rateProfiles.additionalRates = this.mergeNew(
-          this.rateProfiles.additionalRates,
-          rates.additionalRates
-        );
-        this.rateProfiles.boardRates = this.mergeNew(
-          this.rateProfiles.boardRates,
-          rates.boardRates
-        );
-        this.rateProfiles.hireRates = this.mergeNew(
-          this.rateProfiles.hireRates,
-          rates.hireRates
-        );
-        this.rateProfiles.scaffoldRates = this.mergeNew(
-          this.rateProfiles.scaffoldRates,
-          rates.scaffoldRates
-        );
+        if (rates) {
+          this.rateProfiles.additionalRates = this.mergeNew(
+            this.rateProfiles.additionalRates,
+            rates.additionalRates
+          );
+          this.rateProfiles.boardRates = this.mergeNew(
+            this.rateProfiles.boardRates,
+            rates.boardRates
+          );
+          this.rateProfiles.hireRates = this.mergeNew(
+            this.rateProfiles.hireRates,
+            rates.hireRates
+          );
+          this.rateProfiles.scaffoldRates = this.mergeNew(
+            this.rateProfiles.scaffoldRates,
+            rates.scaffoldRates
+          );
+        }
+
+        this.isLoading = false;
+        this.change.detectChanges();
       })
     );
   }

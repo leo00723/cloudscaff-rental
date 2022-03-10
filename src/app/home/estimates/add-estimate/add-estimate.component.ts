@@ -48,7 +48,7 @@ export class AddEstimatePage implements OnInit {
     return this.form.get('additionals') as FormArray;
   }
 
-  async download(terms: Term) {
+  async download(terms: Term | null) {
     const pdf = await this.masterSvc
       .pdf()
       .generateEstimate(this.estimate, this.company, terms);

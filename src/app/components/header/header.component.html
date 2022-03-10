@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button color="primary" *ngIf="showMenu"></ion-menu-button>
       <ion-back-button
-        *ngIf="!showMenu"
+        *ngIf="showBack"
         [defaultHref]="path"
         color="primary"
       ></ion-back-button>

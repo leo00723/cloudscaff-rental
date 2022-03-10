@@ -12,18 +12,18 @@ import {
   OrderByDirection,
   query,
   setDoc,
-  updateDoc,
   where,
   WhereFilterOp,
 } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Functions, httpsCallable } from '@angular/fire/functions';
+import { lastValueFrom, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EditService {
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore, private functions: Functions) {}
 
   //----ADD FUNCTIONS----
 
@@ -60,8 +60,10 @@ export class EditService {
       idField: 'id',
     }).pipe(
       map((data: any) => {
-        if (data.date) return { ...data, date: data.date.toDate() };
-        return data;
+        if (data) {
+          if (data.date) return { ...data, date: data.date.toDate() };
+          return data;
+        }
       })
     );
   }
@@ -133,6 +135,11 @@ export class EditService {
       this.collectionRef(collectionName)
     ) as DocumentReference<any>;
     return docRef.id;
+  }
+
+  async callFunction(name: string, data: any) {
+    const ref = httpsCallable(this.functions, name);
+    return await ref({ ...data });
   }
 
   private docRef(collectionName: string, id: string) {

@@ -22,6 +22,13 @@ const routes: Routes = [
     data: { authGuardPipe: redirectAuthorized },
   },
   {
+    path: 'signup',
+    loadChildren: () =>
+      import('./signup/signup.module').then((m) => m.SignupPageModule),
+    canActivate: [AuthGuard],
+    data: { authGuardPipe: redirectAuthorized },
+  },
+  {
     path: 'forgot',
     loadChildren: () =>
       import('./forgot/forgot.module').then((m) => m.ForgotPageModule),
@@ -50,7 +57,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, {
+      onSameUrlNavigation: 'reload',
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

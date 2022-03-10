@@ -1,5 +1,5 @@
 <div class="ion-padding" *ngIf="company$ | async as company">
-  <ng-container *ngIf="rates$ | async as rates">
+  <ng-container *ngIf="!isLoading">
     <!-- SCAFFOLDS -->
     <ion-item-group class="card-outline mb-3">
       <ion-item-divider>

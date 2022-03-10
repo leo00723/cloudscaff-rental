@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
@@ -13,6 +14,7 @@ import { UserState } from 'src/app/shared/user/user.state';
 })
 export class EditprofileComponent implements OnInit {
   @Input() title = 'Edit Profile';
+  @Output() updated = new EventEmitter<boolean>();
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   user = this.masterSvc.store().selectSnapshot(UserState.user);
@@ -59,7 +61,7 @@ export class EditprofileComponent implements OnInit {
         .notification()
         .toast('Profile updated successfully', 'success');
       this.loading = false;
-      if (this.title === 'Complete Profile') this.close();
+      this.updated.emit(true);
     } catch (e) {
       console.log(e);
       this.masterSvc

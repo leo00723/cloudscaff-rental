@@ -3,6 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  useEmulators: false,
   firebase: {
     projectId: 'cloudscaff-178c8',
     appId: '1:701167432332:web:e4dac3143f1202ce3d41a9',
@@ -13,7 +14,7 @@ export const environment = {
     messagingSenderId: '701167432332',
     measurementId: 'G-HKBBJEV8K0',
   },
-  production: false
+  production: false,
 };
 
 /*

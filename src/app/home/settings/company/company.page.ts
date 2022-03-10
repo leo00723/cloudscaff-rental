@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -17,7 +17,11 @@ import { MasterService } from '../../../services/master.service';
   selector: 'app-company',
   templateUrl: './company.page.html',
 })
-export class CompanyPage implements OnInit {
+export class CompanyPage {
+  @Input() title = 'Business Settings';
+  @Input() showBack = true;
+  @Input() showCondensed = true;
+  @Output() updated = new EventEmitter<boolean>();
   @Select() company$: Observable<Company>;
   company: Company = {
     id: '',
@@ -60,9 +64,7 @@ export class CompanyPage implements OnInit {
   loading = false;
   isLoading = true;
 
-  constructor(private fb: FormBuilder, private masterSvc: MasterService) {}
-
-  ngOnInit(): void {
+  constructor(private fb: FormBuilder, private masterSvc: MasterService) {
     this.init();
   }
 
@@ -73,35 +75,32 @@ export class CompanyPage implements OnInit {
     this.form.patchValue(address);
   }
   save() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      Object.assign(this.company, this.form.value);
-      this.masterSvc
-        .edit()
-        .updateDoc('company', this.company.id, this.company)
-        .then(() => {
-          this.masterSvc
-            .notification()
-            .toast('Settings saved successfully', 'success')
-            .then(() => {
-              this.loading = false;
-            });
-        })
-        .catch((error) => {
-          console.error(error);
-          this.masterSvc
-            .notification()
-            .toast('Something went wrong! Try again later.', 'danger')
-            .then(() => {
-              this.loading = false;
-            });
-        });
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        Object.assign(this.company, this.form.value);
+        this.company.needsSetup = false;
+        await this.masterSvc
+          .edit()
+          .updateDoc('company', this.company.id, this.company);
+        this.masterSvc
+          .notification()
+          .toast('Settings saved successfully', 'success');
+        this.loading = false;
+        this.updated.emit(true);
+      } catch (error) {
+        console.error(error);
+        this.masterSvc
+          .notification()
+          .toast('Something went wrong! Try again later.', 'danger');
+        this.loading = false;
+      }
     });
   }
 
   async uploadImage(data: any) {
     try {
-      this.company.logoUrl = data.url;
+      this.company.logoUrl = data.url2;
       this.company.logoRef = data.ref;
       await this.masterSvc.edit().updateDoc('company', this.company.id, {
         thumb: data.url1,

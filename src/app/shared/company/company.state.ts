@@ -3,6 +3,7 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { catchError, tap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { EditService } from 'src/app/services/edit.service';
+import { Navigate } from '../router.state';
 import { GetCompany, SetCompany } from './company.actions';
 
 @State<Company>({
@@ -20,8 +21,11 @@ export class CompanyState {
   @Action(GetCompany, { cancelUncompleted: true })
   getCompany({ dispatch }: StateContext<string>, { payload }: GetCompany) {
     return this.editSvc.getDocById('company', payload).pipe(
-      tap((company: Company) => {
+      tap(async (company: Company) => {
         dispatch(new SetCompany(company));
+        if (company.needsSetup) {
+          dispatch(new Navigate('/dashboard/onboarding'));
+        }
       }),
       catchError(() => dispatch(new SetCompany(null)))
     );

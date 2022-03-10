@@ -14,6 +14,7 @@ import {
 export class HeaderComponent {
   @Input() title = '';
   @Input() showMenu = true;
+  @Input() showBack = false;
   @Input() path = '';
   @Input() btnName: string;
   @Output() updated = new EventEmitter<boolean>();

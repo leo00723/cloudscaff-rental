@@ -13,6 +13,13 @@ const routes: Routes = [
     component: HomePage,
     children: [
       {
+        path: 'onboarding',
+        loadChildren: () =>
+          import('./onboarding/onboarding.module').then(
+            (m) => m.OnboardingPageModule
+          ),
+      },
+      {
         path: 'overview',
         loadChildren: () =>
           import('./dashboard/dashboard.module').then(

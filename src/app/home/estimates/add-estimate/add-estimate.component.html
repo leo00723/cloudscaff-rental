@@ -768,7 +768,7 @@
               <ion-buttons slot="end">
                 <ion-button
                   (click)="download(terms)"
-                  *ngIf="terms$ | async as terms"
+                  *ngIf="terms$ | async as terms; else noTerms"
                 >
                   <ion-icon
                     slot="icon-only"
@@ -776,6 +776,15 @@
                     color="primary"
                   ></ion-icon>
                 </ion-button>
+                <ng-template #noTerms>
+                  <ion-button (click)="download(null)">
+                    <ion-icon
+                      slot="icon-only"
+                      name="cloud-download-outline"
+                      color="primary"
+                    ></ion-icon>
+                  </ion-button>
+                </ng-template>
               </ion-buttons>
             </ion-item>
           </ion-col>

@@ -12,10 +12,18 @@
   <ion-row class="py-5 rounded-lg-top ion-padding">
     <ion-col size="12" sizeLg="4" sizeMd="6" class="mx-auto">
       <ion-text color="dark">
-        <h1 class="display-6 my-auto fw-bold">Welcome Back!</h1>
-        <p class="fw-light my-auto mt-2">Sign in to continue.</p>
+        <h1 class="display-6 my-auto fw-bold">Create Account</h1>
+        <p class="fw-light my-auto mt-2">
+          Sign up to create a new Cloudscaff business account.
+        </p>
       </ion-text>
-      <form class="py-5" [formGroup]="form" name="login" (ngSubmit)="login()">
+      <form class="py-5" [formGroup]="form" name="login" (ngSubmit)="create()">
+        <app-input-reactive
+          [form]="form"
+          title="Business name"
+          controlName="company"
+          placeholder="Enter business name"
+        ></app-input-reactive>
         <app-input-reactive
           [form]="form"
           title="Email address"
@@ -23,7 +31,14 @@
           type="email"
           placeholder="Enter email address"
         ></app-input-reactive>
-        <ion-item class="mb-3 rounded-3" fill="solid" mode="md">
+        <app-input-reactive
+          [form]="form"
+          title="Full name"
+          controlName="name"
+          placeholder="Enter full name"
+        ></app-input-reactive>
+
+        <ion-item class="mb-3 rounded-3" mode="md" fill="solid">
           <ion-label position="stacked">Password</ion-label>
           <app-show-hide-password>
             <ion-input
@@ -45,16 +60,6 @@
         <ion-text *ngIf="error" class="small mb-3" color="danger">
           <p color="danger">{{errorMessage}}</p>
         </ion-text>
-        <div class="mb-3 text-primary small text-end">
-          <a
-            class="text-decoration-none"
-            routerLink="/forgot"
-            routerDirection="root"
-            [replaceUrl]="true"
-          >
-            Forgot Password?
-          </a>
-        </div>
         <ion-progress-bar
           type="indeterminate"
           *ngIf="loading"
@@ -68,16 +73,12 @@
           type="submit"
           name="submit"
         >
-          Sign In
+          Sign Up
         </ion-button>
 
         <div class="mt-5 text-primary text-center">
-          <a
-            class="text-decoration-none"
-            routerLink="/signup"
-            routerDirection="root"
-            [replaceUrl]="true"
-            >Don't have an account? Sign Up
+          <a class="text-decoration-none" routerLink="/signin"
+            >Already have an account? Sign In
           </a>
         </div>
       </form>

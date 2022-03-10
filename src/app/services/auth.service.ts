@@ -10,6 +10,7 @@ import {
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { GetUser } from 'src/app/shared/user/user.actions';
+import { GetCompany } from '../shared/company/company.actions';
 import { Navigate } from '../shared/router.state';
 
 @Injectable({
@@ -22,11 +23,13 @@ export class AuthService {
     private store: Store,
     private router: Router
   ) {
-    onAuthStateChanged(this.auth, (user) => {
+    onAuthStateChanged(this.auth, async (user) => {
       if (user) {
         this.loggedIn = true;
-        this.store.dispatch(new GetUser(user.uid));
-        this.store.dispatch(new Navigate('/dashboard/sites'));
+        this.store.dispatch([
+          new GetUser(user.uid),
+          new Navigate('/dashboard/sites'),
+        ]);
       } else if (this.loggedIn) {
         this.store.dispatch(new Navigate('/login'));
       }
