@@ -6,6 +6,7 @@ import { Company } from 'src/app/models/company.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { SetUser } from 'src/app/shared/user/user.actions';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
@@ -57,11 +58,11 @@ export class EditprofileComponent implements OnInit {
     const user = { ...this.user, ...this.form.value, needsSetup: false };
     try {
       await this.masterSvc.edit().updateDoc('users', this.user.id, user);
+      this.updated.emit(true);
       this.masterSvc
         .notification()
         .toast('Profile updated successfully', 'success');
       this.loading = false;
-      this.updated.emit(true);
     } catch (e) {
       console.log(e);
       this.masterSvc

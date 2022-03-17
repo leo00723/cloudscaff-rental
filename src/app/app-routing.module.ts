@@ -6,7 +6,7 @@ import {
 } from '@angular/fire/auth-guard';
 import { RouterModule, Routes } from '@angular/router';
 const redirectUnauthorized = () => redirectUnauthorizedTo(['/login']);
-const redirectAuthorized = () => redirectLoggedInTo(['/dashboard']);
+const redirectAuthorized = () => redirectLoggedInTo(['/dashboard/sites']);
 
 const routes: Routes = [
   {
@@ -52,7 +52,7 @@ const routes: Routes = [
   {
     path: '**',
     pathMatch: 'full',
-    redirectTo: '/dashboard',
+    redirectTo: '/dashboard/sites',
   },
 ];
 

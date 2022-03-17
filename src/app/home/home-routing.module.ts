@@ -41,8 +41,15 @@ const routes: Routes = [
       {
         path: 'site/:id',
         loadChildren: () =>
-          import('./sites/view-site/view-site.module').then(
+          import('./view-site/view-site.module').then(
             (m) => m.ViewSitePageModule
+          ),
+      },
+      {
+        path: 'scaffold/:id',
+        loadChildren: () =>
+          import('./view-scaffold/view-scaffold.module').then(
+            (m) => m.ViewScaffoldPageModule
           ),
       },
       {

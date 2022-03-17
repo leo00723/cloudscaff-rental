@@ -27,6 +27,7 @@
         <app-scaffold-table
           [value]="scaffolds$"
           *ngIf="scaffolds$ | async else loading"
+          (selectedItem)="viewScaffold($event)"
         ></app-scaffold-table>
       </div>
       <div *ngSwitchCase="'estimates'">

@@ -25,11 +25,18 @@ const routes: Routes = [
   },
   {
     path: 'customers',
-    loadChildren: () => import('./customers/customers.module').then( m => m.CustomersPageModule)
+    loadChildren: () =>
+      import('./customers/customers.module').then((m) => m.CustomersPageModule),
   },
   {
     path: 'terms',
-    loadChildren: () => import('./terms/terms.module').then( m => m.TermsPageModule)
+    loadChildren: () =>
+      import('./terms/terms.module').then((m) => m.TermsPageModule),
+  },
+  {
+    path: 'users',
+    loadChildren: () =>
+      import('./users/users.module').then((m) => m.UsersPageModule),
   },
 ];
 

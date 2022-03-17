@@ -334,7 +334,7 @@ export class AddEstimatePage implements OnInit {
         form: this.form,
       },
       id: 'acceptEstimate',
-      cssClass: 'accept',
+      cssClass: 'fullscreen',
     });
     return await modal.present();
   }

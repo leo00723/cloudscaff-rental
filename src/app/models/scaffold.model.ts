@@ -1,13 +1,21 @@
+import { AdditionalItem } from './additionalItem.model';
+import { HireItem } from './hireItem.model';
+import { Item } from './item.model';
+import { LabourItem } from './labourItem.model';
+
 export interface Scaffold {
   id?: string;
   code: string;
   date: any;
   companyId: string;
-  estimateId: string;
-  estimateCode: string;
   siteId: string;
   siteCode: string;
   createdBy: string;
+  scaffold: Item;
+  boards: Item[];
+  hire: HireItem;
+  labour: LabourItem[];
+  additionals: AdditionalItem[];
   poNumber: string;
   woNumber: string;
   updatedBy?: string;

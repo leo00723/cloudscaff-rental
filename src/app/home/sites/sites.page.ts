@@ -36,20 +36,6 @@ export class SitesPage implements OnInit {
           }-${siteData.id}`
         )
       );
-
-    // const modal = await this.masterSvc.modal().create({
-    //   component: ViewSitePage,
-    //   componentProps: {
-    //     company: data.company,
-    //     user: data.user,
-    //     siteData,
-    //     isEdit: true,
-    //   },
-    //   showBackdrop: false,
-    //   id: 'editSite',
-    //   cssClass: 'fullscreen',
-    // });
-    // return await modal.present();
   }
 
   async addSite() {

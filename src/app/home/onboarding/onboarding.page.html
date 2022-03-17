@@ -1,14 +1,16 @@
 <ion-content
   *ngIf="{user: user$ | async , company: company$ | async} as data"
-  [ngClass]="data.user.needsSetup ? '':'padding'"
+  [ngClass]="data?.user?.needsSetup ? '':'padding'"
 >
-  <ng-container *ngIf="data.user && data.company else loading">
+  <ng-container
+    *ngIf="data.user !== null && data.company !== null else loading"
+  >
     <app-editprofile
-      *ngIf="data.user.needsSetup else company"
+      *ngIf="data.user?.needsSetup else company"
       title="Complete Profile"
-      (updated)="next(data,false)"
     ></app-editprofile>
     <ng-template #company>
+      {{next(data,false)}}
       <app-company
         [showCondensed]="false"
         [showBack]="false"

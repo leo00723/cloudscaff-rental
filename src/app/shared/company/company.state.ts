@@ -27,7 +27,7 @@ export class CompanyState {
           dispatch(new Navigate('/dashboard/onboarding'));
         }
       }),
-      catchError(() => dispatch(new SetCompany(null)))
+      catchError((error) => dispatch(new SetCompany(null)))
     );
   }
 

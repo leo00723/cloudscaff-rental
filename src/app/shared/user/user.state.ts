@@ -24,8 +24,9 @@ export class UserState {
   getUser({ dispatch }: StateContext<string>, { payload }: GetUser) {
     return this.editSvc.getDocById('users', payload).pipe(
       tap(async (user: User) => {
-        dispatch([new SetUser(user), new GetCompany(user.company)]);
+        dispatch(new SetUser(user));
         if (user.needsSetup) {
+          console.log(user.needsSetup);
           dispatch(new Navigate('/dashboard/onboarding'));
         }
       }),

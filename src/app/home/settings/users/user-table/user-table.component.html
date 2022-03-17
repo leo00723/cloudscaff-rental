@@ -1,0 +1,65 @@
+<ion-searchbar
+  debounce="250"
+  mode="ios"
+  placeholder="Search by email, or role"
+  (ionChange)="updateFilter($event)"
+>
+</ion-searchbar>
+
+<ngx-datatable
+  class="bootstrap striped rounded-lg"
+  [limit]="15"
+  [rows]="temp$ | async"
+  [rowHeight]="'auto'"
+  [columnMode]="'force'"
+  [sortType]="sortType.multi"
+  [headerHeight]="50"
+  [footerHeight]="50"
+  [selectionType]="selectionType.single"
+  trackByProp="id"
+  [scrollbarH]="true"
+  (select)="onSelect($event)"
+  [selected]="selected"
+>
+  <ngx-datatable-column name="Profile" prop="thumb">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-avatar mode="ios">
+        <img [src]="value ? value : 'assets/icons/user.svg'" alt="image" />
+      </ion-avatar>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column name="Name" cellClass="m-auto">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-text>
+        <p class="m-0">
+          {{ value }}
+        </p>
+      </ion-text>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column name="Email" cellClass="m-auto">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-text>
+        <p class="m-0">
+          {{ value }}
+        </p>
+      </ion-text>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column name="Phone" cellClass="m-auto">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-text>
+        <p class="m-0">
+          {{ value }}
+        </p>
+      </ion-text>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column name="Role" cellClass="m-auto">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-text>
+        <ion-badge class="m-0"> {{ value }} </ion-badge>
+      </ion-text>
+    </ng-template>
+  </ngx-datatable-column>
+</ngx-datatable>

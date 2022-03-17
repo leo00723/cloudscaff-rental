@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MasterService } from 'src/app/services/master.service';
+import { Navigate } from '../shared/router.state';
 
 @Component({
   selector: 'app-login',
@@ -30,6 +31,7 @@ export class LoginPage implements OnInit {
     this.loading = true;
     try {
       await this.masterSvc.auth().login(this.form.value);
+      this.masterSvc.store().dispatch(new Navigate('/dashboard/sites'));
       this.form.reset();
       this.loading = !this.loading;
     } catch (error) {

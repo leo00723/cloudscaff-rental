@@ -17,19 +17,24 @@ export class SettingsPage {
       path: '/dashboard/settings/customers',
     },
     {
-      title: 'Rate Profiles',
-      description: 'Here you can manage your rate profiles.',
-      path: '/dashboard/settings/rates',
-    },
-    {
       title: 'Labor Profiles',
       description: 'Here you can manage your labor profiles.',
       path: '/dashboard/settings/labor',
     },
     {
+      title: 'Rate Profiles',
+      description: 'Here you can manage your rate profiles.',
+      path: '/dashboard/settings/rates',
+    },
+    {
       title: 'Terms & Conditions',
       description: "Here you add T's & C's for your documents.",
       path: '/dashboard/settings/terms',
+    },
+    {
+      title: 'User Profiles',
+      description: 'Here you manage users.',
+      path: '/dashboard/settings/users',
     },
   ];
 }

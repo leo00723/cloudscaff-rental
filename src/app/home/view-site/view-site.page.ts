@@ -19,15 +19,15 @@ export class ViewSitePage implements OnDestroy {
   estimates$: Observable<Estimate[]>;
   scaffolds$: Observable<Scaffold[]>;
   active = 'scaffolds';
-
+  ids = [];
   constructor(
     private masterSvc: MasterService,
     private activatedRoute: ActivatedRoute
   ) {
-    const ids = this.activatedRoute.snapshot.paramMap.get('id').split('-');
+    this.ids = this.activatedRoute.snapshot.paramMap.get('id').split('-');
     this.site$ = this.masterSvc
       .edit()
-      .getDocById(`company/${ids[0]}/sites`, ids[1])
+      .getDocById(`company/${this.ids[0]}/sites`, this.ids[1])
       .pipe(
         tap((site: Site) => {
           if (!site)
@@ -38,18 +38,18 @@ export class ViewSitePage implements OnDestroy {
     this.estimates$ = this.masterSvc
       .edit()
       .getCollectionWhere(
-        `company/${ids[0]}/estimates`,
+        `company/${this.ids[0]}/estimates`,
         'siteId',
         '==',
-        ids[1]
+        this.ids[1]
       ) as Observable<Estimate[]>;
     this.scaffolds$ = this.masterSvc
       .edit()
       .getCollectionWhere(
-        `company/${ids[0]}/scaffolds`,
+        `company/${this.ids[0]}/scaffolds`,
         'siteId',
         '==',
-        ids[1]
+        this.ids[1]
       ) as Observable<Scaffold[]>;
   }
 
@@ -64,6 +64,16 @@ export class ViewSitePage implements OnDestroy {
       cssClass: 'fullscreen',
     });
     return await modal.present();
+  }
+
+  viewScaffold(scaffold: Scaffold) {
+    this.masterSvc
+      .store()
+      .dispatch(
+        new Navigate(
+          `/dashboard/scaffold/${this.ids[0]}-${this.ids[1]}-${scaffold.id}`
+        )
+      );
   }
 
   segmentChanged(ev: any) {
