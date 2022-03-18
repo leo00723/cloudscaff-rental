@@ -10,13 +10,14 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { UserPickerComponent } from '../user-picker/user-picker.component';
 
 @Component({
   selector: 'app-site-form',
   templateUrl: './site-form.component.html',
 })
 export class SiteFormComponent implements OnInit {
-  private site: Site = {
+  site: Site = {
     address: '',
     city: '',
     code: '',
@@ -34,6 +35,7 @@ export class SiteFormComponent implements OnInit {
     endDate: undefined,
     status: 'active',
     date: undefined,
+    users: [],
   };
   @Output() newSite = new EventEmitter<Site>();
   @Input() isUpdate = false;
@@ -174,6 +176,26 @@ export class SiteFormComponent implements OnInit {
 
   updateAddress(address: Address) {
     this.form.patchValue(address);
+  }
+
+  test() {
+    this.addUser().then();
+  }
+
+  private async addUser() {
+    const modal = await this.masterSvc.modal().create({
+      component: UserPickerComponent,
+      componentProps: {
+        selectedUsers: this.site.users ? this.site.users : [],
+      },
+      cssClass: 'accept',
+      showBackdrop: true,
+      id: 'selectUsers',
+    });
+    await modal.present();
+    this.site.users = await (await modal.onWillDismiss()).data;
+
+    return true;
   }
 
   private initFrom() {

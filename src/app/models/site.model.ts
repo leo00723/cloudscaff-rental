@@ -1,4 +1,5 @@
 import { Customer } from './customer.model';
+import { User } from './user.model';
 
 export interface Site {
   address: string;
@@ -18,4 +19,5 @@ export interface Site {
   date: any;
   createdBy: string;
   updatedBy: string;
+  users: User[];
 }

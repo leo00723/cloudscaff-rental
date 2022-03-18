@@ -1,0 +1,34 @@
+<ion-toolbar mode="ios">
+  <ion-buttons slot="end">
+    <ion-button (click)="done()"> Done </ion-button>
+  </ion-buttons>
+  <ion-title>Select Users</ion-title>
+</ion-toolbar>
+<cdk-virtual-scroll-viewport itemSize="50" minBufferPx="900" maxBufferPx="1200">
+  <ion-searchbar
+    debounce="250"
+    mode="ios"
+    placeholder="Search by email, or role"
+    (ionChange)="updateFilter($event)"
+  >
+  </ion-searchbar>
+  <ion-list>
+    <ion-item *cdkVirtualFor="let user of users; trackBy: trackItem">
+      <ion-avatar slot="start">
+        <img [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'" />
+      </ion-avatar>
+      <ion-label>
+        {{ user.name }}
+        <ion-badge color="light" mode="ios">
+          {{ user.role }}
+        </ion-badge>
+      </ion-label>
+      <ion-checkbox
+        slot="end"
+        (ionChange)="selectUser(user)"
+        [(ngModel)]="user.selected"
+        mode="ios"
+      ></ion-checkbox>
+    </ion-item>
+  </ion-list>
+</cdk-virtual-scroll-viewport>

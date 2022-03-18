@@ -9,6 +9,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { Navigate } from 'src/app/shared/router.state';
 import { SetSite } from 'src/app/home/sites/state/sites.actions';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
+import { AddSiteComponent } from '../sites/add-site/add-site.component';
 
 @Component({
   selector: 'app-view-site',
@@ -32,7 +33,7 @@ export class ViewSitePage implements OnDestroy {
         tap((site: Site) => {
           if (!site)
             this.masterSvc.store().dispatch(new Navigate('/dashboard/sites'));
-          this.masterSvc.store().dispatch(new SetSite(site));
+          // this.masterSvc.store().dispatch(new SetSite(site));
         })
       ) as Observable<Site>;
     this.estimates$ = this.masterSvc
@@ -61,6 +62,20 @@ export class ViewSitePage implements OnDestroy {
       },
       showBackdrop: false,
       id: 'editEstimate',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async editSite(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddSiteComponent,
+      componentProps: {
+        siteData: site,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'editSite',
       cssClass: 'fullscreen',
     });
     return await modal.present();

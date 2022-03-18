@@ -55,6 +55,7 @@ export class AcceptEstimateComponent implements OnInit {
       endDate: this.estimate.endDate,
       status: 'active',
       date: new Date(),
+      users: [],
     };
     this.form2 = this.masterSvc.fb().group({
       site: ['', Validators.required],

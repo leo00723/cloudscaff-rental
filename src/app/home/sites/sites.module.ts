@@ -13,6 +13,6 @@ import { SitesState } from './state/sites.state';
     SitesPageRoutingModule,
     NgxsModule.forFeature([SitesState]),
   ],
-  declarations: [SitesPage, SiteTableComponent, AddSiteComponent],
+  declarations: [SitesPage, SiteTableComponent],
 })
 export class SitesPageModule {}

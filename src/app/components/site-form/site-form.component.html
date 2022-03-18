@@ -1,5 +1,8 @@
 <form [formGroup]="form">
   <ion-row class="card-outline mb-3">
+    <ion-col size="12">
+      <ion-text><h4>Site Details</h4> </ion-text>
+    </ion-col>
     <ion-col sizeXl="4" size="12">
       <app-input-reactive
         title="Site name"
@@ -24,7 +27,33 @@
     </ion-col>
   </ion-row>
   <ion-row class="card-outline mb-3">
+    <ion-col>
+      <ion-text><h4>Users</h4> </ion-text>
+      <ion-item *ngFor="let user of site.users">
+        <ion-avatar slot="start">
+          <img [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'" />
+        </ion-avatar>
+        <ion-label>
+          {{ user.name }}
+          <ion-badge color="light" mode="ios">
+            {{ user.role }}
+          </ion-badge>
+        </ion-label>
+      </ion-item>
+      <ion-fab-button
+        size="small"
+        class="m-auto mt-3"
+        color="success"
+        (click)="test()"
+      >
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-col>
+  </ion-row>
+  <ion-row class="card-outline mb-3">
     <ion-col size="12">
+      <ion-text><h4>Site Address</h4> </ion-text>
+
       <app-address-search
         *ngIf="isCreate || isUpdate"
         (addressData)="updateAddress($event)"
@@ -66,6 +95,8 @@
   </ion-row>
   <ion-row class="card-outline mb-3">
     <ion-col size="12">
+      <ion-text><h4>Customer Details</h4> </ion-text>
+
       <app-input-select-reactive
         title="Customer"
         placeholder="Select Customer"

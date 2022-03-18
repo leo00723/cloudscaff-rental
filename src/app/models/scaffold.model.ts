@@ -2,6 +2,7 @@ import { AdditionalItem } from './additionalItem.model';
 import { HireItem } from './hireItem.model';
 import { Item } from './item.model';
 import { LabourItem } from './labourItem.model';
+import { User } from './user.model';
 
 export interface Scaffold {
   id?: string;
@@ -22,4 +23,5 @@ export interface Scaffold {
   startDate: any;
   endDate: any;
   status: string;
+  users: User[];
 }
