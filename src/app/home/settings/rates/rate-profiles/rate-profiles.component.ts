@@ -98,7 +98,7 @@ export class RateProfilesComponent implements OnDestroy, OnInit {
             .toast('Rates has been updated.', 'success');
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           this.loading = false;
           this.masterSvc
             .notification()

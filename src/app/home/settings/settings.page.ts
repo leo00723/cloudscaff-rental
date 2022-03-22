@@ -27,6 +27,11 @@ export class SettingsPage {
       path: '/dashboard/settings/rates',
     },
     {
+      title: 'Templates',
+      description: 'Here you edit Templates for your documents.',
+      path: '/dashboard/settings/templates',
+    },
+    {
       title: 'Terms & Conditions',
       description: "Here you add T's & C's for your documents.",
       path: '/dashboard/settings/terms',

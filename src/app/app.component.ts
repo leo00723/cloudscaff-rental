@@ -4,6 +4,7 @@ import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { environment } from 'src/environments/environment';
 import { SplashPage } from './splash/splash.page';
 @Component({
   selector: 'app-root',
@@ -43,7 +44,7 @@ export class AppComponent implements OnInit, OnDestroy {
                   }
                 });
               },
-              'New update availiable!',
+              `${environment.version} available!`,
               'click Yes to install update'
             );
           }

@@ -84,10 +84,8 @@ export class UserPickerComponent implements OnInit {
   selectUser(user: any) {
     const index = this.selectedUsers.findIndex((u) => u.id === user.id);
     if (index === -1 && user.selected) {
-      console.log('adding user');
       this.selectedUsers.push(user);
     } else if (!user.selected) {
-      console.log('removing user');
       this.selectedUsers.splice(index, 1);
     }
   }

@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
+import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
+import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
 import { Company } from 'src/app/models/company.model';
+import { Inspection } from 'src/app/models/inspection.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
@@ -18,6 +21,7 @@ export class ViewScaffoldPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   scaffold$: Observable<Scaffold>;
+  inspections$: Observable<Inspection[]>;
   active = 'overview';
   ids = [];
   constructor(
@@ -39,9 +43,43 @@ export class ViewScaffoldPage implements OnInit {
           // this.masterSvc.store().dispatch(new SetSite(site));
         })
       ) as Observable<Scaffold>;
+    this.inspections$ = this.masterSvc
+      .edit()
+      .getCollectionWhere(
+        `company/${this.ids[0]}/inspections`,
+        'scaffold.id',
+        '==',
+        this.ids[2]
+      ) as Observable<Inspection[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
   }
   ngOnInit() {}
+
+  async addInspection(scaffold: Scaffold) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInspectionComponent,
+      componentProps: {
+        scaffold: scaffold,
+      },
+      showBackdrop: false,
+      id: 'addInspection',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async viewInspection(inspection: Inspection) {
+    const modal = await this.masterSvc.modal().create({
+      component: InspectionSummaryComponent,
+      componentProps: {
+        inspection,
+      },
+      showBackdrop: false,
+      id: 'viewInspection',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
 }

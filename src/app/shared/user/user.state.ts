@@ -26,7 +26,6 @@ export class UserState {
       tap(async (user: User) => {
         dispatch(new SetUser(user));
         if (user.needsSetup) {
-          console.log(user.needsSetup);
           dispatch(new Navigate('/dashboard/onboarding'));
         }
       }),

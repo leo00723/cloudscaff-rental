@@ -111,7 +111,7 @@ export class CompanyPage {
         .notification()
         .toast('Image uploaded successfully', 'success');
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.masterSvc
         .notification()
         .toast(

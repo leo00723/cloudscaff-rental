@@ -29,10 +29,16 @@ const routes: Routes = [
       import('./customers/customers.module').then((m) => m.CustomersPageModule),
   },
   {
+    path: 'templates',
+    loadChildren: () =>
+      import('./templates/templates.module').then((m) => m.TemplatesPageModule),
+  },
+  {
     path: 'terms',
     loadChildren: () =>
       import('./terms/terms.module').then((m) => m.TermsPageModule),
   },
+
   {
     path: 'users',
     loadChildren: () =>

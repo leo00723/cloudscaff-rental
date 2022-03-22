@@ -5,8 +5,8 @@ import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { environment } from 'src/environments/environment';
 import { EditprofileComponent } from '../components/editprofile/editprofile.component';
-import { UserState } from '../shared/user/user.state';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +24,7 @@ export class HomePage implements OnDestroy {
     { title: 'Sites', url: '/dashboard/sites', icon: 'business-outline' },
   ];
   loading = false;
+  version = environment.version;
   @Select() user$: Observable<User>;
   private subs = new Subscription();
   constructor(
@@ -39,7 +40,7 @@ export class HomePage implements OnDestroy {
   check() {
     this.loading = true;
     if (this.masterSvc.platform().is('cordova')) {
-      this.masterSvc.notification().toast('No updates availiable', 'dark');
+      this.masterSvc.notification().toast('No updates available', 'dark');
       this.loading = false;
       return;
     }
@@ -55,17 +56,17 @@ export class HomePage implements OnDestroy {
                 }
               });
             },
-            'New update availiable!',
+            `${environment.version} available!`,
             'click Yes to install update'
           );
         } else {
-          this.masterSvc.notification().toast('No updates availiable', 'dark');
+          this.masterSvc.notification().toast('No updates available', 'dark');
         }
         this.loading = false;
       })
       .catch((err) => {
         setTimeout(() => {
-          this.masterSvc.notification().toast('No updates availiable', 'dark');
+          this.masterSvc.notification().toast('No updates available', 'dark');
           this.loading = false;
         }, 2000);
       });

@@ -43,7 +43,7 @@ export class EditprofileComponent implements OnInit {
         .notification()
         .toast('Image uploaded successfully', 'success');
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.masterSvc
         .notification()
         .toast(
@@ -64,7 +64,7 @@ export class EditprofileComponent implements OnInit {
         .toast('Profile updated successfully', 'success');
       this.loading = false;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.masterSvc
         .notification()
         .toast(

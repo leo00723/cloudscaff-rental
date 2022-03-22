@@ -1,0 +1,66 @@
+<table class="table table-bordered" *ngIf="company$ | async as company">
+  <thead>
+    <tr>
+      <th class="text-center" scope="col">#</th>
+      <th scope="col">Description</th>
+      <th class="text-center" scope="col">Detail</th>
+      <th class="text-center" scope="col">Qty</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th class="text-center" scope="row">1</th>
+      <td colspan="3">{{ company.terminology.scaffold }} Details</td>
+    </tr>
+    <!-- SCAFFOLD -->
+    <tr class="small">
+      <th class="text-center" scope="row"></th>
+      <td>{{ company.terminology.scaffold }}</td>
+      <td class="text-center">
+        {{ scaffold.scaffold.length }}{{ company.measurement.symbol }} x
+        {{ scaffold.scaffold.width }}{{ company.measurement.symbol }} x
+        {{ scaffold.scaffold.height }}{{ company.measurement.symbol }}
+      </td>
+      <td class="text-center">1</td>
+    </tr>
+    <!-- BOARDS -->
+    <tr class="small" *ngFor="let item of scaffold.boards; let i = index">
+      <th class="text-center" scope="row"></th>
+      <td>{{ company.terminology.boards }}</td>
+      <td class="text-center">
+        {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
+        }}{{ company.measurement.symbol }} - Height {{ item.height
+        }}{{ company.measurement.symbol }}
+      </td>
+      <td class="text-center">{{ item.qty }}</td>
+    </tr>
+    <!-- HIRE -->
+    <tr class="small">
+      <th class="text-center" scope="row"></th>
+      <td>{{ company.terminology.hire }}</td>
+      <td class="text-center">{{ scaffold.hire.daysStanding }} days</td>
+      <td class="text-center">1</td>
+    </tr>
+    <!-- LABOR -->
+    <tr>
+      <th class="text-center" scope="row">2</th>
+      <td colspan="3">Labor</td>
+    </tr>
+    <tr class="small" *ngFor="let item of scaffold.labour; let i = index">
+      <th class="text-center" scope="row"></th>
+      <td>{{ item.type.name }}</td>
+      <td class="text-center">{{ item.rate.name }}</td>
+      <td class="text-center">{{ item.qty }}</td>
+    </tr>
+    <!-- ADDITIONALS -->
+    <tr>
+      <th class="text-center" scope="row">3</th>
+      <td colspan="3">Additionals</td>
+    </tr>
+    <tr class="small" *ngFor="let item of scaffold.additionals; let i = index">
+      <th class="text-center" scope="row"></th>
+      <td colspan="2">{{ item.name }}</td>
+      <td class="text-center">{{ item.qty }}</td>
+    </tr>
+  </tbody>
+</table>

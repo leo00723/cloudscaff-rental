@@ -1,7 +1,8 @@
 <ion-item
   fill="solid"
   lines="none"
-  class="rounded-3 mb-3"
+  class="rounded-3"
+  [ngClass]="margin"
   [formGroup]="form"
   mode="md"
 >
@@ -9,6 +10,7 @@
     {{ title }} {{ optional ? "(optional)" : "" }}
   </ion-label>
   <ion-input
+    *ngIf="!textarea"
     debounce="200"
     placeholder="{{ placeholder }}"
     type="{{ type }}"
@@ -19,7 +21,19 @@
     [readonly]="readonly"
   >
   </ion-input>
+  <ion-textarea
+    *ngIf="textarea"
+    debounce="200"
+    placeholder="{{ placeholder }}"
+    id="{{ controlName }}"
+    name="{{ controlName }}"
+    formControlName="{{ controlName }}"
+    (ionChange)="update($event)"
+    [readonly]="readonly"
+    autoGrow="true"
+  ></ion-textarea>
   <ion-note slot="error" color="danger" *ngIf="checkStatus(field(controlName))">
     Please enter a valid {{ title }}
   </ion-note>
+  <ion-reorder *ngIf="reorder" slot="end"></ion-reorder>
 </ion-item>

@@ -1,0 +1,177 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Add Insection</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen="true" class="ion-padding">
+  <ion-grid class="card-outline container">
+    <ion-row class="p-2">
+      <ion-col size="12">
+        <h3>INSPECTION</h3>
+      </ion-col>
+      <ion-col>
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Scaffold:</h6>
+          <h6>Date Issued:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>
+          <h6>{{ inspection.code }}</h6>
+          <h6>{{ scaffold.code }}</h6>
+          <h6>{{ inspection.date | date }}</h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider></ion-item-divider>
+
+    <ion-row class="p-2">
+      <ion-col size="12" sizeXl="6" *ngIf="customer$ | async as customer">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> To </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>
+                {{ customer.name }}
+              </h6>
+              <h6>
+                {{ customer.email }}
+              </h6>
+              <h6>
+                {{ customer.rep }}
+              </h6>
+              <h6>
+                {{ customer.phone }}
+              </h6>
+              <h6>
+                {{ customer.regNumber }}
+              </h6>
+              <br />
+              <h6>
+                {{ customer.address }} <br />
+                {{ customer.suburb }}<br />{{ customer.city }}<br />{{
+                  customer.zip
+                }}<br />{{ customer.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> From </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6" *ngIf="company$ | async as company">
+            <ion-label>
+              <h6>
+                {{ company.name }}
+              </h6>
+              <h6>
+                {{ company.email }}
+              </h6>
+              <h6>N/A</h6>
+              <h6>
+                {{ company.phone }}
+              </h6>
+              <h6>
+                {{ company.regNumber }}
+              </h6>
+              <br />
+              <h6>
+                {{ company.address }} <br />
+                {{ company.suburb }}<br />{{ company.city }}<br />{{
+                  company.zip
+                }}<br />{{ company.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+
+    <ion-item-divider></ion-item-divider>
+    <ion-row class="p-2">
+      <ion-col>
+        <app-scaffold-overview-table
+          [scaffold]="scaffold"
+        ></app-scaffold-overview-table>
+        <app-inspection-checklist
+          [questions]="questions"
+          (list)="updateList($event)"
+          *ngIf="questions$ | async as questions"
+        ></app-inspection-checklist>
+        <app-input-text
+          [textarea]="true"
+          title="Notes"
+          [optional]="true"
+          (fieldChange)="inspection.notes = $event"
+        ></app-input-text>
+        <ion-item>
+          <ion-text>Is the scaffold safe for use?</ion-text>
+          <ion-radio-group
+            slot="end"
+            allowEmptySelection="true"
+            [(ngModel)]="inspection.status"
+          >
+            <ion-item lines="none">
+              <ion-label>Yes</ion-label>
+              <ion-radio slot="end" value="Passed" mode="md"></ion-radio>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-label>No</ion-label>
+              <ion-radio slot="end" value="Failed" mode="md"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row class="mt-5">
+      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+      <ion-col class="text-end" *ngIf="!loading">
+        <ion-button
+          shape="round"
+          color="success"
+          *ngIf="customer$ | async as customer"
+          (click)="create(customer)"
+          >Create Inspection</ion-button
+        >
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

@@ -9,6 +9,7 @@ export interface Scaffold {
   code: string;
   date: any;
   companyId: string;
+  customerId: string;
   siteId: string;
   siteCode: string;
   createdBy: string;
@@ -24,4 +25,6 @@ export interface Scaffold {
   endDate: any;
   status: string;
   users: User[];
+  totalInspections: number;
+  totalHandovers: number;
 }

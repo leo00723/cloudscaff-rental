@@ -25,6 +25,10 @@ import { ShowHidePasswordComponent } from './show-hide-password/show-hide-passwo
 import { SiteFormComponent } from './site-form/site-form.component';
 import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 import { UserPickerComponent } from './user-picker/user-picker.component';
+import { AddInspectionComponent } from './add-inspection/add-inspection.component';
+import { ScaffoldOverviewTableComponent } from './scaffold-overview-table/scaffold-overview-table.component';
+import { InspectionChecklistComponent } from './inspection-checklist/inspection-checklist.component';
+import { InspectionSummaryComponent } from './inspection-summary/inspection-summary.component';
 const COMPONENTS = [
   AddressSearchComponent,
   CustomerComponent,
@@ -45,6 +49,9 @@ const COMPONENTS = [
   CompanyPage,
   AddSiteComponent,
   UserPickerComponent,
+  AddInspectionComponent,
+  ScaffoldOverviewTableComponent,
+  InspectionChecklistComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -58,8 +65,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS],
+  declarations: [COMPONENTS, InspectionSummaryComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS],
+  exports: [IMPORTS, COMPONENTS, InspectionSummaryComponent],
 })
 export class ComponentsModule {}

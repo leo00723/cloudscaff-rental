@@ -1,0 +1,39 @@
+<table class="table table-bordered">
+  <ng-container *ngFor="let category of questions.categories">
+    <thead>
+      <tr class="table-light">
+        <th colspan="3" scope="col">{{ category.name }}</th>
+      </tr>
+      <tr>
+        <th class="text-center" scope="col">#</th>
+        <th scope="col">Question</th>
+        <th class="text-center" scope="col">Checklist</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let item of category.items; let i = index"
+        class="align-middle"
+      >
+        <th class="text-center" scope="row">{{ i + 1 }}.</th>
+        <td>{{ item.question }}</td>
+        <td class="text-center">
+          <ion-radio-group
+            allowEmptySelection="true"
+            (ionChange)="change($event, item)"
+            [value]="item.value"
+          >
+            <ion-item lines="none">
+              <ion-label>Yes</ion-label>
+              <ion-radio slot="end" value="Yes" mode="md"></ion-radio>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-label>No</ion-label>
+              <ion-radio slot="end" value="No" mode="md"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </td>
+      </tr>
+    </tbody>
+  </ng-container>
+</table>

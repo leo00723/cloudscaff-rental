@@ -139,6 +139,7 @@ export class AcceptEstimateComponent implements OnInit {
       this.field('scaffold', this.form2).setValue({
         code,
         companyId: this.company.id,
+        customerId: this.estimate.customer.id,
         siteId: site.id,
         siteCode: site.code,
         scaffold: this.estimate.scaffold,
@@ -152,6 +153,9 @@ export class AcceptEstimateComponent implements OnInit {
         startDate: this.estimate.startDate,
         endDate: this.estimate.endDate,
         date: new Date(),
+        totalInspections: 0,
+        totalHandovers: 0,
+        users: [],
         status: 'pending',
       });
     } else {

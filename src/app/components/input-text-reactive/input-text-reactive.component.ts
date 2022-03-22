@@ -17,9 +17,12 @@ export class InputTextReactiveComponent {
   @Input() title: string;
   @Input() placeholder: string;
   @Input() type = 'text';
+  @Input() margin = 'mb-3';
+  @Input() reorder = false;
   @Input() controlName: string;
   @Input() readonly = false;
   @Input() optional = false;
+  @Input() textarea = false;
   @Input() form;
   @Output() fieldChange = new EventEmitter<any>();
 

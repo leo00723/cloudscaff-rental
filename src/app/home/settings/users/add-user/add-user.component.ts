@@ -50,7 +50,7 @@ export class AddUserComponent {
         .toast('User updated successfully', 'success');
       this.loading = false;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this.masterSvc
         .notification()
         .toast(
@@ -88,7 +88,7 @@ export class AddUserComponent {
         }
         this.loading = !this.loading;
       } catch (e) {
-        console.log(e);
+        console.error(e);
         this.masterSvc
           .notification()
           .toast(
@@ -122,7 +122,7 @@ export class AddUserComponent {
         }
         this.loading = !this.loading;
       } catch (e) {
-        console.log(e);
+        console.error(e);
         this.masterSvc
           .notification()
           .toast(

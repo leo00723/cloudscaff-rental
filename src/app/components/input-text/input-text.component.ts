@@ -22,8 +22,11 @@ export class InputTextComponent implements OnInit {
   @Input() title: string;
   @Input() placeholder: string;
   @Input() type = 'text';
+  @Input() reorder = false;
   @Input() readonly = false;
   @Input() optional = false;
+  @Input() textarea = false;
+  @Input() margin = 'mb-3';
   @Output() fieldChange = new EventEmitter<any>();
   value1: number | string;
   form: FormGroup;
@@ -39,11 +42,20 @@ export class InputTextComponent implements OnInit {
   ngOnInit(): void {
     if (this.type === 'number') {
       this.form = this.fb.group({
-        field: [this.value1, [Validators.required, Validators.min(0)]],
+        field: [
+          this.value1,
+          [
+            !this.optional ? Validators.required : Validators.nullValidator,
+            Validators.min(0),
+          ],
+        ],
       });
     } else {
       this.form = this.fb.group({
-        field: [this.value1, Validators.required],
+        field: [
+          this.value1,
+          !this.optional ? Validators.required : Validators.nullValidator,
+        ],
       });
     }
   }
