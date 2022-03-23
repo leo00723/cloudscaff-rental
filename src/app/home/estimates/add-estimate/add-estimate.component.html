@@ -1,12 +1,8 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="close()">
-        <ion-icon
-          slot="icon-only"
-          name="arrow-back-outline"
-          color="primary"
-        ></ion-icon>
+      <ion-button (click)="close()" color="primary" mode="md">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
@@ -37,8 +33,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
-  <div class="container ion-padding" *ngIf="company" [ngSwitch]="active">
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container" *ngIf="company" [ngSwitch]="active">
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <!-- OVERVIEW TAB -->
       <ion-grid *ngSwitchDefault>
@@ -756,41 +752,11 @@
 
       <!-- SUMMARY TAB -->
 
-      <ion-grid *ngSwitchCase="'summary'" class="card-outline">
-        <ion-row class="mt-3">
-          <ion-col>
-            <ion-text color="medium">
-              <h4>Summary</h4>
-            </ion-text>
-          </ion-col>
-          <ion-col *ngIf="isEdit">
-            <ion-item lines="none" color="none">
-              <ion-buttons slot="end">
-                <ion-button
-                  (click)="download(terms)"
-                  *ngIf="terms$ | async as terms; else noTerms"
-                >
-                  <ion-icon
-                    slot="icon-only"
-                    name="cloud-download-outline"
-                    color="primary"
-                  ></ion-icon>
-                </ion-button>
-                <ng-template #noTerms>
-                  <ion-button (click)="download(null)">
-                    <ion-icon
-                      slot="icon-only"
-                      name="cloud-download-outline"
-                      color="primary"
-                    ></ion-icon>
-                  </ion-button>
-                </ng-template>
-              </ion-buttons>
-            </ion-item>
-          </ion-col>
-        </ion-row>
-
-        <app-estimate-summary [estimate]="estimate"></app-estimate-summary>
+      <ion-grid *ngSwitchCase="'summary'">
+        <app-estimate-summary
+          [estimate]="estimate"
+          [canDownload]="isEdit"
+        ></app-estimate-summary>
 
         <ion-row>
           <ion-progress-bar

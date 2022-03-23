@@ -6,12 +6,18 @@
         *ngIf="showBack"
         [defaultHref]="path"
         color="primary"
+        mode="md"
       ></ion-back-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end" *ngIf="btnName">
       <ion-button (click)="update()">
-        <ion-icon slot="icon-only" [name]="btnName" color="primary"></ion-icon>
+        <ion-icon
+          slot="icon-only"
+          size="medium"
+          [name]="btnName"
+          color="primary"
+        ></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

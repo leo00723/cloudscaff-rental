@@ -6,7 +6,6 @@
 ></app-header>
 
 <ion-content fullscreen="true" class="ion-padding">
-  <app-header-condensed title="Users"></app-header-condensed>
   <app-user-table
     [value]="users$"
     *ngIf="users$ | async else loading"

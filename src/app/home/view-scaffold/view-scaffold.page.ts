@@ -45,11 +45,13 @@ export class ViewScaffoldPage implements OnInit {
       ) as Observable<Scaffold>;
     this.inspections$ = this.masterSvc
       .edit()
-      .getCollectionWhere(
+      .getCollectionWhereAndOrder(
         `company/${this.ids[0]}/inspections`,
         'scaffold.id',
         '==',
-        this.ids[2]
+        this.ids[2],
+        'date',
+        'desc'
       ) as Observable<Inspection[]>;
   }
   segmentChanged(ev: any) {
@@ -65,6 +67,18 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'addInspection',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async addHandover(scaffold: Scaffold) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInspectionComponent,
+      componentProps: {
+        scaffold: scaffold,
+      },
+      showBackdrop: false,
+      id: 'addHandover',
       cssClass: 'fullscreen',
     });
     return await modal.present();

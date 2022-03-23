@@ -3,15 +3,14 @@ import { increment } from '@angular/fire/firestore';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Observable } from 'rxjs';
-import { Term } from 'src/app/models/term.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
+import { User } from 'src/app/models/user.model';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 import { MasterService } from '../../../services/master.service';
 import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
-import { CompanyState } from 'src/app/shared/company/company.state';
-import { User } from 'src/app/models/user.model';
-import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-add-estimate',
@@ -24,7 +23,6 @@ export class AddEstimatePage implements OnInit {
   user: User;
   company: Company;
   customers$: Observable<Customer[]>;
-  terms$: Observable<any>;
   rates$: Observable<any>;
   brokers$: Observable<any>;
   form: FormGroup;
@@ -48,13 +46,6 @@ export class AddEstimatePage implements OnInit {
     return this.form.get('additionals') as FormArray;
   }
 
-  async download(terms: Term | null) {
-    const pdf = await this.masterSvc
-      .pdf()
-      .generateEstimate(this.estimate, this.company, terms);
-    this.masterSvc.handlePdf(pdf, this.estimate.code);
-  }
-
   close() {
     this.masterSvc.modal().dismiss();
   }
@@ -66,9 +57,6 @@ export class AddEstimatePage implements OnInit {
     this.rates$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.company.id}/rateProfiles`, 'estimateRates');
-    this.terms$ = this.masterSvc
-      .edit()
-      .getDocById(`company/${this.company.id}/terms`, 'Estimate');
     this.brokers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/brokers`);

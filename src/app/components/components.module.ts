@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { SwiperModule } from 'swiper/angular';
-import { EstimateSummaryComponent } from '../home/estimates/add-estimate/estimate-summary/estimate-summary.component';
+import { EstimateSummaryComponent } from './estimate-summary/estimate-summary.component';
 import { EstimateTableComponent } from '../home/estimates/estimate-table/estimate-table.component';
 import { CompanyPage } from '../home/settings/company/company.page';
 import { AddSiteComponent } from '../home/sites/add-site/add-site.component';
@@ -29,8 +29,13 @@ import { AddInspectionComponent } from './add-inspection/add-inspection.componen
 import { ScaffoldOverviewTableComponent } from './scaffold-overview-table/scaffold-overview-table.component';
 import { InspectionChecklistComponent } from './inspection-checklist/inspection-checklist.component';
 import { InspectionSummaryComponent } from './inspection-summary/inspection-summary.component';
+import { ScaffoldEditformComponent } from './scaffold-editform/scaffold-editform.component';
+import { CompanyInfoDetailComponent } from './company-info-detail/company-info-detail.component';
 const COMPONENTS = [
+  AddInspectionComponent,
+  AddSiteComponent,
   AddressSearchComponent,
+  CompanyPage,
   CustomerComponent,
   DatepickerComponent,
   EditprofileComponent,
@@ -43,15 +48,12 @@ const COMPONENTS = [
   InputSelectReactiveComponent,
   InputTextComponent,
   InputTextReactiveComponent,
+  InspectionChecklistComponent,
+  ScaffoldOverviewTableComponent,
   ShowHidePasswordComponent,
   SiteFormComponent,
   SkeletonTextComponent,
-  CompanyPage,
-  AddSiteComponent,
   UserPickerComponent,
-  AddInspectionComponent,
-  ScaffoldOverviewTableComponent,
-  InspectionChecklistComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -65,8 +67,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, InspectionSummaryComponent],
+  declarations: [COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, InspectionSummaryComponent],
+  exports: [IMPORTS, COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent],
 })
 export class ComponentsModule {}

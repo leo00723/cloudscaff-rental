@@ -5,6 +5,7 @@ import {
   Input,
 } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
@@ -35,6 +36,7 @@ export class AddInspectionComponent implements OnInit {
     createdBy: '',
   };
   loading = false;
+
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit(): void {
@@ -59,6 +61,10 @@ export class AddInspectionComponent implements OnInit {
 
   updateList(ev: InspectionTemplate) {
     this.inspection.questions = ev;
+  }
+  updateScaffold(ev) {
+    this.scaffold.scaffold = ev.scaffold;
+    this.scaffold.boards = ev.boards;
   }
 
   create(customer: Customer) {

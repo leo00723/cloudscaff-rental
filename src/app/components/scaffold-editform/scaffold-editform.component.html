@@ -1,0 +1,122 @@
+<ng-container *ngIf="company$ | async as company">
+  <form [formGroup]="form" *ngIf="form" class="pt-2">
+    <ion-row class="card-outline mb-3">
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>{{ company.terminology.scaffold }} Details</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <ion-row formGroupName="scaffold">
+          <ion-col>
+            <app-input-reactive
+              title="Length ({{ company.measurement.symbol }})"
+              type="number"
+              controlName="length"
+              [form]="field('scaffold')"
+              placeholder="L"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Width ({{ company.measurement.symbol }})"
+              type="number"
+              controlName="width"
+              [form]="field('scaffold')"
+              placeholder="W"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Height ({{ company.measurement.symbol }})"
+              type="number"
+              controlName="height"
+              [form]="field('scaffold')"
+              placeholder="H"
+            >
+            </app-input-reactive>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+    <!-- BOARDS -->
+    <ion-row class="px-3">
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>{{ company.terminology.boards }} Details</h4>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+    <ion-row
+      formArrayName="boards"
+      class="card-outline mb-3"
+      *ngFor="let board of boardForms.controls; let i = index"
+    >
+      <ion-col size="12">
+        <ion-note> Item {{ i + 1 }} </ion-note>
+        <ion-chip
+          outline
+          color="danger"
+          class="ion-float-end"
+          (click)="deleteBoard(i)"
+        >
+          <ion-label>Delete</ion-label>
+        </ion-chip>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Length ({{ company.measurement.symbol }})"
+          type="number"
+          controlName="length"
+          placeholder="L"
+          [form]="board"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Width ({{ company.measurement.symbol }})"
+          type="number"
+          controlName="width"
+          placeholder="W"
+          [form]="board"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Height Off Ground ({{ company.measurement.symbol }})"
+          type="number"
+          controlName="height"
+          placeholder="H"
+          [form]="board"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Qty"
+          type="number"
+          controlName="qty"
+          placeholder="Enter Qty"
+          [form]="board"
+        >
+        </app-input-reactive>
+      </ion-col>
+    </ion-row>
+    <ion-row class="mb-3">
+      <ion-col>
+        <ion-fab-button
+          size="small"
+          class="m-auto"
+          color="success"
+          (click)="addBoard()"
+        >
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ng-container>

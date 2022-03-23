@@ -20,7 +20,6 @@ import { MasterService } from '../../../services/master.service';
 export class CompanyPage {
   @Input() title = 'Business Settings';
   @Input() showBack = true;
-  @Input() showCondensed = true;
   @Output() updated = new EventEmitter<boolean>();
   @Select() company$: Observable<Company>;
   company: Company = {

@@ -13,10 +13,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
-  <div class="container ion-padding">
-    <div class="card-outline">
-      <app-estimate-summary [estimate]="estimate"></app-estimate-summary>
-    </div>
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container">
+    <app-estimate-summary
+      [estimate]="estimate"
+      [canDownload]="true"
+    ></app-estimate-summary>
   </div>
 </ion-content>

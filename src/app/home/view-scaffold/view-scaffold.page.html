@@ -17,14 +17,17 @@
         <ion-segment-button value="inspections">
           <ion-label>Inspections</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="handovers">
+          <ion-label>Handovers</ion-label>
+        </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
   </app-header>
 
   <ion-content fullscreen="true" class="ion-padding">
     <ng-container [ngSwitch]="active" *ngIf="company$ | async as company">
-      <div *ngSwitchDefault class="container card-outline">
-        <ion-row class="p-2">
+      <div *ngSwitchDefault class="container">
+        <ion-row class="py-2">
           <ion-col size="12">
             <h3>Overview</h3>
           </ion-col>
@@ -60,6 +63,26 @@
         ></app-inspection-table>
         <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button (click)="addInspection(scaffold)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <ng-template #loading>
+          <div class="ion-padding">
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+          </div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'handovers'">
+        <app-inspection-table
+          [value]="inspections$"
+          *ngIf="inspections$ | async else loading"
+          (selectedItem)="viewInspection($event)"
+        ></app-inspection-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addHandover(scaffold)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
         </ion-fab>

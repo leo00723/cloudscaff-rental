@@ -1,6 +1,5 @@
 <app-header title="Estimates" btnName="refresh" (updated)="init()"></app-header>
-<ion-content fullscreen="true" class="ion-padding">
-  <app-header-condensed title="Estimates"></app-header-condensed>
+<ion-content class="ion-padding">
   <app-estimate-table
     [value]="estimates$"
     *ngIf="estimates$ | async else loading"

@@ -122,6 +122,33 @@ export class EditService {
     ) as Observable<any[]>;
   }
 
+  getCollectionWhereAndOrder(
+    collectionPath: string,
+    field: string,
+    whereFilter: WhereFilterOp,
+    value: any,
+    orderField: string,
+    direction: OrderByDirection
+  ) {
+    return collectionData(
+      query(
+        this.collectionRef(collectionPath),
+        where(field, whereFilter, value),
+        orderBy(orderField, direction)
+      ),
+      {
+        idField: 'id',
+      }
+    ).pipe(
+      map((data: any) => {
+        return data.map((d: any) => {
+          if (d.date) return { ...d, date: d.date.toDate() };
+          return d;
+        });
+      })
+    ) as Observable<any[]>;
+  }
+
   //----DELETE FUNCTIONS----
   deleteDocById(collectionName: string, id: string) {
     return deleteDoc(this.docRef(collectionName, id));
