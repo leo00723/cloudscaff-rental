@@ -34,33 +34,38 @@
       </td>
       <td class="text-center">{{ item.qty }}</td>
     </tr>
-    <!-- HIRE -->
-    <tr class="small">
-      <th class="text-center" scope="row"></th>
-      <td>{{ company.terminology.hire }}</td>
-      <td class="text-center">{{ scaffold.hire.daysStanding }} days</td>
-      <td class="text-center">1</td>
-    </tr>
-    <!-- LABOR -->
-    <tr>
-      <th class="text-center" scope="row">2</th>
-      <td colspan="3">Labor</td>
-    </tr>
-    <tr class="small" *ngFor="let item of scaffold.labour; let i = index">
-      <th class="text-center" scope="row"></th>
-      <td>{{ item.type.name }}</td>
-      <td class="text-center">{{ item.rate.name }}</td>
-      <td class="text-center">{{ item.qty }}</td>
-    </tr>
-    <!-- ADDITIONALS -->
-    <tr>
-      <th class="text-center" scope="row">3</th>
-      <td colspan="3">Additionals</td>
-    </tr>
-    <tr class="small" *ngFor="let item of scaffold.additionals; let i = index">
-      <th class="text-center" scope="row"></th>
-      <td colspan="2">{{ item.name }}</td>
-      <td class="text-center">{{ item.qty }}</td>
-    </tr>
+    <ng-container *ngIf="detailed">
+      <!-- HIRE -->
+      <tr class="small">
+        <th class="text-center" scope="row"></th>
+        <td>{{ company.terminology.hire }}</td>
+        <td class="text-center">{{ scaffold.hire.daysStanding }} days</td>
+        <td class="text-center">1</td>
+      </tr>
+      <!-- LABOR -->
+      <tr>
+        <th class="text-center" scope="row">2</th>
+        <td colspan="3">Labor</td>
+      </tr>
+      <tr class="small" *ngFor="let item of scaffold.labour; let i = index">
+        <th class="text-center" scope="row"></th>
+        <td>{{ item.type.name }}</td>
+        <td class="text-center">{{ item.rate.name }}</td>
+        <td class="text-center">{{ item.qty }}</td>
+      </tr>
+      <!-- ADDITIONALS -->
+      <tr>
+        <th class="text-center" scope="row">3</th>
+        <td colspan="3">Additionals</td>
+      </tr>
+      <tr
+        class="small"
+        *ngFor="let item of scaffold.additionals; let i = index"
+      >
+        <th class="text-center" scope="row"></th>
+        <td colspan="2">{{ item.name }}</td>
+        <td class="text-center">{{ item.qty }}</td>
+      </tr></ng-container
+    >
   </tbody>
 </table>

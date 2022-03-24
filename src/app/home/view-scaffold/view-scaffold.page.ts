@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
+import { AddHandoverComponent } from 'src/app/components/add-handover/add-handover.component';
 import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
+import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
 import { Company } from 'src/app/models/company.model';
+import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
@@ -22,6 +25,7 @@ export class ViewScaffoldPage implements OnInit {
   @Select() company$: Observable<Company>;
   scaffold$: Observable<Scaffold>;
   inspections$: Observable<Inspection[]>;
+  handovers$: Observable<Handover[]>;
   active = 'overview';
   ids = [];
   constructor(
@@ -53,6 +57,16 @@ export class ViewScaffoldPage implements OnInit {
         'date',
         'desc'
       ) as Observable<Inspection[]>;
+    this.handovers$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/handovers`,
+        'scaffold.id',
+        '==',
+        this.ids[2],
+        'date',
+        'desc'
+      ) as Observable<Handover[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -73,7 +87,7 @@ export class ViewScaffoldPage implements OnInit {
   }
   async addHandover(scaffold: Scaffold) {
     const modal = await this.masterSvc.modal().create({
-      component: AddInspectionComponent,
+      component: AddHandoverComponent,
       componentProps: {
         scaffold: scaffold,
       },
@@ -92,6 +106,18 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'viewInspection',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewHandover(handover: Handover) {
+    const modal = await this.masterSvc.modal().create({
+      component: HandoverSummaryComponent,
+      componentProps: {
+        handover,
+      },
+      showBackdrop: false,
+      id: 'viewHandover',
       cssClass: 'fullscreen',
     });
     return await modal.present();

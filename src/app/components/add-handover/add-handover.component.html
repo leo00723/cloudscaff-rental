@@ -9,14 +9,14 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Add Insection</ion-title>
+    <ion-title>Add Handover</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content fullscreen="true" class="ion-padding">
   <ion-grid class="container" *ngIf="company$ | async as company">
     <ion-row class="py-2">
       <ion-col size="12">
-        <h3>INSPECTION</h3>
+        <h3>HANDOVER</h3>
       </ion-col>
       <ion-col>
         <ion-label>
@@ -27,35 +27,38 @@
       </ion-col>
       <ion-col>
         <ion-label>
-          <h6>{{ inspection.code }}</h6>
+          <h6>{{ handover.code }}</h6>
           <h6>{{ scaffold.code }}</h6>
-          <h6>{{ inspection.date | date }}</h6>
+          <h6>{{ handover.date | date }}</h6>
         </ion-label>
       </ion-col>
     </ion-row>
-
-    <!-- <app-company-info-detail
-      [customer]="customer"
-      *ngIf="customer$ | async as customer"
-    ></app-company-info-detail> -->
-
     <app-scaffold-editform
       [scaffold]="scaffold"
       (formResult)="updateScaffold($event)"
     ></app-scaffold-editform>
     <ion-row class="py-2">
       <ion-col class="p-0">
-        <app-inspection-checklist
-          [questions]="questions"
-          (list)="updateList($event)"
-          *ngIf="questions$ | async as questions"
-        ></app-inspection-checklist>
         <table class="table table-bordered mb-3">
           <tbody>
             <tr class="align-middle">
+              <td>Maximum load of the scaffold?</td>
+              <td class="text-center">
+                <ion-radio-group slot="end" [(ngModel)]="handover.maxLoad">
+                  <ion-item
+                    lines="none"
+                    *ngFor="let load of (template$ | async)?.maxLoads"
+                  >
+                    <ion-label>{{ load }}</ion-label>
+                    <ion-radio slot="end" [value]="load" mode="md"></ion-radio>
+                  </ion-item>
+                </ion-radio-group>
+              </td>
+            </tr>
+            <tr class="align-middle">
               <td>Is the scaffold safe for use?</td>
               <td class="text-center">
-                <ion-radio-group slot="end" [(ngModel)]="inspection.status">
+                <ion-radio-group slot="end" [(ngModel)]="handover.status">
                   <ion-item lines="none">
                     <ion-label>Yes</ion-label>
                     <ion-radio slot="end" value="Passed" mode="md"></ion-radio>
@@ -73,7 +76,7 @@
           [textarea]="true"
           title="Notes"
           [optional]="true"
-          (fieldChange)="inspection.notes = $event"
+          (fieldChange)="handover.notes = $event"
         ></app-input-text>
       </ion-col>
     </ion-row>
@@ -84,9 +87,11 @@
           shape="round"
           color="success"
           *ngIf="customer$ | async as customer"
-          [disabled]="inspection.status.length === 0"
+          [disabled]="
+            handover.maxLoad.length === 0 || handover.status.length === 0
+          "
           (click)="create(customer)"
-          >Create Inspection</ion-button
+          >Create Handover</ion-button
         >
       </ion-col>
     </ion-row>

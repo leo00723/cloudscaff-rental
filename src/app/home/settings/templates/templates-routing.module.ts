@@ -15,6 +15,13 @@ const routes: Routes = [
         (m) => m.InspectionTemplatePageModule
       ),
   },
+  {
+    path: 'handover',
+    loadChildren: () =>
+      import('./handover-template/handover-template.module').then(
+        (m) => m.HandoverTemplatePageModule
+      ),
+  },
 ];
 
 @NgModule({

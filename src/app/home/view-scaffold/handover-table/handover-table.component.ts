@@ -12,28 +12,28 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
-import { Inspection } from 'src/app/models/inspection.model';
+import { Handover } from 'src/app/models/handover.model';
 
 @Component({
-  selector: 'app-inspection-table',
-  templateUrl: './inspection-table.component.html',
+  selector: 'app-handover-table',
+  templateUrl: './handover-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InspectionTableComponent {
+export class HandoverTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<Inspection>();
-  inspections$: Observable<Inspection[]>;
-  temp$: Observable<Inspection[]>;
-  @Input() set value(estimates: Observable<Inspection[]>) {
-    this.temp$ = estimates;
-    this.inspections$ = estimates;
+  @Output() selectedItem = new EventEmitter<Handover>();
+  handovers$: Observable<Handover[]>;
+  temp$: Observable<Handover[]>;
+  @Input() set value(val: Observable<Handover[]>) {
+    this.temp$ = val;
+    this.handovers$ = val;
   }
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
 
   constructor() {
-    this.temp$ = this.inspections$;
+    this.temp$ = this.handovers$;
   }
 
   onSelect({ selected }) {
@@ -51,9 +51,9 @@ export class InspectionTableComponent {
 
   updateFilter(event) {
     const val = event.detail.value.toLowerCase() as string;
-    this.temp$ = this.inspections$.pipe(
-      map((inspection) =>
-        inspection.filter(
+    this.temp$ = this.handovers$.pipe(
+      map((handover) =>
+        handover.filter(
           (i) =>
             i.code.toLowerCase().indexOf(val) !== -1 ||
             i.notes.toLowerCase().indexOf(val) !== -1 ||

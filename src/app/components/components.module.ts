@@ -31,6 +31,8 @@ import { InspectionChecklistComponent } from './inspection-checklist/inspection-
 import { InspectionSummaryComponent } from './inspection-summary/inspection-summary.component';
 import { ScaffoldEditformComponent } from './scaffold-editform/scaffold-editform.component';
 import { CompanyInfoDetailComponent } from './company-info-detail/company-info-detail.component';
+import { AddHandoverComponent } from './add-handover/add-handover.component';
+import { HandoverSummaryComponent } from './handover-summary/handover-summary.component';
 const COMPONENTS = [
   AddInspectionComponent,
   AddSiteComponent,
@@ -67,8 +69,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent],
+  declarations: [COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent, AddHandoverComponent, HandoverSummaryComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent],
+  exports: [IMPORTS, COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent, AddHandoverComponent, HandoverSummaryComponent],
 })
 export class ComponentsModule {}

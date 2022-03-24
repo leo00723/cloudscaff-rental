@@ -1,0 +1,86 @@
+<app-header
+  title="Handover Template"
+  [showMenu]="false"
+  [showBack]="true"
+  path="/dashboard/settings/templates"
+></app-header>
+
+<ion-content fullscreen="true">
+  <div class="container ion-padding">
+    <ion-row class="card-outline mb-3">
+      <ion-col size="12">
+        <ion-note> Maximum Load Options </ion-note>
+      </ion-col>
+      <!-- ACCESS ITEMS IN CATEGORY -->
+      <ion-col size="12">
+        <ion-reorder-group
+          (ionItemReorder)="doReorder($event)"
+          disabled="false"
+        >
+          <ion-row
+            class="m-0 p-0"
+            *ngFor="let load of template.maxLoads;trackBy: trackItem; let i = index"
+          >
+            <ion-col sizeMd="11.5" size="11">
+              <app-input-text
+                title="Load Description {{i + 1}}"
+                margin="m-0"
+                [reorder]="true"
+                placeholder="Enter option"
+                [value]="load"
+                (fieldChange)="setItem(i,$event)"
+              >
+              </app-input-text>
+            </ion-col>
+            <ion-col sizeMd="0.5" size="1" class="m-auto">
+              <ion-fab-button
+                size="small"
+                class="m-auto"
+                color="danger"
+                (click)="deleteItem(i)"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ion-reorder-group>
+      </ion-col>
+      <ion-col size="12" class="text-center">
+        <ion-button
+          size="small"
+          shape="round"
+          fill="outline"
+          color="success"
+          class="text-capitalize"
+          (click)="addItem()"
+          >Add Option</ion-button
+        >
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12" class="card-outline">
+        <app-input-text
+          title="Handover Detail"
+          margin="m-0"
+          [textarea]="true"
+          placeholder="Enter details"
+          [value]="template.detail"
+          (fieldChange)="template.detail = $event"
+        >
+        </app-input-text>
+      </ion-col>
+      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+      <ion-col size="12" class="text-end">
+        <ion-button
+          *ngIf="!loading"
+          shape="round"
+          color="success"
+          type="submit"
+          (click)="update()"
+        >
+          Update Template
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>
