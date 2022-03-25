@@ -4,6 +4,7 @@ import { InspectionTemplate } from './invoiceTemplate.model';
 import { Scaffold } from './scaffold.model';
 
 export interface Inspection {
+  id?: string;
   date: any;
   code: string;
   status: string;

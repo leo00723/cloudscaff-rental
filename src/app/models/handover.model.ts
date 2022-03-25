@@ -3,6 +3,7 @@ import { Customer } from './customer.model';
 import { Scaffold } from './scaffold.model';
 
 export interface Handover {
+  id?: string;
   date: any;
   code: string;
   status: string;
@@ -13,4 +14,6 @@ export interface Handover {
   company?: Company;
   customer?: Customer;
   scaffold?: Scaffold;
+  signature?: string;
+  signatureRef?: string;
 }

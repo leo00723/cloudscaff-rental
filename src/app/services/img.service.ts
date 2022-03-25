@@ -65,6 +65,21 @@ export class ImgService {
       return null;
     }
   }
+  async uploadBlobNoResize(image: Blob, path: string) {
+    try {
+      await uploadBytes(ref(this.storage, `${path}`), image);
+
+      const url = await getDownloadURL(ref(this.storage, `${path}`));
+
+      const data = {
+        url,
+        ref: path,
+      };
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
 
   async deletePhoto(path: string) {
     const img = ref(this.storage, path);

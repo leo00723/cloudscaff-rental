@@ -33,6 +33,9 @@ import { ScaffoldEditformComponent } from './scaffold-editform/scaffold-editform
 import { CompanyInfoDetailComponent } from './company-info-detail/company-info-detail.component';
 import { AddHandoverComponent } from './add-handover/add-handover.component';
 import { HandoverSummaryComponent } from './handover-summary/handover-summary.component';
+import { SignaturePadComponent } from './signature-pad/signature-pad.component';
+import { SignaturePadModule } from 'angular2-signaturepad';
+
 const COMPONENTS = [
   AddInspectionComponent,
   AddSiteComponent,
@@ -56,6 +59,12 @@ const COMPONENTS = [
   SiteFormComponent,
   SkeletonTextComponent,
   UserPickerComponent,
+  InspectionSummaryComponent,
+  ScaffoldEditformComponent,
+  CompanyInfoDetailComponent,
+  AddHandoverComponent,
+  HandoverSummaryComponent,
+  SignaturePadComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -66,11 +75,12 @@ const IMPORTS = [
   NgxDatatableModule,
   SwiperModule,
   ScrollingModule,
+  SignaturePadModule,
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent, AddHandoverComponent, HandoverSummaryComponent],
+  declarations: [COMPONENTS],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, InspectionSummaryComponent, ScaffoldEditformComponent, CompanyInfoDetailComponent, AddHandoverComponent, HandoverSummaryComponent],
+  exports: [IMPORTS, COMPONENTS],
 })
 export class ComponentsModule {}

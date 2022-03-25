@@ -1,0 +1,12 @@
+<div class="mt-5 d-grid justify-content-center">
+  <signature-pad [options]="signaturePadOptions"></signature-pad>
+
+  <div class="text-end">
+    <ion-button shape="round" color="danger" (click)="clearSignature()"
+      >Clear
+    </ion-button>
+    <ion-button shape="round" color="success" (click)="savePad()"
+      >Save
+    </ion-button>
+  </div>
+</div>

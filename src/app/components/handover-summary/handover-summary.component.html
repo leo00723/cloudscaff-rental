@@ -86,9 +86,22 @@
                 </ion-text>
               </td>
             </tr>
+            <tr class="align-middle" *ngIf="handover.signature">
+              <td>Signature</td>
+              <td class="text-center">
+                <img [src]="handover.signature" />
+              </td>
+            </tr>
           </tbody>
         </table>
       </ion-col>
+      <ion-col size="12" *ngIf="!handover.signature">
+        <app-signature-pad (result)="sign($event)"></app-signature-pad>
+      </ion-col>
+      <ion-progress-bar
+        type="indeterminate"
+        *ngIf="isLoading"
+      ></ion-progress-bar>
     </ion-row>
   </ion-grid>
   <ng-template #loading>
