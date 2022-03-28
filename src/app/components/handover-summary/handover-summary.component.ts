@@ -49,10 +49,18 @@ export class HandoverSummaryComponent {
       if (res) {
         this.handover.signature = res.url2;
         this.handover.signatureRef = res.ref;
+        this.handover.status = 'active-Signed';
         this.editService.setDoc(
           `company/${this.handover.company.id}/handovers`,
           this.handover,
           this.handover.id
+        );
+        await this.editService.updateDoc(
+          `company/${this.handover.company.id}/scaffolds`,
+          this.handover.scaffold.id,
+          {
+            status: 'active-Handed over',
+          }
         );
         this.notificationSvc.toast('Document signed successfully!', 'success');
         this.isLoading = false;

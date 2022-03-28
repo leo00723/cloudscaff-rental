@@ -156,7 +156,7 @@ export class AcceptEstimateComponent implements OnInit {
         totalInspections: 0,
         totalHandovers: 0,
         users: [],
-        status: 'pending',
+        status: 'pending-Work In Progress',
       });
     } else {
       this.show = 'addSite';

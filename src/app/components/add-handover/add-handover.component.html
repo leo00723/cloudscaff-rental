@@ -58,7 +58,7 @@
             <tr class="align-middle">
               <td>Is the scaffold safe for use?</td>
               <td class="text-center">
-                <ion-radio-group slot="end" [(ngModel)]="handover.status">
+                <ion-radio-group slot="end" [(ngModel)]="handover.safe">
                   <ion-item lines="none">
                     <ion-label>Yes</ion-label>
                     <ion-radio slot="end" value="Passed" mode="md"></ion-radio>
@@ -88,7 +88,7 @@
           color="success"
           *ngIf="customer$ | async as customer"
           [disabled]="
-            handover.maxLoad.length === 0 || handover.status.length === 0
+            handover.maxLoad.length === 0 || handover.safe.length === 0
           "
           (click)="create(customer)"
           >Create Handover</ion-button

@@ -89,7 +89,7 @@ export class ViewScaffoldPage implements OnInit {
     const modal = await this.masterSvc.modal().create({
       component: AddHandoverComponent,
       componentProps: {
-        scaffold: scaffold,
+        value: scaffold,
       },
       showBackdrop: false,
       id: 'addHandover',

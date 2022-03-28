@@ -79,7 +79,17 @@ export class AddInspectionComponent implements OnInit {
         this.inspection.company = company;
         this.inspection.customer = customer;
         this.inspection.scaffold = this.scaffold;
-
+        if (this.inspection.status === 'Failed') {
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.inspection.company.id}/scaffolds`,
+              this.inspection.scaffold.id,
+              {
+                status: 'inactive-Failed Inspection',
+              }
+            );
+        }
         await this.masterSvc
           .edit()
           .addDocument(`company/${company.id}/inspections`, this.inspection);

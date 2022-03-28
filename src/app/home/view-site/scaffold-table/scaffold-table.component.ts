@@ -44,12 +44,12 @@ export class ScaffoldTableComponent {
   }
 
   getStatus(status: string) {
-    switch (status) {
+    switch (status.split('-')[0]) {
       case 'active':
         return 'success';
       case 'pending':
         return 'primary';
-      case 'closed':
+      case 'inactive':
         return 'danger';
     }
   }

@@ -16,14 +16,18 @@ import { UserState } from 'src/app/shared/user/user.state';
   templateUrl: './add-handover.component.html',
 })
 export class AddHandoverComponent implements OnInit {
-  @Input() scaffold: Scaffold;
+  @Input() set value(val: Scaffold) {
+    this.scaffold = val;
+  }
+  scaffold: Scaffold;
   @Select() company$: Observable<Company>;
   customer$: Observable<Customer>;
   template$: Observable<HandoverTemplate>;
   handover: Handover = {
     date: new Date(),
     code: '',
-    status: '',
+    status: 'pending-Needs Signature',
+    safe: '',
     maxLoad: '',
     notes: '',
     detail: '',

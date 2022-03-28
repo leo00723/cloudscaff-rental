@@ -11,6 +11,7 @@ export interface Handover {
   detail: string;
   maxLoad: string;
   createdBy: string;
+  safe: string;
   company?: Company;
   customer?: Customer;
   scaffold?: Scaffold;

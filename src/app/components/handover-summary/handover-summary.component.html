@@ -79,10 +79,10 @@
               <td>Is the scaffold safe for use?</td>
               <td class="text-center">
                 <ion-text
-                  [color]="handover.status === 'Passed' ? 'success' : 'danger'"
+                  [color]="handover.safe === 'Passed' ? 'success' : 'danger'"
                   slot="end"
                 >
-                  {{ handover.status }}
+                  {{ handover.safe }}
                 </ion-text>
               </td>
             </tr>
@@ -96,6 +96,7 @@
         </table>
       </ion-col>
       <ion-col size="12" *ngIf="!handover.signature">
+        <ion-text><h4>Signature</h4></ion-text>
         <app-signature-pad (result)="sign($event)"></app-signature-pad>
       </ion-col>
       <ion-progress-bar

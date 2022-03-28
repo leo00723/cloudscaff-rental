@@ -41,11 +41,11 @@ export class HandoverTableComponent {
   }
 
   getStatus(status: string) {
-    switch (status) {
-      case 'Passed':
+    switch (status.split('-')[0]) {
+      case 'active':
         return 'success';
-      case 'Failed':
-        return 'danger';
+      case 'pending':
+        return 'primary';
     }
   }
 
