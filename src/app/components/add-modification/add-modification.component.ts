@@ -29,15 +29,6 @@ import { ScaffoldCost } from 'src/app/models/scaffold-cost';
 export class AddModificationComponent implements OnInit, OnDestroy {
   @ViewChild('message') message: IonTextarea;
   @Input() isEdit = false;
-  scaffoldChange: {
-    dismantle: {
-      length: number;
-      width: number;
-      height: number;
-      type: string;
-    }[];
-    erection: { length: number; width: number; height: number; type: string }[];
-  } = { dismantle: [], erection: [] };
   @Input() set value(val: Scaffold) {
     this.scaffold = val;
   }
@@ -129,7 +120,14 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     }
   }
+  ionViewDidEnter() {
+    this.ready = true;
+  }
 
+  // START: FORM CRUD
+  get attachmentsForms() {
+    return this.form.get('attachments') as FormArray;
+  }
   get boardForms() {
     return this.form.get('boards') as FormArray;
   }
@@ -139,13 +137,77 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   get additionalForms() {
     return this.form.get('additionals') as FormArray;
   }
+  addLabour() {
+    const labour = this.masterSvc.fb().group({
+      type: ['', Validators.required],
+      hours: ['', Validators.required],
+      days: ['', Validators.required],
+      rate: ['', [Validators.required]],
+      qty: ['', Validators.required],
+      total: [0],
+    });
+    this.labourForms.push(labour);
+  }
+  addAdditional() {
+    const additional = this.masterSvc.fb().group({
+      rate: ['', Validators.required],
+      qty: ['', [Validators.required, Validators.min(1)]],
+      name: ['', Validators.required],
+      daysStanding: ['', [Validators.required, Validators.min(1)]],
+      total: [0],
+    });
+    this.additionalForms.push(additional);
+  }
+  addBoard() {
+    const board = this.masterSvc.fb().group({
+      rate: ['', Validators.required],
+      length: ['', [Validators.required, Validators.min(1)]],
+      width: ['', [Validators.required, Validators.min(1)]],
+      height: ['', [Validators.required, Validators.min(1)]],
+      qty: ['', [Validators.required, Validators.min(1)]],
+      total: [0],
+    });
+    this.boardForms.push(board);
+  }
+  addAttachment() {
+    const attachment = this.masterSvc.fb().group({
+      rate: ['', Validators.required],
+      length: ['', [Validators.required, Validators.min(1)]],
+      width: ['', [Validators.required, Validators.min(1)]],
+      height: ['', [Validators.required, Validators.min(1)]],
+      level: ['', [Validators.nullValidator]],
+      breakdown: ['', [Validators.nullValidator]],
+      total: [0],
+    });
+    this.attachmentsForms.push(attachment);
+  }
+  deleteAttachment(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.attachmentsForms.removeAt(i);
+      this.calcHireRate();
+    });
+  }
+  deleteBoard(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.boardForms.removeAt(i);
+      this.calcHireRate();
+    });
+  }
+  deleteAdditional(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.additionalForms.removeAt(i);
+    });
+  }
+  deleteLabour(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.labourForms.removeAt(i);
+    });
+  }
+  // END: FORM CRUD
 
+  // START: Helper functions
   close() {
     this.masterSvc.modal().dismiss();
-  }
-
-  ionViewDidEnter() {
-    this.ready = true;
   }
 
   arr(field: string) {
@@ -155,20 +217,23 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   arrField(arr: string, index: number, field: string) {
     return this.arr(arr).controls[index].get(field) as FormControl;
   }
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+  // END: Helper functions
 
+  // switch broker
   changeBroker() {
     this.labourForms.clear();
     this.addLabour();
   }
 
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
-
+  //switch between pages
   nextView(page: string) {
     this.active = page;
   }
 
+  //event for switching between pages
   segmentChanged(ev: any) {
     if (ev.detail.value === 'summary') {
       this.updateModificationTotal();
@@ -178,11 +243,17 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     }
   }
 
+  //update the totals for a category
   update(type: string, i?: number) {
     switch (type) {
       case 'scaffold':
         {
           this.calcScaffoldRate();
+        }
+        break;
+      case 'attachments':
+        {
+          this.calcAttachmentRate(i);
         }
         break;
       case 'boards':
@@ -206,6 +277,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     this.calcHireRate();
   }
 
+  //Calculate total for a category base on rates
   updateRate(type: string, args: any, i?: number) {
     switch (type) {
       case 'scaffold':
@@ -215,6 +287,15 @@ export class AddModificationComponent implements OnInit, OnDestroy {
             rate: +args,
           });
           this.calcScaffoldRate();
+        }
+        break;
+      case 'attachments':
+        {
+          this.arrField('attachments', i, 'rate').patchValue({
+            ...this.arrField('attachments', i, 'rate').value,
+            rate: +args,
+          });
+          this.calcAttachmentRate(i);
         }
         break;
       case 'boards':
@@ -254,57 +335,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     this.calcHireRate();
   }
 
-  addLabour() {
-    const labour = this.masterSvc.fb().group({
-      type: ['', Validators.required],
-      hours: ['', Validators.required],
-      days: ['', Validators.required],
-      rate: ['', [Validators.required]],
-      qty: ['', Validators.required],
-      total: [0],
-    });
-    this.labourForms.push(labour);
-  }
-
-  addAdditional() {
-    const additional = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
-      qty: ['', [Validators.required, Validators.min(1)]],
-      name: ['', Validators.required],
-      daysStanding: ['', [Validators.required, Validators.min(1)]],
-      total: [0],
-    });
-    this.additionalForms.push(additional);
-  }
-  addBoard() {
-    const board = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
-      length: ['', [Validators.required, Validators.min(1)]],
-      width: ['', [Validators.required, Validators.min(1)]],
-      height: ['', [Validators.required, Validators.min(1)]],
-      qty: ['', [Validators.required, Validators.min(1)]],
-      total: [0],
-    });
-    this.boardForms.push(board);
-  }
-
-  deleteBoard(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.boardForms.removeAt(i);
-      this.calcHireRate();
-    });
-  }
-  deleteAdditional(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.additionalForms.removeAt(i);
-    });
-  }
-  deleteLabour(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.labourForms.removeAt(i);
-    });
-  }
-
+  //create the modification
   createModification() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
@@ -336,6 +367,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     });
   }
 
+  //update the estimate
   updateModification(status: 'pending' | 'accepted' | 'rejected') {
     if (status === 'accepted') {
       this.startAcceptance();
@@ -371,6 +403,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     }
   }
 
+  //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
       component: AcceptEstimateComponent,
@@ -386,19 +419,17 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     return await modal.present();
   }
 
-  // private reset() {
-  //   this.active = 'overview';
-  //   this.show = '';
-  //   this.initFrom();
-  //   this.loading = false;
-  // }
-
+  //update the estimate total
   private updateModificationTotal() {
     if (this.isEdit && this.modification.status !== 'pending') {
       return;
     }
     const scaffold = +this.field('scaffold.total').value;
     const hire = +this.field('hire.total').value;
+    let attachments = 0;
+    this.arr('attachments').controls.forEach((a) => {
+      attachments += +a.get('total').value;
+    });
     let boards = 0;
     this.arr('boards').controls.forEach((c) => {
       boards += +c.get('total').value;
@@ -412,7 +443,8 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       additionals += +c.get('total').value;
     });
 
-    const subtotal = scaffold + boards + hire + labour + additionals;
+    const subtotal =
+      scaffold + attachments + boards + hire + labour + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
@@ -457,7 +489,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       updatedBy: this.user.id,
     });
   }
-
+  // START: functions to update each rate category
   private calcScaffoldRate() {
     switch (this.field('scaffold.rate').value.code) {
       case 1:
@@ -521,6 +553,16 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           );
         }
         break;
+      case 8:
+        {
+          this.field('scaffold.total').setValue(
+            ((this.field('scaffold.length').value *
+              this.field('scaffold.height').value) /
+              10) *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
       case 0: {
         this.field('scaffold.total').setValue(
           this.field('scaffold.rate').value.rate
@@ -530,13 +572,12 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     this.field('scaffold.total').setValue(
       +this.field('scaffold.total').value.toFixed(2)
     );
+
     const newScaffold = this.field('scaffold').value;
-    this.scaffoldChange = this.calcDimension.scaffoldCost(
-      this.scaffold.scaffold,
-      newScaffold
+    this.field('scaffold.breakdown').setValue(
+      this.calcDimension.scaffoldCost(this.scaffold.scaffold, newScaffold)
     );
   }
-
   private calcBoardRate(i: string | number) {
     const ref = this.boardForms.controls[i] as FormControl;
     switch (ref.get('rate').value.code) {
@@ -593,8 +634,105 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
   }
-
+  private calcAttachmentRate(i: string | number) {
+    const ref = this.attachmentsForms.controls[i] as FormControl;
+    switch (ref.get('rate').value.code) {
+      case 1:
+        {
+          ref
+            .get('total')
+            .setValue(ref.get('length').value * ref.get('rate').value.rate);
+        }
+        break;
+      case 2:
+        {
+          ref
+            .get('total')
+            .setValue(ref.get('width').value * ref.get('rate').value.rate);
+        }
+        break;
+      case 3:
+        {
+          ref
+            .get('total')
+            .setValue(ref.get('height').value * ref.get('rate').value.rate);
+        }
+        break;
+      case 4:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('width').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 5:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('height').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 6:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('height').value *
+                ref.get('width').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 7:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('width').value *
+                ref.get('height').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 8:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ((ref.get('length').value * ref.get('height').value) / 10) *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 0: {
+        ref.get('total').setValue(ref.get('rate').value.rate);
+      }
+    }
+    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
+    const newScaffold = ref.value;
+    ref
+      .get('breakdown')
+      .setValue(
+        this.calcDimension.scaffoldCost(
+          this.scaffold.attachments[i],
+          newScaffold
+        )
+      );
+  }
   private calcHireRate() {
+    let attachments = 0;
+    this.arr('attachments').controls.forEach((c) => {
+      attachments += +c.get('total').value;
+    });
     let boards = 0;
     this.arr('boards').controls.forEach((c) => {
       boards += +c.get('total').value;
@@ -611,7 +749,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       case 2:
         {
           this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + boards) *
+            (this.field('scaffold.total').value + attachments + boards) *
               (this.field('hire.rate').value.rate / 100)
           );
         }
@@ -619,7 +757,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       case 3:
         {
           this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + boards) *
+            (this.field('scaffold.total').value + attachments + boards) *
               this.field('hire.daysStanding').value *
               (this.field('hire.rate').value.rate / 100)
           );
@@ -633,7 +771,6 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       +this.field('hire.total').value.toFixed(2)
     );
   }
-
   private calcAdditionalRate(i: string | number) {
     const ref = this.additionalForms.controls[i] as FormControl;
 
@@ -671,7 +808,9 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         ).toFixed(2)
       );
   }
+  // END: Calculations
 
+  // START: Functions to initialise the form
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       customer: [this.modification.customer, Validators.required],
@@ -697,6 +836,8 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           this.modification.scaffold.height,
           [Validators.required, Validators.min(1)],
         ],
+        level: [0, [Validators.nullValidator]],
+        breakdown: ['', [Validators.nullValidator]],
         total: [this.modification.scaffold.total],
       }),
       boards: this.masterSvc.fb().array([]),
@@ -709,11 +850,24 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         total: [this.modification.hire.total],
       }),
       additionals: this.masterSvc.fb().array([]),
+      attachments: this.masterSvc.fb().array([]),
       broker: [this.modification.broker],
       labour: this.masterSvc.fb().array([]),
       poNumber: [this.modification.poNumber],
       woNumber: [this.modification.woNumber],
       code: [this.modification.code],
+    });
+    this.modification.attachments.forEach((a) => {
+      const attachment = this.masterSvc.fb().group({
+        rate: [a.rate, Validators.required],
+        length: [a.length, [Validators.required, Validators.min(1)]],
+        width: [a.width, [Validators.required, Validators.min(1)]],
+        height: [a.height, [Validators.required, Validators.min(1)]],
+        level: [a.level, [Validators.nullValidator]],
+        breakdown: ['', [Validators.nullValidator]],
+        total: [a.total],
+      });
+      this.attachmentsForms.push(attachment);
     });
     this.modification.boards.forEach((b) => {
       const board = this.masterSvc.fb().group({
@@ -773,6 +927,8 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         length: [this.scaffold.scaffold.length, [, Validators.min(1)]],
         width: [this.scaffold.scaffold.width, [, Validators.min(1)]],
         height: [this.scaffold.scaffold.height, [, Validators.min(1)]],
+        level: [0, [Validators.nullValidator]],
+        breakdown: ['', [Validators.nullValidator]],
         total: [0],
       }),
       hire: this.masterSvc.fb().group({
@@ -780,23 +936,37 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         daysStanding: ['', [Validators.min(1)]],
         total: [0],
       }),
-      boards: this.masterSvc.fb().array(
-        this.scaffold.boards.map((b) => {
-          return this.masterSvc.fb().group({
-            rate: [''],
-            length: [b.length, [Validators.required, Validators.min(1)]],
-            width: [b.width, [Validators.required, Validators.min(1)]],
-            height: [b.height, [Validators.required, Validators.min(1)]],
-            qty: [b.qty, [Validators.required, Validators.min(1)]],
-            total: [0],
-          });
-        })
-      ),
+      boards: this.masterSvc.fb().array([]),
+      attachments: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),
       broker: [''],
       poNumber: [''],
       woNumber: [''],
       labour: this.masterSvc.fb().array([]),
     });
+    this.scaffold.attachments.forEach((a) => {
+      const attachment = this.masterSvc.fb().group({
+        rate: ['', Validators.required],
+        length: [a.length, [Validators.required, Validators.min(1)]],
+        width: [a.width, [Validators.required, Validators.min(1)]],
+        height: [a.height, [Validators.required, Validators.min(1)]],
+        level: [a.level, [Validators.nullValidator]],
+        breakdown: ['', [Validators.nullValidator]],
+        total: [0],
+      });
+      this.attachmentsForms.push(attachment);
+    });
+    this.scaffold.boards.forEach((b) => {
+      const board = this.masterSvc.fb().group({
+        rate: ['', Validators.required],
+        length: [b.length, [Validators.required, Validators.min(1)]],
+        width: [b.width, [Validators.required, Validators.min(1)]],
+        height: [b.height, [Validators.required, Validators.min(1)]],
+        qty: [b.qty, [Validators.required, Validators.min(1)]],
+        total: [0],
+      });
+      this.boardForms.push(board);
+    });
   }
+  // END: Form Init
 }

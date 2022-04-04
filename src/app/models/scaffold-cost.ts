@@ -9,6 +9,7 @@ export class ScaffoldCost {
   he = { length: 0, width: 0, height: 0, type: 'height-increase' };
 
   scaffoldCost(scaffold: Item, newScaffold: Item) {
+    this.reset();
     const cs = {
       length: +scaffold.length,
       width: +scaffold.width,
@@ -171,5 +172,14 @@ export class ScaffoldCost {
     } else {
       this.ld.width = this.le.width = this.he.width = this.hd.width = cs.width;
     }
+  }
+
+  reset() {
+    this.ld = { length: 0, width: 0, height: 0, type: 'length-decrease' };
+    this.wd = { length: 0, width: 0, height: 0, type: 'width-decrease' };
+    this.hd = { length: 0, width: 0, height: 0, type: 'height-decrease' };
+    this.le = { length: 0, width: 0, height: 0, type: 'length-increase' };
+    this.we = { length: 0, width: 0, height: 0, type: 'width-increase' };
+    this.he = { length: 0, width: 0, height: 0, type: 'height-increase' };
   }
 }

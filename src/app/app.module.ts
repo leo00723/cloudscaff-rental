@@ -115,8 +115,10 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     NgxsModule.forRoot([AppState, RouterState, UserState, CompanyState], {
       developmentMode: !environment.production,
     }),
-    NgxsLoggerPluginModule.forRoot(),
-    NgxsReduxDevtoolsPluginModule.forRoot(),
+    NgxsLoggerPluginModule.forRoot({ disabled: environment.production }),
+    NgxsReduxDevtoolsPluginModule.forRoot({
+      disabled: environment.production,
+    }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

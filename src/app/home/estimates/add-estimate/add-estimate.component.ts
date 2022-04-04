@@ -687,6 +687,16 @@ export class AddEstimatePage implements OnInit {
             );
         }
         break;
+      case 8:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ((ref.get('length').value * ref.get('height').value) / 10) *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
       case 0: {
         ref.get('total').setValue(ref.get('rate').value.rate);
       }

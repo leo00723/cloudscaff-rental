@@ -9,4 +9,13 @@ export interface Item {
   height?: string;
   safe?: string;
   level?: string;
+  breakdown?: {
+    dismantle: {
+      length: number;
+      width: number;
+      height: number;
+      type: string;
+    }[];
+    erection: { length: number; width: number; height: number; type: string }[];
+  };
 }
