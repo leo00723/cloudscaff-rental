@@ -23,17 +23,17 @@ import { UserState } from 'src/app/shared/user/user.state';
   templateUrl: './add-inspection.component.html',
 })
 export class AddInspectionComponent implements OnInit {
-  @Input() scaffold: Scaffold;
+  @Input() set value(val: Scaffold) {
+    Object.assign(this.scaffold, val);
+  }
+  scaffold: Scaffold = {};
   @Select() company$: Observable<Company>;
   questions$: Observable<InspectionTemplate>;
   customer$: Observable<Customer>;
   inspection: Inspection = {
     date: new Date(),
-    code: '',
     status: '',
     notes: '',
-    questions: undefined,
-    createdBy: '',
   };
   loading = false;
 
@@ -49,7 +49,13 @@ export class AddInspectionComponent implements OnInit {
       ) as Observable<Customer>;
     this.inspection.code = `INS${new Date().toLocaleDateString('en', {
       year: '2-digit',
-    })}${(this.scaffold.totalInspections + 1).toString().padStart(6, '0')}`;
+    })}${(this.scaffold.totalInspections
+      ? this.scaffold.totalInspections + 1
+      : 1
+    )
+      .toString()
+      .padStart(6, '0')}`;
+    this.inspection.scaffold = this.scaffold;
 
     this.questions$ = this.masterSvc
       .edit()
@@ -65,6 +71,7 @@ export class AddInspectionComponent implements OnInit {
   updateScaffold(ev) {
     this.scaffold.scaffold = ev.scaffold;
     this.scaffold.boards = ev.boards;
+    this.scaffold.attachments = ev.attachments;
   }
 
   create(customer: Customer) {

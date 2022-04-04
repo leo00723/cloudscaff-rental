@@ -4,6 +4,7 @@ import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
 import { AddHandoverComponent } from 'src/app/components/add-handover/add-handover.component';
 import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
+import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
 import { Company } from 'src/app/models/company.model';
@@ -77,7 +78,7 @@ export class ViewScaffoldPage implements OnInit {
     const modal = await this.masterSvc.modal().create({
       component: AddInspectionComponent,
       componentProps: {
-        scaffold: scaffold,
+        value: scaffold,
       },
       showBackdrop: false,
       id: 'addInspection',
@@ -93,6 +94,18 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'addHandover',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async addModification(scaffold: Scaffold) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddModificationComponent,
+      componentProps: {
+        value: scaffold,
+      },
+      showBackdrop: false,
+      id: 'addModification',
       cssClass: 'fullscreen',
     });
     return await modal.present();

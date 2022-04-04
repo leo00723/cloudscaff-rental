@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import { ViewEstimateComponent } from 'src/app/components/view-estimate/view-estimate.component';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { User } from 'src/app/models/user.model';
@@ -25,17 +26,30 @@ export class EstimatesPage implements OnInit {
   }
 
   async editEstimate(estimate: Estimate) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddEstimatePage,
-      componentProps: {
-        estimate,
-        isEdit: true,
-      },
-      showBackdrop: false,
-      id: 'editEstimate',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
+    if (estimate.status === 'pending') {
+      const modal = await this.masterSvc.modal().create({
+        component: AddEstimatePage,
+        componentProps: {
+          value: estimate,
+          isEdit: true,
+        },
+        showBackdrop: false,
+        id: 'editEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    } else {
+      const modal = await this.masterSvc.modal().create({
+        component: ViewEstimateComponent,
+        componentProps: {
+          estimate,
+        },
+        showBackdrop: false,
+        id: 'viewEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    }
   }
 
   async addEstimate() {

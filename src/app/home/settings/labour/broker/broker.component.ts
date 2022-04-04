@@ -9,7 +9,7 @@ import { MasterService } from 'src/app/services/master.service';
   templateUrl: './broker.component.html',
 })
 export class BrokerComponent implements OnInit {
-  @Input() labour = new LabourBroker();
+  @Input() labour: LabourBroker = {};
   @Input() isEdit = false;
   @Input() isDelete = false;
   @Input() isCreate = true;

@@ -18,6 +18,7 @@ import { Scaffold } from 'src/app/models/scaffold.model';
 export class ScaffoldOverviewTableComponent implements OnInit {
   @Input() scaffold: Scaffold;
   @Input() detailed = true;
+  @Input() showSafe = false;
   @Select() company$: Observable<Company>;
   constructor() {}
 

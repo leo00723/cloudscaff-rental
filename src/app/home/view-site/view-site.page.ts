@@ -2,13 +2,13 @@ import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { SetSite } from 'src/app/home/sites/state/sites.actions';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { MasterService } from 'src/app/services/master.service';
 import { Navigate } from 'src/app/shared/router.state';
-import { SetSite } from 'src/app/home/sites/state/sites.actions';
-import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
+import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 
 @Component({
@@ -38,30 +38,34 @@ export class ViewSitePage implements OnDestroy {
       ) as Observable<Site>;
     this.estimates$ = this.masterSvc
       .edit()
-      .getCollectionWhere(
+      .getCollectionWhereAndOrder(
         `company/${this.ids[0]}/estimates`,
         'siteId',
         '==',
-        this.ids[1]
+        this.ids[1],
+        'date',
+        'desc'
       ) as Observable<Estimate[]>;
     this.scaffolds$ = this.masterSvc
       .edit()
-      .getCollectionWhere(
+      .getCollectionWhereAndOrder(
         `company/${this.ids[0]}/scaffolds`,
         'siteId',
         '==',
-        this.ids[1]
+        this.ids[1],
+        'date',
+        'desc'
       ) as Observable<Scaffold[]>;
   }
 
-  async editEstimate(estimate: Estimate) {
+  async viewEstimate(estimate: Estimate) {
     const modal = await this.masterSvc.modal().create({
       component: ViewEstimateComponent,
       componentProps: {
         estimate,
       },
       showBackdrop: false,
-      id: 'editEstimate',
+      id: 'viewEstimate',
       cssClass: 'fullscreen',
     });
     return await modal.present();

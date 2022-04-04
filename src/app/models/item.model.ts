@@ -7,4 +7,6 @@ export interface Item {
   length?: string;
   rate?: RateProfile;
   height?: string;
+  safe?: string;
+  level?: string;
 }

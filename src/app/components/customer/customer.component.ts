@@ -9,20 +9,7 @@ import { MasterService } from 'src/app/services/master.service';
   templateUrl: './customer.component.html',
 })
 export class CustomerComponent {
-  private customerData: Customer = {
-    id: '',
-    name: '',
-    email: '',
-    rep: '',
-    phone: '',
-    address: '',
-    suburb: '',
-    city: '',
-    zip: '',
-    country: '',
-    company: '',
-    regNumber: '',
-  };
+  private customerData: Customer = {};
   @Output() newCustomer = new EventEmitter<Customer>();
   @Input() isUpdate = false;
   @Input() isDelete = false;

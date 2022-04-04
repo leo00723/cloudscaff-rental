@@ -5,23 +5,37 @@
       <th scope="col">Description</th>
       <th class="text-center" scope="col">Detail</th>
       <th class="text-center" scope="col">Qty</th>
+      <th class="text-center" scope="col" *ngIf="showSafe">Safe</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th class="text-center" scope="row">1</th>
-      <td colspan="3">{{ company.terminology.scaffold }} Details</td>
+      <td colspan="4">{{ company.terminology.scaffold }} Details</td>
     </tr>
     <!-- SCAFFOLD -->
     <tr class="small">
       <th class="text-center" scope="row"></th>
-      <td>{{ company.terminology.scaffold }}</td>
+      <td>{{ company.terminology.scaffold }} Level 0</td>
       <td class="text-center">
         {{ scaffold.scaffold.length }}{{ company.measurement.symbol }} x
         {{ scaffold.scaffold.width }}{{ company.measurement.symbol }} x
         {{ scaffold.scaffold.height }}{{ company.measurement.symbol }}
       </td>
       <td class="text-center">1</td>
+      <td class="text-center" *ngIf="showSafe">{{ scaffold.scaffold.safe }}</td>
+    </tr>
+    <!-- ATTACHMENTS -->
+    <tr class="small" *ngFor="let item of scaffold.attachments; let i = index">
+      <th class="text-center" scope="row"></th>
+      <td>{{ company.terminology.scaffold }} Level {{ item.level }}</td>
+      <td class="text-center">
+        {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
+        }}{{ company.measurement.symbol }} x {{ item.height
+        }}{{ company.measurement.symbol }}
+      </td>
+      <td class="text-center">1</td>
+      <td class="text-center" *ngIf="showSafe">Yes</td>
     </tr>
     <!-- BOARDS -->
     <tr class="small" *ngFor="let item of scaffold.boards; let i = index">
@@ -33,6 +47,7 @@
         }}{{ company.measurement.symbol }}
       </td>
       <td class="text-center">{{ item.qty }}</td>
+      <td class="text-center" *ngIf="showSafe">Yes</td>
     </tr>
     <ng-container *ngIf="detailed">
       <!-- HIRE -->
@@ -43,9 +58,9 @@
         <td class="text-center">1</td>
       </tr>
       <!-- LABOR -->
-      <tr>
+      <tr *ngIf="scaffold.labour.length > 0">
         <th class="text-center" scope="row">2</th>
-        <td colspan="3">Labor</td>
+        <td colspan="4">Labor</td>
       </tr>
       <tr class="small" *ngFor="let item of scaffold.labour; let i = index">
         <th class="text-center" scope="row"></th>
@@ -54,9 +69,9 @@
         <td class="text-center">{{ item.qty }}</td>
       </tr>
       <!-- ADDITIONALS -->
-      <tr>
+      <tr *ngIf="scaffold.additionals.length > 0">
         <th class="text-center" scope="row">3</th>
-        <td colspan="3">Additionals</td>
+        <td colspan="4">Additionals</td>
       </tr>
       <tr
         class="small"

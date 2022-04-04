@@ -141,6 +141,17 @@ export class PdfService {
     company: Company,
     terms: Term | null
   ) {
+    const attachments = [];
+    estimate.attachments.forEach((a) => {
+      attachments.push(
+        this.addEstimateItem(
+          company,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol})`,
+          1,
+          a.total
+        )
+      );
+    });
     const platforms = [];
     estimate.boards.forEach((b) => {
       platforms.push(
@@ -194,10 +205,11 @@ export class PdfService {
           ],
           this.addEstimateItem(
             company,
-            `${company.terminology.scaffold} - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol})`,
+            `${company.terminology.scaffold} Level 0 - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol})`,
             1,
             estimate.scaffold.total
           ),
+          ...attachments,
           ...platforms,
           this.addEstimateItem(
             company,

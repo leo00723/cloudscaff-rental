@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Output,
@@ -18,7 +17,6 @@ import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Item } from 'src/app/models/item.model';
-import { Scaffold } from 'src/app/models/scaffold.model';
 import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
@@ -29,7 +27,6 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class ScaffoldEditformComponent implements OnInit, OnDestroy {
   @Select() company$: Observable<Company>;
-  @Input() scaffold: Scaffold;
   form: FormGroup;
   @Output() formResult = new EventEmitter<{ boards: Item[]; scaffold: Item }>();
   private subs = new Subscription();
@@ -44,39 +41,42 @@ export class ScaffoldEditformComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.form = this.fb.group({
       scaffold: this.fb.group({
-        length: [
-          this.scaffold.scaffold.length,
-          [Validators.required, Validators.min(1)],
-        ],
-        width: [
-          this.scaffold.scaffold.width,
-          [Validators.required, Validators.min(1)],
-        ],
-        height: [
-          this.scaffold.scaffold.height,
-          [Validators.required, Validators.min(1)],
-        ],
+        length: ['', [Validators.required, Validators.min(1)]],
+        width: ['', [Validators.required, Validators.min(1)]],
+        height: ['', [Validators.required, Validators.min(1)]],
+        safe: ['', [Validators.required]],
+        level: [1, [Validators.nullValidator]],
       }),
-      boards: this.fb.array(
-        this.scaffold.boards.map((board) => {
-          return this.fb.group({
-            length: [board.length, [Validators.required, Validators.min(1)]],
-            width: [board.width, [Validators.required, Validators.min(1)]],
-            height: [board.height, [Validators.required, Validators.min(1)]],
-            qty: [board.qty, [Validators.required, Validators.min(1)]],
-          });
-        })
-      ),
+      attachments: this.fb.array([]),
+      boards: this.fb.array([]),
     });
     this.subs.add(
       this.form.valueChanges.subscribe((value) => {
         this.formResult.emit(value);
-        console.log('-----------------------change');
       })
     );
   }
   field(field: string) {
     return this.form.get(field) as FormControl;
+  }
+  get attachmentForms() {
+    return this.form.get('attachments') as FormArray;
+  }
+  addAttachment() {
+    const attachment = this.fb.group({
+      length: ['', [Validators.required, Validators.min(1)]],
+      width: ['', [Validators.required, Validators.min(1)]],
+      height: ['', [Validators.required, Validators.min(1)]],
+      safe: ['', [Validators.required]],
+      level: ['', [Validators.nullValidator]],
+    });
+    this.attachmentForms.push(attachment);
+  }
+
+  deleteAttachment(i: number) {
+    this.notificationSvc.presentAlertConfirm(() => {
+      this.attachmentForms.removeAt(i);
+    });
   }
   get boardForms() {
     return this.form.get('boards') as FormArray;

@@ -21,7 +21,8 @@
       <ion-col>
         <ion-label>
           <h6>Code:</h6>
-          <h6>Scaffold:</h6>
+          <h6>Scaffold Code:</h6>
+          <h6>Site Code:</h6>
           <h6>Date Issued:</h6>
         </ion-label>
       </ion-col>
@@ -29,6 +30,7 @@
         <ion-label>
           <h6>{{ handover.code }}</h6>
           <h6>{{ handover.scaffold.code }}</h6>
+          <h6>{{ handover.scaffold.siteCode }}</h6>
           <h6>{{ handover.date | date }}</h6>
         </ion-label>
       </ion-col>

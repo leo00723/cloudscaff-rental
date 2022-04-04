@@ -17,21 +17,17 @@ import { UserState } from 'src/app/shared/user/user.state';
 })
 export class AddHandoverComponent implements OnInit {
   @Input() set value(val: Scaffold) {
-    this.scaffold = val;
+    Object.assign(this.scaffold, val);
   }
-  scaffold: Scaffold;
+  scaffold: Scaffold = {};
   @Select() company$: Observable<Company>;
   customer$: Observable<Customer>;
   template$: Observable<HandoverTemplate>;
   handover: Handover = {
-    date: new Date(),
-    code: '',
-    status: 'pending-Needs Signature',
     safe: '',
     maxLoad: '',
-    notes: '',
-    detail: '',
-    createdBy: '',
+    status: 'pending-Needs Signature',
+    date: new Date(),
   };
 
   loading = false;
@@ -47,7 +43,10 @@ export class AddHandoverComponent implements OnInit {
       ) as Observable<Customer>;
     this.handover.code = `HAN${new Date().toLocaleDateString('en', {
       year: '2-digit',
-    })}${(this.scaffold.totalHandovers + 1).toString().padStart(6, '0')}`;
+    })}${(this.scaffold.totalHandovers ? this.scaffold.totalHandovers + 1 : 1)
+      .toString()
+      .padStart(6, '0')}`;
+    this.handover.scaffold = this.scaffold;
 
     this.template$ = this.masterSvc
       .edit()
@@ -62,6 +61,7 @@ export class AddHandoverComponent implements OnInit {
   updateScaffold(ev) {
     this.scaffold.scaffold = ev.scaffold;
     this.scaffold.boards = ev.boards;
+    this.scaffold.attachments = ev.attachments;
   }
   create(customer: Customer) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
@@ -75,7 +75,6 @@ export class AddHandoverComponent implements OnInit {
         this.handover.company = company;
         this.handover.customer = customer;
         this.handover.scaffold = this.scaffold;
-
         await this.masterSvc
           .edit()
           .addDocument(`company/${company.id}/handovers`, this.handover);

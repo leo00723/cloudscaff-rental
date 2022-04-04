@@ -21,7 +21,8 @@
       <ion-col>
         <ion-label>
           <h6>Code:</h6>
-          <h6>Scaffold:</h6>
+          <h6>Scaffold Code:</h6>
+          <h6>Site Code:</h6>
           <h6>Date Issued:</h6>
         </ion-label>
       </ion-col>
@@ -29,6 +30,7 @@
         <ion-label>
           <h6>{{ inspection.code }}</h6>
           <h6>{{ inspection.scaffold.code }}</h6>
+          <h6>{{ inspection.scaffold.siteCode }}</h6>
           <h6>{{ inspection.date | date }}</h6>
         </ion-label>
       </ion-col>
@@ -45,6 +47,7 @@
         <app-scaffold-overview-table
           [detailed]="false"
           [scaffold]="inspection.scaffold"
+          [showSafe]="true"
         ></app-scaffold-overview-table>
         <table class="table table-bordered">
           <ng-container

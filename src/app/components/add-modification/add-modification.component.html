@@ -5,7 +5,9 @@
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
+    <ion-title
+      >{{ isEdit ? "Update Modification" : "Create Modification" }}
+    </ion-title>
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment
@@ -35,7 +37,7 @@
 
 <ion-content fullscreen="true" class="ion-padding">
   <div class="container" *ngIf="company" [ngSwitch]="active">
-    <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
+    <form name="modification" [formGroup]="form" *ngIf="!isLoading && form">
       <!-- OVERVIEW TAB -->
       <ion-grid *ngSwitchDefault>
         <ion-row class="card-outline mb-3">
@@ -51,61 +53,29 @@
               controlName="siteName"
               [form]="form"
               placeholder="Enter Site Name"
+              [readonly]="true"
             >
             </app-input-reactive>
           </ion-col>
-        </ion-row>
-        <ion-row class="card-outline mb-3">
           <ion-col size="12">
-            <app-input-select-reactive
-              (fieldChange)="changeCustomer($event)"
-              title="Customer"
-              placeholder="Select Customer"
-              controlName="customer"
-              [form]="form"
-              [selectedText]="field('customer').value.name"
-            >
-              <ng-container *ngIf="customers$ | async as customers">
-                <ion-select-option class="fw-bold" value="add">
-                  Create new Customer
-                </ion-select-option>
-                <ion-select-option
-                  [value]="customer"
-                  *ngFor="let customer of customers"
-                  >{{ customer.name }}
-                </ion-select-option>
-              </ng-container>
-            </app-input-select-reactive>
-          </ion-col>
-          <ion-col size="12" *ngIf="show === 'editCustomer'">
             <app-customer
               [customer]="field('customer').value"
-              [isUpdate]="estimate.status === 'pending'"
+              [isUpdate]="modification.status === 'pending'"
               [isCreate]="false"
               [companyId]="company.id"
             >
             </app-customer>
           </ion-col>
-          <ion-col size="12" *ngIf="show === 'addCustomer'">
-            <app-customer
-              [companyId]="company.id"
-              (newCustomer)="newCustomer($event)"
-              [isCreate]="true"
-            >
-            </app-customer>
-          </ion-col>
         </ion-row>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
-            <ion-item
-              fill="solid"
-              lines="none"
-              class="rounded-3 my-3"
-              mode="md"
+            <app-input-reactive
+              title="Message"
+              controlName="message"
+              [form]="form"
+              [textarea]="true"
             >
-              <ion-label position="stacked">Message</ion-label>
-              <ion-textarea #message formControlName="message"></ion-textarea>
-            </ion-item>
+            </app-input-reactive>
           </ion-col>
 
           <ion-col sizeMd="4" size="12">
@@ -154,6 +124,19 @@
           </ion-col>
           <ion-col size="12">
             <ion-row formGroupName="scaffold">
+              <ion-col size="12">
+                <ion-text>
+                  <p>
+                    The scaffold is currently
+                    {{ scaffold.scaffold.length }} x
+                    {{ scaffold.scaffold.width }} x
+                    {{ scaffold.scaffold.height }} with the rate :
+                    {{ scaffold.scaffold.rate.name }} at
+                    {{ scaffold.scaffold.rate.rate }}. Enter the updated
+                    scaffold dimensions and only the cost for the modification.
+                  </p>
+                </ion-text>
+              </ion-col>
               <ion-col>
                 <app-input-reactive
                   title="Length ({{ company.measurement.symbol }})"
@@ -187,15 +170,27 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Level"
-                  type="number"
-                  [readonly]="true"
-                  controlName="level"
-                  [form]="field('scaffold')"
-                >
-                </app-input-reactive>
+            </ion-row>
+            <ion-row formGroupName="scaffold">
+              <ion-col size="12">
+                <ion-text color="medium">
+                  <h6>Modification Breakdown</h6>
+                </ion-text>
+                <ion-text>
+                  <p *ngFor="let erection of scaffoldChange.erection">
+                    {{ erection.length | number }} x
+                    {{ erection.width | number }} x
+                    {{ erection.height | number }} - {{ erection.type }}
+                  </p>
+                  <p *ngFor="let dismantle of scaffoldChange.dismantle">
+                    {{ dismantle.length | number }} x
+                    {{ dismantle.width | number }} x
+                    {{ dismantle.height | number }} - {{ dismantle.type }}
+                  </p>
+                </ion-text>
+                <ion-text color="medium">
+                  <h6>Cost for modification</h6>
+                </ion-text>
               </ion-col>
               <ion-col>
                 <app-input-select-reactive
@@ -239,126 +234,6 @@
                   placeholder="Total"
                 >
                 </app-input-reactive>
-              </ion-col>
-            </ion-row>
-            <ion-row
-              formArrayName="attachments"
-              class="mb-3"
-              *ngFor="
-                let attachment of attachmentsForms.controls;
-                let i = index
-              "
-            >
-              <ion-col size="12">
-                <ion-note> Attachment {{ i + 1 }} </ion-note>
-                <ion-chip
-                  outline
-                  color="danger"
-                  class="ion-float-end"
-                  (click)="deleteAttachment(i)"
-                >
-                  <ion-label>Delete</ion-label>
-                </ion-chip>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Length ({{ company.measurement.symbol }})"
-                  type="number"
-                  controlName="length"
-                  placeholder="L"
-                  [form]="attachment"
-                  (fieldChange)="update('attachments', i)"
-                >
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Width ({{ company.measurement.symbol }})"
-                  type="number"
-                  controlName="width"
-                  placeholder="W"
-                  [form]="attachment"
-                  (fieldChange)="update('attachments', i)"
-                >
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Height ({{ company.measurement.symbol }})"
-                  type="number"
-                  controlName="height"
-                  placeholder="H"
-                  [form]="attachment"
-                  (fieldChange)="update('attachments', i)"
-                >
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Level"
-                  [optional]="true"
-                  type="number"
-                  controlName="level"
-                  placeholder="1"
-                  [form]="attachment"
-                >
-                </app-input-reactive>
-              </ion-col>
-              <ion-col>
-                <app-input-select-reactive
-                  title="Rate Profile"
-                  placeholder="Select Rate"
-                  controlName="rate"
-                  [form]="attachment"
-                  (fieldChange)="update('attachments', i)"
-                  [selectedText]="arrField('attachments', i, 'rate').value.name"
-                >
-                  <ng-container *ngIf="rates$ | async as rates">
-                    <ion-select-option
-                      [value]="rate"
-                      *ngFor="let rate of rates.scaffoldRates"
-                      >{{ rate.name }}
-                    </ion-select-option>
-                  </ng-container>
-                </app-input-select-reactive>
-              </ion-col>
-              <ion-col *ngIf="arrField('attachments', i, 'rate').value">
-                <app-input-text
-                  title="Rate override ({{
-                    arrField('attachments', i, 'rate').value.name.startsWith(
-                      '%'
-                    )
-                      ? '%'
-                      : company.currency.symbol
-                  }})"
-                  type="number"
-                  placeholder="Enter rate"
-                  [value]="arrField('attachments', i, 'rate').value.rate"
-                  (fieldChange)="updateRate('attachments', $event, i)"
-                >
-                </app-input-text>
-              </ion-col>
-              <ion-col>
-                <app-input-reactive
-                  title="Total ({{ company.currency.symbol }})"
-                  type="number"
-                  controlName="total"
-                  [form]="attachment"
-                  placeholder="Total"
-                >
-                </app-input-reactive>
-              </ion-col>
-            </ion-row>
-            <ion-row class="mb-3">
-              <ion-col>
-                <ion-fab-button
-                  size="small"
-                  class="m-auto"
-                  color="success"
-                  (click)="addAttachment()"
-                >
-                  <ion-icon name="add"></ion-icon>
-                </ion-fab-button>
               </ion-col>
             </ion-row>
           </ion-col>
@@ -431,6 +306,11 @@
             >
             </app-input-reactive>
           </ion-col>
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h6>Cost for modification</h6>
+            </ion-text>
+          </ion-col>
           <ion-col>
             <app-input-select-reactive
               title="Rate Profile"
@@ -457,8 +337,8 @@
                   : company.currency.symbol
               }})"
               type="number"
-              placeholder="Enter rate"
               [value]="arrField('boards', i, 'rate').value.rate"
+              placeholder="Enter rate"
               (fieldChange)="updateRate('boards', $event, i)"
             >
             </app-input-text>
@@ -884,7 +764,7 @@
 
       <ion-grid *ngSwitchCase="'summary'">
         <app-estimate-summary
-          [estimate]="estimate"
+          [estimate]="modification"
           [canDownload]="isEdit"
         ></app-estimate-summary>
 
@@ -893,23 +773,23 @@
             type="indeterminate"
             *ngIf="loading"
           ></ion-progress-bar>
-          <ion-col *ngIf="isEdit && estimate.status === 'pending'">
+          <ion-col *ngIf="isEdit && modification.status === 'pending'">
             <ion-button
               size="block"
               shape="round"
               color="danger"
               [disabled]="form.invalid"
-              (click)="updateEstimate('rejected')"
+              (click)="updateModification('rejected')"
               >Rejected</ion-button
             >
           </ion-col>
-          <ion-col *ngIf="isEdit && estimate.status === 'pending'">
+          <ion-col *ngIf="isEdit && modification.status === 'pending'">
             <ion-button
               size="block"
               shape="round"
               color="success"
               [disabled]="form.invalid"
-              (click)="updateEstimate('accepted')"
+              (click)="updateModification('accepted')"
             >
               Accepted
             </ion-button>
@@ -919,21 +799,24 @@
               size="block"
               shape="round"
               [disabled]="form.invalid"
-              *ngIf="isEdit && estimate.status === 'pending'"
-              (click)="updateEstimate('pending')"
-              >Update Estimate</ion-button
+              *ngIf="isEdit && modification.status === 'pending'"
+              (click)="updateModification('pending')"
+              >Update Modification</ion-button
             >
             <ion-button
               size="block"
               shape="round"
               [disabled]="form.invalid"
               *ngIf="!isEdit"
-              (click)="createEstimate()"
-              >Create Estimate</ion-button
+              (click)="createModification()"
+              >Create Modification</ion-button
             >
           </ion-col>
         </ion-row>
       </ion-grid>
+      <pre>
+        {{ form.value | json }}
+      </pre>
     </form>
   </div>
 </ion-content>

@@ -5,12 +5,12 @@ import { Scaffold } from './scaffold.model';
 
 export interface Inspection {
   id?: string;
-  date: any;
-  code: string;
-  status: string;
-  notes: string;
-  questions: InspectionTemplate;
-  createdBy: string;
+  date?: any;
+  code?: string;
+  status?: string;
+  notes?: string;
+  questions?: InspectionTemplate;
+  createdBy?: string;
   company?: Company;
   customer?: Customer;
   scaffold?: Scaffold;

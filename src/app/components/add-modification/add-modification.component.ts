@@ -1,34 +1,53 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  Input,
+  ViewChild,
+  OnDestroy,
+} from '@angular/core';
 import { increment } from '@angular/fire/firestore';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { Select } from '@ngxs/store';
+import { Observable, subscribeOn, Subscription } from 'rxjs';
+import { AcceptEstimateComponent } from 'src/app/home/estimates/add-estimate/accept-estimate/accept-estimate.component';
 import { Company } from 'src/app/models/company.model';
-import { Customer } from 'src/app/models/customer.model';
-import { Estimate } from 'src/app/models/estimate.model';
+import { Site } from 'src/app/models/site.model';
+import { Modification } from 'src/app/models/modification.model';
+import { Scaffold } from 'src/app/models/scaffold.model';
 import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
-import { MasterService } from '../../../services/master.service';
-import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
+import { ScaffoldCost } from 'src/app/models/scaffold-cost';
 
 @Component({
-  selector: 'app-add-estimate',
-  templateUrl: './add-estimate.component.html',
+  selector: 'app-add-modification',
+  templateUrl: './add-modification.component.html',
 })
-export class AddEstimatePage implements OnInit {
-  @Input() set value(val: Estimate) {
-    if (val) {
-      Object.assign(this.estimate, val);
-      this.initEditForm();
-    }
-  }
-  @Input() isEdit = false;
+export class AddModificationComponent implements OnInit, OnDestroy {
   @ViewChild('message') message: IonTextarea;
-  estimate: Estimate = {
+  @Input() isEdit = false;
+  scaffoldChange: {
+    dismantle: {
+      length: number;
+      width: number;
+      height: number;
+      type: string;
+    }[];
+    erection: { length: number; width: number; height: number; type: string }[];
+  } = { dismantle: [], erection: [] };
+  @Input() set value(val: Scaffold) {
+    this.scaffold = val;
+  }
+  @Select() company$: Observable<Company>;
+  site$: Observable<Site>;
+  scaffold: Scaffold;
+  modification: Modification = {
     additionals: [],
-    attachments: [],
     boards: [],
+    attachments: [],
     broker: undefined,
     code: '',
     company: {},
@@ -59,25 +78,28 @@ export class AddEstimatePage implements OnInit {
     acceptedBy: '',
     rejectedBy: '',
   };
-  user: User;
   company: Company;
-  customers$: Observable<Customer[]>;
+  user: User;
   rates$: Observable<any>;
   brokers$: Observable<any>;
   form: FormGroup;
   loading = false;
+  ready = false;
   isLoading = true;
   active = 'overview';
   show = '';
+  calcDimension = new ScaffoldCost();
 
+  private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
   }
-  ngOnInit() {
-    this.customers$ = this.masterSvc
-      .edit()
-      .getCollection(`company/${this.company.id}/customers`);
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
+
+  ngOnInit(): void {
     this.rates$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.company.id}/rateProfiles`, 'estimateRates');
@@ -86,24 +108,28 @@ export class AddEstimatePage implements OnInit {
       .getCollection(`company/${this.company.id}/brokers`);
 
     if (this.isEdit) {
+      this.modification = { ...this.modification };
+      this.initEditForm();
       this.show = 'editCustomer';
     } else {
-      this.initFrom();
+      this.site$ = this.masterSvc
+        .edit()
+        .getDocById(
+          `company/${this.company.id}/sites`,
+          this.scaffold.siteId
+        ) as Observable<Site>;
+      this.subs.add(
+        this.site$.subscribe((site) => {
+          console.log(site);
+          this.modification.customer = site.customer;
+          this.modification.siteName = site.name;
+          this.initFrom();
+        })
+      );
       this.isLoading = false;
     }
   }
 
-  ionViewDidEnter() {
-    if (this.message) {
-      this.message.autoGrow = true;
-      this.message.rows = 4;
-    }
-  }
-
-  // START: FORM CRUD
-  get attachmentsForms() {
-    return this.form.get('attachments') as FormArray;
-  }
   get boardForms() {
     return this.form.get('boards') as FormArray;
   }
@@ -113,76 +139,13 @@ export class AddEstimatePage implements OnInit {
   get additionalForms() {
     return this.form.get('additionals') as FormArray;
   }
-  addLabour() {
-    const labour = this.masterSvc.fb().group({
-      type: ['', Validators.required],
-      hours: ['', Validators.required],
-      days: ['', Validators.required],
-      rate: ['', [Validators.required]],
-      qty: ['', Validators.required],
-      total: [0],
-    });
-    this.labourForms.push(labour);
-  }
-  addAdditional() {
-    const additional = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
-      qty: ['', [Validators.required, Validators.min(1)]],
-      name: ['', Validators.required],
-      daysStanding: ['', [Validators.required, Validators.min(1)]],
-      total: [0],
-    });
-    this.additionalForms.push(additional);
-  }
-  addBoard() {
-    const board = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
-      length: ['', [Validators.required, Validators.min(1)]],
-      width: ['', [Validators.required, Validators.min(1)]],
-      height: ['', [Validators.required, Validators.min(1)]],
-      qty: ['', [Validators.required, Validators.min(1)]],
-      total: [0],
-    });
-    this.boardForms.push(board);
-  }
-  addAttachment() {
-    const attachment = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
-      length: ['', [Validators.required, Validators.min(1)]],
-      width: ['', [Validators.required, Validators.min(1)]],
-      height: ['', [Validators.required, Validators.min(1)]],
-      level: ['', [Validators.nullValidator]],
-      total: [0],
-    });
-    this.attachmentsForms.push(attachment);
-  }
-  deleteAttachment(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.attachmentsForms.removeAt(i);
-      this.calcHireRate();
-    });
-  }
-  deleteBoard(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.boardForms.removeAt(i);
-      this.calcHireRate();
-    });
-  }
-  deleteAdditional(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.additionalForms.removeAt(i);
-    });
-  }
-  deleteLabour(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.labourForms.removeAt(i);
-    });
-  }
-  // END: FORM CRUD
 
-  // START: Helper functions
   close() {
     this.masterSvc.modal().dismiss();
+  }
+
+  ionViewDidEnter() {
+    this.ready = true;
   }
 
   arr(field: string) {
@@ -192,57 +155,34 @@ export class AddEstimatePage implements OnInit {
   arrField(arr: string, index: number, field: string) {
     return this.arr(arr).controls[index].get(field) as FormControl;
   }
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
-  // END: Helper functions
 
-  // switch broker
   changeBroker() {
     this.labourForms.clear();
     this.addLabour();
   }
 
-  // switch customer
-  changeCustomer(args) {
-    if (args !== 'add') {
-      this.show = 'editCustomer';
-    } else {
-      this.show = 'addCustomer';
-    }
+  field(field: string) {
+    return this.form.get(field) as FormControl;
   }
 
-  //event for new customer added
-  newCustomer(args) {
-    this.field('customer').setValue({ ...args });
-  }
-
-  //switch between pages
   nextView(page: string) {
     this.active = page;
   }
 
-  //event for switching between pages
   segmentChanged(ev: any) {
     if (ev.detail.value === 'summary') {
-      this.updateEstimateTotal();
+      this.updateModificationTotal();
       this.active = ev.detail.value;
     } else {
       this.active = ev.detail.value;
     }
   }
 
-  //update the totals for a category
   update(type: string, i?: number) {
     switch (type) {
       case 'scaffold':
         {
           this.calcScaffoldRate();
-        }
-        break;
-      case 'attachments':
-        {
-          this.calcAttachmentRate(i);
         }
         break;
       case 'boards':
@@ -266,7 +206,6 @@ export class AddEstimatePage implements OnInit {
     this.calcHireRate();
   }
 
-  //Calculate total for a category base on rates
   updateRate(type: string, args: any, i?: number) {
     switch (type) {
       case 'scaffold':
@@ -276,15 +215,6 @@ export class AddEstimatePage implements OnInit {
             rate: +args,
           });
           this.calcScaffoldRate();
-        }
-        break;
-      case 'attachments':
-        {
-          this.arrField('attachments', i, 'rate').patchValue({
-            ...this.arrField('attachments', i, 'rate').value,
-            rate: +args,
-          });
-          this.calcAttachmentRate(i);
         }
         break;
       case 'boards':
@@ -324,31 +254,81 @@ export class AddEstimatePage implements OnInit {
     this.calcHireRate();
   }
 
-  //create the estimate
-  createEstimate() {
+  addLabour() {
+    const labour = this.masterSvc.fb().group({
+      type: ['', Validators.required],
+      hours: ['', Validators.required],
+      days: ['', Validators.required],
+      rate: ['', [Validators.required]],
+      qty: ['', Validators.required],
+      total: [0],
+    });
+    this.labourForms.push(labour);
+  }
+
+  addAdditional() {
+    const additional = this.masterSvc.fb().group({
+      rate: ['', Validators.required],
+      qty: ['', [Validators.required, Validators.min(1)]],
+      name: ['', Validators.required],
+      daysStanding: ['', [Validators.required, Validators.min(1)]],
+      total: [0],
+    });
+    this.additionalForms.push(additional);
+  }
+  addBoard() {
+    const board = this.masterSvc.fb().group({
+      rate: ['', Validators.required],
+      length: ['', [Validators.required, Validators.min(1)]],
+      width: ['', [Validators.required, Validators.min(1)]],
+      height: ['', [Validators.required, Validators.min(1)]],
+      qty: ['', [Validators.required, Validators.min(1)]],
+      total: [0],
+    });
+    this.boardForms.push(board);
+  }
+
+  deleteBoard(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.boardForms.removeAt(i);
+      this.calcHireRate();
+    });
+  }
+  deleteAdditional(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.additionalForms.removeAt(i);
+    });
+  }
+  deleteLabour(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.labourForms.removeAt(i);
+    });
+  }
+
+  createModification() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         this.loading = true;
-        this.updateEstimateTotal();
+        this.updateModificationTotal();
         await this.masterSvc
           .edit()
           .addDocument(
-            `company/${this.estimate.company.id}/estimates`,
-            this.estimate
+            `company/${this.modification.company.id}/modifications`,
+            this.modification
           );
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalEstimates: increment(1),
+          totalModifications: increment(1),
         });
         this.masterSvc
           .notification()
-          .toast('Estimate created successfully!', 'success');
+          .toast('Modification created successfully!', 'success');
         this.close();
       } catch (error) {
         this.loading = false;
         this.masterSvc
           .notification()
           .toast(
-            'Something went wrong creating your estimate, try again!',
+            'Something went wrong creating your modification, try again!',
             'danger',
             2000
           );
@@ -356,26 +336,25 @@ export class AddEstimatePage implements OnInit {
     });
   }
 
-  //update the estimate
-  updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
+  updateModification(status: 'pending' | 'accepted' | 'rejected') {
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
       this.masterSvc.notification().presentAlertConfirm(() => {
         this.loading = true;
-        this.updateEstimateTotal();
-        this.estimate.status = status;
+        this.updateModificationTotal();
+        this.modification.status = status;
         this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.company.id}/estimates`,
-            this.estimate.id,
-            this.estimate
+            `company/${this.company.id}/modifications`,
+            this.modification.id,
+            this.modification
           )
           .then(() => {
             this.masterSvc
               .notification()
-              .toast('Estimate updated successfully!', 'success');
+              .toast('Modification updated successfully!', 'success');
             this.loading = false;
           })
           .catch(() => {
@@ -383,7 +362,7 @@ export class AddEstimatePage implements OnInit {
             this.masterSvc
               .notification()
               .toast(
-                'Something went wrong updating your estimate, try again!',
+                'Something went wrong updating your modification, try again!',
                 'danger',
                 2000
               );
@@ -392,33 +371,34 @@ export class AddEstimatePage implements OnInit {
     }
   }
 
-  //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
       component: AcceptEstimateComponent,
       componentProps: {
         company: this.company,
         user: this.user,
-        estimate: this.estimate,
+        modification: this.modification,
         form: this.form,
       },
-      id: 'acceptEstimate',
+      id: 'acceptModification',
       cssClass: 'fullscreen',
     });
     return await modal.present();
   }
 
-  //update the estimate total
-  private updateEstimateTotal() {
-    if (this.isEdit && this.estimate.status !== 'pending') {
+  // private reset() {
+  //   this.active = 'overview';
+  //   this.show = '';
+  //   this.initFrom();
+  //   this.loading = false;
+  // }
+
+  private updateModificationTotal() {
+    if (this.isEdit && this.modification.status !== 'pending') {
       return;
     }
     const scaffold = +this.field('scaffold.total').value;
     const hire = +this.field('hire.total').value;
-    let attachments = 0;
-    this.arr('attachments').controls.forEach((a) => {
-      attachments += +a.get('total').value;
-    });
     let boards = 0;
     this.arr('boards').controls.forEach((c) => {
       boards += +c.get('total').value;
@@ -432,23 +412,25 @@ export class AddEstimatePage implements OnInit {
       additionals += +c.get('total').value;
     });
 
-    const subtotal =
-      scaffold + attachments + boards + hire + labour + additionals;
+    const subtotal = scaffold + boards + hire + labour + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
     const vat = totalAfterDiscount * (this.company.vat / 100);
     const total = totalAfterDiscount + tax + vat;
 
-    const code = `EST${new Date().toLocaleDateString('en', {
+    const code = `MOD${new Date().toLocaleDateString('en', {
       year: '2-digit',
-    })}${(this.company.totalEstimates ? this.company.totalEstimates + 1 : 1)
+    })}${(this.scaffold.totalModifications
+      ? this.scaffold.totalModifications + 1
+      : 1
+    )
       .toString()
       .padStart(6, '0')}`;
 
-    Object.assign(this.estimate, {
+    Object.assign(this.modification, {
       ...this.form.value,
-      date: this.isEdit ? this.estimate.date : new Date(),
+      date: this.isEdit ? this.modification.date : new Date(),
       company: {
         name: this.company.name,
         address: this.company.address,
@@ -464,19 +446,18 @@ export class AddEstimatePage implements OnInit {
         swiftCode: this.company.swiftCode,
         id: this.company.id,
       },
-      code: this.isEdit ? this.estimate.code : code,
-      status: this.isEdit ? this.estimate.status : 'pending',
+      code: this.isEdit ? this.modification.code : code,
+      status: this.isEdit ? this.modification.status : 'pending',
       subtotal,
       discount,
       tax,
       vat,
       total,
-      createdBy: this.isEdit ? this.estimate.createdBy : this.user.id,
+      createdBy: this.isEdit ? this.modification.createdBy : this.user.id,
       updatedBy: this.user.id,
     });
   }
 
-  // START: functions to update each rate category
   private calcScaffoldRate() {
     switch (this.field('scaffold.rate').value.code) {
       case 1:
@@ -540,16 +521,6 @@ export class AddEstimatePage implements OnInit {
           );
         }
         break;
-      case 8:
-        {
-          this.field('scaffold.total').setValue(
-            ((this.field('scaffold.length').value *
-              this.field('scaffold.height').value) /
-              10) *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
       case 0: {
         this.field('scaffold.total').setValue(
           this.field('scaffold.rate').value.rate
@@ -558,6 +529,11 @@ export class AddEstimatePage implements OnInit {
     }
     this.field('scaffold.total').setValue(
       +this.field('scaffold.total').value.toFixed(2)
+    );
+    const newScaffold = this.field('scaffold').value;
+    this.scaffoldChange = this.calcDimension.scaffoldCost(
+      this.scaffold.scaffold,
+      newScaffold
     );
   }
 
@@ -618,87 +594,7 @@ export class AddEstimatePage implements OnInit {
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
   }
 
-  private calcAttachmentRate(i: string | number) {
-    const ref = this.attachmentsForms.controls[i] as FormControl;
-    switch (ref.get('rate').value.code) {
-      case 1:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('length').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 2:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('width').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 3:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('height').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 4:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 5:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('height').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 6:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('height').value *
-                ref.get('width').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 7:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('height').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 0: {
-        ref.get('total').setValue(ref.get('rate').value.rate);
-      }
-    }
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-  }
-
   private calcHireRate() {
-    let attachments = 0;
-    this.arr('attachments').controls.forEach((c) => {
-      attachments += +c.get('total').value;
-    });
     let boards = 0;
     this.arr('boards').controls.forEach((c) => {
       boards += +c.get('total').value;
@@ -715,7 +611,7 @@ export class AddEstimatePage implements OnInit {
       case 2:
         {
           this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
+            (this.field('scaffold.total').value + boards) *
               (this.field('hire.rate').value.rate / 100)
           );
         }
@@ -723,7 +619,7 @@ export class AddEstimatePage implements OnInit {
       case 3:
         {
           this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
+            (this.field('scaffold.total').value + boards) *
               this.field('hire.daysStanding').value *
               (this.field('hire.rate').value.rate / 100)
           );
@@ -775,66 +671,51 @@ export class AddEstimatePage implements OnInit {
         ).toFixed(2)
       );
   }
-  // END: Calculations
 
-  // START: Functions to initialise the form
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
-      customer: [this.estimate.customer, Validators.required],
-      message: [this.estimate.message, Validators.required],
-      siteName: [this.estimate.siteName, Validators.required],
-      startDate: [this.estimate.startDate, Validators.required],
-      endDate: [this.estimate.endDate, Validators.required],
+      customer: [this.modification.customer, Validators.required],
+      message: [this.modification.message, Validators.required],
+      siteName: [this.modification.siteName, Validators.required],
+      startDate: [this.modification.startDate, Validators.required],
+      endDate: [this.modification.endDate, Validators.required],
       discountPercentage: [
-        this.estimate.discountPercentage,
+        this.modification.discountPercentage,
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
-        rate: [this.estimate.scaffold.rate, Validators.required],
+        rate: [this.modification.scaffold.rate, Validators.required],
         length: [
-          this.estimate.scaffold.length,
+          this.modification.scaffold.length,
           [Validators.required, Validators.min(1)],
         ],
         width: [
-          this.estimate.scaffold.width,
+          this.modification.scaffold.width,
           [Validators.required, Validators.min(1)],
         ],
         height: [
-          this.estimate.scaffold.height,
+          this.modification.scaffold.height,
           [Validators.required, Validators.min(1)],
         ],
-        level: [0, [Validators.nullValidator]],
-        total: [this.estimate.scaffold.total],
+        total: [this.modification.scaffold.total],
       }),
       boards: this.masterSvc.fb().array([]),
       hire: this.masterSvc.fb().group({
-        rate: [this.estimate.hire.rate, Validators.required],
+        rate: [this.modification.hire.rate, Validators.required],
         daysStanding: [
-          this.estimate.hire.daysStanding,
+          this.modification.hire.daysStanding,
           [Validators.required, Validators.min(1)],
         ],
-        total: [this.estimate.hire.total],
+        total: [this.modification.hire.total],
       }),
       additionals: this.masterSvc.fb().array([]),
-      attachments: this.masterSvc.fb().array([]),
-      broker: [this.estimate.broker],
+      broker: [this.modification.broker],
       labour: this.masterSvc.fb().array([]),
-      poNumber: [this.estimate.poNumber],
-      woNumber: [this.estimate.woNumber],
-      code: [this.estimate.code],
+      poNumber: [this.modification.poNumber],
+      woNumber: [this.modification.woNumber],
+      code: [this.modification.code],
     });
-    this.estimate.attachments.forEach((a) => {
-      const attachment = this.masterSvc.fb().group({
-        rate: [a.rate, Validators.required],
-        length: [a.length, [Validators.required, Validators.min(1)]],
-        width: [a.width, [Validators.required, Validators.min(1)]],
-        height: [a.height, [Validators.required, Validators.min(1)]],
-        level: [a.level, [Validators.nullValidator]],
-        total: [a.total],
-      });
-      this.attachmentsForms.push(attachment);
-    });
-    this.estimate.boards.forEach((b) => {
+    this.modification.boards.forEach((b) => {
       const board = this.masterSvc.fb().group({
         rate: [b.rate, Validators.required],
         length: [b.length, [Validators.required, Validators.min(1)]],
@@ -845,7 +726,7 @@ export class AddEstimatePage implements OnInit {
       });
       this.boardForms.push(board);
     });
-    this.estimate.labour.forEach((l) => {
+    this.modification.labour.forEach((l) => {
       const labour = this.masterSvc.fb().group({
         type: [l.type, Validators.required],
         hours: [l.hours, Validators.required],
@@ -856,7 +737,7 @@ export class AddEstimatePage implements OnInit {
       });
       this.labourForms.push(labour);
     });
-    this.estimate.additionals.forEach((add) => {
+    this.modification.additionals.forEach((add) => {
       const additional = this.masterSvc.fb().group({
         rate: [add.rate, Validators.required],
         qty: [add.qty, [Validators.required, Validators.min(1)]],
@@ -874,13 +755,13 @@ export class AddEstimatePage implements OnInit {
 
   private initFrom() {
     this.form = this.masterSvc.fb().group({
-      customer: ['', Validators.required],
+      customer: [this.modification.customer, Validators.required],
       message: [
         // eslint-disable-next-line max-len
-        'We thank you for your scaffolding enquiry as per the Scope of Work detailed below. We attach herewith our estimate for your perusal.',
+        'We thank you for your scaffolding enquiry as per the Scope of Work detailed below. We attach herewith our modification for your perusal.',
         Validators.required,
       ],
-      siteName: ['', Validators.required],
+      siteName: [this.modification.siteName, Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
       discountPercentage: [
@@ -888,29 +769,34 @@ export class AddEstimatePage implements OnInit {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
-        rate: ['', Validators.required],
-        length: ['', [Validators.required, Validators.min(1)]],
-        width: ['', [Validators.required, Validators.min(1)]],
-        height: ['', [Validators.required, Validators.min(1)]],
-        level: [0, [Validators.nullValidator]],
+        rate: [''],
+        length: [this.scaffold.scaffold.length, [, Validators.min(1)]],
+        width: [this.scaffold.scaffold.width, [, Validators.min(1)]],
+        height: [this.scaffold.scaffold.height, [, Validators.min(1)]],
         total: [0],
       }),
-      attachments: this.masterSvc.fb().array([]),
       hire: this.masterSvc.fb().group({
-        rate: ['', Validators.required],
-        daysStanding: ['', [Validators.required, Validators.min(1)]],
+        rate: [''],
+        daysStanding: ['', [Validators.min(1)]],
         total: [0],
       }),
-      boards: this.masterSvc.fb().array([]),
+      boards: this.masterSvc.fb().array(
+        this.scaffold.boards.map((b) => {
+          return this.masterSvc.fb().group({
+            rate: [''],
+            length: [b.length, [Validators.required, Validators.min(1)]],
+            width: [b.width, [Validators.required, Validators.min(1)]],
+            height: [b.height, [Validators.required, Validators.min(1)]],
+            qty: [b.qty, [Validators.required, Validators.min(1)]],
+            total: [0],
+          });
+        })
+      ),
       additionals: this.masterSvc.fb().array([]),
       broker: [''],
       poNumber: [''],
       woNumber: [''],
       labour: this.masterSvc.fb().array([]),
     });
-    // this.addBoard();
-    // this.addLabour();
-    // this.addAdditional();
   }
-  // END: Form Init
 }

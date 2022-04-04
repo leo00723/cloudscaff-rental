@@ -90,7 +90,9 @@ export class SiteFormComponent implements OnInit {
       this.site.createdBy = this.user.name;
       const code = `SITE${new Date().toLocaleDateString('en', {
         year: '2-digit',
-      })}${(this.company.totalSites + 1).toString().padStart(6, '0')}`;
+      })}${(this.company.totalSites ? this.company.totalSites + 1 : 1)
+        .toString()
+        .padStart(6, '0')}`;
       Object.assign(this.site, { ...this.form.value, code, date: new Date() });
       this.masterSvc
         .edit()

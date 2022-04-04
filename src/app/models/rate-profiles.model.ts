@@ -1,7 +1,7 @@
 export interface RateProfile {
-  code: number;
-  name: string;
-  rate: number;
+  code?: number;
+  name?: string;
+  rate?: number;
 }
 export class RateProfiles {
   scaffoldRates: RateProfile[] = [
@@ -13,6 +13,7 @@ export class RateProfiles {
     { code: 5, name: 'L x H x Rate', rate: 0 },
     { code: 6, name: 'W x H x Rate', rate: 0 },
     { code: 7, name: 'L x W x H x Rate', rate: 0 },
+    { code: 8, name: 'Squares x Rate', rate: 0 },
   ];
   boardRates: RateProfile[] = [
     { code: 0, name: 'Fixed Rate', rate: 0 },

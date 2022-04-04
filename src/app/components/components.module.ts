@@ -35,6 +35,8 @@ import { AddHandoverComponent } from './add-handover/add-handover.component';
 import { HandoverSummaryComponent } from './handover-summary/handover-summary.component';
 import { SignaturePadComponent } from './signature-pad/signature-pad.component';
 import { SignaturePadModule } from 'angular2-signaturepad';
+import { AddModificationComponent } from './add-modification/add-modification.component';
+import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
 
 const COMPONENTS = [
   AddInspectionComponent,
@@ -65,6 +67,8 @@ const COMPONENTS = [
   AddHandoverComponent,
   HandoverSummaryComponent,
   SignaturePadComponent,
+  AddModificationComponent,
+  ViewEstimateComponent,
 ];
 const IMPORTS = [
   CommonModule,

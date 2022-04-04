@@ -79,7 +79,9 @@
         <tr class="small">
           <th class="text-center" scope="row"></th>
           <td>
-            {{ company.terminology.scaffold }} - ({{ estimate.scaffold.length
+            {{ company.terminology.scaffold }} Level
+            {{ estimate.scaffold.level ? estimate.scaffold.level : 0 }} - ({{
+              estimate.scaffold.length
             }}{{ company.measurement.symbol }} x {{ estimate.scaffold.width
             }}{{ company.measurement.symbol }} x {{ estimate.scaffold.height
             }}{{ company.measurement.symbol }})
@@ -88,6 +90,25 @@
           <td class="text-end">
             {{ company.currency.symbol }}
             {{ estimate.scaffold.total | number: "0.2-2" }}
+          </td>
+        </tr>
+        <!-- SCAFFOLD ATTACHMENTS -->
+        <tr
+          class="small"
+          *ngFor="let item of estimate.attachments; let i = index"
+        >
+          <th class="text-center" scope="row"></th>
+          <td>
+            {{ company.terminology.scaffold }} Level
+            {{ item.level ? item.level : 0 }} - ({{ item.length
+            }}{{ company.measurement.symbol }} x {{ item.width
+            }}{{ company.measurement.symbol }} x {{ item.height
+            }}{{ company.measurement.symbol }})
+          </td>
+          <td class="text-center">1</td>
+          <td class="text-end">
+            {{ company.currency.symbol }}
+            {{ item.total | number: "0.2-2" }}
           </td>
         </tr>
         <!-- BOARDS -->
@@ -119,7 +140,7 @@
           </td>
         </tr>
         <!-- LABOR -->
-        <tr>
+        <tr *ngIf="estimate.labour.length > 0">
           <th class="text-center" scope="row">2</th>
           <td colspan="3">Labor</td>
         </tr>
@@ -132,7 +153,7 @@
           </td>
         </tr>
         <!-- ADDITIONALS -->
-        <tr>
+        <tr *ngIf="estimate.additionals.length > 0">
           <th class="text-center" scope="row">3</th>
           <td colspan="3">Additionals</td>
         </tr>

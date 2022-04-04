@@ -1,11 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Select } from '@ngxs/store';
-import { Observable, of, timer } from 'rxjs';
-import { filter, switchMap, tap } from 'rxjs/operators';
-import { CustomerComponent } from 'src/app/components/customer/customer.component';
+import { Observable, timer } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
-import { LabourBroker } from 'src/app/models/labour-broker.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { AddCustomerComponent } from './add-customer/add-customer.component';

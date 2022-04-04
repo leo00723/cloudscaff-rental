@@ -5,10 +5,10 @@ import { Item } from './item.model';
 import { LabourBroker } from './labour-broker.model';
 import { LabourItem } from './labourItem.model';
 
-export interface Estimate {
+export interface Modification {
   additionals: AdditionalItem[];
-  attachments: Item[];
   boards: Item[];
+  attachments: Item[];
   broker: LabourBroker;
   code: string;
   company: { [key: string]: string };

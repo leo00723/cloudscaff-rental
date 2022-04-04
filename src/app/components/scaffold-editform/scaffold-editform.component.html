@@ -38,6 +38,110 @@
             >
             </app-input-reactive>
           </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Level"
+              [optional]="true"
+              type="number"
+              [readonly]="true"
+              controlName="level"
+              [form]="field('scaffold')"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-select-reactive
+              title="Safe for use"
+              placeholder="Safe for use?"
+              controlName="safe"
+              [form]="field('scaffold')"
+              [selectedText]="field('scaffold.safe').value"
+            >
+              <ion-select-option value="Yes">Yes </ion-select-option>
+              <ion-select-option value="No">No </ion-select-option>
+            </app-input-select-reactive>
+          </ion-col>
+        </ion-row>
+        <ion-row
+          formArrayName="attachments"
+          class="mb-3"
+          *ngFor="let attachment of attachmentForms.controls; let i = index"
+        >
+          <ion-col size="12">
+            <ion-note> Attachment {{ i + 1 }} </ion-note>
+            <ion-chip
+              outline
+              color="danger"
+              class="ion-float-end"
+              (click)="deleteAttachment(i)"
+            >
+              <ion-label>Delete</ion-label>
+            </ion-chip>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Length ({{ company.measurement.symbol }})"
+              type="number"
+              controlName="length"
+              placeholder="L"
+              [form]="attachment"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Width ({{ company.measurement.symbol }})"
+              type="number"
+              controlName="width"
+              placeholder="W"
+              [form]="attachment"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Height ({{ company.measurement.symbol }})"
+              type="number"
+              controlName="height"
+              placeholder="H"
+              [form]="attachment"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Level"
+              type="number"
+              controlName="level"
+              placeholder="1"
+              [form]="attachment"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-select-reactive
+              title="Safe for use"
+              placeholder="Safe for use?"
+              controlName="safe"
+              [form]="attachment"
+              [selectedText]="field('attachments').value[i].safe"
+            >
+              <ion-select-option value="Yes">Yes </ion-select-option>
+              <ion-select-option value="No">No </ion-select-option>
+            </app-input-select-reactive>
+          </ion-col>
+        </ion-row>
+        <ion-row class="mb-3">
+          <ion-col>
+            <ion-fab-button
+              size="small"
+              class="m-auto"
+              color="success"
+              (click)="addAttachment()"
+            >
+              <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
+          </ion-col>
         </ion-row>
       </ion-col>
     </ion-row>

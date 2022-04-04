@@ -135,7 +135,9 @@ export class AcceptEstimateComponent implements OnInit {
       this.show = 'selectedSite';
       const code = `SCA${new Date().toLocaleDateString('en', {
         year: '2-digit',
-      })}${(site.totalScaffolds + 1).toString().padStart(6, '0')}`;
+      })}${(site.totalScaffolds ? site.totalScaffolds + 1 : 1)
+        .toString()
+        .padStart(6, '0')}`;
       this.field('scaffold', this.form2).setValue({
         code,
         companyId: this.company.id,
@@ -143,6 +145,7 @@ export class AcceptEstimateComponent implements OnInit {
         siteId: site.id,
         siteCode: site.code,
         scaffold: this.estimate.scaffold,
+        attachments: this.estimate.attachments,
         boards: this.estimate.boards,
         hire: this.estimate.hire,
         labour: this.estimate.labour,

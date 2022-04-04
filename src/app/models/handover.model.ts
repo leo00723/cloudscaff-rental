@@ -4,14 +4,14 @@ import { Scaffold } from './scaffold.model';
 
 export interface Handover {
   id?: string;
-  date: any;
-  code: string;
-  status: string;
-  notes: string;
-  detail: string;
-  maxLoad: string;
-  createdBy: string;
-  safe: string;
+  date?: any;
+  code?: string;
+  status?: string;
+  notes?: string;
+  detail?: string;
+  maxLoad?: string;
+  createdBy?: string;
+  safe?: string;
   company?: Company;
   customer?: Customer;
   scaffold?: Scaffold;

@@ -51,6 +51,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { AppState } from './shared/app/app.state';
 import { CompanyState } from './shared/company/company.state';
 import { RouterState } from './shared/router.state';
 import { UserState } from './shared/user/user.state';
@@ -111,7 +112,7 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    NgxsModule.forRoot([RouterState, UserState, CompanyState], {
+    NgxsModule.forRoot([AppState, RouterState, UserState, CompanyState], {
       developmentMode: !environment.production,
     }),
     NgxsLoggerPluginModule.forRoot(),

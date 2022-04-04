@@ -36,7 +36,7 @@
         <app-estimate-table
           [value]="estimates$"
           *ngIf="estimates$ | async else loading"
-          (selectedItem)="editEstimate($event)"
+          (selectedItem)="viewEstimate($event)"
         ></app-estimate-table>
       </div>
       <ng-template #loading>

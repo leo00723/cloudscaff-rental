@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AlertController, ToastController, ToastOptions } from '@ionic/angular';
+import { AlertAttributes } from '@ionic/core';
 
 @Injectable({
   providedIn: 'root',
@@ -22,9 +23,16 @@ export class NotificationService {
     return await toast.present();
   }
 
-  async presentAlertConfirm(callback?, header?: string, message?: string) {
+  async presentAlertConfirm(
+    callback?,
+    header?: string,
+    message?: string,
+    subheader?: string,
+    html?: AlertAttributes
+  ) {
     const alert = await this.alertController.create({
       header: header ? header : 'Are you sure you want to continue?',
+      subHeader: subheader,
       mode: 'ios',
       message: message ? message : 'click Yes to proceed',
       buttons: [

@@ -3,7 +3,7 @@ export class Labour {
   ot1 = 0;
   ot2 = 0;
   ph = 0;
-  name: string;
+  name?: string;
 
   constructor(name: string) {
     this.name = name;

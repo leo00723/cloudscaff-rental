@@ -1,6 +1,6 @@
 export interface UnitData {
-  name: string;
-  symbol: string;
+  name?: string;
+  symbol?: string;
 }
 export class Currencies {
   currencies: UnitData[] = [
