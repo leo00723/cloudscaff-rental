@@ -1,26 +1,19 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-  ViewChild,
-  OnDestroy,
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
-import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Select } from '@ngxs/store';
-import { Observable, subscribeOn, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AcceptEstimateComponent } from 'src/app/home/estimates/add-estimate/accept-estimate/accept-estimate.component';
 import { Company } from 'src/app/models/company.model';
-import { Site } from 'src/app/models/site.model';
 import { Modification } from 'src/app/models/modification.model';
+import { ScaffoldCost } from 'src/app/models/scaffold-cost';
 import { Scaffold } from 'src/app/models/scaffold.model';
+import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
-import { ScaffoldCost } from 'src/app/models/scaffold-cost';
 
 @Component({
   selector: 'app-add-modification',
@@ -30,11 +23,37 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   @ViewChild('message') message: IonTextarea;
   @Input() isEdit = false;
   @Input() set value(val: Scaffold) {
-    this.scaffold = val;
+    Object.assign(this.scaffold, val);
   }
   @Select() company$: Observable<Company>;
   site$: Observable<Site>;
-  scaffold: Scaffold;
+  scaffold: Scaffold = {
+    id: '',
+    code: '',
+    date: undefined,
+    companyId: '',
+    customerId: '',
+    siteId: '',
+    siteCode: '',
+    createdBy: '',
+    scaffold: undefined,
+    attachments: [],
+    boards: [],
+    hire: undefined,
+    labour: [],
+    additionals: [],
+    poNumber: '',
+    woNumber: '',
+    updatedBy: '',
+    startDate: undefined,
+    endDate: undefined,
+    status: '',
+    users: [],
+    totalInspections: 0,
+    totalHandovers: 0,
+    totalModifications: 0,
+    totalInvoices: 0,
+  };
   modification: Modification = {
     additionals: [],
     boards: [],
@@ -111,7 +130,6 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         ) as Observable<Site>;
       this.subs.add(
         this.site$.subscribe((site) => {
-          console.log(site);
           this.modification.customer = site.customer;
           this.modification.siteName = site.name;
           this.initFrom();
@@ -142,7 +160,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       type: ['', Validators.required],
       hours: ['', Validators.required],
       days: ['', Validators.required],
-      rate: ['', [Validators.required]],
+      rate: ['', Validators.nullValidator],
       qty: ['', Validators.required],
       total: [0],
     });
@@ -150,7 +168,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   }
   addAdditional() {
     const additional = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
+      rate: ['', Validators.nullValidator],
       qty: ['', [Validators.required, Validators.min(1)]],
       name: ['', Validators.required],
       daysStanding: ['', [Validators.required, Validators.min(1)]],
@@ -160,7 +178,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   }
   addBoard() {
     const board = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
+      rate: ['', Validators.nullValidator],
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
@@ -171,12 +189,12 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   }
   addAttachment() {
     const attachment = this.masterSvc.fb().group({
-      rate: ['', Validators.required],
+      rate: ['', Validators.nullValidator],
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
       level: ['', [Validators.nullValidator]],
-      breakdown: ['', [Validators.nullValidator]],
+      breakdown: [{ dismantle: [], erection: [] }, [Validators.nullValidator]],
       total: [0],
     });
     this.attachmentsForms.push(attachment);
@@ -367,7 +385,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     });
   }
 
-  //update the estimate
+  //update the modification
   updateModification(status: 'pending' | 'accepted' | 'rejected') {
     if (status === 'accepted') {
       this.startAcceptance();
@@ -419,7 +437,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     return await modal.present();
   }
 
-  //update the estimate total
+  //update the modification total
   private updateModificationTotal() {
     if (this.isEdit && this.modification.status !== 'pending') {
       return;
@@ -487,6 +505,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       total,
       createdBy: this.isEdit ? this.modification.createdBy : this.user.id,
       updatedBy: this.user.id,
+      oldScaffold: this.scaffold,
     });
   }
   // START: functions to update each rate category
@@ -719,14 +738,13 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
     const newScaffold = ref.value;
+    const oldScaffold = this.scaffold.attachments[i]
+      ? this.scaffold.attachments[i]
+      : { length: 0, width: 0, height: 0 };
+    console.log(oldScaffold);
     ref
       .get('breakdown')
-      .setValue(
-        this.calcDimension.scaffoldCost(
-          this.scaffold.attachments[i],
-          newScaffold
-        )
-      );
+      .setValue(this.calcDimension.scaffoldCost(oldScaffold, newScaffold));
   }
   private calcHireRate() {
     let attachments = 0;
@@ -837,7 +855,10 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           [Validators.required, Validators.min(1)],
         ],
         level: [0, [Validators.nullValidator]],
-        breakdown: ['', [Validators.nullValidator]],
+        breakdown: [
+          this.modification.scaffold.breakdown,
+          [Validators.nullValidator],
+        ],
         total: [this.modification.scaffold.total],
       }),
       boards: this.masterSvc.fb().array([]),
@@ -864,7 +885,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
         level: [a.level, [Validators.nullValidator]],
-        breakdown: ['', [Validators.nullValidator]],
+        breakdown: [a.breakdown, [Validators.nullValidator]],
         total: [a.total],
       });
       this.attachmentsForms.push(attachment);
@@ -923,12 +944,15 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
-        rate: [''],
+        rate: ['', Validators.nullValidator],
         length: [this.scaffold.scaffold.length, [, Validators.min(1)]],
         width: [this.scaffold.scaffold.width, [, Validators.min(1)]],
         height: [this.scaffold.scaffold.height, [, Validators.min(1)]],
         level: [0, [Validators.nullValidator]],
-        breakdown: ['', [Validators.nullValidator]],
+        breakdown: [
+          { dismantle: [], erection: [] },
+          [Validators.nullValidator],
+        ],
         total: [0],
       }),
       hire: this.masterSvc.fb().group({
@@ -946,19 +970,22 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     });
     this.scaffold.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({
-        rate: ['', Validators.required],
+        rate: ['', Validators.nullValidator],
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
         level: [a.level, [Validators.nullValidator]],
-        breakdown: ['', [Validators.nullValidator]],
+        breakdown: [
+          { dismantle: [], erection: [] },
+          [Validators.nullValidator],
+        ],
         total: [0],
       });
       this.attachmentsForms.push(attachment);
     });
     this.scaffold.boards.forEach((b) => {
       const board = this.masterSvc.fb().group({
-        rate: ['', Validators.required],
+        rate: ['', Validators.nullValidator],
         length: [b.length, [Validators.required, Validators.min(1)]],
         width: [b.width, [Validators.required, Validators.min(1)]],
         height: [b.height, [Validators.required, Validators.min(1)]],

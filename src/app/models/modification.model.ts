@@ -4,6 +4,7 @@ import { HireItem } from './hireItem.model';
 import { Item } from './item.model';
 import { LabourBroker } from './labour-broker.model';
 import { LabourItem } from './labourItem.model';
+import { Scaffold } from './scaffold.model';
 
 export interface Modification {
   additionals: AdditionalItem[];
@@ -38,4 +39,5 @@ export interface Modification {
   updatedBy: string;
   acceptedBy: string;
   rejectedBy: string;
+  oldScaffold?: Scaffold;
 }

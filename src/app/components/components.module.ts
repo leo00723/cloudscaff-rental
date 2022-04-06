@@ -37,6 +37,7 @@ import { SignaturePadComponent } from './signature-pad/signature-pad.component';
 import { SignaturePadModule } from 'angular2-signaturepad';
 import { AddModificationComponent } from './add-modification/add-modification.component';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
+import { ModificationSummaryComponent } from './modification-summary/modification-summary.component';
 
 const COMPONENTS = [
   AddInspectionComponent,
@@ -83,8 +84,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS],
+  declarations: [COMPONENTS, ModificationSummaryComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS],
+  exports: [IMPORTS, COMPONENTS, ModificationSummaryComponent],
 })
 export class ComponentsModule {}

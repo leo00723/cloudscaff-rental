@@ -101,11 +101,11 @@
         </ng-template>
       </div>
       <div *ngSwitchCase="'modifications'">
-        <app-handover-table
-          [value]="handovers$"
-          *ngIf="handovers$ | async else loading"
-          (selectedItem)="viewHandover($event)"
-        ></app-handover-table>
+        <app-estimate-table
+          [value]="modifications$"
+          *ngIf="modifications$ | async else loading"
+          (selectedItem)="viewModification($event)"
+        ></app-estimate-table>
         <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button (click)="addModification(scaffold)">
             <ion-icon name="add"></ion-icon>

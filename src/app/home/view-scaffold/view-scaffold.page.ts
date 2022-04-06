@@ -10,6 +10,7 @@ import { InspectionSummaryComponent } from 'src/app/components/inspection-summar
 import { Company } from 'src/app/models/company.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
+import { Modification } from 'src/app/models/modification.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
@@ -27,6 +28,7 @@ export class ViewScaffoldPage implements OnInit {
   scaffold$: Observable<Scaffold>;
   inspections$: Observable<Inspection[]>;
   handovers$: Observable<Handover[]>;
+  modifications$: Observable<Modification[]>;
   active = 'overview';
   ids = [];
   constructor(
@@ -68,6 +70,13 @@ export class ViewScaffoldPage implements OnInit {
         'date',
         'desc'
       ) as Observable<Handover[]>;
+    this.modifications$ = this.masterSvc
+      .edit()
+      .getCollectionOrdered(
+        `company/${this.ids[0]}/modifications`,
+        'code',
+        'desc'
+      ) as Observable<Modification[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -128,6 +137,18 @@ export class ViewScaffoldPage implements OnInit {
       component: HandoverSummaryComponent,
       componentProps: {
         handover,
+      },
+      showBackdrop: false,
+      id: 'viewHandover',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewModification(modification: Modification) {
+    const modal = await this.masterSvc.modal().create({
+      component: HandoverSummaryComponent,
+      componentProps: {
+        modification,
       },
       showBackdrop: false,
       id: 'viewHandover',
