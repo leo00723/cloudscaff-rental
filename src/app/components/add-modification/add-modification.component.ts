@@ -54,7 +54,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     totalModifications: 0,
     totalInvoices: 0,
   };
-  modification: Modification = {
+  @Input() modification: Modification = {
     additionals: [],
     boards: [],
     attachments: [],
@@ -119,6 +119,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
 
     if (this.isEdit) {
       this.modification = { ...this.modification };
+      console.log(this.modification);
       this.initEditForm();
       this.show = 'editCustomer';
     } else {
@@ -506,6 +507,9 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       createdBy: this.isEdit ? this.modification.createdBy : this.user.id,
       updatedBy: this.user.id,
       oldScaffold: this.scaffold,
+      scaffoldId: this.scaffold.id,
+      scaffoldCode: this.scaffold.code,
+      siteId: this.scaffold.siteId,
     });
   }
   // START: functions to update each rate category

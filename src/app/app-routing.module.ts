@@ -50,9 +50,23 @@ const routes: Routes = [
     data: { authGuardPipe: redirectUnauthorized },
   },
   {
+    path: 'viewEstimate/:id',
+    loadChildren: () =>
+      import('./customer-estimate/customer-estimate.module').then(
+        (m) => m.CustomerEstimatePageModule
+      ),
+  },
+  {
     path: '**',
     pathMatch: 'full',
     redirectTo: '/dashboard/sites',
+  },
+  {
+    path: 'customer-estimate',
+    loadChildren: () =>
+      import('./customer-estimate/customer-estimate.module').then(
+        (m) => m.CustomerEstimatePageModule
+      ),
   },
 ];
 

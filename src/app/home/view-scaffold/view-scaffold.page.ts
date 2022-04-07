@@ -7,6 +7,7 @@ import { AddInspectionComponent } from 'src/app/components/add-inspection/add-in
 import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
+import { ViewEstimateComponent } from 'src/app/components/view-estimate/view-estimate.component';
 import { Company } from 'src/app/models/company.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
@@ -72,9 +73,12 @@ export class ViewScaffoldPage implements OnInit {
       ) as Observable<Handover[]>;
     this.modifications$ = this.masterSvc
       .edit()
-      .getCollectionOrdered(
+      .getCollectionWhereAndOrder(
         `company/${this.ids[0]}/modifications`,
-        'code',
+        'scaffoldId',
+        '==',
+        this.ids[1],
+        'date',
         'desc'
       ) as Observable<Modification[]>;
   }
@@ -145,15 +149,29 @@ export class ViewScaffoldPage implements OnInit {
     return await modal.present();
   }
   async viewModification(modification: Modification) {
-    const modal = await this.masterSvc.modal().create({
-      component: HandoverSummaryComponent,
-      componentProps: {
-        modification,
-      },
-      showBackdrop: false,
-      id: 'viewHandover',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
+    if (modification.status === 'pending') {
+      const modal = await this.masterSvc.modal().create({
+        component: AddModificationComponent,
+        componentProps: {
+          modification,
+          isEdit: true,
+        },
+        showBackdrop: false,
+        id: 'editModification',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    } else {
+      const modal = await this.masterSvc.modal().create({
+        component: ViewEstimateComponent,
+        componentProps: {
+          modification,
+        },
+        showBackdrop: false,
+        id: 'viewEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    }
   }
 }

@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 import { DecimalPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { FileOpener } from '@ionic-native/file-opener/ngx';
+import { Platform } from '@ionic/angular';
 import { Observer, of } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
@@ -133,8 +136,36 @@ const defaultCS = {
 })
 export class PdfService {
   pdfMake: any;
-  constructor(private decimalPipe: DecimalPipe) {}
+  constructor(
+    private decimalPipe: DecimalPipe,
+    private platformService: Platform,
+    private fileOpenerService: FileOpener
+  ) {}
 
+  handlePdf(pdf: any, filename: string) {
+    if (this.platformService.is('cordova')) {
+      pdf.getBase64(async (data) => {
+        try {
+          let path = `${filename}.pdf`;
+          const result = await Filesystem.writeFile({
+            path,
+            data,
+            directory: Directory.Data,
+          });
+          this.fileOpenerService.open(`${result.uri}`, 'application/pdf');
+          return true;
+        } catch (e) {
+          console.error('Unable to write file', e);
+          return false;
+        }
+      });
+    } else if (!this.platformService.is('iphone')) {
+      pdf.download(filename);
+      return true;
+    } else {
+      return false;
+    }
+  }
   // ESTIMATE STANDARD PDF
   async generateEstimate(
     estimate: Estimate,

@@ -1,4 +1,5 @@
 import { AdditionalItem } from './additionalItem.model';
+import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { HireItem } from './hireItem.model';
 import { Item } from './item.model';
@@ -11,7 +12,7 @@ export interface Estimate {
   boards: Item[];
   broker: LabourBroker;
   code: string;
-  company: { [key: string]: string };
+  company: Company;
   customer: Customer;
   date: any;
   discount: number;
