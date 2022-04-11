@@ -14,6 +14,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { AcceptModificationComponent } from '../accept-modification/accept-modification.component';
 
 @Component({
   selector: 'app-add-modification',
@@ -424,7 +425,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
-      component: AcceptEstimateComponent,
+      component: AcceptModificationComponent,
       componentProps: {
         company: this.company,
         user: this.user,

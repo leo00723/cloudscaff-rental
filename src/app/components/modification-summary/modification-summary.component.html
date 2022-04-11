@@ -5,7 +5,7 @@
         <h3>Modification</h3>
       </ion-text>
       <ion-buttons slot="end" *ngIf="canDownload">
-        <ion-button
+        <!-- <ion-button
           (click)="download(terms)"
           *ngIf="terms$ | async as terms; else noTerms"
           color="primary"
@@ -16,22 +16,24 @@
           <ion-button (click)="download(null)" color="primary">
             <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
           </ion-button>
-        </ng-template>
+        </ng-template> -->
       </ion-buttons>
     </ion-item>
   </ion-col>
   <ion-col size="6">
     <ion-label>
       <h6>Code:</h6>
+      <h6>Scaffold Code:</h6>
+      <h6>Site Code:</h6>
       <h6>Site name:</h6>
       <h6>Date Issued:</h6>
     </ion-label>
   </ion-col>
   <ion-col size="6">
     <ion-label>
-      <h6>
-        {{ modification.code }}
-      </h6>
+      <h6>{{ modification.code }}</h6>
+      <h6>{{ modification.scaffoldCode }}</h6>
+      <h6>{{ modification.oldScaffold.siteCode }}</h6>
       <h6>
         {{ modification.siteName }}
       </h6>

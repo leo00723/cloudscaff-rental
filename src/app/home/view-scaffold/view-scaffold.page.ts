@@ -7,17 +7,15 @@ import { AddInspectionComponent } from 'src/app/components/add-inspection/add-in
 import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
-import { ViewEstimateComponent } from 'src/app/components/view-estimate/view-estimate.component';
+import { ViewModificationComponent } from 'src/app/components/view-modification/view-modification.component';
 import { Company } from 'src/app/models/company.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
 import { Modification } from 'src/app/models/modification.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
-import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { Navigate } from 'src/app/shared/router.state';
-import { SetSite } from '../sites/state/sites.actions';
 
 @Component({
   selector: 'app-view-scaffold',
@@ -123,6 +121,18 @@ export class ViewScaffoldPage implements OnInit {
     });
     return await modal.present();
   }
+  async addInvoice(scaffold: Scaffold) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddModificationComponent,
+      componentProps: {
+        value: scaffold,
+      },
+      showBackdrop: false,
+      id: 'addInvoice',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
 
   async viewInspection(inspection: Inspection) {
     const modal = await this.masterSvc.modal().create({
@@ -164,12 +174,12 @@ export class ViewScaffoldPage implements OnInit {
       return await modal.present();
     } else {
       const modal = await this.masterSvc.modal().create({
-        component: ViewEstimateComponent,
+        component: ViewModificationComponent,
         componentProps: {
           modification,
         },
         showBackdrop: false,
-        id: 'viewEstimate',
+        id: 'viewModification',
         cssClass: 'fullscreen',
       });
       return await modal.present();

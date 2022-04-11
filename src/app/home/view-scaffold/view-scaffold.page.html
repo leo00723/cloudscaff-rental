@@ -7,6 +7,7 @@
   >
     <ion-toolbar>
       <ion-segment
+        [scrollable]="true"
         (ionChange)="segmentChanged($event)"
         selectOnFocus="true"
         [value]="active"
@@ -22,6 +23,9 @@
         </ion-segment-button>
         <ion-segment-button value="modifications">
           <ion-label>Modifications</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="invoices">
+          <ion-label>Invoices</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -108,6 +112,26 @@
         ></app-modification-table>
         <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button (click)="addModification(scaffold)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <ng-template #loading>
+          <div class="ion-padding">
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+          </div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'invoices'">
+        <app-modification-table
+          [value]="modifications$"
+          *ngIf="modifications$ | async else loading"
+          (selectedItem)="viewModification($event,scaffold)"
+        ></app-modification-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addInvoice(scaffold)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
         </ion-fab>

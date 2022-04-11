@@ -39,6 +39,8 @@ import { AddModificationComponent } from './add-modification/add-modification.co
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
 import { ModificationSummaryComponent } from './modification-summary/modification-summary.component';
 import { ShareDocumentComponent } from './share-document/share-document.component';
+import { AcceptModificationComponent } from './accept-modification/accept-modification.component';
+import { ViewModificationComponent } from './view-modification/view-modification.component';
 
 const COMPONENTS = [
   AddInspectionComponent,
@@ -72,6 +74,8 @@ const COMPONENTS = [
   AddModificationComponent,
   ViewEstimateComponent,
   ShareDocumentComponent,
+  ModificationSummaryComponent,
+  AcceptModificationComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -86,8 +90,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, ModificationSummaryComponent],
+  declarations: [COMPONENTS, ViewModificationComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, ModificationSummaryComponent],
+  exports: [IMPORTS, COMPONENTS, ViewModificationComponent],
 })
 export class ComponentsModule {}

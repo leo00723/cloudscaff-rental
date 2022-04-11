@@ -28,9 +28,6 @@ export class ModificationTableComponent {
   selectionType = SelectionType;
   selected = [];
   @Input() set value(modifications: Observable<Modification[]>) {
-    modifications.subscribe((data) => {
-      console.log(data);
-    });
     this.temp$ = modifications;
     this.modifications$ = modifications;
   }
