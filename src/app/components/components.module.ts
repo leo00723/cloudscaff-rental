@@ -38,6 +38,7 @@ import { SignaturePadModule } from 'angular2-signaturepad';
 import { AddModificationComponent } from './add-modification/add-modification.component';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
 import { ModificationSummaryComponent } from './modification-summary/modification-summary.component';
+import { ShareDocumentComponent } from './share-document/share-document.component';
 
 const COMPONENTS = [
   AddInspectionComponent,
@@ -70,6 +71,7 @@ const COMPONENTS = [
   SignaturePadComponent,
   AddModificationComponent,
   ViewEstimateComponent,
+  ShareDocumentComponent,
 ];
 const IMPORTS = [
   CommonModule,

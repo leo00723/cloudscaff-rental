@@ -282,13 +282,14 @@ export class PdfService {
       info: this.getMetaData(`${company.name}-Estimate-${estimate.code}`),
       content: [
         await this.getHeader(
-          'ESTIMATE',
+          'Estimate',
           estimate.code,
           estimate.siteName,
           estimate.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png'
+            : 'assets/icon/favicon.png',
+          `https://app.cloudscaff.com/viewEstimate/${company.id}-${estimate.id}`
         ),
         hr,
         this.getSubHeader(estimate.customer, company),
@@ -304,14 +305,14 @@ export class PdfService {
             body: [
               [
                 {
-                  text: 'BANKING DETAILS',
+                  text: 'Banking Details',
                   style: ['h4b'],
                   alignment: 'left',
                 },
                 '',
                 '',
                 {
-                  text: 'TOTAL AMOUNT',
+                  text: 'Total Amount',
                   style: ['h4b'],
                   alignment: 'right',
                 },
@@ -352,16 +353,27 @@ export class PdfService {
                 { text: 'Account Number:', style: 'h6b', alignment: 'left' },
                 { text: company.accountNum, alignment: 'left' },
                 {
-                  text: company.vat
-                    ? `VAT (${company.vat}%):`
-                    : `Tax (${company.salesTax}%):`,
+                  text:
+                    company.vat > 0
+                      ? `VAT (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
                 {
-                  text: `${company.currency.symbol} ${this.format(
-                    estimate.vat
-                  )}`,
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.vat
+                        )}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.tax
+                        )}`
+                      : '',
+
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
                 },
@@ -396,7 +408,7 @@ export class PdfService {
           layout: 'noBorders',
         },
         {
-          text: 'TERMS & CONDITIONS',
+          text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
           pageBreak: 'before',
         },
@@ -427,7 +439,8 @@ export class PdfService {
     code: string,
     siteName: string,
     date: Date,
-    url: string
+    url: string,
+    link: string
   ) {
     const header = {
       style: 'tableExample',
@@ -454,6 +467,16 @@ export class PdfService {
           [
             { text: 'Date Issued:', style: 'h6b' },
             `${this.toDate(date)}`,
+            '',
+            '',
+          ],
+          [
+            { text: 'View Online:', style: 'h6b' },
+            {
+              text: 'Click here to view online',
+              style: ['h6b', { color: 'blue' }],
+              link,
+            },
             '',
             '',
           ],
@@ -491,14 +514,14 @@ export class PdfService {
           [
             {
               text: `${customer.name}`,
-              style: 'h3',
+              style: 'h4',
               colSpan: 2,
               alignment: 'left',
             },
             {},
             {
               text: `${company.name}`,
-              style: 'h3',
+              style: 'h4',
               colSpan: 2,
               alignment: 'left',
             },
@@ -529,6 +552,12 @@ export class PdfService {
             customer.regNumber ? customer.regNumber : 'N/A',
             { text: 'Registration No:', style: 'h6b' },
             company.regNumber ? company.regNumber : 'N/A',
+          ],
+          [
+            { text: 'VAT No:', style: 'h6b' },
+            customer.vatNum ? customer.vatNum : 'N/A',
+            { text: 'VAT No:', style: 'h6b' },
+            company.vatNum ? company.vatNum : 'N/A',
           ],
           [
             { text: 'Address:', style: 'h6b' },

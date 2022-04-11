@@ -56,17 +56,11 @@ const routes: Routes = [
         (m) => m.CustomerEstimatePageModule
       ),
   },
+
   {
     path: '**',
     pathMatch: 'full',
     redirectTo: '/dashboard/sites',
-  },
-  {
-    path: 'customer-estimate',
-    loadChildren: () =>
-      import('./customer-estimate/customer-estimate.module').then(
-        (m) => m.CustomerEstimatePageModule
-      ),
   },
 ];
 

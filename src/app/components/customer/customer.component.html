@@ -1,10 +1,5 @@
 <form [formGroup]="form" class="card-outline m-auto">
   <ion-row>
-    <ion-col size="12" *ngIf="isCreate || isUpdate">
-      <app-address-search
-        (addressData)="updateAddress($event)"
-      ></app-address-search>
-    </ion-col>
     <ion-col size="12" sizeXl="6">
       <app-input-reactive
         title="Customer name"
@@ -32,8 +27,18 @@
         [form]="form"
         controlName="regNumber"
       ></app-input-reactive>
+      <app-input-reactive
+        title="VAT Number"
+        [optional]="true"
+        [form]="form"
+        controlName="vatNum"
+      ></app-input-reactive>
     </ion-col>
     <ion-col size="12" sizeXl="6">
+      <app-address-search
+        *ngIf="isCreate || isUpdate"
+        (addressData)="updateAddress($event)"
+      ></app-address-search>
       <app-input-reactive title="Address" [form]="form" controlName="address">
       </app-input-reactive>
       <app-input-reactive

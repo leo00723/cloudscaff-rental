@@ -139,6 +139,7 @@ export class CompanyPage {
           bankName: [this.company.bankName],
           accountNum: [this.company.accountNum],
           regNumber: [this.company.regNumber],
+          vatNum: [this.company.vatNum],
           branchCode: [this.company.branchCode],
           swiftCode: [this.company.swiftCode],
           currency: [this.company.currency, Validators.required],

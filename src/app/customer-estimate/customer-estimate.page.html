@@ -5,304 +5,322 @@
 </ion-header>
 
 <ion-content fullscreen="true" class="ion-padding">
-  <ng-container *ngIf="company$ | async as company">
-    <div class="container" *ngIf="estimate$ | async as estimate">
-      <ion-row class="py-2">
-        <ion-col size="12">
-          <ion-item class="ion-no-padding" lines="none" color="none">
-            <ion-text>
-              <h3>ESTIMATE</h3>
-            </ion-text>
-            <ion-buttons slot="end">
-              <ion-button
-                (click)="download(terms,estimate,company)"
-                *ngIf="terms$ | async as terms; else noTerms"
-                color="primary"
-              >
-                <ion-icon
-                  slot="icon-only"
-                  name="cloud-download-outline"
-                ></ion-icon>
-              </ion-button>
-              <ng-template #noTerms>
-                <ion-button
-                  (click)="download(null,estimate,company)"
-                  color="primary"
-                >
-                  <ion-icon
-                    slot="icon-only"
-                    name="cloud-download-outline"
-                  ></ion-icon>
-                </ion-button>
-              </ng-template>
-            </ion-buttons>
-          </ion-item>
-        </ion-col>
-        <ion-col size="6">
-          <ion-label>
-            <h6>Code:</h6>
-            <h6>Site name:</h6>
-            <h6>Date Issued:</h6>
-          </ion-label>
-        </ion-col>
-        <ion-col size="6">
-          <ion-label>
-            <h6>{{ estimate.code }}</h6>
-            <h6>{{ estimate.siteName }}</h6>
-            <h6>{{ estimate.date | date }}</h6>
-          </ion-label>
-        </ion-col>
-      </ion-row>
-      <ion-item-divider mode="md"></ion-item-divider>
+  <div class="container" *ngIf="estimate$ | async as estimate">
+    <ion-row class="py-2">
+      <ion-col sizeMd="6" size="4">
+        <ion-text>
+          <h4>Estimate</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col sizeMd="6" size="8" class="text-end">
+        <ion-button
+          size="small"
+          fill="clear"
+          (click)="download(estimate.terms, estimate.estimate,estimate.company)"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Site name:</h6>
+          <h6>Date Issued:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>{{ estimate.estimate.code }}</h6>
+          <h6>{{ estimate.estimate.siteName }}</h6>
+          <h6>{{ estimate.estimate.date.toDate() | date }}</h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
 
-      <ion-row class="py-2">
-        <ion-col size="12" sizeXl="6">
-          <ion-row>
-            <ion-col size="12">
-              <ion-text color="medium"> To </ion-text>
-            </ion-col>
-            <ion-col size="6">
-              <ion-label>
-                <h6>Company:</h6>
-                <h6>Email:</h6>
-                <h6>Representative:</h6>
-                <h6>Contact No:</h6>
-                <h6>Registration No:</h6>
-                <br />
-                <h6>Address:</h6>
-              </ion-label>
-            </ion-col>
-            <ion-col size="6">
-              <ion-label>
-                <h6>{{ estimate.customer.name }}</h6>
-                <h6>{{ estimate.customer.email }}</h6>
-                <h6>{{ estimate.customer.rep }}</h6>
-                <h6>{{ estimate.customer.phone }}</h6>
-                <h6>{{ estimate.customer.regNumber }}</h6>
-                <br />
-                <h6>
-                  {{ estimate.customer.address }} <br />
-                  {{ estimate.customer.suburb }}<br />{{ estimate.customer.city
-                  }}<br />{{ estimate.customer.zip }}<br />{{
-                  estimate.customer.country }}
-                </h6>
-              </ion-label>
-            </ion-col>
-          </ion-row>
-        </ion-col>
+    <ion-row class="py-2">
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> To </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ estimate.estimate.customer.name }}</h6>
+              <h6>{{ estimate.estimate.customer.email }}</h6>
+              <h6>{{ estimate.estimate.customer.rep }}</h6>
+              <h6>{{ estimate.estimate.customer.phone }}</h6>
+              <h6>{{ estimate.estimate.customer.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ estimate.estimate.customer.address }} <br />
+                {{ estimate.estimate.customer.suburb }}<br />{{
+                estimate.estimate.customer.city }}<br />{{
+                estimate.estimate.customer.zip }}<br />{{
+                estimate.estimate.customer.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
 
-        <ion-col size="12" sizeXl="6" *ngIf="company$ | async as company">
-          <ion-row>
-            <ion-col size="12">
-              <ion-text color="medium"> From </ion-text>
-            </ion-col>
-            <ion-col size="6">
-              <ion-label>
-                <h6>Company:</h6>
-                <h6>Email:</h6>
-                <h6>Representative:</h6>
-                <h6>Contact No:</h6>
-                <h6>Registration No:</h6>
-                <br />
-                <h6>Address:</h6>
-              </ion-label>
-            </ion-col>
-            <ion-col size="6">
-              <ion-label>
-                <h6>{{ company.name }}</h6>
-                <h6>{{ company.email }}</h6>
-                <h6>N/A</h6>
-                <h6>{{ company.phone }}</h6>
-                <h6>{{ company.regNumber }}</h6>
-                <br />
-                <h6>
-                  {{ company.address }} <br />
-                  {{ company.suburb }}<br />{{ company.city }}<br />{{
-                  company.zip }}<br />{{ company.country }}
-                </h6>
-              </ion-label>
-            </ion-col>
-          </ion-row>
-        </ion-col>
-      </ion-row>
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> From </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ estimate.company.name }}</h6>
+              <h6>{{ estimate.company.email }}</h6>
+              <h6>N/A</h6>
+              <h6>{{ estimate.company.phone }}</h6>
+              <h6>{{ estimate.company.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ estimate.company.address }} <br />
+                {{ estimate.company.suburb }}<br />{{ estimate.company.city
+                }}<br />{{ estimate.company.zip }}<br />{{
+                estimate.company.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
 
-      <ion-item-divider mode="md"></ion-item-divider>
+    <ion-item-divider mode="md"></ion-item-divider>
 
-      <ion-row class="py-2">
-        <ion-col size="12">
-          <ion-label color="medium">
-            <h6>Message</h6>
-          </ion-label>
-        </ion-col>
-        <ion-col size="12">
-          <p [innerText]="estimate.message"></p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th class="text-center" scope="col">#</th>
-                <th scope="col">Description</th>
-                <th class="text-center" scope="col">Qty</th>
-                <th class="text-end" scope="col">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th class="text-center" scope="row">1</th>
-                <td colspan="3">Scaffold Details</td>
-              </tr>
-              <!-- SCAFFOLD -->
-              <tr class="small">
-                <th class="text-center" scope="row"></th>
-                <td>
-                  {{ company.terminology.scaffold }} Level {{
-                  estimate.scaffold.level ? estimate.scaffold.level : 0 }} - ({{
-                  estimate.scaffold.length }}{{ company.measurement.symbol }} x
-                  {{ estimate.scaffold.width }}{{ company.measurement.symbol }}
-                  x {{ estimate.scaffold.height }}{{ company.measurement.symbol
-                  }})
-                </td>
-                <td class="text-center">1</td>
-                <td class="text-end">
-                  {{ company.currency.symbol }} {{ estimate.scaffold.total |
-                  number: "0.2-2" }}
-                </td>
-              </tr>
-              <!-- SCAFFOLD ATTACHMENTS -->
-              <tr
-                class="small"
-                *ngFor="let item of estimate.attachments; let i = index"
-              >
-                <th class="text-center" scope="row"></th>
-                <td>
-                  {{ company.terminology.scaffold }} Level {{ item.level ?
-                  item.level : 0 }} - ({{ item.length }}{{
-                  company.measurement.symbol }} x {{ item.width }}{{
-                  company.measurement.symbol }} x {{ item.height }}{{
-                  company.measurement.symbol }})
-                </td>
-                <td class="text-center">1</td>
-                <td class="text-end">
-                  {{ company.currency.symbol }} {{ item.total | number: "0.2-2"
-                  }}
-                </td>
-              </tr>
-              <!-- BOARDS -->
-              <tr
-                class="small"
-                *ngFor="let item of estimate.boards; let i = index"
-              >
-                <th class="text-center" scope="row"></th>
-                <td>
-                  {{ company.terminology.boards }} - ({{ item.length }}{{
-                  company.measurement.symbol }} x {{ item.width }}{{
-                  company.measurement.symbol }}) - Height ({{ item.height }}{{
-                  company.measurement.symbol }})
-                </td>
-                <td class="text-center">{{ item.qty }}</td>
-                <td class="text-end">
-                  {{ company.currency.symbol }} {{ item.total | number: "0.2-2"
-                  }}
-                </td>
-              </tr>
-              <!-- HIRE -->
-              <tr class="small">
-                <th class="text-center" scope="row"></th>
-                <td>
-                  {{ company.terminology.hire }} - ({{
-                  estimate.hire.daysStanding }} days)
-                </td>
-                <td class="text-center">1</td>
-                <td class="text-end">
-                  {{ company.currency.symbol }} {{ estimate.hire.total | number:
-                  "0.2-2" }}
-                </td>
-              </tr>
-              <!-- LABOR -->
-              <tr *ngIf="estimate.labour.length > 0">
-                <th class="text-center" scope="row">2</th>
-                <td colspan="3">Labor</td>
-              </tr>
-              <tr
-                class="small"
-                *ngFor="let item of estimate.labour; let i = index"
-              >
-                <th class="text-center" scope="row"></th>
-                <td>{{ item.type.name }} - {{ item.rate.name }}</td>
-                <td class="text-center">{{ item.qty }}</td>
-                <td class="text-end">
-                  {{ company.currency.symbol }} {{ item.total | number: "0.2-2"
-                  }}
-                </td>
-              </tr>
-              <!-- ADDITIONALS -->
-              <tr *ngIf="estimate.additionals.length > 0">
-                <th class="text-center" scope="row">3</th>
-                <td colspan="3">Additionals</td>
-              </tr>
-              <tr
-                class="small"
-                *ngFor="let item of estimate.additionals; let i = index"
-              >
-                <th class="text-center" scope="row"></th>
-                <td>{{ item.name }}</td>
-                <td class="text-center">{{ item.qty }}</td>
-                <td class="text-end">
-                  {{ company.currency.symbol }} {{ item.total | number: "0.2-2"
-                  }}
-                </td>
-              </tr>
-            </tbody>
-            <!-- FOOTER TOTALS -->
-            <tfoot>
-              <tr>
-                <th class="text-end" colspan="2" scope="col">Subtotal</th>
-                <th class="text-end" colspan="2" scope="col">
-                  {{ company.currency.symbol }} {{ estimate.subtotal | number:
-                  "0.2-2" }}
-                </th>
-              </tr>
-              <tr>
-                <th class="text-end" colspan="2" scope="col">
-                  Discount ({{ estimate.discountPercentage }}%)
-                </th>
-                <th class="text-end text-danger" colspan="2" scope="col">
-                  - {{ company.currency.symbol }} {{ estimate.discount | number:
-                  "0.2-2" }}
-                </th>
-              </tr>
-              <tr *ngIf="company.salesTax > 0">
-                <th class="text-end" colspan="2" scope="col">
-                  Sales Tax ({{ company.salesTax }}%)
-                </th>
-                <th class="text-end" colspan="2" scope="col">
-                  {{ company.currency.symbol }} {{ estimate.tax | number:
-                  "0.2-2" }}
-                </th>
-              </tr>
-              <tr *ngIf="company.vat > 0">
-                <th class="text-end" colspan="2" scope="col">
-                  VAT ({{ company.vat }}%)
-                </th>
-                <th class="text-end" colspan="2" scope="col">
-                  {{ company.currency.symbol }} {{ estimate.vat | number:
-                  "0.2-2" }}
-                </th>
-              </tr>
-              <tr>
-                <th class="text-end" colspan="2" scope="col">Total</th>
-                <th class="text-end" colspan="2" scope="col">
-                  {{ company.currency.symbol }} {{ estimate.total | number:
-                  "0.2-2" }}
-                </th>
-              </tr>
-            </tfoot>
-          </table>
-        </ion-col>
-      </ion-row>
-    </div>
-  </ng-container>
+    <ion-row class="py-2">
+      <ion-col size="12">
+        <ion-label color="medium">
+          <h6>Message</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="12">
+        <p [innerText]="estimate.estimate.message"></p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col">#</th>
+              <th scope="col">Description</th>
+              <th class="text-center" scope="col">Qty</th>
+              <th class="text-end" scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="text-center" scope="row">1</th>
+              <td colspan="3">Scaffold Details</td>
+            </tr>
+            <!-- SCAFFOLD -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ estimate.company.terminology.scaffold }} Level {{
+                estimate.estimate.scaffold.level ?
+                estimate.estimate.scaffold.level : 0 }} - ({{
+                estimate.estimate.scaffold.length }}{{
+                estimate.company.measurement.symbol }} x {{
+                estimate.estimate.scaffold.width }}{{
+                estimate.company.measurement.symbol }} x {{
+                estimate.estimate.scaffold.height }}{{
+                estimate.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{ estimate.company.currency.symbol }} {{
+                estimate.estimate.scaffold.total | number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- SCAFFOLD ATTACHMENTS -->
+            <tr
+              class="small"
+              *ngFor="let item of estimate.estimate.attachments; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ estimate.company.terminology.scaffold }} Level {{ item.level
+                ? item.level : 0 }} - ({{ item.length }}{{
+                estimate.company.measurement.symbol }} x {{ item.width }}{{
+                estimate.company.measurement.symbol }} x {{ item.height }}{{
+                estimate.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{ estimate.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+            <!-- BOARDS -->
+            <tr
+              class="small"
+              *ngFor="let item of estimate.estimate.boards; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ estimate.company.terminology.boards }} - ({{ item.length }}{{
+                estimate.company.measurement.symbol }} x {{ item.width }}{{
+                estimate.company.measurement.symbol }}) - Height ({{ item.height
+                }}{{ estimate.company.measurement.symbol }})
+              </td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ estimate.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+            <!-- HIRE -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ estimate.company.terminology.hire }} - ({{
+                estimate.estimate.hire.daysStanding }} days)
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{ estimate.company.currency.symbol }} {{
+                estimate.estimate.hire.total | number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- LABOR -->
+            <tr *ngIf="estimate.estimate.labour.length > 0">
+              <th class="text-center" scope="row">2</th>
+              <td colspan="3">Labor</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of estimate.estimate.labour; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.type.name }} - {{ item.rate.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ estimate.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+            <!-- ADDITIONALS -->
+            <tr *ngIf="estimate.estimate.additionals.length > 0">
+              <th class="text-center" scope="row">3</th>
+              <td colspan="3">Additionals</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of estimate.estimate.additionals; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ estimate.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+          </tbody>
+          <!-- FOOTER TOTALS -->
+          <tfoot>
+            <tr>
+              <th class="text-end" colspan="2" scope="col">Subtotal</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ estimate.company.currency.symbol }} {{
+                estimate.estimate.subtotal | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="2" scope="col">
+                Discount ({{ estimate.estimate.discountPercentage }}%)
+              </th>
+              <th class="text-end text-danger" colspan="2" scope="col">
+                - {{ estimate.company.currency.symbol }} {{
+                estimate.estimate.discount | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr *ngIf="estimate.company.salesTax > 0">
+              <th class="text-end" colspan="2" scope="col">
+                Sales Tax ({{ estimate.company.salesTax }}%)
+              </th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ estimate.company.currency.symbol }} {{ estimate.estimate.tax
+                | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr *ngIf="estimate.company.vat > 0">
+              <th class="text-end" colspan="2" scope="col">
+                VAT ({{ estimate.company.vat }}%)
+              </th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ estimate.company.currency.symbol }} {{ estimate.estimate.vat
+                | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="2" scope="col">Total</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ estimate.company.currency.symbol }} {{
+                estimate.estimate.total | number: "0.2-2" }}
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </ion-col>
+      <ion-col size="12" *ngIf="requestUpdate">
+        <app-input-text
+          [textarea]="true"
+          title="Message"
+          placeholder="Enter your message here"
+          (fieldChange)="message = $event"
+        ></app-input-text>
+      </ion-col>
+      <ion-col size="12" class="text-end" *ngIf="!estimate.approved">
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+        <ion-button
+          shape="round"
+          color="primary"
+          *ngIf="!loading"
+          (click)="update('update', estimate)"
+        >
+          Request Update
+        </ion-button>
+        <ion-button
+          shape="round"
+          color="success"
+          *ngIf="!loading"
+          (click)="update('approve',estimate)"
+        >
+          Approve
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
 </ion-content>

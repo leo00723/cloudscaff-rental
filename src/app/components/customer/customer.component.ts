@@ -31,6 +31,7 @@ export class CustomerComponent {
         city: [this.customerData.city, Validators.required],
         zip: [this.customerData.zip],
         regNumber: [this.customerData.regNumber],
+        vatNum: [this.customerData.vatNum],
         country: [this.customerData.country, Validators.required],
       });
     }
@@ -48,6 +49,7 @@ export class CustomerComponent {
       city: ['', Validators.required],
       zip: [''],
       regNumber: [''],
+      vatNum: [''],
       country: ['', Validators.required],
     });
   }

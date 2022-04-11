@@ -11,4 +11,5 @@ export interface Customer {
   country?: string;
   company?: string;
   regNumber?: string;
+  vatNum?: string;
 }
