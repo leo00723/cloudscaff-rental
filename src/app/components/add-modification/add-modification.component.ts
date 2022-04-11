@@ -119,7 +119,6 @@ export class AddModificationComponent implements OnInit, OnDestroy {
 
     if (this.isEdit) {
       this.modification = { ...this.modification };
-      console.log(this.modification);
       this.initEditForm();
       this.show = 'editCustomer';
     } else {
@@ -845,7 +844,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
-        rate: [this.modification.scaffold.rate, Validators.required],
+        rate: [this.modification.scaffold.rate, Validators.nullValidator],
         length: [
           this.modification.scaffold.length,
           [Validators.required, Validators.min(1)],
@@ -858,19 +857,19 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           this.modification.scaffold.height,
           [Validators.required, Validators.min(1)],
         ],
-        level: [0, [Validators.nullValidator]],
+        level: [0, Validators.nullValidator],
         breakdown: [
           this.modification.scaffold.breakdown,
-          [Validators.nullValidator],
+          Validators.nullValidator,
         ],
         total: [this.modification.scaffold.total],
       }),
       boards: this.masterSvc.fb().array([]),
       hire: this.masterSvc.fb().group({
-        rate: [this.modification.hire.rate, Validators.required],
+        rate: [this.modification.hire.rate, Validators.nullValidator],
         daysStanding: [
           this.modification.hire.daysStanding,
-          [Validators.required, Validators.min(1)],
+          [Validators.min(1)],
         ],
         total: [this.modification.hire.total],
       }),
@@ -896,7 +895,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     });
     this.modification.boards.forEach((b) => {
       const board = this.masterSvc.fb().group({
-        rate: [b.rate, Validators.required],
+        rate: [b.rate],
         length: [b.length, [Validators.required, Validators.min(1)]],
         width: [b.width, [Validators.required, Validators.min(1)]],
         height: [b.height, [Validators.required, Validators.min(1)]],
@@ -910,7 +909,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         type: [l.type, Validators.required],
         hours: [l.hours, Validators.required],
         days: [l.days, Validators.required],
-        rate: [l.rate, [Validators.required]],
+        rate: [l.rate],
         qty: [l.qty, Validators.required],
         total: [l.total],
       });
@@ -918,7 +917,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     });
     this.modification.additionals.forEach((add) => {
       const additional = this.masterSvc.fb().group({
-        rate: [add.rate, Validators.required],
+        rate: [add.rate],
         qty: [add.qty, [Validators.required, Validators.min(1)]],
         name: [add.name, Validators.required],
         daysStanding: [
@@ -960,7 +959,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         total: [0],
       }),
       hire: this.masterSvc.fb().group({
-        rate: [''],
+        rate: ['', Validators.nullValidator],
         daysStanding: ['', [Validators.min(1)]],
         total: [0],
       }),

@@ -77,7 +77,7 @@ export class ViewScaffoldPage implements OnInit {
         `company/${this.ids[0]}/modifications`,
         'scaffoldId',
         '==',
-        this.ids[1],
+        this.ids[2],
         'date',
         'desc'
       ) as Observable<Modification[]>;
@@ -148,11 +148,12 @@ export class ViewScaffoldPage implements OnInit {
     });
     return await modal.present();
   }
-  async viewModification(modification: Modification) {
+  async viewModification(modification: Modification, scaffold: Scaffold) {
     if (modification.status === 'pending') {
       const modal = await this.masterSvc.modal().create({
         component: AddModificationComponent,
         componentProps: {
+          value: scaffold,
           modification,
           isEdit: true,
         },

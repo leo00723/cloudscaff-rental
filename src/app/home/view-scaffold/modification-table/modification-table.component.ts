@@ -12,7 +12,6 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
-import { Estimate } from 'src/app/models/estimate.model';
 import { Modification } from 'src/app/models/modification.model';
 
 @Component({
@@ -22,13 +21,16 @@ import { Modification } from 'src/app/models/modification.model';
 })
 export class ModificationTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<Estimate>();
-  modifications$: Observable<Estimate[]>;
-  temp$: Observable<Estimate[]>;
+  @Output() selectedItem = new EventEmitter<Modification>();
+  modifications$: Observable<Modification[]>;
+  temp$: Observable<Modification[]>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
   @Input() set value(modifications: Observable<Modification[]>) {
+    modifications.subscribe((data) => {
+      console.log(data);
+    });
     this.temp$ = modifications;
     this.modifications$ = modifications;
   }

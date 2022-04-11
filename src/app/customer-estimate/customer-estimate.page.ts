@@ -70,7 +70,7 @@ export class CustomerEstimatePage {
       );
   }
 
-  async update(type: 'approve' | 'reject' | 'update', data) {
+  async update(type: 'approve' | 'reject' | 'update' | 'negotiate', data) {
     switch (type) {
       case 'approve':
         {
@@ -120,7 +120,89 @@ export class CustomerEstimatePage {
           this.loading = false;
         }
         break;
-      case 'update': {
+      case 'update':
+        {
+          if (this.requestUpdate) {
+            if (this.message.length > 0) {
+              this.loading = true;
+              const emailData = {
+                to: data.company.email,
+                template: {
+                  name: 'share',
+                  data: {
+                    title: `Hey ${data.company.name}, ${data.estimate.customer.name} requested an update on estimate ${data.estimate.code} with the following message.`,
+                    message: this.message,
+                    btnText: 'View Estimate',
+                    link: `https://app.cloudscaff.com/viewEstimate/${this.ids[0]}-${this.ids[1]}`,
+                    subject: `${data.estimate.customer.name} requested an update on the estimate ${data.estimate.code}.`,
+                  },
+                },
+              };
+              await this.editService.addDocument(
+                'mail',
+                JSON.parse(JSON.stringify(emailData))
+              );
+              this.notificationSvc.toast(
+                'Request sent successfully',
+                'success'
+              );
+              this.requestUpdate = false;
+              this.message = '';
+              this.loading = false;
+            } else {
+              this.notificationSvc.toast(
+                'Please enter a message',
+                'warning',
+                3000
+              );
+            }
+          } else {
+            this.requestUpdate = true;
+          }
+        }
+        break;
+      case 'negotiate':
+        {
+          if (this.requestUpdate) {
+            if (this.message.length > 0) {
+              this.loading = true;
+              const emailData = {
+                to: data.company.email,
+                template: {
+                  name: 'share',
+                  data: {
+                    title: `Hey ${data.company.name}, ${data.estimate.customer.name} requested a negotiation on estimate ${data.estimate.code} with the following message.`,
+                    message: this.message,
+                    btnText: 'View Estimate',
+                    link: `https://app.cloudscaff.com/viewEstimate/${this.ids[0]}-${this.ids[1]}`,
+                    subject: `${data.estimate.customer.name} requested a negotiation on the estimate ${data.estimate.code}.`,
+                  },
+                },
+              };
+              await this.editService.addDocument(
+                'mail',
+                JSON.parse(JSON.stringify(emailData))
+              );
+              this.notificationSvc.toast(
+                'Request sent successfully',
+                'success'
+              );
+              this.requestUpdate = false;
+              this.message = '';
+              this.loading = false;
+            } else {
+              this.notificationSvc.toast(
+                'Please enter a message',
+                'warning',
+                3000
+              );
+            }
+          } else {
+            this.requestUpdate = true;
+          }
+        }
+        break;
+      case 'reject': {
         if (this.requestUpdate) {
           if (this.message.length > 0) {
             this.loading = true;
@@ -129,11 +211,11 @@ export class CustomerEstimatePage {
               template: {
                 name: 'share',
                 data: {
-                  title: `Hey ${data.company.name}, ${data.estimate.customer.name} requested an update on estimate ${data.estimate.code} with the following message.`,
+                  title: `Hey ${data.company.name}, ${data.estimate.customer.name} rejected the estimate ${data.estimate.code} with the following message.`,
                   message: this.message,
                   btnText: 'View Estimate',
                   link: `https://app.cloudscaff.com/viewEstimate/${this.ids[0]}-${this.ids[1]}`,
-                  subject: `${data.estimate.customer.name} requested an update on the estimate ${data.estimate.code}.`,
+                  subject: `${data.estimate.customer.name} rejected the estimate ${data.estimate.code}.`,
                 },
               },
             };

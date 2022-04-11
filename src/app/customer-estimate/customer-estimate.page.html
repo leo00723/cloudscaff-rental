@@ -306,6 +306,22 @@
         ></ion-progress-bar>
         <ion-button
           shape="round"
+          color="danger"
+          *ngIf="!loading"
+          (click)="update('reject',estimate)"
+        >
+          Reject
+        </ion-button>
+        <ion-button
+          shape="round"
+          color="dark"
+          *ngIf="!loading"
+          (click)="update('negotiate',estimate)"
+        >
+          Negotiate
+        </ion-button>
+        <ion-button
+          shape="round"
           color="primary"
           *ngIf="!loading"
           (click)="update('update', estimate)"
@@ -315,7 +331,7 @@
         <ion-button
           shape="round"
           color="success"
-          *ngIf="!loading"
+          *ngIf="!loading && !requestUpdate"
           (click)="update('approve',estimate)"
         >
           Approve
