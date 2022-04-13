@@ -23,6 +23,7 @@ export interface Company {
   currency?: UnitData;
   terminology?: Terminology;
   totalEstimates?: number;
+  totalInvoices?: number;
   totalSites?: number;
   users?: string[];
   vat?: number;

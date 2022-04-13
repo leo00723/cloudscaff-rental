@@ -5,9 +5,16 @@ import { ViewScaffoldPageRoutingModule } from './view-scaffold-routing.module';
 import { ViewScaffoldPage } from './view-scaffold.page';
 import { HandoverTableComponent } from './handover-table/handover-table.component';
 import { ModificationTableComponent } from './modification-table/modification-table.component';
+import { InvoiceTableComponent } from './invoice-table/invoice-table.component';
 
 @NgModule({
   imports: [ComponentsModule, ViewScaffoldPageRoutingModule],
-  declarations: [ViewScaffoldPage, InspectionTableComponent, HandoverTableComponent, ModificationTableComponent],
+  declarations: [
+    ViewScaffoldPage,
+    InspectionTableComponent,
+    HandoverTableComponent,
+    ModificationTableComponent,
+    InvoiceTableComponent,
+  ],
 })
 export class ViewScaffoldPageModule {}

@@ -41,6 +41,9 @@ import { ModificationSummaryComponent } from './modification-summary/modificatio
 import { ShareDocumentComponent } from './share-document/share-document.component';
 import { AcceptModificationComponent } from './accept-modification/accept-modification.component';
 import { ViewModificationComponent } from './view-modification/view-modification.component';
+import { AddInvoiceComponent } from './add-invoice/add-invoice.component';
+import { InvoiceSummaryComponent } from './invoice-summary/invoice-summary.component';
+import { AddPaymentComponent } from './add-payment/add-payment.component';
 
 const COMPONENTS = [
   AddInspectionComponent,
@@ -76,6 +79,9 @@ const COMPONENTS = [
   ShareDocumentComponent,
   ModificationSummaryComponent,
   AcceptModificationComponent,
+  ViewModificationComponent,
+  AddInvoiceComponent,
+  InvoiceSummaryComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -90,8 +96,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, ViewModificationComponent],
+  declarations: [COMPONENTS, AddPaymentComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, ViewModificationComponent],
+  exports: [IMPORTS, COMPONENTS, AddPaymentComponent],
 })
 export class ComponentsModule {}

@@ -56,6 +56,13 @@ const routes: Routes = [
         (m) => m.CustomerEstimatePageModule
       ),
   },
+  {
+    path: 'viewInvoice/:id',
+    loadChildren: () =>
+      import('./customer-invoice/customer-invoice.module').then(
+        (m) => m.CustomerInvoicePageModule
+      ),
+  },
 
   {
     path: '**',

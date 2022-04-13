@@ -5,33 +5,39 @@
         title="Customer name"
         [form]="form"
         controlName="name"
+        [readonly]="readOnly"
       ></app-input-reactive>
       <app-input-reactive
         title="Email address"
         [form]="form"
         controlName="email"
+        [readonly]="readOnly"
       ></app-input-reactive>
       <app-input-reactive
         title="Representative"
         [form]="form"
         controlName="rep"
+        [readonly]="readOnly"
       ></app-input-reactive>
       <app-input-reactive
         title="Contact Number"
         [form]="form"
         controlName="phone"
+        [readonly]="readOnly"
       ></app-input-reactive>
       <app-input-reactive
         title="Registration Number"
         [optional]="true"
         [form]="form"
         controlName="regNumber"
+        [readonly]="readOnly"
       ></app-input-reactive>
       <app-input-reactive
         title="VAT Number"
         [optional]="true"
         [form]="form"
         controlName="vatNum"
+        [readonly]="readOnly"
       ></app-input-reactive>
     </ion-col>
     <ion-col size="12" sizeXl="6">
@@ -39,30 +45,39 @@
         *ngIf="isCreate || isUpdate"
         (addressData)="updateAddress($event)"
       ></app-address-search>
-      <app-input-reactive title="Address" [form]="form" controlName="address">
+      <app-input-reactive
+        title="Address"
+        [form]="form"
+        controlName="address"
+        [readonly]="readOnly"
+      >
       </app-input-reactive>
       <app-input-reactive
         title="suburb"
         [form]="form"
         controlName="suburb"
         [optional]="true"
+        [readonly]="readOnly"
       >
       </app-input-reactive>
       <app-input-reactive
         title="State/City"
         [form]="form"
         controlName="city"
+        [readonly]="readOnly"
       ></app-input-reactive>
       <app-input-reactive
         title="Zip"
         [form]="form"
         controlName="zip"
         [optional]="true"
+        [readonly]="readOnly"
       ></app-input-reactive>
       <app-input-reactive
         title="Country"
         [form]="form"
         controlName="country"
+        [readonly]="readOnly"
       ></app-input-reactive>
     </ion-col>
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>

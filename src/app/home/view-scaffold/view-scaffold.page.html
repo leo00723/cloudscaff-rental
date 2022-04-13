@@ -125,11 +125,11 @@
         </ng-template>
       </div>
       <div *ngSwitchCase="'invoices'">
-        <app-modification-table
-          [value]="modifications$"
-          *ngIf="modifications$ | async else loading"
-          (selectedItem)="viewModification($event,scaffold)"
-        ></app-modification-table>
+        <app-invoice-table
+          [value]="invoices$"
+          *ngIf="invoices$ | async else loading"
+          (selectedItem)="viewInvoice($event,scaffold)"
+        ></app-invoice-table>
         <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button (click)="addInvoice(scaffold)">
             <ion-icon name="add"></ion-icon>

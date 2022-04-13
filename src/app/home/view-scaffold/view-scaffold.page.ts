@@ -4,6 +4,7 @@ import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
 import { AddHandoverComponent } from 'src/app/components/add-handover/add-handover.component';
 import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
+import { AddInvoiceComponent } from 'src/app/components/add-invoice/add-invoice.component';
 import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
@@ -11,6 +12,7 @@ import { ViewModificationComponent } from 'src/app/components/view-modification/
 import { Company } from 'src/app/models/company.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
+import { Invoice } from 'src/app/models/invoice.model';
 import { Modification } from 'src/app/models/modification.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { User } from 'src/app/models/user.model';
@@ -28,6 +30,7 @@ export class ViewScaffoldPage implements OnInit {
   inspections$: Observable<Inspection[]>;
   handovers$: Observable<Handover[]>;
   modifications$: Observable<Modification[]>;
+  invoices$: Observable<Invoice[]>;
   active = 'overview';
   ids = [];
   constructor(
@@ -79,6 +82,16 @@ export class ViewScaffoldPage implements OnInit {
         'date',
         'desc'
       ) as Observable<Modification[]>;
+    this.invoices$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/invoices`,
+        'scaffoldId',
+        '==',
+        this.ids[2],
+        'date',
+        'desc'
+      ) as Observable<Invoice[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -123,7 +136,7 @@ export class ViewScaffoldPage implements OnInit {
   }
   async addInvoice(scaffold: Scaffold) {
     const modal = await this.masterSvc.modal().create({
-      component: AddModificationComponent,
+      component: AddInvoiceComponent,
       componentProps: {
         value: scaffold,
       },
@@ -180,6 +193,35 @@ export class ViewScaffoldPage implements OnInit {
         },
         showBackdrop: false,
         id: 'viewModification',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    }
+  }
+  async viewInvoice(invoice: Invoice, scaffold: Scaffold) {
+    if (
+      invoice.status.startsWith('pending') ||
+      invoice.status.startsWith('updated')
+    ) {
+      const modal = await this.masterSvc.modal().create({
+        component: AddInvoiceComponent,
+        componentProps: {
+          value: invoice,
+          isEdit: true,
+        },
+        showBackdrop: false,
+        id: 'addInvoice',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    } else {
+      const modal = await this.masterSvc.modal().create({
+        component: ViewModificationComponent,
+        componentProps: {
+          invoice,
+        },
+        showBackdrop: false,
+        id: 'viewInvoice',
         cssClass: 'fullscreen',
       });
       return await modal.present();

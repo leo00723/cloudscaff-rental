@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
-import { Estimate } from 'src/app/models/estimate.model';
+import { Invoice } from 'src/app/models/invoice.model';
 import { Term } from 'src/app/models/term.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { ShareDocumentComponent } from '../share-document/share-document.component';
 
 @Component({
-  selector: 'app-estimate-summary',
-  templateUrl: './estimate-summary.component.html',
+  selector: 'app-invoice-summary',
+  templateUrl: './invoice-summary.component.html',
+  styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EstimateSummaryComponent {
-  @Input() estimate: Estimate;
+export class InvoiceSummaryComponent {
+  @Input() invoice: Invoice;
   @Input() canDownload = false;
   terms$: Observable<Term>;
   company: Company;
@@ -22,36 +22,36 @@ export class EstimateSummaryComponent {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.terms$ = this.masterSvc
       .edit()
-      .getDocById(`company/${this.company.id}/terms`, 'Estimate');
+      .getDocById(`company/${this.company.id}/terms`, 'Invoice');
   }
   async download(terms: Term | null) {
-    const sharedEstimate = {
-      estimate: this.estimate,
+    const sharedInvoice = {
+      invoice: this.invoice,
       company: this.company,
       terms: terms,
     };
     await this.masterSvc
       .edit()
       .setDoc(
-        'sharedEstimates',
-        { ...sharedEstimate, cc: [], email: [this.estimate.company.email] },
-        `${this.company.id}-${this.estimate.id}`
+        'sharedInvoices',
+        { ...sharedInvoice, cc: [], email: [this.invoice.company.email] },
+        `${this.company.id}-${this.invoice.id}`
       );
-    const pdf = await this.masterSvc
-      .pdf()
-      .generateEstimate(this.estimate, this.company, terms);
-    this.masterSvc.handlePdf(pdf, this.estimate.code);
+    // const pdf = await this.masterSvc
+    //   .pdf()
+    //   .generateInvoice(this.invoice, this.company, terms);
+    // this.masterSvc.handlePdf(pdf, this.invoice.code);
   }
   async share(terms: Term | null) {
-    const sharedEstimate = {
-      estimate: this.estimate,
+    const sharedInvoice = {
+      invoice: this.invoice,
       company: this.company,
       terms: terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,
       componentProps: {
-        data: { type: 'estimate', doc: sharedEstimate },
+        data: { type: 'invoice', doc: sharedInvoice },
       },
       showBackdrop: true,
       id: 'shareDocument',

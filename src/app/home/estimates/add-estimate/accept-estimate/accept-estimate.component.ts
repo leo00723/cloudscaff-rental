@@ -4,6 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
+import { Invoice } from 'src/app/models/invoice.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
@@ -82,6 +83,36 @@ export class AcceptEstimateComponent implements OnInit {
           .edit()
           .addDocument(`company/${this.company.id}/scaffolds`, scaffold);
         this.estimate.scaffoldId = data.id;
+        const company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+        let invoice: Invoice = {};
+        const code = `INV${new Date().toLocaleDateString('en', {
+          year: '2-digit',
+        })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
+          .toString()
+          .padStart(6, '0')}`;
+        Object.assign(invoice, {
+          ...this.estimate,
+          code: code,
+          id: '',
+          estimateCode: this.estimate.code,
+          estimateId: this.estimate.id,
+          date: new Date(),
+          status: 'pending-Not Sent',
+          totalOutstanding: this.estimate.total,
+          totalPaid: 0,
+          deposit: 0,
+          depositType: 'Percent',
+          depositTotal: 'Percent',
+        });
+
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalInvoices: increment(1),
+        });
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/invoices`, invoice);
 
         await this.masterSvc
           .edit()
@@ -158,6 +189,8 @@ export class AcceptEstimateComponent implements OnInit {
         date: new Date(),
         totalInspections: 0,
         totalHandovers: 0,
+        totalModifications: 0,
+        totalInvoices: 1,
         users: [],
         status: 'pending-Work In Progress',
       });

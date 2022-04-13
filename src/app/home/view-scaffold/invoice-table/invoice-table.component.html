@@ -1,0 +1,90 @@
+<ion-searchbar
+  debounce="250"
+  mode="ios"
+  placeholder="Search by code, company, site name or total"
+  (ionChange)="updateFilter($event)"
+>
+</ion-searchbar>
+
+<ngx-datatable
+  class="bootstrap striped rounded-lg"
+  [limit]="15"
+  [rows]="temp$ | async"
+  [rowHeight]="50"
+  [columnMode]="'force'"
+  [sortType]="sortType.multi"
+  [headerHeight]="50"
+  [footerHeight]="50"
+  [selectionType]="selectionType.single"
+  trackByProp="code"
+  [scrollbarH]="true"
+  (select)="onSelect($event)"
+  [selected]="selected"
+>
+  <ngx-datatable-column
+    name="Code"
+    [checkboxable]="false"
+  ></ngx-datatable-column>
+  <ngx-datatable-column name="Site Name"></ngx-datatable-column>
+  <ngx-datatable-column
+    name="Date Created"
+    prop="date"
+    cellClass="text-center"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | date: "dd MMM yyyy" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total Amount"
+    prop="total"
+    cellClass="text-end"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.company.currency }} {{ value | number: "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total Paid"
+    prop="totalPaid"
+    cellClass="text-end"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.company.currency }} {{ value | number: "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total Outstanding"
+    prop="totalOutstanding"
+    cellClass="text-end"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.company.currency }} {{ value | number: "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total Due"
+    prop="depositTotal"
+    cellClass="text-end"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.company.currency }} {{ value | number: "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Status"
+    cellClass="text-center"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-badge [color]="getStatus(value)" mode="ios">{{
+        value.split("-")[1]
+      }}</ion-badge>
+    </ng-template>
+  </ngx-datatable-column>
+</ngx-datatable>

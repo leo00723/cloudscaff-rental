@@ -14,6 +14,7 @@ export class CustomerComponent {
   @Input() isUpdate = false;
   @Input() isDelete = false;
   @Input() isCreate = true;
+  @Input() readOnly = false;
   @Input() companyId: string;
   @Input() set customer(val: Customer) {
     this.customerData = val;

@@ -11,6 +11,7 @@
           <h6>Representative:</h6>
           <h6>Contact No:</h6>
           <h6>Registration No:</h6>
+          <h6>VAT No:</h6>
           <br />
           <h6>Address:</h6>
         </ion-label>
@@ -30,7 +31,10 @@
             {{ customer.phone }}
           </h6>
           <h6>
-            {{ customer.regNumber }}
+            {{ customer.regNumber ? customer.regNumber : "N/A" }}
+          </h6>
+          <h6>
+            {{ customer.vatNum ? customer.vatNum : "N/A" }}
           </h6>
           <br />
           <h6>
@@ -55,6 +59,7 @@
           <h6>Representative:</h6>
           <h6>Contact No:</h6>
           <h6>Registration No:</h6>
+          <h6>VAT No:</h6>
           <br />
           <h6>Address:</h6>
         </ion-label>
@@ -72,7 +77,10 @@
             {{ company.phone }}
           </h6>
           <h6>
-            {{ company.regNumber }}
+            {{ company.regNumber ? company.regNumber : "N/A" }}
+          </h6>
+          <h6>
+            {{ company.vatNum ? company.vatNum : "N/A" }}
           </h6>
           <br />
           <h6>

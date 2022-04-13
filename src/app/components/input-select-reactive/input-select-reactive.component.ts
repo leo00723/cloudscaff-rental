@@ -17,6 +17,7 @@ export class InputSelectReactiveComponent {
   @Input() selectedText: string;
   @Input() type = 'text';
   @Input() controlName: string;
+  @Input() interface: 'alert' | 'action-sheet' | 'popover' | 'modal' = 'alert';
   @Input() form;
   @Output() fieldChange = new EventEmitter<any>();
 

@@ -1,7 +1,7 @@
 <ion-row class="py-2">
   <ion-col sizeMd="6" size="4">
     <ion-text>
-      <h4>Estimate</h4>
+      <h4>Invoice</h4>
     </ion-text>
   </ion-col>
   <ion-col sizeMd="6" size="8" class="text-end">
@@ -20,7 +20,7 @@
         fill="clear"
         color="primary"
       >
-        <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
+        <ion-icon name="share-social-outline"></ion-icon>&nbsp;Share
       </ion-button>
     </ng-container>
     <ng-template #noTerms>
@@ -38,7 +38,7 @@
         fill="clear"
         color="primary"
       >
-        <ion-icon name="share-social-outline"></ion-icon>&nbsp;Share
+        <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
       </ion-button>
     </ng-template>
   </ion-col>
@@ -46,19 +46,35 @@
     <ion-label>
       <h6>Code:</h6>
       <h6>Site name:</h6>
+      <h6>Scaffold Code:</h6>
+      <h6>Estimate Code:</h6>
+      <h6>Purchase Order:</h6>
+      <h6>Work Order:</h6>
       <h6>Date Issued:</h6>
     </ion-label>
   </ion-col>
   <ion-col size="6">
     <ion-label>
       <h6>
-        {{ estimate.code }}
+        {{ invoice.code }}
       </h6>
       <h6>
-        {{ estimate.siteName }}
+        {{ invoice.siteName }}
       </h6>
       <h6>
-        {{ estimate.date | date }}
+        {{ invoice.scaffoldCode }}
+      </h6>
+      <h6>
+        {{ invoice.estimateCode }}
+      </h6>
+      <h6>
+        {{ invoice.poNumber ? invoice.poNumber : "N/A" }}
+      </h6>
+      <h6>
+        {{ invoice.woNumber ? invoice.woNumber : "N/A" }}
+      </h6>
+      <h6>
+        {{ invoice.startDate | date }}
       </h6>
     </ion-label>
   </ion-col>
@@ -66,7 +82,7 @@
 <ion-item-divider mode="md"></ion-item-divider>
 
 <app-company-info-detail
-  [customer]="estimate.customer"
+  [customer]="invoice.customer"
 ></app-company-info-detail>
 
 <ion-item-divider mode="md"></ion-item-divider>
@@ -78,7 +94,7 @@
     </ion-label>
   </ion-col>
   <ion-col size="12">
-    <p [innerText]="estimate.message"></p>
+    <p [innerText]="invoice.message"></p>
   </ion-col>
 </ion-row>
 <ion-row>
@@ -102,22 +118,22 @@
           <th class="text-center" scope="row"></th>
           <td>
             {{ company.terminology.scaffold }} Level
-            {{ estimate.scaffold.level ? estimate.scaffold.level : 0 }} - ({{
-              estimate.scaffold.length
-            }}{{ company.measurement.symbol }} x {{ estimate.scaffold.width
-            }}{{ company.measurement.symbol }} x {{ estimate.scaffold.height
+            {{ invoice.scaffold.level ? invoice.scaffold.level : 0 }} - ({{
+              invoice.scaffold.length
+            }}{{ company.measurement.symbol }} x {{ invoice.scaffold.width
+            }}{{ company.measurement.symbol }} x {{ invoice.scaffold.height
             }}{{ company.measurement.symbol }})
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ estimate.scaffold.total | number: "0.2-2" }}
+            {{ invoice.scaffold.total | number: "0.2-2" }}
           </td>
         </tr>
         <!-- SCAFFOLD ATTACHMENTS -->
         <tr
           class="small"
-          *ngFor="let item of estimate.attachments; let i = index"
+          *ngFor="let item of invoice.attachments; let i = index"
         >
           <th class="text-center" scope="row"></th>
           <td>
@@ -134,7 +150,7 @@
           </td>
         </tr>
         <!-- BOARDS -->
-        <tr class="small" *ngFor="let item of estimate.boards; let i = index">
+        <tr class="small" *ngFor="let item of invoice.boards; let i = index">
           <th class="text-center" scope="row"></th>
           <td>
             {{ company.terminology.boards }} - ({{ item.length
@@ -152,21 +168,21 @@
         <tr class="small">
           <th class="text-center" scope="row"></th>
           <td>
-            {{ company.terminology.hire }} - ({{ estimate.hire.daysStanding }}
+            {{ company.terminology.hire }} - ({{ invoice.hire.daysStanding }}
             days)
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ estimate.hire.total | number: "0.2-2" }}
+            {{ invoice.hire.total | number: "0.2-2" }}
           </td>
         </tr>
         <!-- LABOR -->
-        <tr *ngIf="estimate.labour.length > 0">
+        <tr *ngIf="invoice.labour.length > 0">
           <th class="text-center" scope="row">2</th>
           <td colspan="3">Labor</td>
         </tr>
-        <tr class="small" *ngFor="let item of estimate.labour; let i = index">
+        <tr class="small" *ngFor="let item of invoice.labour; let i = index">
           <th class="text-center" scope="row"></th>
           <td>{{ item.type.name }} - {{ item.rate.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
@@ -175,13 +191,13 @@
           </td>
         </tr>
         <!-- ADDITIONALS -->
-        <tr *ngIf="estimate.additionals.length > 0">
+        <tr *ngIf="invoice.additionals.length > 0">
           <th class="text-center" scope="row">3</th>
           <td colspan="3">Additionals</td>
         </tr>
         <tr
           class="small"
-          *ngFor="let item of estimate.additionals; let i = index"
+          *ngFor="let item of invoice.additionals; let i = index"
         >
           <th class="text-center" scope="row"></th>
           <td>{{ item.name }}</td>
@@ -197,16 +213,16 @@
           <th class="text-end" colspan="2" scope="col">Subtotal</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ estimate.subtotal | number: "0.2-2" }}
+            {{ invoice.subtotal | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="2" scope="col">
-            Discount ({{ estimate.discountPercentage }}%)
+            Discount ({{ invoice.discountPercentage }}%)
           </th>
           <th class="text-end text-danger" colspan="2" scope="col">
             - {{ company.currency.symbol }}
-            {{ estimate.discount | number: "0.2-2" }}
+            {{ invoice.discount | number: "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
@@ -214,7 +230,7 @@
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th class="text-end" colspan="2" scope="col">
-            {{ company.currency.symbol }} {{ estimate.tax | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.tax | number: "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
@@ -222,13 +238,34 @@
             VAT ({{ company.vat }}%)
           </th>
           <th class="text-end" colspan="2" scope="col">
-            {{ company.currency.symbol }} {{ estimate.vat | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.vat | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="2" scope="col">Total</th>
+          <th class="text-end" colspan="2" scope="col">Grand Total</th>
           <th class="text-end" colspan="2" scope="col">
-            {{ company.currency.symbol }} {{ estimate.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.total | number: "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="2" scope="col">Amount Paid</th>
+          <th class="text-end" colspan="2" scope="col">
+            {{ company.currency.symbol }}
+            {{ invoice.totalPaid | number: "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="2" scope="col">Amount Outstanding</th>
+          <th class="text-end" colspan="2" scope="col">
+            {{ company.currency.symbol }}
+            {{ invoice.totalOutstanding | number: "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="2" scope="col">Amount Due</th>
+          <th class="text-end" colspan="2" scope="col">
+            {{ company.currency.symbol }}
+            {{ invoice.depositTotal | number: "0.2-2" }}
           </th>
         </tr>
       </tfoot>
