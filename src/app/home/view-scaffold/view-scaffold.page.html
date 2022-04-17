@@ -27,6 +27,9 @@
         <ion-segment-button value="invoices">
           <ion-label>Invoices</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="payments">
+          <ion-label>Payments</ion-label>
+        </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
   </app-header>
@@ -135,6 +138,22 @@
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
         </ion-fab>
+        <ng-template #loading>
+          <div class="ion-padding">
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+          </div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'payments'">
+        <app-payments-table
+          [value]="payments$"
+          *ngIf="payments$ | async else loading"
+          (selectedItem)="viewPayment($event)"
+        ></app-payments-table>
+
         <ng-template #loading>
           <div class="ion-padding">
             <app-skeleton-text></app-skeleton-text>

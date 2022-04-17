@@ -37,10 +37,10 @@ export class InvoiceSummaryComponent {
         { ...sharedInvoice, cc: [], email: [this.invoice.company.email] },
         `${this.company.id}-${this.invoice.id}`
       );
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateInvoice(this.invoice, this.company, terms);
-    // this.masterSvc.handlePdf(pdf, this.invoice.code);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateInvoice(this.invoice, this.company, terms);
+    this.masterSvc.handlePdf(pdf, this.invoice.code);
   }
   async share(terms: Term | null) {
     const sharedInvoice = {

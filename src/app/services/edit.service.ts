@@ -142,6 +142,7 @@ export class EditService {
     ).pipe(
       map((data: any) => {
         return data.map((d: any) => {
+          console.log(d);
           if (d.date) return { ...d, date: d.date.toDate() };
           return d;
         });

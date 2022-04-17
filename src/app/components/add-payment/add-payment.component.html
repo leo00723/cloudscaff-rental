@@ -9,12 +9,12 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Enter Payment </ion-title>
+    <ion-title>{{ !isEdit ? "Enter Payment" : "View Payment" }} </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form name="estimate">
+  <form name="estimate" *ngIf="!isEdit">
     <ion-row>
       <ion-col size="12">
         <app-input-reactive
@@ -68,4 +68,50 @@
       </ion-col>
     </ion-row>
   </form>
+  <ion-row *ngIf="isEdit">
+    <ion-col size="12">
+      <app-input-text
+        title="Customer"
+        [value]="payment.customer"
+        [readonly]="true"
+      >
+      </app-input-text>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-text
+        title="Invoice"
+        [value]="payment.invoiceCode"
+        [readonly]="true"
+      >
+      </app-input-text>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-text
+        title="Date"
+        [value]="payment.date | date"
+        [readonly]="true"
+      >
+      </app-input-text>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-text
+        title="Total ({{ company.currency.symbol }})"
+        [value]="payment.total"
+        [readonly]="true"
+      >
+      </app-input-text>
+    </ion-col>
+    <ion-col size="12">
+      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+      <ion-button
+        size="block"
+        shape="round"
+        color="success"
+        *ngIf="!loading"
+        (click)="download()"
+      >
+        Download Invoice
+      </ion-button>
+    </ion-col>
+  </ion-row>
 </ion-content>

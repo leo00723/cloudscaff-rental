@@ -6,6 +6,7 @@ import { AddHandoverComponent } from 'src/app/components/add-handover/add-handov
 import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
 import { AddInvoiceComponent } from 'src/app/components/add-invoice/add-invoice.component';
 import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
+import { AddPaymentComponent } from 'src/app/components/add-payment/add-payment.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
 import { ViewModificationComponent } from 'src/app/components/view-modification/view-modification.component';
@@ -14,6 +15,7 @@ import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
 import { Invoice } from 'src/app/models/invoice.model';
 import { Modification } from 'src/app/models/modification.model';
+import { Payment } from 'src/app/models/payment.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -31,6 +33,7 @@ export class ViewScaffoldPage implements OnInit {
   handovers$: Observable<Handover[]>;
   modifications$: Observable<Modification[]>;
   invoices$: Observable<Invoice[]>;
+  payments$: Observable<Payment[]>;
   active = 'overview';
   ids = [];
   constructor(
@@ -92,6 +95,16 @@ export class ViewScaffoldPage implements OnInit {
         'date',
         'desc'
       ) as Observable<Invoice[]>;
+    this.payments$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/payments`,
+        'scaffoldId',
+        '==',
+        this.ids[2],
+        'date',
+        'desc'
+      ) as Observable<Payment[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -226,5 +239,18 @@ export class ViewScaffoldPage implements OnInit {
       });
       return await modal.present();
     }
+  }
+  async viewPayment(payment: Payment) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddPaymentComponent,
+      componentProps: {
+        payment,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'viewPayment',
+      cssClass: 'accent',
+    });
+    return await modal.present();
   }
 }
