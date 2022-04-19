@@ -107,13 +107,12 @@ export class AcceptEstimateComponent implements OnInit {
           depositTotal: 'Percent',
         });
 
-        await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalInvoices: increment(1),
-        });
         await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/invoices`, invoice);
-
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalInvoices: increment(1),
+        });
         await this.masterSvc
           .edit()
           .updateDoc(

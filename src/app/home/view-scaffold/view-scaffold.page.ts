@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
+import { AddCreditComponent } from 'src/app/components/add-credit/add-credit.component';
 import { AddHandoverComponent } from 'src/app/components/add-handover/add-handover.component';
 import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
 import { AddInvoiceComponent } from 'src/app/components/add-invoice/add-invoice.component';
@@ -11,6 +12,7 @@ import { HandoverSummaryComponent } from 'src/app/components/handover-summary/ha
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
 import { ViewModificationComponent } from 'src/app/components/view-modification/view-modification.component';
 import { Company } from 'src/app/models/company.model';
+import { Credit } from 'src/app/models/credit.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
 import { Invoice } from 'src/app/models/invoice.model';
@@ -34,6 +36,7 @@ export class ViewScaffoldPage implements OnInit {
   modifications$: Observable<Modification[]>;
   invoices$: Observable<Invoice[]>;
   payments$: Observable<Payment[]>;
+  credits$: Observable<Credit[]>;
   active = 'overview';
   ids = [];
   constructor(
@@ -105,6 +108,16 @@ export class ViewScaffoldPage implements OnInit {
         'date',
         'desc'
       ) as Observable<Payment[]>;
+    this.credits$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/credits`,
+        'scaffoldId',
+        '==',
+        this.ids[2],
+        'date',
+        'desc'
+      ) as Observable<Credit[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -155,6 +168,18 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'addInvoice',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async addCredit(scaffold: Scaffold) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddCreditComponent,
+      componentProps: {
+        value: scaffold,
+      },
+      showBackdrop: false,
+      id: 'addCredit',
       cssClass: 'fullscreen',
     });
     return await modal.present();
@@ -249,6 +274,19 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'viewPayment',
+      cssClass: 'accent',
+    });
+    return await modal.present();
+  }
+  async viewCredit(credit: Credit) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddPaymentComponent,
+      componentProps: {
+        credit,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'viewCredit',
       cssClass: 'accent',
     });
     return await modal.present();

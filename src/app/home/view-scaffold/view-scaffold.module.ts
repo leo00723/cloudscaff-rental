@@ -7,6 +7,7 @@ import { HandoverTableComponent } from './handover-table/handover-table.componen
 import { ModificationTableComponent } from './modification-table/modification-table.component';
 import { InvoiceTableComponent } from './invoice-table/invoice-table.component';
 import { PaymentsTableComponent } from './payments-table/payments-table.component';
+import { CreditTableComponent } from './credit-table/credit-table.component';
 
 @NgModule({
   imports: [ComponentsModule, ViewScaffoldPageRoutingModule],
@@ -17,6 +18,7 @@ import { PaymentsTableComponent } from './payments-table/payments-table.componen
     ModificationTableComponent,
     InvoiceTableComponent,
     PaymentsTableComponent,
+    CreditTableComponent,
   ],
 })
 export class ViewScaffoldPageModule {}

@@ -1,0 +1,167 @@
+<ion-row class="py-2">
+  <ion-col sizeMd="6" size="4">
+    <ion-text>
+      <h4>Credit Note</h4>
+    </ion-text>
+  </ion-col>
+  <ion-col sizeMd="6" size="8" class="text-end">
+    <ng-container *ngIf="canDownload">
+      <ng-container *ngIf="terms$ | async as terms; else noTerms">
+        <ion-button
+          size="small"
+          (click)="download(terms)"
+          fill="clear"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+        <ion-button
+          size="small"
+          (click)="share(terms)"
+          fill="clear"
+          color="primary"
+        >
+          <ion-icon name="share-social-outline"></ion-icon>&nbsp;Share
+        </ion-button>
+      </ng-container>
+      <ng-template #noTerms>
+        <ion-button
+          size="small"
+          (click)="download(null)"
+          fill="clear"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+        <ion-button
+          size="small"
+          (click)="share(null)"
+          fill="clear"
+          color="primary"
+        >
+          <ion-icon name="share-social-outline"></ion-icon>&nbsp;Share
+        </ion-button>
+      </ng-template></ng-container
+    >
+  </ion-col>
+  <ion-col size="6">
+    <ion-label>
+      <h6>Code:</h6>
+      <h6>Site name:</h6>
+      <h6>Date Issued:</h6>
+    </ion-label>
+  </ion-col>
+  <ion-col size="6">
+    <ion-label>
+      <h6>
+        {{ credit.code }}
+      </h6>
+      <h6>
+        {{ credit.siteName }}
+      </h6>
+      <h6>
+        {{ credit.date | date }}
+      </h6>
+    </ion-label>
+  </ion-col>
+</ion-row>
+<ion-item-divider mode="md"></ion-item-divider>
+
+<app-company-info-detail [customer]="credit.customer"></app-company-info-detail>
+
+<ion-item-divider mode="md"></ion-item-divider>
+
+<ion-row class="py-2">
+  <ion-col size="12">
+    <ion-label color="medium">
+      <h6>Message</h6>
+    </ion-label>
+  </ion-col>
+  <ion-col size="12">
+    <p [innerText]="credit.message"></p>
+  </ion-col>
+</ion-row>
+<ion-row>
+  <ion-col>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th class="text-center" scope="col">#</th>
+            <th class="text-center" scope="col">Code</th>
+            <th scope="col">Description</th>
+            <th class="text-center" scope="col">Qty</th>
+            <th class="text-center" scope="col">Unit</th>
+            <th class="text-end" scope="col">Rate</th>
+            <th class="text-end" scope="col">Discount</th>
+            <th class="text-end" scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="small"
+            *ngFor="let item of credit.additionals; let i = index"
+          >
+            <th class="text-center" scope="row">{{ i + 1 }}</th>
+            <th class="text-center" scope="row">{{ item.code }}</th>
+            <td [innerText]="item.name"></td>
+            <td class="text-center">{{ item.qty }}</td>
+            <td class="text-center">{{ item.unit }}</td>
+            <td class="text-end">
+              {{ company.currency.symbol }} {{ item.rate | number: "0.2-2" }}
+            </td>
+            <td class="text-end">
+              {{ company.currency.symbol }}
+              {{ item.discount | number: "0.2-2" }}
+            </td>
+            <td class="text-end">
+              {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            </td>
+          </tr>
+        </tbody>
+        <!-- FOOTER TOTALS -->
+        <tfoot>
+          <tr>
+            <th class="text-end" colspan="6" scope="col">Subtotal</th>
+            <th class="text-end" colspan="2" scope="col">
+              {{ company.currency.symbol }}
+              {{ credit.subtotal | number: "0.2-2" }}
+            </th>
+          </tr>
+          <tr>
+            <th class="text-end" colspan="6" scope="col">
+              Discount ({{ credit.discountPercentage }}%)
+            </th>
+            <th class="text-end text-danger" colspan="2" scope="col">
+              - {{ company.currency.symbol }}
+              {{ credit.discount | number: "0.2-2" }}
+            </th>
+          </tr>
+          <tr *ngIf="company.salesTax > 0">
+            <th class="text-end" colspan="6" scope="col">
+              Sales Tax ({{ company.salesTax }}%)
+            </th>
+            <th class="text-end" colspan="2" scope="col">
+              {{ company.currency.symbol }} {{ credit.tax | number: "0.2-2" }}
+            </th>
+          </tr>
+          <tr *ngIf="company.vat > 0">
+            <th class="text-end" colspan="6" scope="col">
+              VAT ({{ company.vat }}%)
+            </th>
+            <th class="text-end" colspan="2" scope="col">
+              {{ company.currency.symbol }} {{ credit.vat | number: "0.2-2" }}
+            </th>
+          </tr>
+          <tr>
+            <th class="text-end" colspan="6" scope="col">Total</th>
+            <th class="text-end" colspan="2" scope="col">
+              {{ company.currency.symbol }}
+              {{ credit.total | number: "0.2-2" }}
+            </th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </ion-col>
+</ion-row>

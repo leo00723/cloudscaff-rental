@@ -6,4 +6,8 @@ export interface AdditionalItem {
   rate?: RateProfile;
   qty?: string;
   daysStanding?: string;
+  code?: string;
+  unit?: string;
+  discount?: number;
+  discountPercentage?: number;
 }

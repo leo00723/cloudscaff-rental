@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Company } from 'src/app/models/company.model';
+import { Invoice } from 'src/app/models/invoice.model';
 import { Modification } from 'src/app/models/modification.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -56,6 +57,36 @@ export class AcceptModificationComponent {
               status: 'pending-Work In Progress',
             }
           );
+        const company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+        let invoice: Invoice = {};
+        const code = `INV${new Date().toLocaleDateString('en', {
+          year: '2-digit',
+        })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
+          .toString()
+          .padStart(6, '0')}`;
+        Object.assign(invoice, {
+          ...this.modification,
+          code: code,
+          id: '',
+          estimateCode: this.modification.code,
+          estimateId: this.modification.id,
+          date: new Date(),
+          status: 'pending-Not Sent',
+          totalOutstanding: this.modification.total,
+          totalPaid: 0,
+          deposit: 0,
+          depositType: 'Percent',
+          depositTotal: 'Percent',
+        });
+
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/invoices`, invoice);
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalInvoices: increment(1),
+        });
         await this.masterSvc
           .edit()
           .updateDoc(

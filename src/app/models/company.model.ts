@@ -24,6 +24,7 @@ export interface Company {
   terminology?: Terminology;
   totalEstimates?: number;
   totalInvoices?: number;
+  totalCredits?: number;
   totalSites?: number;
   users?: string[];
   vat?: number;
