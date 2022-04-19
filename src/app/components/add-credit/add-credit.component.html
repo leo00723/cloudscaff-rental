@@ -54,10 +54,19 @@
 
           <ion-col size="12">
             <app-input-reactive
-              title="Project Name"
-              controlName="siteName"
+              title="Site"
+              controlName="siteCode"
               [form]="form"
-              placeholder="Enter Project Name"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col size="12">
+            <app-input-reactive
+              title="Scaffold"
+              controlName="scaffoldCode"
+              [form]="form"
+              [readonly]="true"
             >
             </app-input-reactive>
           </ion-col>
@@ -284,7 +293,7 @@
             type="indeterminate"
             *ngIf="loading"
           ></ion-progress-bar>
-          <ion-col *ngIf="isEdit && credit.status === 'pending'">
+          <!-- <ion-col *ngIf="isEdit && credit.status === 'pending'">
             <ion-button
               size="block"
               shape="round"
@@ -293,12 +302,12 @@
               (click)="updateCredit('rejected')"
               >Rejected</ion-button
             >
-          </ion-col>
+          </ion-col> -->
           <ion-col class="text-end">
             <ion-button
               size="block"
               shape="round"
-              color="warning"
+              color="primary"
               *ngIf="isEdit && credit.status === 'pending'"
               (click)="updateCredit('pending')"
               >Update Credit Note</ion-button
@@ -311,7 +320,7 @@
               >Create Credit Note</ion-button
             >
           </ion-col>
-          <ion-col *ngIf="isEdit && credit.status === 'pending'">
+          <!-- <ion-col *ngIf="isEdit && credit.status === 'pending'">
             <ion-button
               size="block"
               shape="round"
@@ -321,7 +330,7 @@
             >
               Accepted
             </ion-button>
-          </ion-col>
+          </ion-col> -->
         </ion-row>
       </ion-grid>
     </form>

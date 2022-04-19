@@ -7,6 +7,7 @@ import { AcceptEstimateComponent } from 'src/app/home/estimates/add-estimate/acc
 import { Company } from 'src/app/models/company.model';
 import { Credit } from 'src/app/models/credit.model';
 import { Customer } from 'src/app/models/customer.model';
+import { Scaffold } from 'src/app/models/scaffold.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -17,6 +18,12 @@ import { UserState } from 'src/app/shared/user/user.state';
   templateUrl: './add-credit.component.html',
 })
 export class AddCreditComponent implements OnInit {
+  @Input() set scaffoldValue(val: Scaffold) {
+    if (val) {
+      Object.assign(this.scaffold, val);
+      this.initFrom();
+    }
+  }
   @Input() set value(val: Credit) {
     if (val) {
       Object.assign(this.credit, val);
@@ -36,7 +43,8 @@ export class AddCreditComponent implements OnInit {
     endDate: undefined,
     id: '',
     message: '',
-    siteName: '',
+    siteCode: '',
+    scaffoldCode: '',
     startDate: undefined,
     status: '',
     subtotal: 0,
@@ -51,6 +59,7 @@ export class AddCreditComponent implements OnInit {
     acceptedBy: '',
     rejectedBy: '',
   };
+  scaffold: Scaffold = {};
   user: User;
   company: Company;
   customers$: Observable<Customer[]>;
@@ -282,7 +291,7 @@ export class AddCreditComponent implements OnInit {
     const vat = totalAfterDiscount * (this.company.vat / 100);
     const total = totalAfterDiscount + tax + vat;
 
-    const code = `QUO${new Date().toLocaleDateString('en', {
+    const code = `CRE${new Date().toLocaleDateString('en', {
       year: '2-digit',
     })}${(this.company.totalCredits ? this.company.totalCredits + 1 : 1)
       .toString()
@@ -333,7 +342,10 @@ export class AddCreditComponent implements OnInit {
     this.form = this.masterSvc.fb().group({
       customer: [this.credit.customer, Validators.required],
       message: [this.credit.message, Validators.required],
-      siteName: [this.credit.siteName, Validators.required],
+      siteCode: [this.credit.siteCode, Validators.required],
+      siteId: [this.credit.siteId, Validators.required],
+      scaffoldCode: [this.credit.scaffoldCode, Validators.required],
+      scaffoldId: [this.credit.siteId, Validators.required],
       startDate: [this.credit.startDate, Validators.required],
       endDate: [this.credit.endDate, Validators.required],
       discountPercentage: [
@@ -369,7 +381,10 @@ export class AddCreditComponent implements OnInit {
     this.form = this.masterSvc.fb().group({
       customer: ['', Validators.required],
       message: ['', Validators.required],
-      siteName: ['', Validators.required],
+      siteCode: [this.scaffold.siteCode, Validators.required],
+      siteId: [this.scaffold.siteId, Validators.required],
+      scaffoldCode: [this.scaffold.code, Validators.required],
+      scaffoldId: [this.scaffold.id, Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
       discountPercentage: [

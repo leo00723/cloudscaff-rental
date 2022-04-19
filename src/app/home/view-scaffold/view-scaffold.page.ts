@@ -176,7 +176,7 @@ export class ViewScaffoldPage implements OnInit {
     const modal = await this.masterSvc.modal().create({
       component: AddCreditComponent,
       componentProps: {
-        value: scaffold,
+        scaffoldValue: scaffold,
       },
       showBackdrop: false,
       id: 'addCredit',
@@ -280,14 +280,14 @@ export class ViewScaffoldPage implements OnInit {
   }
   async viewCredit(credit: Credit) {
     const modal = await this.masterSvc.modal().create({
-      component: AddPaymentComponent,
+      component: AddCreditComponent,
       componentProps: {
-        credit,
+        value: credit,
         isEdit: true,
       },
       showBackdrop: false,
       id: 'viewCredit',
-      cssClass: 'accent',
+      cssClass: 'fullscreen',
     });
     return await modal.present();
   }

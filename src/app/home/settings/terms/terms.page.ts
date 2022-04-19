@@ -42,6 +42,11 @@ export class TermsPage {
       description: "Here you update T's & C's for your invoices.",
       path: 'Invoice',
     },
+    {
+      title: "Credit Note T's & C's",
+      description: "Here you update T's & C's for your credit notes.",
+      path: 'Credit',
+    },
   ];
   terms$: Observable<Term[] | any>;
   isLoading = true;

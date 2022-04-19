@@ -21,7 +21,7 @@
           fill="clear"
           color="primary"
         >
-          <ion-icon name="share-social-outline"></ion-icon>&nbsp;Share
+          <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
         </ion-button>
       </ng-container>
       <ng-template #noTerms>
@@ -39,7 +39,7 @@
           fill="clear"
           color="primary"
         >
-          <ion-icon name="share-social-outline"></ion-icon>&nbsp;Share
+          <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
         </ion-button>
       </ng-template></ng-container
     >
@@ -47,7 +47,8 @@
   <ion-col size="6">
     <ion-label>
       <h6>Code:</h6>
-      <h6>Site name:</h6>
+      <h6>Site Code:</h6>
+      <h6>Scaffold Code:</h6>
       <h6>Date Issued:</h6>
     </ion-label>
   </ion-col>
@@ -57,7 +58,10 @@
         {{ credit.code }}
       </h6>
       <h6>
-        {{ credit.siteName }}
+        {{ credit.siteCode }}
+      </h6>
+      <h6>
+        {{ credit.scaffoldCode }}
       </h6>
       <h6>
         {{ credit.date | date }}

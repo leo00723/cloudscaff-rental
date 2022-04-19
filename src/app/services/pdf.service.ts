@@ -9,6 +9,7 @@ import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Term } from 'src/app/models/term.model';
+import { Credit } from '../models/credit.model';
 import { Invoice } from '../models/invoice.model';
 const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 541.86 66.07"><defs><style>.cls-1{fill:#feb508;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><path class="cls-1" d="M67.87,66.07H3.34A3.31,3.31,0,0,1,0,62.77H0a3.31,3.31,0,0,1,3.31-3.31H67.87a3.31,3.31,0,0,0,3.31-3.3V33.79a3.31,3.31,0,0,0-3.31-3.31H24.4a3.3,3.3,0,0,1-3.3-3.3h0a3.31,3.31,0,0,1,3.3-3.31H67.87a9.91,9.91,0,0,1,9.91,9.92V56.16A9.91,9.91,0,0,1,67.87,66.07Z"/><path class="cls-1" d="M53.82,42.2H9.91A9.92,9.92,0,0,1,0,32.28V9.91A9.91,9.91,0,0,1,9.91,0H74.48a3.3,3.3,0,0,1,3.3,3.3h0a3.3,3.3,0,0,1-3.3,3.31H9.91a3.3,3.3,0,0,0-3.3,3.3V32.28a3.31,3.31,0,0,0,3.3,3.31H53.82a3.3,3.3,0,0,1,3.3,3.3h0A3.31,3.31,0,0,1,53.82,42.2Z"/><path class="cls-1" d="M275.51,24.55a2.35,2.35,0,0,1,2.35,2.35V47.42a7,7,0,0,1-7.05,7H244.91a7,7,0,0,1-7-7V26.83a2.36,2.36,0,0,1,2.35-2.35h0a2.35,2.35,0,0,1,2.35,2.35V47.4a2.36,2.36,0,0,0,2.35,2.35h25.91a2.36,2.36,0,0,0,2.35-2.35V26.9a2.35,2.35,0,0,1,2.34-2.35Z"/><path class="cls-1" d="M409.83,52.14a2.35,2.35,0,0,1-2.35,2.35H376.83a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H376.83a2.33,2.33,0,0,0-2.34,2.33V47.44a2.36,2.36,0,0,0,2.35,2.35h30.64a2.35,2.35,0,0,1,2.35,2.35Z"/><path class="cls-1" d="M281.9,24.34h33a7,7,0,0,1,7,7.05v15.9a7,7,0,0,1-7,7.05H281.83v-4.7H314.9a2.35,2.35,0,0,0,2.34-2.35V31.39A2.35,2.35,0,0,0,314.9,29h-33Z"/><path class="cls-1" d="M462.53,52.16V31.52a2.35,2.35,0,0,1,2.34-2.35h30.65a2.34,2.34,0,0,0,2.34-2.34h0a2.33,2.33,0,0,0-2.34-2.34H464.86a7,7,0,0,0-7,7V52.16a2.33,2.33,0,0,0,2.34,2.33h0A2.33,2.33,0,0,0,462.53,52.16Z"/><path class="cls-1" d="M416.21,54.34A2.35,2.35,0,0,1,413.87,52V31.48a7,7,0,0,1,7.05-7h25.91a7,7,0,0,1,7,7V52.06a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35V31.5a2.35,2.35,0,0,0-2.35-2.35H420.91a2.35,2.35,0,0,0-2.35,2.35V52a2.35,2.35,0,0,1-2.35,2.35Z"/><rect class="cls-1" x="431.53" y="23.7" width="4.66" height="31.1" transform="translate(394.61 473.12) rotate(-90)"/><path class="cls-1" d="M475.12,23.55h4.7a0,0,0,0,1,0,0v29a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35v-29A0,0,0,0,1,475.12,23.55Z" transform="translate(438.23 516.71) rotate(-90)"/><path class="cls-1" d="M506.53,52.16V31.52a2.35,2.35,0,0,1,2.34-2.35h30.65a2.34,2.34,0,0,0,2.34-2.34h0a2.33,2.33,0,0,0-2.34-2.34H508.86a7,7,0,0,0-7,7V52.16a2.33,2.33,0,0,0,2.34,2.33h0A2.33,2.33,0,0,0,506.53,52.16Z"/><path class="cls-1" d="M519.12,23.55h4.7a0,0,0,0,1,0,0v29a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35v-29A0,0,0,0,1,519.12,23.55Z" transform="translate(482.23 560.71) rotate(-90)"/><path class="cls-1" d="M339.61,36.89h19.26a7,7,0,0,1,7,7l0,3.5a7,7,0,0,1-7,7.05H328.18a2.35,2.35,0,0,1-2.35-2.35h0a2.35,2.35,0,0,1,2.35-2.35H358.9a2.35,2.35,0,0,0,2.34-2.35l0-3.5a2.34,2.34,0,0,0-2.33-2.35H339.61Z"/><path class="cls-1" d="M352.12,41.59H332.86a7,7,0,0,1-7-7.05l0-3a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H332.83a2.35,2.35,0,0,0-2.34,2.35l0,3a2.34,2.34,0,0,0,2.33,2.35h19.26Z"/><rect class="cls-1" x="281.9" y="29.04" width="4.67" height="20.6"/><path class="cls-1" d="M214,54.49H201a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h13v4.7H201a2.34,2.34,0,0,0-2.33,2.35v15.9A2.34,2.34,0,0,0,201,49.79h13Z"/><path class="cls-1" d="M213.86,24.49h13a7,7,0,0,1,7,7.05v15.9a7,7,0,0,1-7,7.05h-13v-4.7h13a2.35,2.35,0,0,0,2.34-2.35V31.54a2.35,2.35,0,0,0-2.34-2.35h-13Z"/><path class="cls-1" d="M154.64,26.82V47.46A2.35,2.35,0,0,0,157,49.8h30.42a2.35,2.35,0,0,1,2.34,2.35h0a2.34,2.34,0,0,1-2.34,2.34H157a7,7,0,0,1-7-7V26.82a2.33,2.33,0,0,1,2.33-2.33h0A2.33,2.33,0,0,1,154.64,26.82Z"/><path class="cls-1" d="M145.86,52.14a2.35,2.35,0,0,1-2.34,2.35H112.86a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H112.86a2.33,2.33,0,0,0-2.33,2.33V47.44a2.36,2.36,0,0,0,2.35,2.35h30.64a2.35,2.35,0,0,1,2.34,2.35Z"/></g></g></svg>`;
 const hr = {
@@ -421,7 +422,7 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
-  // ESTIMATE STANDARD PDF
+  // INVOICE STANDARD PDF
   async generateInvoice(
     invoice: Invoice,
     company: Company,
@@ -740,6 +741,193 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
+  // Credit STANDARD PDF
+  async generateCredit(credit: Credit, company: Company, terms: Term | null) {
+    const additionals = [];
+    credit.additionals.forEach((a, i) => {
+      additionals.push(
+        this.addCreditItem(
+          i + 1,
+          company,
+          a.code,
+          a.name,
+          a.qty,
+          a.unit,
+          a.rate,
+          a.discount,
+          a.total
+        )
+      );
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', 150, 'auto', 'auto', '*', '*', '*'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Code', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Rate', style: 'h4b', alignment: 'right' },
+            { text: 'Discount', style: 'h4b', alignment: 'right' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          ...additionals,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Quotation-${credit.code}`),
+      content: [
+        await this.getHeader(
+          'Credit Note',
+          credit.code,
+          credit.siteCode,
+          credit.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          `https://app.quoteiva.com/viewQuotation/${company.id}-${credit.id}`,
+          [
+            [
+              { text: 'Scaffold:', style: 'h6b' },
+              `${credit.scaffoldCode}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getSubHeader(credit.customer, company),
+        hr,
+        { text: credit.message },
+        summary,
+        hr,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    credit.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount (${credit.discountPercentage}%):`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    credit.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
+                { text: company.accountNum, alignment: 'left' },
+                {
+                  text:
+                    company.vat > 0
+                      ? `VAT (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(credit.vat)}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(credit.tax)}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    credit.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '', style: { fontSize: 6 } },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
   // UTILITY FUNCTIONS
   async loadPdfMaker() {
     if (!this.pdfMake) {
@@ -760,7 +948,8 @@ export class PdfService {
     siteName: string,
     date: any,
     url: string,
-    link: string
+    link: string,
+    data?: any
   ) {
     const header = {
       style: 'tableExample',
@@ -783,13 +972,15 @@ export class PdfService {
             '',
           ],
           [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
-          [{ text: 'Site Name:', style: 'h6b' }, `${siteName}`, '', ''],
+          [{ text: 'Site:', style: 'h6b' }, `${siteName}`, '', ''],
+          ...data,
           [
             { text: 'Date Issued:', style: 'h6b' },
             `${this.toDate(date)}`,
             '',
             '',
           ],
+
           [
             { text: 'View Online:', style: 'h6b' },
             {
@@ -908,6 +1099,54 @@ export class PdfService {
         text: qty,
         style: 'h6',
         alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(total)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
+  }
+  private addCreditItem(
+    index,
+    company: Company,
+    code: string,
+    description: string,
+    qty: string | number,
+    unit: string | number,
+    rate: number,
+    discount: number,
+    total: number
+  ) {
+    return [
+      index,
+      {
+        text: code,
+        style: 'h6',
+      },
+      {
+        text: description,
+        style: 'h6',
+      },
+      {
+        text: qty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: unit,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(rate)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(discount)}`,
+        style: 'h6',
+        alignment: 'right',
       },
       {
         text: `${company.currency.symbol} ${this.format(total)}`,

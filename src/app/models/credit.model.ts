@@ -13,7 +13,8 @@ export interface Credit {
   endDate: any;
   id: string;
   message: string;
-  siteName: string;
+  siteCode: string;
+  scaffoldCode: string;
   startDate: any;
   status: string;
   subtotal: number;

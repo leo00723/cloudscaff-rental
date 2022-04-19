@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Credit } from 'src/app/models/credit.model';
+import { Scaffold } from 'src/app/models/scaffold.model';
 import { Term } from 'src/app/models/term.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -22,7 +23,7 @@ export class CreditSummaryComponent {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.terms$ = this.masterSvc
       .edit()
-      .getDocById(`company/${this.company.id}/terms`, 'credit');
+      .getDocById(`company/${this.company.id}/terms`, 'Credit');
   }
   async download(terms: Term | null) {
     const sharedCredit = {
@@ -37,10 +38,10 @@ export class CreditSummaryComponent {
         { ...sharedCredit, cc: [], email: [this.credit.company.email] },
         `${this.company.id}-${this.credit.id}`
       );
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateCredit(this.credit, this.company, terms);
-    // this.masterSvc.handlePdf(pdf, this.credit.code);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateCredit(this.credit, this.company, terms);
+    this.masterSvc.handlePdf(pdf, this.credit.code);
   }
   async share(terms: Term | null) {
     const sharedCredit = {
