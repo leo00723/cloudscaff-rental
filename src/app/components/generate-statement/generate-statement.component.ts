@@ -34,8 +34,8 @@ export class GenerateStatementComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.masterSvc.fb().group({
-      startDate: ['', Validators.nullValidator],
-      endDate: ['', Validators.nullValidator],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
       customer: ['', Validators.required],
     });
   }
