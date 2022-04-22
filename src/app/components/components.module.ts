@@ -46,6 +46,8 @@ import { InvoiceSummaryComponent } from './invoice-summary/invoice-summary.compo
 import { AddPaymentComponent } from './add-payment/add-payment.component';
 import { AddCreditComponent } from './add-credit/add-credit.component';
 import { CreditSummaryComponent } from './credit-summary/credit-summary.component';
+import { GenerateStatementComponent } from './generate-statement/generate-statement.component';
+import { StatementSummaryComponent } from './statement-summary/statement-summary.component';
 
 const COMPONENTS = [
   AddInspectionComponent,
@@ -98,8 +100,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, AddPaymentComponent, AddCreditComponent, CreditSummaryComponent],
+  declarations: [COMPONENTS, AddPaymentComponent, AddCreditComponent, CreditSummaryComponent, GenerateStatementComponent, StatementSummaryComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, AddPaymentComponent, AddCreditComponent, CreditSummaryComponent],
+  exports: [IMPORTS, COMPONENTS, AddPaymentComponent, AddCreditComponent, CreditSummaryComponent, GenerateStatementComponent, StatementSummaryComponent],
 })
 export class ComponentsModule {}

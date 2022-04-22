@@ -1,0 +1,67 @@
+<ion-grid *ngIf="!viewStatement">
+  <ion-row class="card-outline mb-3">
+    <ion-col size="12">
+      <ion-text color="medium">
+        <h4>Generate Statement</h4>
+      </ion-text>
+    </ion-col>
+    <ion-col size="6">
+      <app-input-date
+        [form]="form"
+        controlName="startDate"
+        title="Start Date"
+      ></app-input-date>
+    </ion-col>
+    <ion-col size="6" *ngIf="field('startDate').value">
+      <app-input-date
+        [form]="form"
+        controlName="endDate"
+        [min]="field('startDate').value"
+        title="End Date"
+      ></app-input-date>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-select-reactive
+        title="Customer"
+        placeholder="Select Customer"
+        controlName="customer"
+        [form]="form"
+        [selectedText]="field('customer').value.name"
+      >
+        <ng-container *ngIf="customers$ | async as customers">
+          <ion-select-option
+            [value]="customer"
+            *ngFor="let customer of customers"
+            >{{ customer.name }}
+          </ion-select-option>
+        </ng-container>
+      </app-input-select-reactive>
+    </ion-col>
+    <ion-col size="12" *ngIf="field('customer').value">
+      <app-customer
+        [customer]="field('customer').value"
+        [isUpdate]="false"
+        [isCreate]="false"
+        [companyId]="company.id"
+      >
+      </app-customer>
+    </ion-col>
+    <ion-col size="12" class="text-end">
+      <ion-progress-bar
+        type="indeterminate"
+        *ngIf="isLoading"
+      ></ion-progress-bar>
+      <ion-button
+        shape="round"
+        (click)="generate()"
+        [disabled]="form.invalid"
+        *ngIf="!isLoading"
+        >Generate Statement</ion-button
+      >
+    </ion-col>
+  </ion-row>
+</ion-grid>
+<app-statement-summary
+  *ngIf="viewStatement && statement$ | async as statement"
+  [statement]="statement"
+></app-statement-summary>

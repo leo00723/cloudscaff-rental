@@ -22,6 +22,11 @@ export class HomePage implements OnDestroy {
       icon: 'options-outline',
     },
     { title: 'Sites', url: '/dashboard/sites', icon: 'business-outline' },
+    {
+      title: 'Statements',
+      url: '/dashboard/statements',
+      icon: 'document-text-outline',
+    },
   ];
   loading = false;
   version = environment.version;

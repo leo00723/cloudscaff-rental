@@ -59,6 +59,13 @@ const routes: Routes = [
             (m) => m.SettingsPageModule
           ),
       },
+      {
+        path: 'statements',
+        loadChildren: () =>
+          import('./statement/statement.module').then(
+            (m) => m.StatementPageModule
+          ),
+      },
     ],
   },
 ];

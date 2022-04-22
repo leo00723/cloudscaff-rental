@@ -1,0 +1,14 @@
+<app-header title="Statements"></app-header>
+<ion-content fullscreen="true" class="ion-padding">
+  <app-generate-statement
+    *ngIf="!isLoading else loading"
+  ></app-generate-statement>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>
