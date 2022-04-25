@@ -50,34 +50,43 @@ export class GenerateStatementComponent implements OnInit {
       const data = this.form.value;
       const invoices = this.masterSvc
         .edit()
-        .getCollectionWhereAndOrder(
+        .getCollectionWhereAndDateRangeAndOrder(
           `company/${this.company.id}/invoices`,
           'customer.id',
           '==',
           data.customer.id,
           'date',
-          'desc'
+          'desc',
+          'date',
+          new Date(data.startDate),
+          new Date(data.endDate)
         ) as Observable<Invoice[]>;
       invoices.subscribe();
       const payments = this.masterSvc
         .edit()
-        .getCollectionWhereAndOrder(
+        .getCollectionWhereAndDateRangeAndOrder(
           `company/${this.company.id}/payments`,
           'customerId',
           '==',
           data.customer.id,
           'date',
-          'desc'
+          'desc',
+          'date',
+          new Date(data.startDate),
+          new Date(data.endDate)
         ) as Observable<Payment[]>;
       const credits = this.masterSvc
         .edit()
-        .getCollectionWhereAndOrder(
+        .getCollectionWhereAndDateRangeAndOrder(
           `company/${this.company.id}/credits`,
           'customer.id',
           '==',
           data.customer.id,
           'date',
-          'desc'
+          'desc',
+          'date',
+          new Date(data.startDate),
+          new Date(data.endDate)
         ) as Observable<Credit[]>;
       this.statement$ = forkJoin<{
         customer: Observable<Customer>;

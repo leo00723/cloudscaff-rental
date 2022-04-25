@@ -941,7 +941,7 @@ export class PdfService {
     const credits = [];
     statement.invoices.forEach((a, i) => {
       invoices.push([
-        i,
+        i + 1,
         {
           text: a.code,
           style: 'h6',
@@ -965,7 +965,7 @@ export class PdfService {
     });
     statement.payments.forEach((a, i) => {
       payments.push([
-        i,
+        i + 1,
         {
           text: a.invoiceCode,
           style: 'h6',
@@ -988,7 +988,7 @@ export class PdfService {
     });
     statement.credits.forEach((a, i) => {
       credits.push([
-        i,
+        i + 1,
         {
           text: a.code,
           style: 'h6',

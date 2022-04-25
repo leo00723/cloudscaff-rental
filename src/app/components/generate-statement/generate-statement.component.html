@@ -1,5 +1,5 @@
-<ion-grid *ngIf="!viewStatement">
-  <ion-row class="card-outline mb-3">
+<ion-grid>
+  <ion-row class="card-outline mb-3" *ngIf="!viewStatement">
     <ion-col size="12">
       <ion-text color="medium">
         <h4>Generate Statement</h4>
@@ -60,8 +60,19 @@
       >
     </ion-col>
   </ion-row>
+  <app-statement-summary
+    *ngIf="viewStatement && statement$ | async as statement"
+    [statement]="statement"
+  ></app-statement-summary>
+  <ion-row *ngIf="viewStatement">
+    <ion-col size="12" class="text-end">
+      <ion-button
+        shape="round"
+        color="danger"
+        (click)="viewStatement = false"
+        *ngIf="!isLoading"
+        >Cancel</ion-button
+      >
+    </ion-col>
+  </ion-row>
 </ion-grid>
-<app-statement-summary
-  *ngIf="viewStatement && statement$ | async as statement"
-  [statement]="statement"
-></app-statement-summary>
