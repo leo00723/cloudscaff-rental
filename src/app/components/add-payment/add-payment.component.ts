@@ -51,7 +51,15 @@ export class AddPaymentComponent {
             ? 0
             : this.invoice.depositTotal - payment.total;
         this.invoice.deposit = 0;
-        this.invoice.status = 'updated-Partial Payment';
+
+        if (this.invoice.totalOutstanding === 0) {
+          this.invoice.status = 'accepted-Paid';
+        } else if (this.invoice.totalOutstanding < 0) {
+          this.invoice.status = 'rejected-Over Paid';
+        } else {
+          this.invoice.status = 'updated-Partial Payment';
+        }
+
         await this.masterSvc
           .edit()
           .updateDoc(`company/${this.company.id}/invoices`, this.invoice.id, {

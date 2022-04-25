@@ -1,0 +1,514 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Cloudscaff - Modification </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container" *ngIf="modification$ | async as modification">
+    <ion-row class="py-2">
+      <ion-col sizeMd="6" size="4">
+        <ion-text>
+          <h4>Modification</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col sizeMd="6" size="8" class="text-end">
+        <ion-button
+          size="small"
+          fill="clear"
+          (click)="download(modification.terms, modification.modification,modification.company)"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Scaffold Code:</h6>
+          <h6>Site Code:</h6>
+          <h6>Site name:</h6>
+          <h6>Date Issued:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>{{ modification.modification.code }}</h6>
+          <h6>{{ modification.modification.scaffoldCode }}</h6>
+          <h6>{{ modification.modification.oldScaffold.siteCode }}</h6>
+          <h6>{{ modification.modification.siteName }}</h6>
+          <h6>{{ modification.modification.date | date }}</h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <ion-row class="py-2">
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> To </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ modification.modification.customer.name }}</h6>
+              <h6>{{ modification.modification.customer.email }}</h6>
+              <h6>{{ modification.modification.customer.rep }}</h6>
+              <h6>{{ modification.modification.customer.phone }}</h6>
+              <h6>{{ modification.modification.customer.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ modification.modification.customer.address }} <br />
+                {{ modification.modification.customer.suburb }}<br />{{
+                modification.modification.customer.city }}<br />{{
+                modification.modification.customer.zip }}<br />{{
+                modification.modification.customer.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> From </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ modification.modification.company.name }}</h6>
+              <h6>{{ modification.modification.company.email }}</h6>
+              <h6>N/A</h6>
+              <h6>{{ modification.modification.company.phone }}</h6>
+              <h6>{{ modification.modification.company.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ modification.modification.company.address }}
+                <br />
+                {{ modification.modification.company.suburb }}<br />{{
+                modification.modification.company.city }}<br />{{
+                modification.modification.company.zip }}<br />{{
+                modification.modification.company.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <ion-row class="py-2">
+      <ion-col size="12">
+        <ion-label color="medium">
+          <h6>Message</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="12">
+        <p [innerText]="modification.modification.message"></p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-text color="medium" class="mb-3"
+          ><h6>Before Modification</h6></ion-text
+        >
+
+        <table class="table table-bordered border-danger">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col">#</th>
+              <th scope="col">Description</th>
+              <th class="text-center" scope="col">Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="text-center" scope="row">1</th>
+              <td colspan="3">Scaffold Modification Details</td>
+            </tr>
+            <!-- SCAFFOLD -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.scaffold }} Level {{
+                modification.modification.oldScaffold.scaffold.level ?
+                modification.modification.oldScaffold.scaffold.level : 0 }} -
+                ({{ modification.modification.oldScaffold.scaffold.length }}{{
+                modification.company.measurement.symbol }} x {{
+                modification.modification.oldScaffold.scaffold.width }}{{
+                modification.company.measurement.symbol }} x {{
+                modification.modification.oldScaffold.scaffold.height }}{{
+                modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+            </tr>
+            <!-- SCAFFOLD ATTACHMENTS -->
+            <tr
+              class="small"
+              *ngFor="
+                let item of modification.modification.oldScaffold.attachments;
+                let i = index
+              "
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.scaffold }} Level {{
+                item.level ? item.level : 0 }} - ({{ item.length }}{{
+                modification.company.measurement.symbol }} x {{ item.width }}{{
+                modification.company.measurement.symbol }} x {{ item.height }}{{
+                modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+            </tr>
+            <!-- BOARDS -->
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.oldScaffold.boards; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.boards }} - ({{ item.length
+                }}{{ modification.company.measurement.symbol }} x {{ item.width
+                }}{{ modification.company.measurement.symbol }}) - Height ({{
+                item.height }}{{ modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">{{ item.qty }}</td>
+            </tr>
+            <!-- HIRE -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.hire }} - ({{
+                modification.modification.oldScaffold.hire.daysStanding }} days)
+              </td>
+              <td class="text-center">1</td>
+            </tr>
+            <!-- LABOR -->
+            <tr *ngIf="modification.modification.oldScaffold.labour.length > 0">
+              <th class="text-center" scope="row">2</th>
+              <td colspan="3">Labor</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.oldScaffold.labour; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.type.name }} - {{ item.rate.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+            </tr>
+            <!-- ADDITIONALS -->
+            <tr
+              *ngIf="modification.modification.oldScaffold.additionals.length > 0"
+            >
+              <th class="text-center" scope="row">3</th>
+              <td colspan="3">Additionals</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="
+                let item of modification.modification.oldScaffold.additionals;
+                let i = index
+              "
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ion-col>
+      <ion-col>
+        <ion-text color="medium" class="mb-3"
+          ><h6>After Modification</h6></ion-text
+        >
+        <table class="table table-bordered border-success">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col">#</th>
+              <th scope="col">Description</th>
+              <th class="text-center" scope="col">Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="text-center" scope="row">1</th>
+              <td colspan="3">Scaffold Modification Details</td>
+            </tr>
+            <!-- SCAFFOLD -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.scaffold }} Level {{
+                modification.modification.scaffold.level ?
+                modification.modification.scaffold.level : 0 }} - ({{
+                modification.modification.scaffold.length }}{{
+                modification.company.measurement.symbol }} x {{
+                modification.modification.scaffold.width }}{{
+                modification.company.measurement.symbol }} x {{
+                modification.modification.scaffold.height }}{{
+                modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+            </tr>
+            <!-- SCAFFOLD ATTACHMENTS -->
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.attachments; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.scaffold }} Level {{
+                item.level ? item.level : 0 }} - ({{ item.length }}{{
+                modification.company.measurement.symbol }} x {{ item.width }}{{
+                modification.company.measurement.symbol }} x {{ item.height }}{{
+                modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+            </tr>
+            <!-- BOARDS -->
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.boards; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.boards }} - ({{ item.length
+                }}{{ modification.company.measurement.symbol }} x {{ item.width
+                }}{{ modification.company.measurement.symbol }}) - Height ({{
+                item.height }}{{ modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">{{ item.qty }}</td>
+            </tr>
+            <!-- HIRE -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.hire }} - ({{
+                modification.modification.hire.daysStanding }} days)
+              </td>
+              <td class="text-center">1</td>
+            </tr>
+            <!-- LABOR -->
+            <tr *ngIf="modification.modification.labour.length > 0">
+              <th class="text-center" scope="row">2</th>
+              <td colspan="3">Labor</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.labour; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.type.name }} - {{ item.rate.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+            </tr>
+            <!-- ADDITIONALS -->
+            <tr *ngIf="modification.modification.additionals.length > 0">
+              <th class="text-center" scope="row">3</th>
+              <td colspan="3">Additionals</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.additionals; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ion-col>
+      <ion-col size="12">
+        <ion-text color="medium" class="mb-3"
+          ><h6>Modification Cost</h6></ion-text
+        >
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col">#</th>
+              <th scope="col">Description</th>
+              <th class="text-center" scope="col">Qty</th>
+              <th class="text-end" scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="text-center" scope="row">1</th>
+              <td colspan="3">Scaffold Modification Details</td>
+            </tr>
+            <!-- SCAFFOLD -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.scaffold }} Level {{
+                modification.modification.scaffold.level ?
+                modification.modification.scaffold.level : 0 }} - ({{
+                modification.modification.scaffold.length }}{{
+                modification.company.measurement.symbol }} x {{
+                modification.modification.scaffold.width }}{{
+                modification.company.measurement.symbol }} x {{
+                modification.modification.scaffold.height }}{{
+                modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{ modification.company.currency.symbol }} {{
+                modification.modification.scaffold.total | number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- SCAFFOLD ATTACHMENTS -->
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.attachments; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.scaffold }} Level {{
+                item.level ? item.level : 0 }} - ({{ item.length }}{{
+                modification.company.measurement.symbol }} x {{ item.width }}{{
+                modification.company.measurement.symbol }} x {{ item.height }}{{
+                modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{ modification.company.currency.symbol }} {{ item.total |
+                number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- BOARDS -->
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.boards; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.boards }} - ({{ item.length
+                }}{{ modification.company.measurement.symbol }} x {{ item.width
+                }}{{ modification.company.measurement.symbol }}) - Height ({{
+                item.height }}{{ modification.company.measurement.symbol }})
+              </td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ modification.company.currency.symbol }} {{ item.total |
+                number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- HIRE -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ modification.company.terminology.hire }} - ({{
+                modification.modification.hire.daysStanding }} days)
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{ modification.company.currency.symbol }} {{
+                modification.modification.hire.total | number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- LABOR -->
+            <tr *ngIf="modification.modification.labour.length > 0">
+              <th class="text-center" scope="row">2</th>
+              <td colspan="3">Labor</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.labour; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.type.name }} - {{ item.rate.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ modification.company.currency.symbol }} {{ item.total |
+                number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- ADDITIONALS -->
+            <tr *ngIf="modification.modification.additionals.length > 0">
+              <th class="text-center" scope="row">3</th>
+              <td colspan="3">Additionals</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of modification.modification.additionals; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ modification.company.currency.symbol }} {{ item.total |
+                number: "0.2-2" }}
+              </td>
+            </tr>
+          </tbody>
+          <!-- FOOTER TOTALS -->
+          <tfoot>
+            <tr>
+              <th class="text-end" colspan="2" scope="col">Subtotal</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ modification.company.currency.symbol }} {{
+                modification.modification.subtotal | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="2" scope="col">
+                Discount ({{ modification.modification.discountPercentage }}%)
+              </th>
+              <th class="text-end text-danger" colspan="2" scope="col">
+                - {{ modification.company.currency.symbol }} {{
+                modification.modification.discount | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr *ngIf="modification.company.salesTax > 0">
+              <th class="text-end" colspan="2" scope="col">
+                Sales Tax ({{ modification.company.salesTax }}%)
+              </th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ modification.company.currency.symbol }} {{
+                modification.modification.tax | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr *ngIf="modification.company.vat > 0">
+              <th class="text-end" colspan="2" scope="col">
+                VAT ({{ modification.company.vat }}%)
+              </th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ modification.company.currency.symbol }} {{
+                modification.modification.vat | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="2" scope="col">Total</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ modification.company.currency.symbol }} {{
+                modification.modification.total | number: "0.2-2" }}
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

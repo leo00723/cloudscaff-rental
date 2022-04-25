@@ -10,6 +10,8 @@ import { AddModificationComponent } from 'src/app/components/add-modification/ad
 import { AddPaymentComponent } from 'src/app/components/add-payment/add-payment.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
+import { InvoiceSummaryComponent } from 'src/app/components/invoice-summary/invoice-summary.component';
+import { ViewInvoiceComponent } from 'src/app/components/view-invoice/view-invoice.component';
 import { ViewModificationComponent } from 'src/app/components/view-modification/view-modification.component';
 import { Company } from 'src/app/models/company.model';
 import { Credit } from 'src/app/models/credit.model';
@@ -254,9 +256,9 @@ export class ViewScaffoldPage implements OnInit {
       return await modal.present();
     } else {
       const modal = await this.masterSvc.modal().create({
-        component: ViewModificationComponent,
+        component: ViewInvoiceComponent,
         componentProps: {
-          invoice,
+          invoice: invoice,
         },
         showBackdrop: false,
         id: 'viewInvoice',

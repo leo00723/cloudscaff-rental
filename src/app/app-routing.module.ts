@@ -63,6 +63,20 @@ const routes: Routes = [
         (m) => m.CustomerInvoicePageModule
       ),
   },
+  {
+    path: 'viewCredit/:id',
+    loadChildren: () =>
+      import('./customer-credit/customer-credit.module').then(
+        (m) => m.CustomerCreditPageModule
+      ),
+  },
+  {
+    path: 'viewModification/:id',
+    loadChildren: () =>
+      import('./customer-modification/customer-modification.module').then(
+        (m) => m.CustomerModificationPageModule
+      ),
+  },
 
   {
     path: '**',

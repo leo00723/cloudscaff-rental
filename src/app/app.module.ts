@@ -56,6 +56,7 @@ import { CompanyState } from './shared/company/company.state';
 import { RouterState } from './shared/router.state';
 import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
+import { CustomerCreditModule } from './customer-credit/customer-credit.module';
 
 let resolvePersistenceEnabled: (enabled: boolean) => void;
 export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -119,6 +120,7 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     NgxsReduxDevtoolsPluginModule.forRoot({
       disabled: environment.production,
     }),
+    CustomerCreditModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

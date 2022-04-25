@@ -1,0 +1,216 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Cloudscaff - Credit Note </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container" *ngIf="credit$ | async as credit">
+    <ion-row class="py-2">
+      <ion-col sizeMd="6" size="4">
+        <ion-text>
+          <h4>Credit Note</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col sizeMd="6" size="8" class="text-end">
+        <ion-button
+          size="small"
+          fill="clear"
+          (click)="download(credit.terms, credit.credit,credit.company)"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Site Code:</h6>
+          <h6>Scaffold Code:</h6>
+          <h6>Date Issued:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>{{ credit.credit.code }}</h6>
+          <h6>{{ credit.credit.siteCode }}</h6>
+          <h6>{{ credit.credit.scaffoldCode }}</h6>
+          <h6>{{ credit.credit.date | date }}</h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
+    <ion-row class="py-2">
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> To </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ credit.credit.customer.name }}</h6>
+              <h6>{{ credit.credit.customer.email }}</h6>
+              <h6>{{ credit.credit.customer.rep }}</h6>
+              <h6>{{ credit.credit.customer.phone }}</h6>
+              <h6>{{ credit.credit.customer.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ credit.credit.customer.address }} <br />
+                {{ credit.credit.customer.suburb }}<br />{{
+                credit.credit.customer.city }}<br />{{
+                credit.credit.customer.zip }}<br />{{
+                credit.credit.customer.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> From </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ credit.credit.company.name }}</h6>
+              <h6>{{ credit.credit.company.email }}</h6>
+              <h6>N/A</h6>
+              <h6>{{ credit.credit.company.phone }}</h6>
+              <h6>{{ credit.credit.company.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ credit.credit.company.address }} <br />
+                {{ credit.credit.company.suburb }}<br />{{
+                credit.credit.company.city }}<br />{{ credit.credit.company.zip
+                }}<br />{{ credit.credit.company.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <ion-row class="py-2">
+      <ion-col size="12">
+        <ion-label color="medium">
+          <h6>Message</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="12">
+        <p [innerText]="credit.credit.message"></p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th class="text-center" scope="col">#</th>
+                <th class="text-center" scope="col">Code</th>
+                <th scope="col">Description</th>
+                <th class="text-center" scope="col">Qty</th>
+                <th class="text-center" scope="col">Unit</th>
+                <th class="text-end" scope="col">Rate</th>
+                <th class="text-end" scope="col">Discount</th>
+                <th class="text-end" scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="small"
+                *ngFor="let item of credit.credit.additionals; let i = index"
+              >
+                <th class="text-center" scope="row">{{ i + 1 }}</th>
+                <th class="text-center" scope="row">{{ item.code }}</th>
+                <td [innerText]="item.name"></td>
+                <td class="text-center">{{ item.qty }}</td>
+                <td class="text-center">{{ item.unit }}</td>
+                <td class="text-end">
+                  {{ credit.company.currency.symbol }} {{ item.rate | number:
+                  "0.2-2" }}
+                </td>
+                <td class="text-end">
+                  {{ credit.company.currency.symbol }} {{ item.discount |
+                  number: "0.2-2" }}
+                </td>
+                <td class="text-end">
+                  {{ credit.company.currency.symbol }} {{ item.total | number:
+                  "0.2-2" }}
+                </td>
+              </tr>
+            </tbody>
+            <!-- FOOTER TOTALS -->
+            <tfoot>
+              <tr>
+                <th class="text-end" colspan="6" scope="col">Subtotal</th>
+                <th class="text-end" colspan="2" scope="col">
+                  {{ credit.company.currency.symbol }} {{ credit.credit.subtotal
+                  | number: "0.2-2" }}
+                </th>
+              </tr>
+              <tr>
+                <th class="text-end" colspan="6" scope="col">
+                  Discount ({{ credit.credit.discountPercentage }}%)
+                </th>
+                <th class="text-end text-danger" colspan="2" scope="col">
+                  - {{ credit.company.currency.symbol }} {{
+                  credit.credit.discount | number: "0.2-2" }}
+                </th>
+              </tr>
+              <tr *ngIf="credit.company.salesTax > 0">
+                <th class="text-end" colspan="6" scope="col">
+                  Sales Tax ({{ credit.company.salesTax }}%)
+                </th>
+                <th class="text-end" colspan="2" scope="col">
+                  {{ credit.company.currency.symbol }} {{ credit.credit.tax |
+                  number: "0.2-2" }}
+                </th>
+              </tr>
+              <tr *ngIf="credit.company.vat > 0">
+                <th class="text-end" colspan="6" scope="col">
+                  VAT ({{ credit.company.vat }}%)
+                </th>
+                <th class="text-end" colspan="2" scope="col">
+                  {{ credit.company.currency.symbol }} {{ credit.credit.vat |
+                  number: "0.2-2" }}
+                </th>
+              </tr>
+              <tr>
+                <th class="text-end" colspan="6" scope="col">Total</th>
+                <th class="text-end" colspan="2" scope="col">
+                  {{ credit.company.currency.symbol }} {{ credit.credit.total |
+                  number: "0.2-2" }}
+                </th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

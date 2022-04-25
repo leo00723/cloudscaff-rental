@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Estimate } from 'src/app/models/estimate.model';
+import { Invoice } from 'src/app/models/invoice.model';
 import { MasterService } from 'src/app/services/master.service';
 
 @Component({
-  selector: 'app-view-estimate',
-  templateUrl: './view-estimate.component.html',
+  selector: 'app-view-invoice',
+  templateUrl: './view-invoice.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ViewEstimateComponent {
-  @Input() estimate: Estimate;
+export class ViewInvoiceComponent {
+  @Input() invoice: Invoice;
   constructor(private masterSvc: MasterService) {}
   close() {
     this.masterSvc.modal().dismiss();
