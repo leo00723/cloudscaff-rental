@@ -40,7 +40,7 @@ export class EstimateSummaryComponent {
     const pdf = await this.masterSvc
       .pdf()
       .generateEstimate(this.estimate, this.company, terms);
-    this.masterSvc.handlePdf(pdf, this.estimate.code);
+    this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
   }
   async share(terms: Term | null) {
     const sharedEstimate = {

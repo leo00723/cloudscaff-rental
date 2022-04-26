@@ -12,6 +12,7 @@ import { Estimate } from 'src/app/models/estimate.model';
 import { Term } from 'src/app/models/term.model';
 import { environment } from 'src/environments/environment';
 import { Credit } from '../models/credit.model';
+import { Inspection } from '../models/inspection.model';
 import { Invoice } from '../models/invoice.model';
 import { Modification } from '../models/modification.model';
 import { Statement } from '../models/statement.mode';
@@ -54,7 +55,31 @@ const tLayout = {
   paddingTop: (i, node) => 4,
   paddingBottom: (i, node) => 1,
   fillColor: (i, node) =>
-    i === 0 || i === node.table.body.length ? 'white' : 'white',
+    i === 0 || i === node.table.body.length ? '#eeeeee' : 'white',
+};
+const tLayout2 = {
+  hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 0 : 1),
+  hLineColor: (i, node) => {
+    if (i === 0 || i === node.table.body.length) {
+      return 'white';
+    } else if (i === 1) {
+      return '#5a5a5a';
+    } else {
+      return '#f2f2F2';
+    }
+  },
+  vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length ? 0 : 0),
+
+  vLineColor: (i, node) =>
+    i === 0 || i === node.table.widths.length ? 'black' : 'gray',
+  // hLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
+  // vLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
+  paddingLeft: (i, node) => 6,
+  paddingRight: (i, node) => 6,
+  paddingTop: (i, node) => 4,
+  paddingBottom: (i, node) => 1,
+  fillColor: (i, node) =>
+    i === 0 || i === 1 || i === node.table.body.length ? '#eeeeee' : 'white',
 };
 const stylesCS = {
   header: {
@@ -618,6 +643,234 @@ export class PdfService {
           pageBreak: 'before',
         },
         { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  // Credit STANDARD PDF
+  async generateInspection(
+    inspection: Inspection,
+    company: Company,
+    terms: Term | null
+  ) {
+    const attachments = [];
+    inspection.scaffold.attachments.forEach((a, i) => {
+      attachments.push([
+        '',
+        {
+          text: `${company.terminology.scaffold} Level ${a.level}`,
+          style: 'h6',
+        },
+        {
+          text: `${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.safe,
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const boards = [];
+    inspection.scaffold.boards.forEach((b, i) => {
+      boards.push([
+        '',
+        {
+          text: `${company.terminology.boards}`,
+          style: 'h6',
+        },
+        {
+          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Height ${b.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: b.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: 'Yes',
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', '*', '*', '*'],
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Detail', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Safe', style: 'h4b', alignment: 'center' },
+          ],
+          [
+            {
+              text: 1,
+              style: 'h4b',
+            },
+            {
+              text: `${company.terminology.scaffold} Details`,
+              style: 'h4b',
+              colSpan: 4,
+            },
+          ],
+          [
+            '',
+            {
+              text: `${company.terminology.scaffold} Level 0`,
+              style: 'h6',
+            },
+            {
+              text: `${inspection.scaffold.scaffold.length}${company.measurement.symbol} x ${inspection.scaffold.scaffold.width}${company.measurement.symbol} x ${inspection.scaffold.scaffold.height}${company.measurement.symbol}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: '1',
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: inspection.scaffold.scaffold.safe,
+              style: 'h6',
+              alignment: 'center',
+            },
+          ],
+          ...attachments,
+          ...boards,
+        ],
+      },
+      layout: tLayout,
+    };
+    const checklist = [];
+    inspection.questions.categories.forEach((c, i) => {
+      const items = [];
+      c.items.forEach((i, j) => {
+        items.push([
+          {
+            text: j + 1,
+            style: 'h6',
+            alignment: 'left',
+          },
+          {
+            text: i.question,
+            style: 'h6',
+            alignment: 'left',
+          },
+          {
+            text: i.value ? i.value : 'N/A',
+            style: 'h6',
+            alignment: 'center',
+          },
+        ]);
+      });
+      const questions = {
+        table: {
+          // headers are automatically repeated if the table spans over multiple pages
+          // you can declare how many rows should be treated as headers
+          headerRows: 1,
+          widths: ['auto', '*', 'auto'],
+          body: [
+            [
+              { text: '#', style: 'h4b', alignment: 'left' },
+              { text: 'Question', style: 'h4b', alignment: 'left' },
+              { text: 'Checklist', style: 'h4b', alignment: 'center' },
+            ],
+            ...items,
+          ],
+        },
+        layout: tLayout,
+      };
+      checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
+    });
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Inspection-${inspection.code}`),
+      content: [
+        await this.getHeader(
+          'Inspection',
+          inspection.code,
+          inspection.scaffold.siteCode,
+          inspection.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          `https://app.cloudscaff.com/viewInspection/${company.id}-${inspection.id}`,
+          [
+            [
+              { text: 'Scaffold:', style: 'h6b' },
+              `${inspection.scaffold.code}`,
+              '',
+              '',
+            ],
+            [
+              {
+                text: 'Status:',
+                style: 'h6b',
+              },
+              {
+                text: inspection.status,
+                style: 'h6b',
+                color: inspection.status === 'Passed' ? 'green' : 'red',
+              },
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getSubHeader(inspection.customer, company),
+        hr,
+        { text: inspection.notes },
+        hr,
+        summary,
+        checklist,
+        hr,
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['auto', '*'],
+            body: [
+              [
+                { text: 'Status', style: 'h4b', alignment: 'left' },
+                {
+                  text: inspection.status,
+                  style: 'h4b',
+                  alignment: 'right',
+                  color: inspection.status === 'Passed' ? 'green' : 'red',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+          fillColor: inspection.status === 'Passed' ? '#EEF5EC' : '#FAECED',
+        },
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '', style: { fontSize: 6 } },
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,

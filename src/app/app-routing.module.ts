@@ -77,7 +77,20 @@ const routes: Routes = [
         (m) => m.CustomerModificationPageModule
       ),
   },
-
+  {
+    path: 'viewInspection/:id',
+    loadChildren: () =>
+      import('./customer-inspection/customer-inspection.module').then(
+        (m) => m.CustomerInspectionPageModule
+      ),
+  },
+  {
+    path: 'viewHandover/:id',
+    loadChildren: () =>
+      import('./customer-handover/customer-handover.module').then(
+        (m) => m.CustomerHandoverPageModule
+      ),
+  },
   {
     path: '**',
     pathMatch: 'full',

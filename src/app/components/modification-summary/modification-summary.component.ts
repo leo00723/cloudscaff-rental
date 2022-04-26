@@ -35,21 +35,19 @@ export class ModificationSummaryComponent {
       company: this.company,
       terms: terms,
     };
-    await this.masterSvc
-      .edit()
-      .setDoc(
-        'sharedModifications',
-        {
-          ...sharedModification,
-          cc: [],
-          email: [this.modification.company.email],
-        },
-        `${this.company.id}-${this.modification.id}`
-      );
+    await this.masterSvc.edit().setDoc(
+      'sharedModifications',
+      {
+        ...sharedModification,
+        cc: [],
+        email: [this.modification.company.email],
+      },
+      `${this.company.id}-${this.modification.id}`
+    );
     const pdf = await this.masterSvc
       .pdf()
       .generateModification(this.modification, this.company, terms);
-    this.masterSvc.handlePdf(pdf, this.modification.code);
+    this.masterSvc.pdf().handlePdf(pdf, this.modification.code);
   }
   async share(terms: Term | null) {
     const sharedModification = {

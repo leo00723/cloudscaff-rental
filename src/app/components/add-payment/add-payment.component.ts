@@ -98,7 +98,7 @@ export class AddPaymentComponent {
       const pdf = await this.masterSvc
         .pdf()
         .generateInvoice(this.payment.invoice, this.company, null);
-      this.masterSvc.handlePdf(pdf, this.payment.invoiceCode);
+      this.masterSvc.pdf().handlePdf(pdf, this.payment.invoiceCode);
       this.loading = false;
     } catch (e) {
       console.error(e);

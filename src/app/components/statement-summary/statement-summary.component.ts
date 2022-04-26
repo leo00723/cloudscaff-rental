@@ -46,10 +46,12 @@ export class StatementSummaryComponent {
     const pdf = await this.masterSvc
       .pdf()
       .generateStatement(this.statement, this.company, terms);
-    this.masterSvc.handlePdf(
-      pdf,
-      `${this.statement.customer.name}-Statement-${this.statement.dates.date}`
-    );
+    this.masterSvc
+      .pdf()
+      .handlePdf(
+        pdf,
+        `${this.statement.customer.name}-Statement-${this.statement.dates.date}`
+      );
   }
   async share(terms: Term | null) {
     const sharedStatement = {

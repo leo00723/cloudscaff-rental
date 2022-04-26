@@ -41,7 +41,7 @@ export class CreditSummaryComponent {
     const pdf = await this.masterSvc
       .pdf()
       .generateCredit(this.credit, this.company, terms);
-    this.masterSvc.handlePdf(pdf, this.credit.code);
+    this.masterSvc.pdf().handlePdf(pdf, this.credit.code);
   }
   async share(terms: Term | null) {
     const sharedCredit = {

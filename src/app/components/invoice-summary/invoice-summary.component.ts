@@ -40,7 +40,7 @@ export class InvoiceSummaryComponent {
     const pdf = await this.masterSvc
       .pdf()
       .generateInvoice(this.invoice, this.company, terms);
-    this.masterSvc.handlePdf(pdf, this.invoice.code);
+    this.masterSvc.pdf().handlePdf(pdf, this.invoice.code);
   }
   async share(terms: Term | null) {
     const sharedInvoice = {
