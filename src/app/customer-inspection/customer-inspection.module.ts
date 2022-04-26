@@ -13,8 +13,8 @@ import { CustomerInspectionPage } from './customer-inspection.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    CustomerInspectionPageRoutingModule
+    CustomerInspectionPageRoutingModule,
   ],
-  declarations: [CustomerInspectionPage]
+  declarations: [CustomerInspectionPage],
 })
 export class CustomerInspectionPageModule {}

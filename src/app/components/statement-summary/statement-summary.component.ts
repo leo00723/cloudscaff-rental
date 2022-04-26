@@ -31,18 +31,18 @@ export class StatementSummaryComponent {
   }
 
   async download(terms: Term | null) {
-    // const sharedStatement = {
-    //   statement: this.statement,
-    //   company: this.company,
-    //   terms: terms,
-    // };
-    // await this.masterSvc
-    //   .edit()
-    //   .setDoc(
-    //     'sharedStatements',
-    //     { ...sharedStatement, cc: [], email: [this.company.email] },
-    //     `${this.company.id}-${this.statement.id}`
-    //   );
+    const sharedStatement = {
+      statement: this.statement,
+      company: this.company,
+      terms: terms,
+    };
+    await this.masterSvc
+      .edit()
+      .setDoc(
+        'sharedStatements',
+        { ...sharedStatement, cc: [], email: [this.company.email] },
+        `${this.company.id}-${this.statement.customer.id}`
+      );
     const pdf = await this.masterSvc
       .pdf()
       .generateStatement(this.statement, this.company, terms);

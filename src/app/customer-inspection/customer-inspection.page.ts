@@ -18,9 +18,6 @@ import { Navigate } from '../shared/router.state';
 export class CustomerInspectionPage {
   inspection$: Observable<SharedInspection>;
   ids: string[];
-  loading = false;
-  message = '';
-  requestUpdate = false;
   sent = false;
   constructor(
     private editService: EditService,

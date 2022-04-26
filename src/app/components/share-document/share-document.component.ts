@@ -1,8 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { Company } from 'src/app/models/company.model';
+import { Credit } from 'src/app/models/credit.model';
 import { Estimate } from 'src/app/models/estimate.model';
+import { Handover } from 'src/app/models/handover.model';
+import { Inspection } from 'src/app/models/inspection.model';
 import { Invoice } from 'src/app/models/invoice.model';
+import { Modification } from 'src/app/models/modification.model';
+import { Statement } from 'src/app/models/statement.mode';
 import { MasterService } from 'src/app/services/master.service';
 
 @Component({
@@ -88,12 +93,252 @@ export class ShareDocumentComponent {
           }
         }
         break;
-      case 'invoice': {
+      case 'invoice':
+        {
+          try {
+            this.loading = true;
+            const invoice: Invoice = this.data.doc.invoice;
+            const company: Company = this.data.doc.company;
+            const link = `https://app.cloudscaff.com/viewInvoice/${company.id}-${invoice.id}`;
+            const email = this.form.value;
+            const cc = email.cc.map((e) => e.email);
+            const emailData = {
+              to: email.email,
+              cc: cc.length > 0 ? cc : '',
+              template: {
+                name: 'share',
+                data: {
+                  title: `Hey ${invoice.customer.name}, ${company.name} has sent you a Invoice.`,
+                  message: '',
+                  btnText: 'View Invoice',
+                  link,
+                  subject: `${company.name} Invoice - ${invoice.code}`,
+                },
+              },
+            };
+            await this.masterSvc
+              .edit()
+              .setDoc(
+                'sharedInvoices',
+                { ...this.data.doc, cc, email },
+                `${company.id}-${invoice.id}`
+              );
+            await this.masterSvc
+              .edit()
+              .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            this.form.reset();
+            this.masterSvc
+              .notification()
+              .toast('Invoice shared successfully', 'success');
+            this.close();
+            this.loading = false;
+          } catch (error) {
+            console.error(error);
+            this.masterSvc
+              .notification()
+              .toast('Something went wrong! Please try again', 'danger');
+            this.loading = false;
+          }
+        }
+        break;
+      case 'modification':
+        {
+          try {
+            this.loading = true;
+            const modification: Modification = this.data.doc.modification;
+            const company: Company = this.data.doc.company;
+            const link = `https://app.cloudscaff.com/viewModification/${company.id}-${modification.id}`;
+            const email = this.form.value;
+            const cc = email.cc.map((e) => e.email);
+            const emailData = {
+              to: email.email,
+              cc: cc.length > 0 ? cc : '',
+              template: {
+                name: 'share',
+                data: {
+                  title: `Hey ${modification.customer.name}, ${company.name} has sent you a Modification.`,
+                  message: '',
+                  btnText: 'View Modification',
+                  link,
+                  subject: `${company.name} Modification - ${modification.code}`,
+                },
+              },
+            };
+            await this.masterSvc
+              .edit()
+              .setDoc(
+                'sharedModifications',
+                { ...this.data.doc, cc, email },
+                `${company.id}-${modification.id}`
+              );
+            await this.masterSvc
+              .edit()
+              .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            this.form.reset();
+            this.masterSvc
+              .notification()
+              .toast('Modification shared successfully', 'success');
+            this.close();
+            this.loading = false;
+          } catch (error) {
+            console.error(error);
+            this.masterSvc
+              .notification()
+              .toast('Something went wrong! Please try again', 'danger');
+            this.loading = false;
+          }
+        }
+        break;
+      case 'inspection':
+        {
+          try {
+            this.loading = true;
+            const inspection: Inspection = this.data.doc.inspection;
+            const company: Company = this.data.doc.company;
+            const link = `https://app.cloudscaff.com/viewInspection/${company.id}-${inspection.id}`;
+            const email = this.form.value;
+            const cc = email.cc.map((e) => e.email);
+            const emailData = {
+              to: email.email,
+              cc: cc.length > 0 ? cc : '',
+              template: {
+                name: 'share',
+                data: {
+                  title: `Hey ${inspection.customer.name}, ${company.name} has sent you a Inspection.`,
+                  message: '',
+                  btnText: 'View Inspection',
+                  link,
+                  subject: `${company.name} Inspection - ${inspection.code}`,
+                },
+              },
+            };
+            await this.masterSvc
+              .edit()
+              .setDoc(
+                'sharedInspections',
+                { ...this.data.doc, cc, email },
+                `${company.id}-${inspection.id}`
+              );
+            await this.masterSvc
+              .edit()
+              .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            this.form.reset();
+            this.masterSvc
+              .notification()
+              .toast('Inspection shared successfully', 'success');
+            this.close();
+            this.loading = false;
+          } catch (error) {
+            console.error(error);
+            this.masterSvc
+              .notification()
+              .toast('Something went wrong! Please try again', 'danger');
+            this.loading = false;
+          }
+        }
+        break;
+      case 'handover':
+        {
+          try {
+            this.loading = true;
+            const handover: Handover = this.data.doc.handover;
+            const company: Company = this.data.doc.company;
+            const link = `https://app.cloudscaff.com/viewHandover/${company.id}-${handover.id}`;
+            const email = this.form.value;
+            const cc = email.cc.map((e) => e.email);
+            const emailData = {
+              to: email.email,
+              cc: cc.length > 0 ? cc : '',
+              template: {
+                name: 'share',
+                data: {
+                  title: `Hey ${handover.customer.name}, ${company.name} has sent you a Handover.`,
+                  message: '',
+                  btnText: 'View Handover',
+                  link,
+                  subject: `${company.name} Handover - ${handover.code}`,
+                },
+              },
+            };
+            await this.masterSvc
+              .edit()
+              .setDoc(
+                'sharedHandovers',
+                { ...this.data.doc, cc, email },
+                `${company.id}-${handover.id}`
+              );
+            await this.masterSvc
+              .edit()
+              .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            this.form.reset();
+            this.masterSvc
+              .notification()
+              .toast('Handover shared successfully', 'success');
+            this.close();
+            this.loading = false;
+          } catch (error) {
+            console.error(error);
+            this.masterSvc
+              .notification()
+              .toast('Something went wrong! Please try again', 'danger');
+            this.loading = false;
+          }
+        }
+        break;
+      case 'credit':
+        {
+          try {
+            this.loading = true;
+            const credit: Credit = this.data.doc.credit;
+            const company: Company = this.data.doc.company;
+            const link = `https://app.cloudscaff.com/viewCredit/${company.id}-${credit.id}`;
+            const email = this.form.value;
+            const cc = email.cc.map((e) => e.email);
+            const emailData = {
+              to: email.email,
+              cc: cc.length > 0 ? cc : '',
+              template: {
+                name: 'share',
+                data: {
+                  title: `Hey ${credit.customer.name}, ${company.name} has sent you a Credit Note.`,
+                  message: '',
+                  btnText: 'View Credit Note',
+                  link,
+                  subject: `${company.name} Credit Note - ${credit.code}`,
+                },
+              },
+            };
+            await this.masterSvc
+              .edit()
+              .setDoc(
+                'sharedCredits',
+                { ...this.data.doc, cc, email },
+                `${company.id}-${credit.id}`
+              );
+            await this.masterSvc
+              .edit()
+              .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            this.form.reset();
+            this.masterSvc
+              .notification()
+              .toast('Credit Note shared successfully', 'success');
+            this.close();
+            this.loading = false;
+          } catch (error) {
+            console.error(error);
+            this.masterSvc
+              .notification()
+              .toast('Something went wrong! Please try again', 'danger');
+            this.loading = false;
+          }
+        }
+        break;
+      case 'statement': {
         try {
           this.loading = true;
-          const invoice: Invoice = this.data.doc.invoice;
+          const statement: Statement = this.data.doc.statement;
           const company: Company = this.data.doc.company;
-          const link = `https://app.cloudscaff.com/viewInvoice/${company.id}-${invoice.id}`;
+          const link = `https://app.cloudscaff.com/viewStatement/${company.id}-${statement.customer.id}`;
           const email = this.form.value;
           const cc = email.cc.map((e) => e.email);
           const emailData = {
@@ -102,20 +347,20 @@ export class ShareDocumentComponent {
             template: {
               name: 'share',
               data: {
-                title: `Hey ${invoice.customer.name}, ${company.name} has sent you a Invoice.`,
+                title: `Hey ${statement.customer.name}, ${company.name} has sent you a Statement.`,
                 message: '',
-                btnText: 'View Invoice',
+                btnText: 'View Statement',
                 link,
-                subject: `${company.name} Invoice - ${invoice.code}`,
+                subject: `${company.name} Statement - ${statement.dates.date}`,
               },
             },
           };
           await this.masterSvc
             .edit()
             .setDoc(
-              'sharedInvoices',
+              'sharedStatements',
               { ...this.data.doc, cc, email },
-              `${company.id}-${invoice.id}`
+              `${company.id}-${statement.customer.id}`
             );
           await this.masterSvc
             .edit()
@@ -123,7 +368,7 @@ export class ShareDocumentComponent {
           this.form.reset();
           this.masterSvc
             .notification()
-            .toast('Invoice shared successfully', 'success');
+            .toast('Statement shared successfully', 'success');
           this.close();
           this.loading = false;
         } catch (error) {

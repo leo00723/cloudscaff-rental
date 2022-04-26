@@ -92,6 +92,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'viewStatement/:id',
+    loadChildren: () =>
+      import('./customer-statement/customer-statement.module').then(
+        (m) => m.CustomerStatementPageModule
+      ),
+  },
+  {
     path: '**',
     pathMatch: 'full',
     redirectTo: '/dashboard/sites',

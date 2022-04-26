@@ -12,6 +12,7 @@ import { Estimate } from 'src/app/models/estimate.model';
 import { Term } from 'src/app/models/term.model';
 import { environment } from 'src/environments/environment';
 import { Credit } from '../models/credit.model';
+import { Handover } from '../models/handover.model';
 import { Inspection } from '../models/inspection.model';
 import { Invoice } from '../models/invoice.model';
 import { Modification } from '../models/modification.model';
@@ -56,30 +57,6 @@ const tLayout = {
   paddingBottom: (i, node) => 1,
   fillColor: (i, node) =>
     i === 0 || i === node.table.body.length ? '#eeeeee' : 'white',
-};
-const tLayout2 = {
-  hLineWidth: (i, node) => (i === 0 || i === node.table.body.length ? 0 : 1),
-  hLineColor: (i, node) => {
-    if (i === 0 || i === node.table.body.length) {
-      return 'white';
-    } else if (i === 1) {
-      return '#5a5a5a';
-    } else {
-      return '#f2f2F2';
-    }
-  },
-  vLineWidth: (i, node) => (i === 0 || i === node.table.widths.length ? 0 : 0),
-
-  vLineColor: (i, node) =>
-    i === 0 || i === node.table.widths.length ? 'black' : 'gray',
-  // hLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
-  // vLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
-  paddingLeft: (i, node) => 6,
-  paddingRight: (i, node) => 6,
-  paddingTop: (i, node) => 4,
-  paddingBottom: (i, node) => 1,
-  fillColor: (i, node) =>
-    i === 0 || i === 1 || i === node.table.body.length ? '#eeeeee' : 'white',
 };
 const stylesCS = {
   header: {
@@ -650,7 +627,7 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
-  // Credit STANDARD PDF
+  // INSPECTION PDF
   async generateInspection(
     inspection: Inspection,
     company: Company,
@@ -865,6 +842,263 @@ export class PdfService {
           layout: tLayout,
           fillColor: inspection.status === 'Passed' ? '#EEF5EC' : '#FAECED',
         },
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '', style: { fontSize: 6 } },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  // HANDOVER PDF
+  async generateHandover(
+    handover: Handover,
+    company: Company,
+    terms: Term | null
+  ) {
+    const attachments = [];
+    handover.scaffold.attachments.forEach((a, i) => {
+      attachments.push([
+        '',
+        {
+          text: `${company.terminology.scaffold} Level ${a.level}`,
+          style: 'h6',
+        },
+        {
+          text: `${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.safe,
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const boards = [];
+    handover.scaffold.boards.forEach((b, i) => {
+      boards.push([
+        '',
+        {
+          text: `${company.terminology.boards}`,
+          style: 'h6',
+        },
+        {
+          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Height ${b.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: b.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: 'Yes',
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', '*', '*', '*'],
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Detail', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Safe', style: 'h4b', alignment: 'center' },
+          ],
+          [
+            {
+              text: 1,
+              style: 'h4b',
+            },
+            {
+              text: `${company.terminology.scaffold} Details`,
+              style: 'h4b',
+              colSpan: 4,
+            },
+          ],
+          [
+            '',
+            {
+              text: `${company.terminology.scaffold} Level 0`,
+              style: 'h6',
+            },
+            {
+              text: `${handover.scaffold.scaffold.length}${company.measurement.symbol} x ${handover.scaffold.scaffold.width}${company.measurement.symbol} x ${handover.scaffold.scaffold.height}${company.measurement.symbol}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: '1',
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: handover.scaffold.scaffold.safe,
+              style: 'h6',
+              alignment: 'center',
+            },
+          ],
+          ...attachments,
+          ...boards,
+        ],
+      },
+      layout: tLayout,
+    };
+    const signature = handover.signature
+      ? {
+          image: await this.getBase64ImageFromURL(handover.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Handover-${handover.code}`),
+      content: [
+        await this.getHeader(
+          'Handover',
+          handover.code,
+          handover.scaffold.siteCode,
+          handover.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          `https://app.cloudscaff.com/viewHandover/${company.id}-${handover.id}`,
+          [
+            [
+              { text: 'Scaffold:', style: 'h6b' },
+              `${handover.scaffold.code}`,
+              '',
+              '',
+            ],
+            [
+              {
+                text: 'Status:',
+                style: 'h6b',
+              },
+              {
+                text: handover.safe,
+                style: 'h6b',
+                color: handover.safe === 'Passed' ? 'green' : 'red',
+              },
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getSubHeader(handover.customer, company),
+        hr,
+        { text: handover.notes },
+        hr,
+        summary,
+        hr,
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*'],
+            body: [
+              [
+                {
+                  text: 'Handover Details',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: handover.detail,
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Status',
+                  style: 'h4b',
+                  alignment: 'left',
+                  colSpan: 2,
+                },
+                {
+                  text: '',
+                  style: 'h4b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                {
+                  text: 'Maximum load of the scaffold?',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: handover.maxLoad,
+                  style: 'h4b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                {
+                  text: 'Is the scaffold safe for use?	',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: handover.safe,
+                  style: 'h4b',
+                  alignment: 'right',
+                  color: handover.safe === 'Passed' ? 'green' : 'red',
+                },
+              ],
+              [
+                {
+                  text: 'Signature',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature,
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
+        hr,
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
@@ -1579,6 +1813,16 @@ export class PdfService {
               [
                 { text: 'Date Issued:', style: 'h6b' },
                 `${this.toDate(statement.dates.date)}`,
+                '',
+                '',
+              ],
+              [
+                { text: 'View Online:', style: 'h6b' },
+                {
+                  text: 'Click here to view online',
+                  style: ['h6b', { color: 'blue' }],
+                  link: `https://app.cloudscaff.com/viewStatement/${company.id}-${statement.customer.id}`,
+                },
                 '',
                 '',
               ],

@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
 import { Company } from '../models/company.model';
-import { Invoice } from '../models/invoice.model';
-import { SharedInvoice } from '../models/sharedInvoice.model';
+import { SharedStatement } from '../models/sharedStatement.model';
+import { Statement } from '../models/statement.mode';
 import { Term } from '../models/term.model';
 import { EditService } from '../services/edit.service';
 import { NotificationService } from '../services/notification.service';
@@ -12,11 +12,11 @@ import { PdfService } from '../services/pdf.service';
 import { Navigate } from '../shared/router.state';
 
 @Component({
-  selector: 'app-customer-invoice',
-  templateUrl: './customer-invoice.page.html',
+  selector: 'app-customer-statement',
+  templateUrl: './customer-statement.page.html',
 })
-export class CustomerInvoicePage {
-  invoice$: Observable<SharedInvoice>;
+export class CustomerStatementPage {
+  statement$: Observable<SharedStatement>;
   ids: string[];
   sent = false;
   constructor(
@@ -31,10 +31,10 @@ export class CustomerInvoicePage {
       this.notificationSvc.toast('Document not found!', 'warning', 3000);
       this.store.dispatch(new Navigate('/login'));
     }
-    this.invoice$ = this.editService
-      .getDocById('sharedInvoices', `${this.ids[0]}-${this.ids[1]}`)
+    this.statement$ = this.editService
+      .getDocById('sharedStatements', `${this.ids[0]}-${this.ids[1]}`)
       .pipe(
-        tap(async (data: SharedInvoice) => {
+        tap(async (data: SharedStatement) => {
           if (data) {
             if (!data.viewed && !this.sent) {
               this.sent = true;
@@ -43,11 +43,11 @@ export class CustomerInvoicePage {
                 template: {
                   name: 'share',
                   data: {
-                    title: `Hey ${data.company.name}, ${data.invoice.customer.name} has viewed your invoice.`,
+                    title: `Hey ${data.company.name}, ${data.statement.customer.name} has viewed your statement.`,
                     message: '',
-                    btnText: 'View Invoice',
-                    link: `https://app.cloudscaff.com/viewInvoice/${this.ids[0]}-${this.ids[1]}`,
-                    subject: `${data.invoice.customer.name} viewed the invoice`,
+                    btnText: 'View Statement',
+                    link: `https://app.cloudscaff.com/viewStatement/${this.ids[0]}-${this.ids[1]}`,
+                    subject: `${data.statement.customer.name} viewed the statement`,
                   },
                 },
               };
@@ -55,7 +55,7 @@ export class CustomerInvoicePage {
                 'mail',
                 JSON.parse(JSON.stringify(emailData))
               );
-              await this.editService.updateDoc('sharedInvoices', data.id, {
+              await this.editService.updateDoc('sharedStatements', data.id, {
                 viewed: true,
               });
             }
@@ -67,9 +67,9 @@ export class CustomerInvoicePage {
       );
   }
 
-  async download(terms: Term | null, invoice: Invoice, company: Company) {
-    const pdf = await this.pdf.generateInvoice(invoice, company, terms);
-    if (!this.pdf.handlePdf(pdf, invoice.code)) {
+  async download(terms: Term | null, statement: Statement, company: Company) {
+    const pdf = await this.pdf.generateStatement(statement, company, terms);
+    if (!this.pdf.handlePdf(pdf, statement.dates.date)) {
       this.notificationSvc.toast(
         'Documents can only be downloaded on pc or web',
         'warning',
