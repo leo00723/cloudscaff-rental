@@ -1,4 +1,4 @@
-<app-header title="Sites" btnName="refresh" (updated)="init()"></app-header>
+<app-header title="Sites"></app-header>
 <ion-content fullscreen="true" class="ion-padding">
   <app-site-table
     *ngIf="sites$ | async else loading"

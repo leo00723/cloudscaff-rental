@@ -23,6 +23,11 @@ export class HomePage implements OnDestroy {
     },
     { title: 'Sites', url: '/dashboard/sites', icon: 'business-outline' },
     {
+      title: 'Inventory',
+      url: '/dashboard/inventory',
+      icon: 'bar-chart-outline',
+    },
+    {
       title: 'Statements',
       url: '/dashboard/statements',
       icon: 'document-text-outline',
@@ -31,6 +36,7 @@ export class HomePage implements OnDestroy {
   loading = false;
   version = environment.version;
   @Select() user$: Observable<User>;
+  isIphone = this.masterSvc.platform().is('iphone');
   private subs = new Subscription();
   constructor(
     private masterSvc: MasterService,

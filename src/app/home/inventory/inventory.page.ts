@@ -1,0 +1,105 @@
+import { Component, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
+import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
+import { Company } from 'src/app/models/company.model';
+import { InventoryItem } from 'src/app/models/inventoryItem.model';
+import { Shipment } from 'src/app/models/shipment.model';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
+
+@Component({
+  selector: 'app-inventory',
+  templateUrl: './inventory.page.html',
+})
+export class InventoryPage implements OnInit {
+  @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
+  inventoryItems$: Observable<InventoryItem[]>;
+  shipments$: Observable<Shipment[]>;
+  active = 1;
+  constructor(private masterSvc: MasterService) {}
+  ngOnInit() {
+    this.init();
+  }
+
+  async addItem() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddStockitemComponent,
+      componentProps: {},
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addStockItem',
+    });
+    return await modal.present();
+  }
+
+  async editItem(item) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddStockitemComponent,
+      componentProps: {
+        isEdit: true,
+        value: item,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'editStockItem',
+    });
+    return await modal.present();
+  }
+
+  async addShipment() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddShipmentComponent,
+      componentProps: { inventoryItems$: this.inventoryItems$ },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addShipment',
+    });
+    return await modal.present();
+  }
+
+  viewItem(args) {
+    console.log('View ----', args);
+  }
+  async viewShipment(shipment: Shipment) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddShipmentComponent,
+      componentProps: {
+        isEdit: true,
+        inventoryItems$: this.inventoryItems$,
+        value: shipment,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'editShipment',
+    });
+    return await modal.present();
+  }
+
+  segmentChanged(ev: any) {
+    this.active = ev.detail.value;
+  }
+
+  private init() {
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+
+    setTimeout(() => {
+      if (id) {
+        this.inventoryItems$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/stockItems`, 'code', 'asc');
+        this.shipments$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/shipments`, 'code', 'desc');
+      } else {
+        console.log(
+          '-----------------------try inventory----------------------'
+        );
+        this.init();
+      }
+    }, 200);
+  }
+}

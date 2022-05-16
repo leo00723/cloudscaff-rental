@@ -7,10 +7,11 @@
   >
     <ion-toolbar>
       <ion-segment
-        [scrollable]="true"
+        scrollable="true"
         (ionChange)="segmentChanged($event)"
         selectOnFocus="true"
         [value]="active"
+        mode="md"
       >
         <ion-segment-button value="overview">
           <ion-label>Overview</ion-label>

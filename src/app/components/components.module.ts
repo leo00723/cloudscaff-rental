@@ -49,17 +49,31 @@ import { CreditSummaryComponent } from './credit-summary/credit-summary.componen
 import { GenerateStatementComponent } from './generate-statement/generate-statement.component';
 import { StatementSummaryComponent } from './statement-summary/statement-summary.component';
 import { ViewInvoiceComponent } from './view-invoice/view-invoice.component';
+import { AddStockitemComponent } from './add-stockitem/add-stockitem.component';
+import { AddShipmentComponent } from './add-shipment/add-shipment.component';
 
 const COMPONENTS = [
+  AcceptModificationComponent,
+  AddCreditComponent,
+  AddHandoverComponent,
   AddInspectionComponent,
+  AddInvoiceComponent,
+  AddModificationComponent,
+  AddPaymentComponent,
+  AddShipmentComponent,
   AddSiteComponent,
+  AddStockitemComponent,
   AddressSearchComponent,
+  CompanyInfoDetailComponent,
   CompanyPage,
+  CreditSummaryComponent,
   CustomerComponent,
   DatepickerComponent,
   EditprofileComponent,
   EstimateSummaryComponent,
   EstimateTableComponent,
+  GenerateStatementComponent,
+  HandoverSummaryComponent,
   HeaderComponent,
   HeaderCondensedComponent,
   ImgUploadComponent,
@@ -68,25 +82,21 @@ const COMPONENTS = [
   InputTextComponent,
   InputTextReactiveComponent,
   InspectionChecklistComponent,
+  InspectionSummaryComponent,
+  InvoiceSummaryComponent,
+  ModificationSummaryComponent,
+  ScaffoldEditformComponent,
   ScaffoldOverviewTableComponent,
+  ShareDocumentComponent,
   ShowHidePasswordComponent,
+  SignaturePadComponent,
   SiteFormComponent,
   SkeletonTextComponent,
+  StatementSummaryComponent,
   UserPickerComponent,
-  InspectionSummaryComponent,
-  ScaffoldEditformComponent,
-  CompanyInfoDetailComponent,
-  AddHandoverComponent,
-  HandoverSummaryComponent,
-  SignaturePadComponent,
-  AddModificationComponent,
   ViewEstimateComponent,
-  ShareDocumentComponent,
-  ModificationSummaryComponent,
-  AcceptModificationComponent,
+  ViewInvoiceComponent,
   ViewModificationComponent,
-  AddInvoiceComponent,
-  InvoiceSummaryComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -101,8 +111,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, AddPaymentComponent, AddCreditComponent, CreditSummaryComponent, GenerateStatementComponent, StatementSummaryComponent, ViewInvoiceComponent],
+  declarations: [COMPONENTS],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, AddPaymentComponent, AddCreditComponent, CreditSummaryComponent, GenerateStatementComponent, StatementSummaryComponent],
+  exports: [IMPORTS, COMPONENTS],
 })
 export class ComponentsModule {}

@@ -1,0 +1,64 @@
+<app-header title="Inventory"
+  ><ion-toolbar>
+    <ion-segment
+      scrollable
+      (ionChange)="segmentChanged($event)"
+      selectOnFocus="true"
+      [value]="active"
+      mode="md"
+    >
+      <ion-segment-button value="1">
+        <ion-label>Overview</ion-label>
+      </ion-segment-button>
+      <!-- <ion-segment-button value="2">
+        <ion-label>Requests</ion-label>
+      </ion-segment-button> -->
+      <ion-segment-button value="3">
+        <ion-label>Shipments</ion-label>
+      </ion-segment-button>
+      <!-- <ion-segment-button value="4">
+        <ion-label>Returns</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="5">
+        <ion-label>Transfers</ion-label>
+      </ion-segment-button> -->
+    </ion-segment>
+  </ion-toolbar></app-header
+>
+<ion-content fullscreen="true" class="ion-padding">
+  <ng-container [ngSwitch]="active">
+    <div *ngSwitchDefault>
+      <app-inventory-table
+        [value]="inventoryItems$"
+        *ngIf="inventoryItems$ | async else loading"
+        (selectedItem)="viewItem($event)"
+        (editItem)="editItem($event)"
+      ></app-inventory-table>
+      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addItem()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </div>
+    <div *ngSwitchCase="3">
+      <app-shipment-table
+        [value]="shipments$"
+        *ngIf="shipments$ | async else loading"
+        (selectedItem)="viewShipment($event)"
+      ></app-shipment-table>
+      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addShipment()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </div>
+    <ng-template #loading>
+      <div class="ion-padding">
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+      </div>
+    </ng-template>
+  </ng-container>
+</ion-content>

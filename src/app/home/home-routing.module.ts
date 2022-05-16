@@ -66,6 +66,13 @@ const routes: Routes = [
             (m) => m.StatementPageModule
           ),
       },
+      {
+        path: 'inventory',
+        loadChildren: () =>
+          import('./inventory/inventory.module').then(
+            (m) => m.InventoryPageModule
+          ),
+      },
     ],
   },
 ];

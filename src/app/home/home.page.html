@@ -5,7 +5,7 @@
   *ngIf="user$ |async as user"
 >
   <ion-content>
-    <ion-item lines="none">
+    <ion-item lines="none" [ngClass]="isIphone ? 'mt-5' : ''">
       <ion-avatar slot="start">
         <img
           [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'"
