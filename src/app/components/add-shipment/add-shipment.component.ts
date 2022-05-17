@@ -21,7 +21,7 @@ import { UserState } from 'src/app/shared/user/user.state';
 export class AddShipmentComponent implements OnInit, OnDestroy {
   @Input() isEdit = false;
   @Input() inventoryItems$: Observable<InventoryItem[]>;
-  @Input() set value(val: InventoryItem) {
+  @Input() set value(val: Shipment) {
     if (val) {
       Object.assign(this.shipment, val);
       this.initEditForm();
