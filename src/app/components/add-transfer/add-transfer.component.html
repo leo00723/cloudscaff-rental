@@ -9,7 +9,7 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ !isEdit ? "Add Shipment" : "Edit Shipment" }} </ion-title>
+    <ion-title>{{ !isEdit ? "Add Transfer" : "Edit Transfer" }} </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -18,16 +18,17 @@
       <ion-row class="card-outline mb-3">
         <ion-col size="12">
           <ion-text color="medium">
-            <h4>Site Information</h4>
+            <h4>Transfer From</h4>
           </ion-text>
         </ion-col>
-        <ion-col size="12" *ngIf="shipment.status === 'pending'">
+        <ion-col size="12" *ngIf="transfer.status === 'pending'">
           <app-input-select-reactive
             title="Site"
             placeholder="Select Site"
-            controlName="site"
+            controlName="fromSite"
             [form]="form"
-            [selectedText]="field('site').value.name"
+            [selectedText]="field('fromSite').value.name"
+            (fieldChange)="updateItems()"
           >
             <ng-container *ngIf="sites$ | async as sites">
               <ion-select-option [value]="site" *ngFor="let site of sites"
@@ -36,9 +37,64 @@
             </ng-container>
           </app-input-select-reactive>
         </ion-col>
-        <ion-col *ngIf="field('site').value as site">
+        <ion-col *ngIf="field('fromSite').value as site">
           <app-input-text
-            *ngIf="shipment.status !== 'pending'"
+            *ngIf="transfer.status !== 'pending'"
+            title="Site Name"
+            [value]="site.name"
+            [readonly]="true"
+          >
+          </app-input-text>
+          <app-input-text
+            title="Site Code"
+            [value]="site.code"
+            [readonly]="true"
+          >
+          </app-input-text>
+          <app-input-text
+            title="Customer Name"
+            [value]="site.customer.name"
+            [readonly]="true"
+          >
+          </app-input-text>
+          <app-input-text
+            title="Site Address"
+            value="{{ site.address }} , {{ site.suburb }} , {{ site.city }}, {{
+              site.zip
+            }}, {{ site.country }}"
+            [readonly]="true"
+          >
+          </app-input-text>
+        </ion-col>
+      </ion-row>
+      <ion-row class="card-outline mb-3">
+        <ion-col size="12">
+          <ion-text color="medium">
+            <h4>Transfer To</h4>
+          </ion-text>
+        </ion-col>
+        <ion-col size="12" *ngIf="transfer.status === 'pending'">
+          <app-input-select-reactive
+            title="Site"
+            placeholder="Select Site"
+            controlName="toSite"
+            [form]="form"
+            [selectedText]="field('toSite').value.name"
+          >
+            <ng-container *ngIf="sites$ | async as sites">
+              <ng-container *ngFor="let site of sites">
+                <ion-select-option
+                  *ngIf="site.id !== field('fromSite').value.id"
+                  [value]="site"
+                  >{{ site.name }}
+                </ion-select-option>
+              </ng-container>
+            </ng-container>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col *ngIf="field('toSite').value as site">
+          <app-input-text
+            *ngIf="transfer.status !== 'pending'"
             title="Site Name"
             [value]="site.name"
             [readonly]="true"
@@ -69,23 +125,24 @@
       <ion-row>
         <ion-col size="12">
           <ion-text color="medium">
-            <h4>Shipment Information</h4>
+            <h4>Transfer Information</h4>
           </ion-text>
         </ion-col>
-        <ion-col size="6">
+        <ion-col size="12">
           <app-input-date
             [form]="form"
-            controlName="startDate"
-            title="Start Date"
+            controlName="transferDate"
+            title="Transfer Date"
           ></app-input-date>
-        </ion-col>
-        <ion-col size="6">
-          <app-input-date
-            [form]="form"
-            controlName="endDate"
-            [min]="field('startDate').value"
-            title="End Date"
-          ></app-input-date>
+          <ion-col size="12">
+            <app-input-reactive
+              title="Notes"
+              controlName="notes"
+              [form]="form"
+              [textarea]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
         </ion-col>
         <ion-col size="6">
           <ion-text color="medium">
@@ -117,7 +174,7 @@
                   <td>{{ item.category }}</td>
                   <td>{{ item.name }}</td>
                   <td class="text-center">
-                    {{ item.availableQty - item.inUseQty }}
+                    {{ item.availableQty }}
                   </td>
                   <td class="text-center">
                     <ion-input
@@ -132,7 +189,7 @@
                       [clearOnEdit]="true"
                       [value]="item.shipmentQty"
                       (ionChange)="update($event, item)"
-                      [readonly]="shipment.status !== 'pending'"
+                      [readonly]="transfer.status !== 'pending'"
                     >
                     </ion-input>
                   </td>
@@ -169,7 +226,7 @@
         <ion-col
           size="12"
           class="text-end"
-          *ngIf="shipment.status !== 'void' && shipment.status !== 'sent'"
+          *ngIf="transfer.status !== 'void' && transfer.status !== 'sent'"
         >
           <ion-progress-bar
             type="indeterminate"
@@ -179,17 +236,17 @@
             shape="round"
             [disabled]="form.invalid"
             *ngIf="!isEdit && !loading"
-            (click)="createShipment()"
-            >Create Shipment</ion-button
+            (click)="createTransfer()"
+            >Create Transfer</ion-button
           >
-          <ion-button
+          <!-- <ion-button
             shape="round"
             *ngIf="isEdit && !loading"
             color="danger"
             [disabled]="form.invalid"
             (click)="updateShipment('void')"
             >Void Shipment</ion-button
-          >
+          > -->
           <!-- <ion-button
             shape="round"
             *ngIf="isEdit && !loading && shipment.status !== 'reserved'"
@@ -198,7 +255,7 @@
             (click)="updateShipment('reserved')"
             >Reserve Shipment</ion-button
           > -->
-          <ion-button
+          <!-- <ion-button
             shape="round"
             *ngIf="isEdit && !loading"
             color="success"
@@ -211,8 +268,8 @@
             *ngIf="isEdit && !loading && shipment.status === 'pending'"
             [disabled]="form.invalid"
             (click)="updateShipment('pending')"
-            >Update Shipment</ion-button
-          >
+            >Update transfer</ion-button
+          > -->
         </ion-col>
       </ion-row>
     </ion-grid>

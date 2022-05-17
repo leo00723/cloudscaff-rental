@@ -25,6 +25,7 @@ export interface Company {
   totalEstimates?: number;
   totalShipments?: number;
   totalInvoices?: number;
+  totalTransfers?: number;
   totalCredits?: number;
   totalSites?: number;
   users?: string[];

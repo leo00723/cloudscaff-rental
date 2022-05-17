@@ -28,8 +28,8 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
   items: InventoryItem[];
-  form: FormGroup;
   shipment: Shipment = { status: 'pending' };
+  form: FormGroup;
   user: User;
   company: Company;
   loading = false;
@@ -58,12 +58,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
 
-  close() {
-    this.masterSvc.modal().dismiss();
-  }
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
   update(val, item: InventoryItem) {
     item.shipmentQty = +val.detail.value;
   }
@@ -136,6 +130,13 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
+  }
+
+  close() {
+    this.masterSvc.modal().dismiss();
+  }
+  field(field: string) {
+    return this.form.get(field) as FormControl;
   }
 
   private initEditForm() {

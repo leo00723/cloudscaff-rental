@@ -3,10 +3,12 @@ import { Select } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
+import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Shipment } from 'src/app/models/shipment.model';
+import { Transfer } from 'src/app/models/transfer.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -20,6 +22,7 @@ export class InventoryPage implements OnInit {
   @Select() company$: Observable<Company>;
   inventoryItems$: Observable<InventoryItem[]>;
   shipments$: Observable<Shipment[]>;
+  transfers$: Observable<Transfer[]>;
   active = 1;
   constructor(private masterSvc: MasterService) {}
   ngOnInit() {
@@ -47,17 +50,6 @@ export class InventoryPage implements OnInit {
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'editStockItem',
-    });
-    return await modal.present();
-  }
-
-  async addShipment() {
-    const modal = await this.masterSvc.modal().create({
-      component: AddShipmentComponent,
-      componentProps: { inventoryItems$: this.inventoryItems$ },
-      cssClass: 'fullscreen',
-      showBackdrop: false,
-      id: 'addShipment',
     });
     return await modal.present();
   }
@@ -90,6 +82,17 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async addShipment() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddShipmentComponent,
+      componentProps: { inventoryItems$: this.inventoryItems$ },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addShipment',
+    });
+    return await modal.present();
+  }
+
   async viewShipment(shipment: Shipment) {
     const modal = await this.masterSvc.modal().create({
       component: AddShipmentComponent,
@@ -101,6 +104,31 @@ export class InventoryPage implements OnInit {
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'editShipment',
+    });
+    return await modal.present();
+  }
+
+  async addTransfer() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddTransferComponent,
+      componentProps: {},
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addTransfer',
+    });
+    return await modal.present();
+  }
+
+  async viewTransfer(transfer: Transfer) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddTransferComponent,
+      componentProps: {
+        isEdit: true,
+        value: transfer,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'viewTransfer',
     });
     return await modal.present();
   }
@@ -120,6 +148,9 @@ export class InventoryPage implements OnInit {
         this.shipments$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/shipments`, 'code', 'desc');
+        this.transfers$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/transfers`, 'code', 'desc');
       } else {
         console.log(
           '-----------------------try inventory----------------------'

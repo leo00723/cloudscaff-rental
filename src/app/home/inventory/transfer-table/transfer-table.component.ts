@@ -12,28 +12,28 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
-import { Shipment } from 'src/app/models/shipment.model';
+import { Transfer } from 'src/app/models/transfer.model';
 
 @Component({
-  selector: 'app-shipment-table',
-  templateUrl: './shipment-table.component.html',
+  selector: 'app-transfer-table',
+  templateUrl: './transfer-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShipmentTableComponent {
+export class TransferTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<Shipment>();
-  shipments$: Observable<Shipment[]>;
-  temp$: Observable<Shipment[]>;
-  @Input() set value(estimates: Observable<Shipment[]>) {
-    this.temp$ = estimates;
-    this.shipments$ = estimates;
+  @Output() selectedItem = new EventEmitter<Transfer>();
+  transfers$: Observable<Transfer[]>;
+  temp$: Observable<Transfer[]>;
+  @Input() set value(transfers: Observable<Transfer[]>) {
+    this.temp$ = transfers;
+    this.transfers$ = transfers;
   }
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
 
   constructor() {
-    this.temp$ = this.shipments$;
+    this.temp$ = this.transfers$;
   }
 
   onSelect({ selected }) {
@@ -55,13 +55,15 @@ export class ShipmentTableComponent {
 
   updateFilter(event) {
     const val = event.detail.value.toLowerCase() as string;
-    this.temp$ = this.shipments$.pipe(
+    this.temp$ = this.transfers$.pipe(
       map((site) =>
         site.filter(
           (s) =>
             s.code.toLowerCase().indexOf(val) !== -1 ||
-            s.site.name.toLowerCase().indexOf(val) !== -1 ||
-            s.site.customer.name.toLowerCase().indexOf(val) !== -1 ||
+            s.fromSite.name.toLowerCase().indexOf(val) !== -1 ||
+            s.fromSite.customer.name.toLowerCase().indexOf(val) !== -1 ||
+            s.toSite.name.toLowerCase().indexOf(val) !== -1 ||
+            s.toSite.customer.name.toLowerCase().indexOf(val) !== -1 ||
             s.status.toLowerCase().indexOf(val) !== -1 ||
             !val
         )

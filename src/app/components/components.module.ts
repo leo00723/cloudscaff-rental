@@ -52,6 +52,7 @@ import { ViewInvoiceComponent } from './view-invoice/view-invoice.component';
 import { AddStockitemComponent } from './add-stockitem/add-stockitem.component';
 import { AddShipmentComponent } from './add-shipment/add-shipment.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
+import { AddTransferComponent } from './add-transfer/add-transfer.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -99,6 +100,7 @@ const COMPONENTS = [
   ViewInvoiceComponent,
   ViewModificationComponent,
   ViewStockLocationsComponent,
+  AddTransferComponent,
 ];
 const IMPORTS = [
   CommonModule,
