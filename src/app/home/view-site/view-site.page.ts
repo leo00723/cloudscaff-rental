@@ -19,6 +19,7 @@ export class ViewSitePage implements OnDestroy {
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
   scaffolds$: Observable<Scaffold[]>;
+  inventoryItems$: Observable<any>;
   active = 'scaffolds';
   ids = [];
   constructor(
@@ -56,6 +57,9 @@ export class ViewSitePage implements OnDestroy {
         'date',
         'desc'
       ) as Observable<Scaffold[]>;
+    this.inventoryItems$ = this.masterSvc
+      .edit()
+      .getDocById(`company/${this.ids[0]}/siteStock`, this.ids[1]);
   }
 
   async viewEstimate(estimate: Estimate) {

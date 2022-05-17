@@ -1,0 +1,57 @@
+<ion-searchbar
+  debounce="250"
+  mode="ios"
+  placeholder="Search by code, category, name or quantities"
+  (ionChange)="updateFilter($event)"
+>
+</ion-searchbar>
+
+<ngx-datatable
+  class="bootstrap striped rounded-lg"
+  [limit]="15"
+  [rows]="temp"
+  [rowHeight]="50"
+  [columnMode]="'force'"
+  [sortType]="sortType.multi"
+  [headerHeight]="50"
+  [footerHeight]="50"
+  trackByProp="code"
+  [scrollbarH]="true"
+>
+  <ngx-datatable-column
+    name="Code"
+    [checkboxable]="false"
+  ></ngx-datatable-column>
+  <ngx-datatable-column name="Category"></ngx-datatable-column>
+  <ngx-datatable-column name="Name"></ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total Qty"
+    prop="availableQty"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column>
+  <!-- <ngx-datatable-column
+    name="Available Qty"
+    cellClass="text-center"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.availableQty - row.inUseQty }}
+    </ng-template>
+  </ngx-datatable-column> -->
+  <!-- <ngx-datatable-column
+    name="In Use Qty"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column> -->
+  <!-- <ngx-datatable-column
+    name="Reserved Qty"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column> -->
+  <ngx-datatable-column
+    name="Weight"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column>
+</ngx-datatable>

@@ -29,7 +29,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
   items: InventoryItem[];
   form: FormGroup;
-  shipment: Shipment = {};
+  shipment: Shipment = { status: 'pending' };
   user: User;
   company: Company;
   loading = false;
@@ -65,7 +65,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     return this.form.get(field) as FormControl;
   }
   update(val, item: InventoryItem) {
-    item.shipmentQty = val.detail.value;
+    item.shipmentQty = +val.detail.value;
   }
 
   async createShipment() {
@@ -153,7 +153,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           this.shipment.items.forEach((item) => {
             const inventoryItem = items.find((i) => i.id === item.id);
             if (inventoryItem) {
-              inventoryItem.shipmentQty = item.shipmentQty;
+              inventoryItem.shipmentQty = +item.shipmentQty;
             }
           });
           this.items = items;

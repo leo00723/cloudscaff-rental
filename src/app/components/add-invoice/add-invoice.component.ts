@@ -753,6 +753,15 @@ export class AddInvoiceComponent implements OnInit {
           );
         }
         break;
+      case 4:
+        {
+          this.field('hire.total').setValue(
+            (this.field('scaffold.total').value + attachments + boards) *
+              (this.field('hire.daysStanding').value / 7) *
+              (this.field('hire.rate').value.rate / 100)
+          );
+        }
+        break;
       case 0: {
         this.field('hire.total').setValue(this.field('hire.rate').value.rate);
       }

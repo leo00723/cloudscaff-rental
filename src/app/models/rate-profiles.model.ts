@@ -27,6 +27,7 @@ export class RateProfiles {
     { code: 1, name: 'Days x Rate', rate: 0 },
     { code: 2, name: '% of Total', rate: 0 },
     { code: 3, name: '% of Total x Days', rate: 0 },
+    { code: 4, name: '% of Total x Weeks', rate: 0 },
   ];
   additionalRates: RateProfile[] = [
     { code: 0, name: 'Fixed Rate', rate: 0 },

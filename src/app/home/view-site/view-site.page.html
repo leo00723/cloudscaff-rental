@@ -17,6 +17,9 @@
         <ion-segment-button value="scaffolds">
           <ion-label>Scaffolds</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="inventory">
+          <ion-label>Inventory</ion-label>
+        </ion-segment-button>
         <ion-segment-button value="estimates">
           <ion-label>Estimates</ion-label>
         </ion-segment-button>
@@ -32,6 +35,15 @@
           *ngIf="scaffolds$ | async else loading"
           (selectedItem)="viewScaffold($event)"
         ></app-scaffold-table>
+      </div>
+      <div *ngSwitchCase="'inventory'">
+        <app-site-inventory-table
+          [value]="items.items"
+          *ngIf="inventoryItems$ | async as items else empty"
+        ></app-site-inventory-table>
+        <ng-template #empty>
+          <app-site-inventory-table [value]="[]"></app-site-inventory-table
+        ></ng-template>
       </div>
       <div *ngSwitchCase="'estimates'">
         <app-estimate-table
