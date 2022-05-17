@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
+import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Shipment } from 'src/app/models/shipment.model';
@@ -61,9 +62,34 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
-  viewItem(args) {
-    console.log('View ----', args);
+  async viewItem(item: InventoryItem) {
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    const sites$ = this.masterSvc
+      .edit()
+      .getCollectionWhere(
+        `company/${company.id}/siteStock`,
+        'ids',
+        'array-contains',
+        item.id
+      )
+      .pipe(
+        map((data) => {
+          return data.map((doc) => {
+            const single = doc.items.find((i: any) => i.id === item.id);
+            return { site: doc.site, item: single };
+          });
+        })
+      );
+    const modal = await this.masterSvc.modal().create({
+      component: ViewStockLocationsComponent,
+      componentProps: { locations$: sites$ },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'viewLocation',
+    });
+    return await modal.present();
   }
+
   async viewShipment(shipment: Shipment) {
     const modal = await this.masterSvc.modal().create({
       component: AddShipmentComponent,

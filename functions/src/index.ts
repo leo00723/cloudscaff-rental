@@ -91,7 +91,7 @@ exports.manageShipment = functions.firestore
           });
 
           const oldInventory = siteInventory.data()!.items;
-          const itemIds = oldInventory.map((item: any) => item.id);
+
           items.forEach((item: any) => {
             const inventoryItem = oldInventory.find(
               (i: any) => i.id === item.id
@@ -104,6 +104,7 @@ exports.manageShipment = functions.firestore
             }
           });
 
+          const itemIds = oldInventory.map((item: any) => item.id);
           const updatedInventory = {
             items: oldInventory,
             ids: itemIds,
