@@ -89,6 +89,37 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       this.loading = false;
     }
   }
+  async updateTransfer(status: string) {
+    this.loading = true;
+    try {
+      Object.assign(this.transfer, this.form.value);
+      this.transfer.items = this.items.filter((item) => item.shipmentQty > 0);
+      this.transfer.status = status;
+
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/transfers`,
+          this.transfer.id,
+          this.transfer
+        );
+
+      this.masterSvc
+        .notification()
+        .toast('Transfer updated successfully', 'success');
+      this.close();
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating transfer. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
+  }
 
   updateItems() {
     const fromSite = this.field('fromSite').value.id;

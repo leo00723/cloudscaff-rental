@@ -173,3 +173,170 @@ exports.manageShipment = functions.firestore
       return error;
     }
   });
+
+exports.manageTransfer = functions.firestore
+  .document('company/{companyId}/transfers/{transferId}')
+  .onUpdate(async (change, context) => {
+    try {
+      if (
+        change.before.data().status !== 'sent' &&
+        change.after.data().status === 'sent'
+      ) {
+        const transfer = change.after.data();
+        // Get the shipment items on FROM site
+        const fromSiteInventory = await admin
+          .firestore()
+          .doc(
+            `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+          )
+          .get();
+
+        // Get the shipment items on TO site
+        const toSiteInventory = await admin
+          .firestore()
+          .doc(
+            `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+          )
+          .get();
+
+        // check if its the first time the site is recieving a shipment
+        if (toSiteInventory.exists) {
+          // Update the to site inventory
+          const items = transfer.items.map((item: any) => {
+            return {
+              id: item.id,
+              code: item.code,
+              category: item.category,
+              name: item.name,
+              weight: +item.weight,
+              availableQty: +item.shipmentQty,
+            };
+          });
+
+          //get the items on both sites
+          const fromSiteItems = fromSiteInventory.data()!.items;
+          const toSiteItems = toSiteInventory.data()!.items;
+
+          //update the from site inventory totals
+          items.forEach((item: any) => {
+            const inventoryItem = fromSiteItems.find(
+              (i: any) => i.id === item.id
+            );
+            if (inventoryItem) {
+              inventoryItem.availableQty =
+                inventoryItem.availableQty - item.availableQty;
+              //remove item if its zero
+              if (inventoryItem.availableQty <= 0) {
+                fromSiteItems.splice(fromSiteItems.indexOf(inventoryItem), 1);
+              }
+            }
+          });
+
+          //update the to site inventory totals
+          items.forEach((item: any) => {
+            const inventoryItem = toSiteItems.find(
+              (i: any) => i.id === item.id
+            );
+            if (inventoryItem) {
+              inventoryItem.availableQty =
+                inventoryItem.availableQty + item.availableQty;
+            } else {
+              toSiteItems.push(item);
+            }
+          });
+
+          //update the from site document data
+          const fromItemIds = fromSiteItems.map((item: any) => item.id);
+          const updatedFromInventory = {
+            items: fromSiteItems,
+            ids: fromItemIds,
+            site: transfer.fromSite,
+          };
+
+          // update the to site document data
+          const toItemIds = toSiteItems.map((item: any) => item.id);
+          const updatedToInventory = {
+            items: toSiteItems,
+            ids: toItemIds,
+            site: transfer.toSite,
+          };
+
+          //update the from site document
+          await admin
+            .firestore()
+            .doc(
+              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+            )
+            .set(updatedFromInventory);
+          // update the to site document
+          await admin
+            .firestore()
+            .doc(
+              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+            )
+            .set(updatedToInventory);
+        } else {
+          // Create the site inventory
+          const items = transfer.items.map((item: any) => {
+            return {
+              id: item.id,
+              code: item.code,
+              category: item.category,
+              name: item.name,
+              weight: +item.weight,
+              availableQty: +item.shipmentQty,
+            };
+          });
+          const fromSiteItems = fromSiteInventory.data()!.items;
+          //update the from site inventory totals
+          items.forEach((item: any) => {
+            const inventoryItem = fromSiteItems.find(
+              (i: any) => i.id === item.id
+            );
+            if (inventoryItem) {
+              inventoryItem.availableQty =
+                inventoryItem.availableQty - item.availableQty;
+              //remove item if its zero
+              if (inventoryItem.availableQty <= 0) {
+                fromSiteItems.splice(fromSiteItems.indexOf(inventoryItem), 1);
+              }
+            }
+          });
+
+          //update the from site document data
+          const fromItemIds = fromSiteItems.map((item: any) => item.id);
+          const updatedFromInventory = {
+            items: fromSiteItems,
+            ids: fromItemIds,
+            site: transfer.fromSite,
+          };
+
+          //update the from site document
+          await admin
+            .firestore()
+            .doc(
+              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+            )
+            .set(updatedFromInventory);
+
+          // update the to site document
+          const itemIds = transfer.items.map((item: any) => item.id);
+          const updatedInventory = {
+            items,
+            ids: itemIds,
+            site: transfer.toSite,
+          };
+          await admin
+            .firestore()
+            .doc(
+              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+            )
+            .set(updatedInventory);
+        }
+        return '200';
+      }
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  });

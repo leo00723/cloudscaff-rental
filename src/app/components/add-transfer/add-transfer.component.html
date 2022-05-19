@@ -255,21 +255,21 @@
             (click)="updateShipment('reserved')"
             >Reserve Shipment</ion-button
           > -->
-          <!-- <ion-button
+          <ion-button
             shape="round"
             *ngIf="isEdit && !loading"
             color="success"
             [disabled]="form.invalid"
-            (click)="updateShipment('sent')"
-            >Send Shipment</ion-button
+            (click)="updateTransfer('sent')"
+            >Send Transfer</ion-button
           >
           <ion-button
             shape="round"
-            *ngIf="isEdit && !loading && shipment.status === 'pending'"
+            *ngIf="isEdit && !loading && transfer.status === 'pending'"
             [disabled]="form.invalid"
-            (click)="updateShipment('pending')"
-            >Update transfer</ion-button
-          > -->
+            (click)="updateTransfer('pending')"
+            >Update Transfer</ion-button
+          >
         </ion-col>
       </ion-row>
     </ion-grid>

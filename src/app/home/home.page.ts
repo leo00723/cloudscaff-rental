@@ -7,6 +7,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { environment } from 'src/environments/environment';
 import { EditprofileComponent } from '../components/editprofile/editprofile.component';
+import { AppState } from '../shared/app/app.state';
 
 @Component({
   selector: 'app-home',
@@ -55,32 +56,44 @@ export class HomePage implements OnDestroy {
       this.loading = false;
       return;
     }
-    this.updates
-      .checkForUpdate()
-      .then((res) => {
-        if (res) {
-          this.masterSvc.notification().presentAlertConfirm(
-            () => {
-              this.updates.activateUpdate().then((res) => {
-                if (res) {
-                  window.location.reload();
-                }
-              });
-            },
-            `${environment.version} available!`,
-            'click Yes to install update'
-          );
-        } else {
-          this.masterSvc.notification().toast('No updates available', 'dark');
-        }
-        this.loading = false;
-      })
-      .catch((err) => {
-        setTimeout(() => {
-          this.masterSvc.notification().toast('No updates available', 'dark');
-          this.loading = false;
-        }, 2000);
-      });
+    const version = this.masterSvc.store().selectSnapshot(AppState.version);
+    if (version) {
+      console.log('version', version);
+      if (!this.masterSvc.platform().is('cordova')) {
+        const version = this.masterSvc.store().selectSnapshot(AppState.version);
+        this.updates
+          .checkForUpdate()
+          .then((res) => {
+            if (res) {
+              this.masterSvc.notification().presentAlertConfirm(
+                () => {
+                  this.updates.activateUpdate().then((res) => {
+                    if (res) {
+                      window.location.reload();
+                    }
+                  });
+                },
+                `${version.version} available!`,
+                `${version.message.toString().replace(',', '</br>')}`,
+                'Click Yes to update'
+              );
+            } else {
+              this.masterSvc
+                .notification()
+                .toast('No updates available', 'dark');
+            }
+            this.loading = false;
+          })
+          .catch((err) => {
+            setTimeout(() => {
+              this.masterSvc
+                .notification()
+                .toast('No updates available', 'dark');
+              this.loading = false;
+            }, 2000);
+          });
+      }
+    }
   }
 
   async editProfile() {
