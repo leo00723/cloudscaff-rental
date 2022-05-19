@@ -117,7 +117,8 @@
             {{ modification.oldScaffold.scaffold.width
             }}{{ company.measurement.symbol }} x
             {{ modification.oldScaffold.scaffold.height
-            }}{{ company.measurement.symbol }})
+            }}{{ company.measurement.symbol }}) -
+            {{ modification.oldScaffold.scaffold.description }}
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -135,7 +136,7 @@
             {{ item.level ? item.level : 0 }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
             }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }})
+            }}{{ company.measurement.symbol }}) - {{ item.description }}
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -148,7 +149,7 @@
           <td>
             {{ company.terminology.boards }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
-            }}{{ company.measurement.symbol }}) - Height ({{ item.height
+            }}{{ company.measurement.symbol }}) - Level ({{ item.height
             }}{{ company.measurement.symbol }})
           </td>
           <td class="text-center">{{ item.qty }}</td>
@@ -221,6 +222,7 @@
             }}{{ company.measurement.symbol }} x {{ modification.scaffold.width
             }}{{ company.measurement.symbol }} x
             {{ modification.scaffold.height }}{{ company.measurement.symbol }})
+            - {{ modification.scaffold.description }}
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -235,7 +237,7 @@
             {{ item.level ? item.level : 0 }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
             }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }})
+            }}{{ company.measurement.symbol }}) - {{ item.description }}
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -248,7 +250,7 @@
           <td>
             {{ company.terminology.boards }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
-            }}{{ company.measurement.symbol }}) - Height ({{ item.height
+            }}{{ company.measurement.symbol }}) - Level ({{ item.height
             }}{{ company.measurement.symbol }})
           </td>
           <td class="text-center">{{ item.qty }}</td>
@@ -319,6 +321,7 @@
             }}{{ company.measurement.symbol }} x {{ modification.scaffold.width
             }}{{ company.measurement.symbol }} x
             {{ modification.scaffold.height }}{{ company.measurement.symbol }})
+            - {{ modification.scaffold.description }}
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
@@ -337,7 +340,7 @@
             {{ item.level ? item.level : 0 }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
             }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }})
+            }}{{ company.measurement.symbol }}) - {{ item.description }}
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
@@ -354,7 +357,7 @@
           <td>
             {{ company.terminology.boards }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
-            }}{{ company.measurement.symbol }}) - Height ({{ item.height
+            }}{{ company.measurement.symbol }}) - Level ({{ item.height
             }}{{ company.measurement.symbol }})
           </td>
           <td class="text-center">{{ item.qty }}</td>

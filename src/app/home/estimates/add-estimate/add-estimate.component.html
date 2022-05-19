@@ -153,8 +153,18 @@
               <h4>{{ company.terminology.scaffold }} Details</h4>
             </ion-text>
           </ion-col>
+
           <ion-col size="12">
             <ion-row formGroupName="scaffold">
+              <ion-col size="12">
+                <app-input-reactive
+                  title="Description"
+                  controlName="description"
+                  placeholder="Enter description"
+                  [form]="field('scaffold')"
+                >
+                </app-input-reactive>
+              </ion-col>
               <ion-col>
                 <app-input-reactive
                   title="Length ({{ company.measurement.symbol }})"
@@ -260,6 +270,15 @@
                 >
                   <ion-label>Delete</ion-label>
                 </ion-chip>
+              </ion-col>
+              <ion-col size="12">
+                <app-input-reactive
+                  title="Description"
+                  controlName="description"
+                  placeholder="Enter description"
+                  [form]="attachment"
+                >
+                </app-input-reactive>
               </ion-col>
               <ion-col>
                 <app-input-reactive

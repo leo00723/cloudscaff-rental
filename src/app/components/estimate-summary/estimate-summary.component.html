@@ -106,7 +106,8 @@
               estimate.scaffold.length
             }}{{ company.measurement.symbol }} x {{ estimate.scaffold.width
             }}{{ company.measurement.symbol }} x {{ estimate.scaffold.height
-            }}{{ company.measurement.symbol }})
+            }}{{ company.measurement.symbol }}) -
+            {{ estimate.scaffold.description }}
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
@@ -125,7 +126,7 @@
             {{ item.level ? item.level : 0 }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
             }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }})
+            }}{{ company.measurement.symbol }}) - {{ item.description }}
           </td>
           <td class="text-center">1</td>
           <td class="text-end">

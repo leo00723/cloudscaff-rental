@@ -192,6 +192,12 @@
                       [readonly]="transfer.status !== 'pending'"
                     >
                     </ion-input>
+                    <ion-label
+                      color="danger"
+                      *ngIf="qty.value > item.availableQty"
+                    >
+                      you cannot exceed the available qty
+                    </ion-label>
                   </td>
                 </tr>
                 <ng-template #viewShipment>

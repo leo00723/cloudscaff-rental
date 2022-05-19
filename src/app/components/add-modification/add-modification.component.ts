@@ -190,6 +190,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   }
   addAttachment() {
     const attachment = this.masterSvc.fb().group({
+      description: ['', Validators.nullValidator],
       rate: ['', Validators.nullValidator],
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
@@ -854,6 +855,11 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
+        description: [
+          this.modification.scaffold.description,
+          Validators.nullValidator,
+        ],
+
         rate: [this.modification.scaffold.rate, Validators.nullValidator],
         length: [
           this.modification.scaffold.length,
@@ -893,6 +899,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     });
     this.modification.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({
+        description: [a.description, Validators.nullValidator],
         rate: [a.rate, Validators.required],
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
@@ -957,6 +964,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
+        description: ['', Validators.nullValidator],
         rate: ['', Validators.nullValidator],
         length: [this.scaffold.scaffold.length, [, Validators.min(1)]],
         width: [this.scaffold.scaffold.width, [, Validators.min(1)]],
@@ -983,6 +991,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     });
     this.scaffold.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({
+        description: [a.description, Validators.nullValidator],
         rate: ['', Validators.nullValidator],
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],

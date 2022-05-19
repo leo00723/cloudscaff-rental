@@ -152,6 +152,7 @@ export class AddInvoiceComponent implements OnInit {
   }
   addAttachment() {
     const attachment = this.masterSvc.fb().group({
+      description: ['', Validators.nullValidator],
       rate: ['', Validators.required],
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
@@ -831,6 +832,11 @@ export class AddInvoiceComponent implements OnInit {
         [Validators.required],
       ],
       scaffold: this.masterSvc.fb().group({
+        description: [
+          this.invoice.scaffold.description,
+          Validators.nullValidator,
+        ],
+
         rate: [this.invoice.scaffold.rate, Validators.required],
         length: [
           this.invoice.scaffold.length,
@@ -863,6 +869,7 @@ export class AddInvoiceComponent implements OnInit {
     });
     this.invoice.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({
+        description: [a.description, Validators.nullValidator],
         rate: [a.rate, Validators.required],
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
@@ -928,6 +935,7 @@ export class AddInvoiceComponent implements OnInit {
       deposit: [100, [Validators.required, Validators.min(0)]],
       depositType: ['Percentage', [Validators.required]],
       scaffold: this.masterSvc.fb().group({
+        description: ['', Validators.nullValidator],
         rate: ['', Validators.required],
         length: ['', [Validators.required, Validators.min(1)]],
         width: ['', [Validators.required, Validators.min(1)]],

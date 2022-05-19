@@ -162,7 +162,8 @@
                 invoice.invoice.scaffold.width }}{{
                 invoice.company.measurement.symbol }} x {{
                 invoice.invoice.scaffold.height }}{{
-                invoice.company.measurement.symbol }})
+                invoice.company.measurement.symbol }}) - {{
+                invoice.invoice.scaffold.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -181,7 +182,7 @@
                 item.level : 0 }} - ({{ item.length }}{{
                 invoice.company.measurement.symbol }} x {{ item.width }}{{
                 invoice.company.measurement.symbol }} x {{ item.height }}{{
-                invoice.company.measurement.symbol }})
+                invoice.company.measurement.symbol }}) - {{ item.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -198,7 +199,7 @@
               <td>
                 {{ invoice.company.terminology.boards }} - ({{ item.length }}{{
                 invoice.company.measurement.symbol }} x {{ item.width }}{{
-                invoice.company.measurement.symbol }}) - Height ({{ item.height
+                invoice.company.measurement.symbol }}) - Level ({{ item.height
                 }}{{ invoice.company.measurement.symbol }})
               </td>
               <td class="text-center">{{ item.qty }}</td>

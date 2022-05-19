@@ -158,8 +158,15 @@
                         (ionChange)="update($event, item)"
                       >
                       </ion-input>
-                    </td></tr
-                ></ng-template>
+                      <ion-label
+                        color="danger"
+                        *ngIf="qty.value > item.availableQty"
+                      >
+                        you cannot exceed the available qty
+                      </ion-label>
+                    </td>
+                  </tr></ng-template
+                >
               </ng-container>
             </tbody>
           </table>

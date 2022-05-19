@@ -2,8 +2,11 @@ import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
+import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
 import { SetSite } from 'src/app/home/sites/state/sites.actions';
 import { Estimate } from 'src/app/models/estimate.model';
+import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -19,6 +22,7 @@ export class ViewSitePage implements OnDestroy {
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
   scaffolds$: Observable<Scaffold[]>;
+  returns$: Observable<Scaffold[]>;
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
   ids = [];
@@ -60,6 +64,16 @@ export class ViewSitePage implements OnDestroy {
     this.inventoryItems$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.ids[0]}/siteStock`, this.ids[1]);
+    this.returns$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/returns`,
+        'site.id',
+        '==',
+        this.ids[1],
+        'date',
+        'desc'
+      ) as Observable<Return[]>;
   }
 
   async viewEstimate(estimate: Estimate) {
@@ -89,6 +103,37 @@ export class ViewSitePage implements OnDestroy {
     return await modal.present();
   }
 
+  async addRequest(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddRequestComponent,
+      componentProps: { siteData: site },
+      showBackdrop: false,
+      id: 'addRequest',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async addReturn(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddReturnComponent,
+      componentProps: { siteData: site },
+      showBackdrop: false,
+      id: 'addReturn',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewReturn(returnData: Return, site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddReturnComponent,
+      componentProps: { isEdit: true, value: returnData, siteData: site },
+      showBackdrop: false,
+      id: 'viewReturn',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
   viewScaffold(scaffold: Scaffold) {
     this.masterSvc
       .store()

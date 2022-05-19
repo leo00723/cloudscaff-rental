@@ -58,7 +58,6 @@ export class HomePage implements OnDestroy {
     }
     const version = this.masterSvc.store().selectSnapshot(AppState.version);
     if (version) {
-      console.log('version', version);
       if (!this.masterSvc.platform().is('cordova')) {
         const version = this.masterSvc.store().selectSnapshot(AppState.version);
         this.updates

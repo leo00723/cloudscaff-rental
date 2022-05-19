@@ -147,6 +147,7 @@ export class AddEstimatePage implements OnInit {
   }
   addAttachment() {
     const attachment = this.masterSvc.fb().group({
+      description: ['', Validators.nullValidator],
       rate: ['', Validators.required],
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
@@ -810,6 +811,10 @@ export class AddEstimatePage implements OnInit {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
+        description: [
+          this.estimate.scaffold.description,
+          Validators.nullValidator,
+        ],
         rate: [this.estimate.scaffold.rate, Validators.required],
         length: [
           this.estimate.scaffold.length,
@@ -842,6 +847,7 @@ export class AddEstimatePage implements OnInit {
     });
     this.estimate.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({
+        description: [a.description, Validators.nullValidator],
         rate: [a.rate, Validators.required],
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
@@ -906,6 +912,7 @@ export class AddEstimatePage implements OnInit {
       ],
       scaffold: this.masterSvc.fb().group({
         rate: ['', Validators.required],
+        description: ['', Validators.nullValidator],
         length: ['', [Validators.required, Validators.min(1)]],
         width: ['', [Validators.required, Validators.min(1)]],
         height: ['', [Validators.required, Validators.min(1)]],

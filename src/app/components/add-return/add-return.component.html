@@ -1,0 +1,156 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ !isEdit ? "Add Return" : "Edit Return" }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="form" *ngIf="form">
+    <ion-row>
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>Return Information</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-date
+          [form]="form"
+          controlName="returnDate"
+          title="Return Date"
+        ></app-input-date>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Notes"
+            controlName="notes"
+            [form]="form"
+            [textarea]="true"
+          >
+          </app-input-reactive>
+        </ion-col>
+      </ion-col>
+      <ion-col size="6">
+        <ion-text color="medium">
+          <h4>Inventory Information</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col size="6" class="text-end my-auto align-middle">
+        <ion-text color="medium"> <h6>Show all Items</h6> </ion-text>
+        <ion-toggle
+          [checked]="viewAll"
+          (ionChange)="viewAll = !viewAll"
+        ></ion-toggle>
+      </ion-col>
+      <ion-col size="12">
+        <table class="table table-sm table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Code</th>
+              <th scope="col">Category</th>
+              <th scope="col">Name</th>
+              <th scope="col" class="text-center">Available Qty</th>
+              <th scope="col" class="text-center">Shipment Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of items; let i = index">
+              <tr class="align-middle" *ngIf="viewAll; else viewShipment">
+                <th scope="row">{{ item.code }}</th>
+                <td>{{ item.category }}</td>
+                <td>{{ item.name }}</td>
+                <td class="text-center">
+                  {{ item.availableQty }}
+                </td>
+                <td class="text-center">
+                  <ion-input
+                    #qty
+                    debounce="200"
+                    type="number"
+                    [color]="
+                      qty.value > item.availableQty || qty.value < 0
+                        ? 'danger'
+                        : 'success'
+                    "
+                    [clearOnEdit]="true"
+                    [value]="item.shipmentQty"
+                    (ionChange)="update($event, item)"
+                    [readonly]="return.status !== 'pending'"
+                  >
+                  </ion-input>
+                  <ion-label
+                    color="danger"
+                    *ngIf="qty.value > item.availableQty"
+                  >
+                    you cannot exceed the available qty
+                  </ion-label>
+                </td>
+              </tr>
+              <ng-template #viewShipment>
+                <tr class="align-middle" *ngIf="item.shipmentQty > 0">
+                  <th scope="row">{{ item.code }}</th>
+                  <td>{{ item.category }}</td>
+                  <td>{{ item.name }}</td>
+                  <td class="text-center">{{ item.availableQty }}</td>
+                  <td class="text-center">
+                    <ion-input
+                      #qty
+                      debounce="200"
+                      type="number"
+                      [color]="
+                        qty.value > item.availableQty || qty.value < 0
+                          ? 'danger'
+                          : 'success'
+                      "
+                      [clearOnEdit]="true"
+                      [value]="item.shipmentQty"
+                      (ionChange)="update($event, item)"
+                    >
+                    </ion-input>
+                  </td></tr
+              ></ng-template>
+            </ng-container>
+          </tbody>
+        </table>
+      </ion-col>
+      <ion-col
+        size="12"
+        class="text-end"
+        *ngIf="return.status !== 'void' && return.status !== 'sent'"
+      >
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+        <ion-button
+          shape="round"
+          [disabled]="form.invalid"
+          *ngIf="!isEdit && !loading"
+          (click)="createReturn()"
+          >Create Return</ion-button
+        >
+        <ion-button
+          shape="round"
+          *ngIf="isEdit && !loading"
+          color="success"
+          [disabled]="form.invalid"
+          (click)="updateReturn('sent')"
+          >Send Return</ion-button
+        >
+        <ion-button
+          shape="round"
+          *ngIf="isEdit && !loading && return.status === 'pending'"
+          [disabled]="form.invalid"
+          (click)="updateReturn('pending')"
+          >Update Return</ion-button
+        >
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>

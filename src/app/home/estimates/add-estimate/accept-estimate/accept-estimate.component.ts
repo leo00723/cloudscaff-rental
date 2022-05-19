@@ -104,7 +104,7 @@ export class AcceptEstimateComponent implements OnInit {
           totalPaid: 0,
           deposit: 0,
           depositType: 'Percent',
-          depositTotal: 'Percent',
+          depositTotal: 100,
         });
 
         await this.masterSvc

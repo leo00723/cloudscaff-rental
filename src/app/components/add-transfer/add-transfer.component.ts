@@ -50,75 +50,79 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     }
   }
 
-  async createTransfer() {
-    this.loading = true;
-    try {
-      let transfer: Transfer = { ...this.form.value };
-      transfer.items = this.items.filter((item) => item.shipmentQty > 0);
-      this.company = this.masterSvc
-        .store()
-        .selectSnapshot(CompanyState.company);
+  createTransfer() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        let transfer: Transfer = { ...this.form.value };
+        transfer.items = this.items.filter((item) => item.shipmentQty > 0);
+        this.company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
 
-      transfer.code = `TRA${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${(this.company.totalTransfers ? this.company.totalTransfers + 1 : 1)
-        .toString()
-        .padStart(6, '0')}`;
+        transfer.code = `TRA${new Date().toLocaleDateString('en', {
+          year: '2-digit',
+        })}${(this.company.totalTransfers ? this.company.totalTransfers + 1 : 1)
+          .toString()
+          .padStart(6, '0')}`;
 
-      await this.masterSvc
-        .edit()
-        .addDocument(`company/${this.company.id}/transfers`, transfer);
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/transfers`, transfer);
 
-      await this.masterSvc.edit().updateDoc('company', this.company.id, {
-        totalTransfers: increment(1),
-      });
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalTransfers: increment(1),
+        });
 
-      this.masterSvc
-        .notification()
-        .toast('Transfer created successfully', 'success');
-      this.close();
-      this.loading = false;
-    } catch (e) {
-      console.error(e);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong creating transfer. Please try again!',
-          'danger'
-        );
-      this.loading = false;
-    }
+        this.masterSvc
+          .notification()
+          .toast('Transfer created successfully', 'success');
+        this.close();
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating transfer. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
   }
-  async updateTransfer(status: string) {
-    this.loading = true;
-    try {
-      Object.assign(this.transfer, this.form.value);
-      this.transfer.items = this.items.filter((item) => item.shipmentQty > 0);
-      this.transfer.status = status;
+  updateTransfer(status: string) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        Object.assign(this.transfer, this.form.value);
+        this.transfer.items = this.items.filter((item) => item.shipmentQty > 0);
+        this.transfer.status = status;
 
-      await this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.company.id}/transfers`,
-          this.transfer.id,
-          this.transfer
-        );
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/transfers`,
+            this.transfer.id,
+            this.transfer
+          );
 
-      this.masterSvc
-        .notification()
-        .toast('Transfer updated successfully', 'success');
-      this.close();
-      this.loading = false;
-    } catch (e) {
-      console.error(e);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong updating transfer. Please try again!',
-          'danger'
-        );
-      this.loading = false;
-    }
+        this.masterSvc
+          .notification()
+          .toast('Transfer updated successfully', 'success');
+        this.close();
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating transfer. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
   }
 
   updateItems() {

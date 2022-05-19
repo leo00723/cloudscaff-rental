@@ -62,43 +62,45 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     item.shipmentQty = +val.detail.value;
   }
 
-  async createShipment() {
-    this.loading = true;
-    try {
-      let shipment: Shipment = { ...this.form.value };
-      shipment.items = this.items.filter((item) => item.shipmentQty > 0);
-      this.company = this.masterSvc
-        .store()
-        .selectSnapshot(CompanyState.company);
+  createShipment() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        let shipment: Shipment = { ...this.form.value };
+        shipment.items = this.items.filter((item) => item.shipmentQty > 0);
+        this.company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
 
-      shipment.code = `SHI${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
-        .toString()
-        .padStart(6, '0')}`;
+        shipment.code = `SHI${new Date().toLocaleDateString('en', {
+          year: '2-digit',
+        })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
+          .toString()
+          .padStart(6, '0')}`;
 
-      await this.masterSvc
-        .edit()
-        .addDocument(`company/${this.company.id}/shipments`, shipment);
-      await this.masterSvc.edit().updateDoc('company', this.company.id, {
-        totalShipments: increment(1),
-      });
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/shipments`, shipment);
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalShipments: increment(1),
+        });
 
-      this.masterSvc
-        .notification()
-        .toast('Shipment created successfully', 'success');
-      this.close();
-      this.loading = false;
-    } catch (e) {
-      console.error(e);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong creating shipment. Please try again!',
-          'danger'
-        );
-      this.loading = false;
-    }
+        this.masterSvc
+          .notification()
+          .toast('Shipment created successfully', 'success');
+        this.close();
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating shipment. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
   }
 
   updateShipment(status: string) {

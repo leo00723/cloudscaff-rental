@@ -340,3 +340,84 @@ exports.manageTransfer = functions.firestore
       return error;
     }
   });
+
+exports.manageReturn = functions.firestore
+  .document('company/{companyId}/returns/{returnId}')
+  .onUpdate(async (change, context) => {
+    try {
+      if (
+        change.before.data().status !== 'sent' &&
+        change.after.data().status === 'sent'
+      ) {
+        const returnData = change.after.data();
+        // Get the shipment items on site
+        const siteInventory = await admin
+          .firestore()
+          .doc(
+            `company/${context.params.companyId}/siteStock/${returnData.site.id}`
+          )
+          .get();
+        // check if its the first time the shipment is being sent
+        if (siteInventory.exists) {
+          // Update the site inventory
+          const items = returnData.items.map((item: any) => {
+            return {
+              id: item.id,
+              code: item.code,
+              category: item.category,
+              name: item.name,
+              weight: +item.weight,
+              availableQty: +item.shipmentQty,
+            };
+          });
+
+          const oldInventory = siteInventory.data()!.items;
+
+          items.forEach((item: any) => {
+            const inventoryItem = oldInventory.find(
+              (i: any) => i.id === item.id
+            );
+            if (inventoryItem) {
+              inventoryItem.availableQty =
+                inventoryItem.availableQty - item.availableQty;
+              if (inventoryItem.availableQty <= 0) {
+                oldInventory.splice(oldInventory.indexOf(inventoryItem), 1);
+              }
+            } else {
+              oldInventory.push(item);
+            }
+          });
+
+          const itemIds = oldInventory.map((item: any) => item.id);
+          const updatedInventory = {
+            items: oldInventory,
+            ids: itemIds,
+            site: returnData.site,
+          };
+
+          await admin
+            .firestore()
+            .doc(
+              `company/${context.params.companyId}/siteStock/${returnData.site.id}`
+            )
+            .set(updatedInventory);
+
+          // update the stock list
+          for (const item of items) {
+            await admin
+              .firestore()
+              .doc(`company/${context.params.companyId}/stockItems/${item.id}`)
+              .update({
+                inUseQty: admin.firestore.FieldValue.increment(
+                  -item.availableQty
+                ),
+              });
+          }
+        }
+        return '200';
+      }
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  });

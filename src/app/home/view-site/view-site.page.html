@@ -20,6 +20,9 @@
         <ion-segment-button value="inventory">
           <ion-label>Inventory</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="returns">
+          <ion-label>Returns</ion-label>
+        </ion-segment-button>
         <ion-segment-button value="estimates">
           <ion-label>Estimates</ion-label>
         </ion-segment-button>
@@ -44,6 +47,18 @@
         <ng-template #empty>
           <app-site-inventory-table [value]="[]"></app-site-inventory-table
         ></ng-template>
+      </div>
+      <div *ngSwitchCase="'returns'">
+        <app-returns-table
+          [value]="returns$"
+          *ngIf="returns$ | async else loading"
+          (selectedItem)="viewReturn($event,site)"
+        ></app-returns-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addReturn(site)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
       </div>
       <div *ngSwitchCase="'estimates'">
         <app-estimate-table

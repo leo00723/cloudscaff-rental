@@ -53,6 +53,8 @@ import { AddStockitemComponent } from './add-stockitem/add-stockitem.component';
 import { AddShipmentComponent } from './add-shipment/add-shipment.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { AddTransferComponent } from './add-transfer/add-transfer.component';
+import { AddRequestComponent } from './add-request/add-request.component';
+import { AddReturnComponent } from './add-return/add-return.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -101,6 +103,8 @@ const COMPONENTS = [
   ViewModificationComponent,
   ViewStockLocationsComponent,
   AddTransferComponent,
+  AddRequestComponent,
+  AddReturnComponent,
 ];
 const IMPORTS = [
   CommonModule,

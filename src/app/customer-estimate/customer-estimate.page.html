@@ -152,7 +152,8 @@
                 estimate.estimate.scaffold.width }}{{
                 estimate.company.measurement.symbol }} x {{
                 estimate.estimate.scaffold.height }}{{
-                estimate.company.measurement.symbol }})
+                estimate.company.measurement.symbol }}) - {{
+                estimate.estimate.scaffold.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -171,7 +172,7 @@
                 ? item.level : 0 }} - ({{ item.length }}{{
                 estimate.company.measurement.symbol }} x {{ item.width }}{{
                 estimate.company.measurement.symbol }} x {{ item.height }}{{
-                estimate.company.measurement.symbol }})
+                estimate.company.measurement.symbol }}) - {{ item.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -188,7 +189,7 @@
               <td>
                 {{ estimate.company.terminology.boards }} - ({{ item.length }}{{
                 estimate.company.measurement.symbol }} x {{ item.width }}{{
-                estimate.company.measurement.symbol }}) - Height ({{ item.height
+                estimate.company.measurement.symbol }}) - Level ({{ item.height
                 }}{{ estimate.company.measurement.symbol }})
               </td>
               <td class="text-center">{{ item.qty }}</td>

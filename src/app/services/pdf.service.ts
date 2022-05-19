@@ -190,7 +190,7 @@ export class PdfService {
       attachments.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol})`,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
           1,
           a.total
         )
@@ -201,7 +201,7 @@ export class PdfService {
       platforms.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Height (${b.height}${company.measurement.symbol})`,
+          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Level (${b.height}${company.measurement.symbol})`,
           b.qty,
           b.total
         )
@@ -249,7 +249,7 @@ export class PdfService {
           ],
           this.addEstimateItem(
             company,
-            `${company.terminology.scaffold} Level 0 - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol})`,
+            `${company.terminology.scaffold} Level 0 - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol}) - ${estimate.scaffold.description}`,
             1,
             estimate.scaffold.total
           ),
@@ -667,7 +667,7 @@ export class PdfService {
           style: 'h6',
         },
         {
-          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Height ${b.height}${company.measurement.symbol}`,
+          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Level ${b.height}${company.measurement.symbol}`,
           style: 'h6',
           alignment: 'center',
         },
@@ -895,7 +895,7 @@ export class PdfService {
           style: 'h6',
         },
         {
-          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Height ${b.height}${company.measurement.symbol}`,
+          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Level ${b.height}${company.measurement.symbol}`,
           style: 'h6',
           alignment: 'center',
         },
@@ -1123,7 +1123,7 @@ export class PdfService {
       attachments.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol})`,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
           1,
           a.total
         )
@@ -1134,7 +1134,7 @@ export class PdfService {
       platforms.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Height (${b.height}${company.measurement.symbol})`,
+          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Level (${b.height}${company.measurement.symbol})`,
           b.qty,
           b.total
         )
@@ -1182,7 +1182,7 @@ export class PdfService {
           ],
           this.addEstimateItem(
             company,
-            `${company.terminology.scaffold} Level 0 - (${invoice.scaffold.length}${company.measurement.symbol} x ${invoice.scaffold.width}${company.measurement.symbol} x ${invoice.scaffold.height}${company.measurement.symbol})`,
+            `${company.terminology.scaffold} Level 0 - (${invoice.scaffold.length}${company.measurement.symbol} x ${invoice.scaffold.width}${company.measurement.symbol} x ${invoice.scaffold.height}${company.measurement.symbol}) - ${invoice.scaffold.description}`,
             1,
             invoice.scaffold.total
           ),
@@ -2158,7 +2158,7 @@ export class PdfService {
     data.attachments.forEach((a) => {
       attachments.push(
         this.addModificationItem(
-          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol})`,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
           1
         )
       );
@@ -2167,7 +2167,7 @@ export class PdfService {
     data.boards.forEach((b) => {
       platforms.push(
         this.addModificationItem(
-          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Height (${b.height}${company.measurement.symbol})`,
+          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Level (${b.height}${company.measurement.symbol})`,
           b.qty
         )
       );
@@ -2207,7 +2207,7 @@ export class PdfService {
             },
           ],
           this.addModificationItem(
-            `${company.terminology.scaffold} Level 0 - (${data.scaffold.length}${company.measurement.symbol} x ${data.scaffold.width}${company.measurement.symbol} x ${data.scaffold.height}${company.measurement.symbol})`,
+            `${company.terminology.scaffold} Level 0 - (${data.scaffold.length}${company.measurement.symbol} x ${data.scaffold.width}${company.measurement.symbol} x ${data.scaffold.height}${company.measurement.symbol}) - ${data.scaffold.description}`,
             1
           ),
           ...attachments,
@@ -2251,7 +2251,7 @@ export class PdfService {
       attachments.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol})`,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
           1,
           a.total
         )
@@ -2262,7 +2262,7 @@ export class PdfService {
       platforms.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Height (${b.height}${company.measurement.symbol})`,
+          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Level (${b.height}${company.measurement.symbol})`,
           b.qty,
           b.total
         )
@@ -2310,7 +2310,7 @@ export class PdfService {
           ],
           this.addEstimateItem(
             company,
-            `${company.terminology.scaffold} Level 0 - (${data.scaffold.length}${company.measurement.symbol} x ${data.scaffold.width}${company.measurement.symbol} x ${data.scaffold.height}${company.measurement.symbol})`,
+            `${company.terminology.scaffold} Level 0 - (${data.scaffold.length}${company.measurement.symbol} x ${data.scaffold.width}${company.measurement.symbol} x ${data.scaffold.height}${company.measurement.symbol}) - ${data.scaffold.description}`,
             1,
             data.scaffold.total
           ),

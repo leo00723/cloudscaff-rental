@@ -1,6 +1,7 @@
 import { RateProfile } from './rate-profiles.model';
 
 export interface Item {
+  description?: string;
   width?: string;
   qty?: string;
   total?: number;
