@@ -804,8 +804,8 @@ export class AddEstimatePage implements OnInit {
       customer: [this.estimate.customer, Validators.required],
       message: [this.estimate.message],
       siteName: [this.estimate.siteName, Validators.required],
-      startDate: [this.estimate.startDate, Validators.required],
-      endDate: [this.estimate.endDate, Validators.required],
+      startDate: [this.estimate.startDate, Validators.nullValidator],
+      endDate: [this.estimate.endDate, Validators.nullValidator],
       discountPercentage: [
         this.estimate.discountPercentage,
         [Validators.required, Validators.min(0), Validators.max(100)],
@@ -904,8 +904,8 @@ export class AddEstimatePage implements OnInit {
         Validators.required,
       ],
       siteName: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: ['', Validators.nullValidator],
+      endDate: ['', Validators.nullValidator],
       discountPercentage: [
         0,
         [Validators.required, Validators.min(0), Validators.max(100)],

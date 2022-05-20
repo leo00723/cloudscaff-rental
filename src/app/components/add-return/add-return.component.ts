@@ -23,10 +23,10 @@ import { increment } from '@angular/fire/firestore';
 })
 export class AddReturnComponent implements OnInit, OnDestroy {
   @Input() isEdit = false;
+  @Input() allowSend = false;
   @Input() siteData: Site;
   @Input() set value(val: Return) {
     if (val) {
-      console.log(val);
       Object.assign(this.return, val);
       this.initEditForm();
     }
@@ -38,6 +38,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   loading = false;
   viewAll = true;
   items: InventoryItem[];
+  error = false;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
@@ -48,7 +49,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.return.status !== 'sent') {
+    if (this.return.status !== 'sent' && !this.allowSend) {
       this.subs.add(
         this.masterSvc
           .edit()
@@ -143,8 +144,45 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       }
     });
   }
-  update(val, item: InventoryItem) {
-    item.shipmentQty = +val.detail.value;
+  update(val, item: InventoryItem, type: string) {
+    switch (type) {
+      case 'shipment':
+        {
+          item.shipmentQty = +val.detail.value;
+          item.shipmentQty > item.availableQty || item.shipmentQty < 0
+            ? (this.error = true)
+            : (this.error = false);
+        }
+        break;
+      case 'damaged':
+        item.damagedQty = +val.detail.value;
+        break;
+      case 'maintenance':
+        item.inMaintenanceQty = +val.detail.value;
+        break;
+      case 'lost':
+        item.lostQty = +val.detail.value;
+        break;
+    }
+    this.checkError(item);
+  }
+
+  checkError(item: InventoryItem) {
+    const damaged = item.damagedQty ? item.damagedQty : 0;
+    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
+    const lost = item.lostQty ? item.lostQty : 0;
+    if (
+      damaged + maintenance + lost > item.shipmentQty ||
+      damaged < 0 ||
+      maintenance < 0 ||
+      lost < 0
+    ) {
+      item.error = true;
+      this.error = true;
+    } else {
+      item.error = false;
+      this.error = false;
+    }
   }
   close() {
     this.masterSvc.modal().dismiss();

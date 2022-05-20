@@ -55,6 +55,8 @@ import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-l
 import { AddTransferComponent } from './add-transfer/add-transfer.component';
 import { AddRequestComponent } from './add-request/add-request.component';
 import { AddReturnComponent } from './add-return/add-return.component';
+import { ReturnsTableComponent } from '../home/view-site/returns-table/returns-table.component';
+import { CalculatePipe } from './calculate.pipe';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -105,6 +107,8 @@ const COMPONENTS = [
   AddTransferComponent,
   AddRequestComponent,
   AddReturnComponent,
+  ReturnsTableComponent,
+  CalculatePipe,
 ];
 const IMPORTS = [
   CommonModule,

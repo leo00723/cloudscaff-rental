@@ -817,8 +817,8 @@ export class AddInvoiceComponent implements OnInit {
       customer: [this.invoice.customer, Validators.required],
       message: [this.invoice.message],
       siteName: [this.invoice.siteName, Validators.required],
-      startDate: [this.invoice.startDate, Validators.required],
-      endDate: [this.invoice.endDate, Validators.required],
+      startDate: [this.invoice.startDate, Validators.nullValidator],
+      endDate: [this.invoice.endDate, Validators.nullValidator],
       discountPercentage: [
         this.invoice.discountPercentage,
         [Validators.required, Validators.min(0), Validators.max(100)],
@@ -926,8 +926,8 @@ export class AddInvoiceComponent implements OnInit {
         Validators.required,
       ],
       siteName: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: ['', Validators.nullValidator],
+      endDate: ['', Validators.nullValidator],
       discountPercentage: [
         0,
         [Validators.required, Validators.min(0), Validators.max(100)],

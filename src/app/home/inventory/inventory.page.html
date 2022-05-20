@@ -16,9 +16,9 @@
       <ion-segment-button value="3">
         <ion-label>Shipments</ion-label>
       </ion-segment-button>
-      <!-- <ion-segment-button value="4">
+      <ion-segment-button value="4">
         <ion-label>Returns</ion-label>
-      </ion-segment-button> -->
+      </ion-segment-button>
       <ion-segment-button value="5">
         <ion-label>Transfers</ion-label>
       </ion-segment-button>
@@ -51,6 +51,13 @@
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
+    </div>
+    <div *ngSwitchCase="4">
+      <app-returns-table
+        [value]="returns$"
+        *ngIf="returns$ | async else loading"
+        (selectedItem)="viewReturn($event)"
+      ></app-returns-table>
     </div>
     <div *ngSwitchCase="5">
       <app-transfer-table

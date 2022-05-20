@@ -34,6 +34,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   company: Company;
   loading = false;
   viewAll = true;
+  error = false;
   private subs = new Subscription();
   @Select() sites$: Observable<Site[]>;
   constructor(private masterSvc: MasterService) {
@@ -60,6 +61,24 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
 
   update(val, item: InventoryItem) {
     item.shipmentQty = +val.detail.value;
+    this.checkError(item);
+  }
+
+  checkError(item: InventoryItem) {
+    console.log('checking error');
+    const totalQty = item.availableQty ? item.availableQty : 0;
+    const inUseQty = item.inUseQty ? item.inUseQty : 0;
+    const damaged = item.damagedQty ? item.damagedQty : 0;
+    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
+    const lost = item.lostQty ? item.lostQty : 0;
+    const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
+    if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
+      item.error = true;
+      this.error = true;
+    } else {
+      item.error = false;
+      this.error = false;
+    }
   }
 
   createShipment() {

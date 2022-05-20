@@ -117,24 +117,23 @@
                   <td>{{ item.category }}</td>
                   <td>{{ item.name }}</td>
                   <td class="text-center">
-                    {{ item.availableQty - item.inUseQty }}
+                    {{ item | calculate }}
                   </td>
                   <td class="text-center">
                     <ion-input
                       #qty
                       debounce="200"
                       type="number"
-                      [color]="
-                        qty.value > item.availableQty || qty.value < 0
-                          ? 'danger'
-                          : 'success'
-                      "
+                      [color]="item.error ? 'danger' : 'success'"
                       [clearOnEdit]="true"
                       [value]="item.shipmentQty"
                       (ionChange)="update($event, item)"
                       [readonly]="shipment.status !== 'pending'"
                     >
                     </ion-input>
+                    <ion-label color="danger" *ngIf="item.error">
+                      you cannot exceed the available qty
+                    </ion-label>
                   </td>
                 </tr>
                 <ng-template #viewShipment>
@@ -142,26 +141,21 @@
                     <th scope="row">{{ item.code }}</th>
                     <td>{{ item.category }}</td>
                     <td>{{ item.name }}</td>
-                    <td class="text-center">{{ item.availableQty }}</td>
+                    <td class="text-center">
+                      {{ item | calculate }}
+                    </td>
                     <td class="text-center">
                       <ion-input
                         #qty
                         debounce="200"
                         type="number"
-                        [color]="
-                          qty.value > item.availableQty || qty.value < 0
-                            ? 'danger'
-                            : 'success'
-                        "
+                        [color]="item.error ? 'danger' : 'success'"
                         [clearOnEdit]="true"
                         [value]="item.shipmentQty"
                         (ionChange)="update($event, item)"
                       >
                       </ion-input>
-                      <ion-label
-                        color="danger"
-                        *ngIf="qty.value > item.availableQty"
-                      >
+                      <ion-label color="danger" *ngIf="item.error">
                         you cannot exceed the available qty
                       </ion-label>
                     </td>
@@ -184,7 +178,7 @@
           ></ion-progress-bar>
           <ion-button
             shape="round"
-            [disabled]="form.invalid"
+            [disabled]="form.invalid || error"
             *ngIf="!isEdit && !loading"
             (click)="createShipment()"
             >Create Shipment</ion-button

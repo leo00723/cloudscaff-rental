@@ -33,6 +33,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   loading = false;
   viewAll = true;
   items: InventoryItem[];
+  error = false;
   @Select() sites$: Observable<Site[]>;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
@@ -138,6 +139,23 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   }
   update(val, item: InventoryItem) {
     item.shipmentQty = +val.detail.value;
+    this.checkError(item);
+  }
+  checkError(item: InventoryItem) {
+    console.log('checking error');
+    const totalQty = item.availableQty ? item.availableQty : 0;
+    const inUseQty = item.inUseQty ? item.inUseQty : 0;
+    const damaged = item.damagedQty ? item.damagedQty : 0;
+    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
+    const lost = item.lostQty ? item.lostQty : 0;
+    const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
+    if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
+      item.error = true;
+      this.error = true;
+    } else {
+      item.error = false;
+      this.error = false;
+    }
   }
   close() {
     this.masterSvc.modal().dismiss();

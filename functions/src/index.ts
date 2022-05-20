@@ -368,6 +368,9 @@ exports.manageReturn = functions.firestore
               name: item.name,
               weight: +item.weight,
               availableQty: +item.shipmentQty,
+              damagedQty: +item.damagedQty,
+              lostQty: +item.lostQty,
+              inMaintenanceQty: +item.inMaintenanceQty,
             };
           });
 
@@ -410,6 +413,13 @@ exports.manageReturn = functions.firestore
               .update({
                 inUseQty: admin.firestore.FieldValue.increment(
                   -item.availableQty
+                ),
+                damagedQty: admin.firestore.FieldValue.increment(
+                  item.damagedQty
+                ),
+                lostQty: admin.firestore.FieldValue.increment(item.lostQty),
+                inMaintenanceQty: admin.firestore.FieldValue.increment(
+                  item.inMaintenanceQty
                 ),
               });
           }

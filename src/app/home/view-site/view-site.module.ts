@@ -6,7 +6,6 @@ import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.componen
 import { SiteInventoryTableComponent } from './site-inventory-table/site-inventory-table.component';
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
-import { ReturnsTableComponent } from './returns-table/returns-table.component';
 
 @NgModule({
   imports: [
@@ -18,7 +17,6 @@ import { ReturnsTableComponent } from './returns-table/returns-table.component';
     ViewSitePage,
     ScaffoldTableComponent,
     SiteInventoryTableComponent,
-    ReturnsTableComponent,
   ],
 })
 export class ViewSitePageModule {}

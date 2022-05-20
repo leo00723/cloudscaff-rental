@@ -17,11 +17,12 @@ export interface InventoryItem {
   yardQty?: number;
   crossHireQty?: number;
   inUseQty?: number;
-  inMantainenceQty?: number;
+  inMaintenanceQty?: number;
   damagedQty?: number;
   lostQty?: number;
   shipmentQty?: number;
   reservedQty?: number;
   inService?: boolean;
   crossHire?: CrossHire[];
+  error?: boolean;
 }

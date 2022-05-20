@@ -41,7 +41,11 @@
           <h4>Inventory Information</h4>
         </ion-text>
       </ion-col>
-      <ion-col size="6" class="text-end my-auto align-middle">
+      <ion-col
+        size="6"
+        class="text-end my-auto align-middle"
+        *ngIf="!allowSend"
+      >
         <ion-text color="medium"> <h6>Show all Items</h6> </ion-text>
         <ion-toggle
           [checked]="viewAll"
@@ -57,6 +61,15 @@
               <th scope="col">Name</th>
               <th scope="col" class="text-center">Available Qty</th>
               <th scope="col" class="text-center">Shipment Qty</th>
+              <th scope="col" *ngIf="allowSend" class="text-center">
+                Maintenance Qty
+              </th>
+              <th scope="col" *ngIf="allowSend" class="text-center">
+                Damaged Qty
+              </th>
+              <th scope="col" *ngIf="allowSend" class="text-center">
+                Lost Qty
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -80,8 +93,8 @@
                     "
                     [clearOnEdit]="true"
                     [value]="item.shipmentQty"
-                    (ionChange)="update($event, item)"
-                    [readonly]="return.status !== 'pending'"
+                    (ionChange)="update($event, item, 'shipment')"
+                    [readonly]="return.status !== 'pending' || allowSend"
                   >
                   </ion-input>
                   <ion-label
@@ -89,6 +102,54 @@
                     *ngIf="qty.value > item.availableQty"
                   >
                     you cannot exceed the available qty
+                  </ion-label>
+                </td>
+                <td class="text-center">
+                  <ion-input
+                    #MaintenanceQty
+                    debounce="200"
+                    type="number"
+                    [color]="item.error ? 'danger' : 'primary'"
+                    [clearOnEdit]="true"
+                    [value]="item.inMaintenanceQty"
+                    (ionChange)="update($event, item, 'maintenance')"
+                    [readonly]="return.status !== 'pending' && !allowSend"
+                  >
+                  </ion-input>
+                  <ion-label color="danger" *ngIf="item.error">
+                    you cannot exceed the shipment qty
+                  </ion-label>
+                </td>
+                <td class="text-center">
+                  <ion-input
+                    #DamagedQty
+                    debounce="200"
+                    type="number"
+                    [color]="item.error ? 'danger' : 'warning'"
+                    [clearOnEdit]="true"
+                    [value]="item.damagedQty"
+                    (ionChange)="update($event, item, 'damaged')"
+                    [readonly]="return.status !== 'pending' && !allowSend"
+                  >
+                  </ion-input>
+                  <ion-label color="danger" *ngIf="item.error">
+                    you cannot exceed the shipment qty
+                  </ion-label>
+                </td>
+                <td class="text-center">
+                  <ion-input
+                    #LostQty
+                    debounce="200"
+                    type="number"
+                    [color]="item.error ? 'danger' : 'danger'"
+                    [clearOnEdit]="true"
+                    [value]="item.lostQty"
+                    (ionChange)="update($event, item, 'lost')"
+                    [readonly]="return.status !== 'pending' && !allowSend"
+                  >
+                  </ion-input>
+                  <ion-label color="danger" *ngIf="item.error">
+                    you cannot exceed the shipment qty
                   </ion-label>
                 </td>
               </tr>
@@ -110,7 +171,7 @@
                       "
                       [clearOnEdit]="true"
                       [value]="item.shipmentQty"
-                      (ionChange)="update($event, item)"
+                      (ionChange)="update($event, item, 'shipment')"
                     >
                     </ion-input>
                   </td></tr
@@ -137,15 +198,17 @@
         >
         <ion-button
           shape="round"
-          *ngIf="isEdit && !loading"
+          *ngIf="isEdit && !loading && allowSend"
           color="success"
-          [disabled]="form.invalid"
+          [disabled]="form.invalid || error"
           (click)="updateReturn('sent')"
-          >Send Return</ion-button
+          >Accept Return</ion-button
         >
         <ion-button
           shape="round"
-          *ngIf="isEdit && !loading && return.status === 'pending'"
+          *ngIf="
+            isEdit && !loading && return.status === 'pending' && !allowSend
+          "
           [disabled]="form.invalid"
           (click)="updateReturn('pending')"
           >Update Return</ion-button

@@ -181,21 +181,14 @@
                       #qty
                       debounce="200"
                       type="number"
-                      [color]="
-                        qty.value > item.availableQty || qty.value < 0
-                          ? 'danger'
-                          : 'success'
-                      "
+                      [color]="item.error ? 'danger' : 'success'"
                       [clearOnEdit]="true"
                       [value]="item.shipmentQty"
                       (ionChange)="update($event, item)"
                       [readonly]="transfer.status !== 'pending'"
                     >
                     </ion-input>
-                    <ion-label
-                      color="danger"
-                      *ngIf="qty.value > item.availableQty"
-                    >
+                    <ion-label color="danger" *ngIf="item.error">
                       you cannot exceed the available qty
                     </ion-label>
                   </td>
@@ -211,18 +204,18 @@
                         #qty
                         debounce="200"
                         type="number"
-                        [color]="
-                          qty.value > item.availableQty || qty.value < 0
-                            ? 'danger'
-                            : 'success'
-                        "
+                        [color]="item.error ? 'danger' : 'success'"
                         [clearOnEdit]="true"
                         [value]="item.shipmentQty"
                         (ionChange)="update($event, item)"
                       >
                       </ion-input>
-                    </td></tr
-                ></ng-template>
+                      <ion-label color="danger" *ngIf="item.error">
+                        you cannot exceed the available qty
+                      </ion-label>
+                    </td>
+                  </tr></ng-template
+                >
               </ng-container>
             </tbody>
           </table>
@@ -240,7 +233,7 @@
           ></ion-progress-bar>
           <ion-button
             shape="round"
-            [disabled]="form.invalid"
+            [disabled]="form.invalid || error"
             *ngIf="!isEdit && !loading"
             (click)="createTransfer()"
             >Create Transfer</ion-button
@@ -265,14 +258,14 @@
             shape="round"
             *ngIf="isEdit && !loading"
             color="success"
-            [disabled]="form.invalid"
+            [disabled]="form.invalid || error"
             (click)="updateTransfer('sent')"
             >Send Transfer</ion-button
           >
           <ion-button
             shape="round"
             *ngIf="isEdit && !loading && transfer.status === 'pending'"
-            [disabled]="form.invalid"
+            [disabled]="form.invalid || error"
             (click)="updateTransfer('pending')"
             >Update Transfer</ion-button
           >

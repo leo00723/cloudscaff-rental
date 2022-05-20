@@ -49,11 +49,26 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row.availableQty - row.inUseQty }}
+      {{ row | calculate }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
     name="In Use Qty"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column>
+  <ngx-datatable-column
+    name="In Maintenance Qty"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column>
+  <ngx-datatable-column
+    name="Damaged Qty"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column>
+  <ngx-datatable-column
+    name="Lost Qty"
     cellClass="text-center"
     headerClass="text-center"
   ></ngx-datatable-column>

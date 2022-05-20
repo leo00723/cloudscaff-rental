@@ -848,8 +848,8 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       customer: [this.modification.customer, Validators.required],
       message: [this.modification.message, Validators.required],
       siteName: [this.modification.siteName, Validators.required],
-      startDate: [this.modification.startDate, Validators.required],
-      endDate: [this.modification.endDate, Validators.required],
+      startDate: [this.modification.startDate, Validators.nullValidator],
+      endDate: [this.modification.endDate, Validators.nullValidator],
       discountPercentage: [
         this.modification.discountPercentage,
         [Validators.required, Validators.min(0), Validators.max(100)],
@@ -957,8 +957,8 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         Validators.required,
       ],
       siteName: [this.modification.siteName, Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: ['', Validators.nullValidator],
+      endDate: ['', Validators.nullValidator],
       discountPercentage: [
         0,
         [Validators.required, Validators.min(0), Validators.max(100)],

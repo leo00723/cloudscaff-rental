@@ -179,8 +179,8 @@ export class AddStockitemComponent implements OnInit {
         this.inventoryItem.inUseQty,
         [Validators.required, Validators.min(0)],
       ],
-      inMantainenceQty: [
-        this.inventoryItem.inMantainenceQty,
+      inMaintenanceQty: [
+        this.inventoryItem.inMaintenanceQty,
         [Validators.required, Validators.min(0)],
       ],
       damagedQty: [
@@ -219,7 +219,7 @@ export class AddStockitemComponent implements OnInit {
       crossHireQty: [0, [Validators.required, Validators.min(0)]],
       inUseQty: [0, [Validators.required, Validators.min(0)]],
       reservedQty: [0, [Validators.required, Validators.min(0)]],
-      inMantainenceQty: [0, [Validators.required, Validators.min(0)]],
+      inMaintenanceQty: [0, [Validators.required, Validators.min(0)]],
       damagedQty: [0, [Validators.required, Validators.min(0)]],
       lostQty: [0, [Validators.required, Validators.min(0)]],
       inService: [true, [Validators.required]],

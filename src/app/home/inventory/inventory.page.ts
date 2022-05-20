@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
+import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
 import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
+import { Return } from 'src/app/models/return.model';
 import { Shipment } from 'src/app/models/shipment.model';
 import { Transfer } from 'src/app/models/transfer.model';
 import { User } from 'src/app/models/user.model';
@@ -23,6 +25,7 @@ export class InventoryPage implements OnInit {
   inventoryItems$: Observable<InventoryItem[]>;
   shipments$: Observable<Shipment[]>;
   transfers$: Observable<Transfer[]>;
+  returns$: Observable<Return[]>;
   active = 1;
   constructor(private masterSvc: MasterService) {}
   ngOnInit() {
@@ -133,6 +136,17 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async viewReturn(returnData: Return) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddReturnComponent,
+      componentProps: { allowSend: true, isEdit: true, value: returnData },
+      showBackdrop: false,
+      id: 'viewReturn',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
   }
@@ -151,6 +165,9 @@ export class InventoryPage implements OnInit {
         this.transfers$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/transfers`, 'code', 'desc');
+        this.returns$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/returns`, 'code', 'desc');
       } else {
         console.log(
           '-----------------------try inventory----------------------'

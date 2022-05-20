@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { Company } from 'src/app/models/company.model';
 import { Credit } from 'src/app/models/credit.model';
@@ -60,7 +60,7 @@ export class ShareDocumentComponent {
               template: {
                 name: 'share',
                 data: {
-                  title: `Hey ${quote.customer.name}, ${company.name} has sent you a Estimate.`,
+                  title: `Hey ${quote.customer.name}, ${company.name} has sent you an Estimate.`,
                   message: '',
                   btnText: 'View Estimate',
                   link,
@@ -108,7 +108,7 @@ export class ShareDocumentComponent {
               template: {
                 name: 'share',
                 data: {
-                  title: `Hey ${invoice.customer.name}, ${company.name} has sent you a Invoice.`,
+                  title: `Hey ${invoice.customer.name}, ${company.name} has sent you an Invoice.`,
                   message: '',
                   btnText: 'View Invoice',
                   link,
@@ -204,7 +204,7 @@ export class ShareDocumentComponent {
               template: {
                 name: 'share',
                 data: {
-                  title: `Hey ${inspection.customer.name}, ${company.name} has sent you a Inspection.`,
+                  title: `Hey ${inspection.customer.name}, ${company.name} has sent you an Inspection.`,
                   message: '',
                   btnText: 'View Inspection',
                   link,
