@@ -1,4 +1,4 @@
-export class TransportItem {
+export class TransportType {
   maxLoad?: number;
   name?: string;
   rate?: number;
@@ -6,5 +6,13 @@ export class TransportItem {
 export interface Transport {
   id?: string;
   name?: string;
-  types?: TransportItem[];
+  types?: TransportType[];
+}
+export interface TransportItem {
+  rate?: number;
+  hours?: string;
+  qty?: string;
+  days?: string;
+  total?: number;
+  type?: TransportType;
 }

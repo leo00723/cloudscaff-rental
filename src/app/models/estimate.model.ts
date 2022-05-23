@@ -5,6 +5,7 @@ import { HireItem } from './hireItem.model';
 import { Item } from './item.model';
 import { LabourBroker } from './labour-broker.model';
 import { LabourItem } from './labourItem.model';
+import { Transport, TransportItem } from './transport.model';
 
 export interface Estimate {
   additionals: AdditionalItem[];
@@ -21,6 +22,8 @@ export interface Estimate {
   hire: HireItem;
   id: string;
   labour: LabourItem[];
+  transport: TransportItem[];
+  transportProfile: Transport[];
   message: string;
   scaffold: Item;
   siteName: string;

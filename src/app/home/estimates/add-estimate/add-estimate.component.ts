@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
+import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
@@ -40,6 +41,8 @@ export class AddEstimatePage implements OnInit {
     hire: undefined,
     id: '',
     labour: [],
+    transport: [],
+    transportProfile: undefined,
     message: '',
     scaffold: undefined,
     siteName: '',
@@ -64,6 +67,7 @@ export class AddEstimatePage implements OnInit {
   customers$: Observable<Customer[]>;
   rates$: Observable<any>;
   brokers$: Observable<any>;
+  transport$: Observable<Transport[]>;
   form: FormGroup;
   loading = false;
   isLoading = true;
@@ -84,6 +88,9 @@ export class AddEstimatePage implements OnInit {
     this.brokers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/brokers`);
+    this.transport$ = this.masterSvc
+      .edit()
+      .getCollection(`company/${this.company.id}/transport`);
 
     if (this.isEdit) {
       this.show = 'editCustomer';
@@ -110,6 +117,9 @@ export class AddEstimatePage implements OnInit {
   get labourForms() {
     return this.form.get('labour') as FormArray;
   }
+  get transportForms() {
+    return this.form.get('transport') as FormArray;
+  }
   get additionalForms() {
     return this.form.get('additionals') as FormArray;
   }
@@ -123,6 +133,16 @@ export class AddEstimatePage implements OnInit {
       total: [0],
     });
     this.labourForms.push(labour);
+  }
+  addTransport() {
+    const transport = this.masterSvc.fb().group({
+      type: ['', Validators.required],
+      hours: ['', Validators.required],
+      days: ['', Validators.required],
+      qty: ['', Validators.required],
+      total: [''],
+    });
+    this.transportForms.push(transport);
   }
   addAdditional() {
     const additional = this.masterSvc.fb().group({
@@ -180,6 +200,11 @@ export class AddEstimatePage implements OnInit {
       this.labourForms.removeAt(i);
     });
   }
+  deleteTransport(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.transportForms.removeAt(i);
+    });
+  }
   // END: FORM CRUD
 
   // START: Helper functions
@@ -203,6 +228,12 @@ export class AddEstimatePage implements OnInit {
   changeBroker() {
     this.labourForms.clear();
     this.addLabour();
+  }
+
+  // switch transport
+  changeTransport() {
+    this.transportForms.clear();
+    this.addTransport();
   }
 
   // switch customer
@@ -882,7 +913,12 @@ export class AddEstimatePage implements OnInit {
       additionals: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
       broker: [this.estimate.broker],
+      transportProfile: [
+        this.estimate.transportProfile ? this.estimate.transportProfile : '',
+        Validators.nullValidator,
+      ],
       labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
       poNumber: [this.estimate.poNumber],
       woNumber: [this.estimate.woNumber],
       code: [this.estimate.code],
@@ -922,6 +958,16 @@ export class AddEstimatePage implements OnInit {
       });
       this.labourForms.push(labour);
     });
+    this.estimate.transport.forEach((t) => {
+      const transport = this.masterSvc.fb().group({
+        type: [t.type, Validators.required],
+        hours: [t.hours, Validators.required],
+        days: [t.days, Validators.required],
+        qty: [t.qty, Validators.required],
+        total: [t.total],
+      });
+      this.transportForms.push(transport);
+    });
     this.estimate.additionals.forEach((add) => {
       const additional = this.masterSvc.fb().group({
         rate: [add.rate, Validators.required],
@@ -936,17 +982,6 @@ export class AddEstimatePage implements OnInit {
       this.additionalForms.push(additional);
     });
     this.isLoading = false;
-  }
-
-  public findInvalidControls() {
-    const invalid = [];
-    const controls = this.form.controls;
-    for (const name in controls) {
-      if (controls[name].invalid) {
-        invalid.push(`${name} is invalid`);
-      }
-    }
-    return invalid;
   }
 
   private initFrom() {
@@ -984,13 +1019,25 @@ export class AddEstimatePage implements OnInit {
       boards: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),
       broker: [''],
+      transportProfile: [''],
       poNumber: [''],
       woNumber: [''],
       labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
     });
     // this.addBoard();
     // this.addLabour();
     // this.addAdditional();
+  }
+  public findInvalidControls() {
+    const invalid = [];
+    const controls = this.form.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        invalid.push(`${name} is invalid`);
+      }
+    }
+    return invalid;
   }
   // END: Form Init
 }
