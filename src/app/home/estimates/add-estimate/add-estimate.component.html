@@ -200,6 +200,17 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
+                  title="Lifts"
+                  type="number"
+                  controlName="lifts"
+                  [form]="field('scaffold')"
+                  placeholder="No. Lifts"
+                  (fieldChange)="update('scaffold')"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
                   title="Level"
                   type="number"
                   [readonly]="true"
@@ -308,6 +319,17 @@
                   type="number"
                   controlName="height"
                   placeholder="H"
+                  [form]="attachment"
+                  (fieldChange)="update('attachments', i)"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
+                  title="Lifts"
+                  type="number"
+                  controlName="lifts"
+                  placeholder="No. of Lifts"
                   [form]="attachment"
                   (fieldChange)="update('attachments', i)"
                 >

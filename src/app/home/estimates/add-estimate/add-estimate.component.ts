@@ -152,6 +152,7 @@ export class AddEstimatePage implements OnInit {
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
+      lifts: ['', [Validators.nullValidator, Validators.min(1)]],
       level: [''],
       total: [0],
     });
@@ -552,6 +553,15 @@ export class AddEstimatePage implements OnInit {
           );
         }
         break;
+      case 9:
+        {
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.length').value *
+              this.field('scaffold.lifts').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
       case 0: {
         this.field('scaffold.total').setValue(
           this.field('scaffold.rate').value.rate
@@ -695,6 +705,17 @@ export class AddEstimatePage implements OnInit {
             .get('total')
             .setValue(
               ((ref.get('length').value * ref.get('height').value) / 10) *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
+      case 9:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('lifts').value *
                 ref.get('rate').value.rate
             );
         }
@@ -847,6 +868,7 @@ export class AddEstimatePage implements OnInit {
           this.estimate.scaffold.height,
           [Validators.required, Validators.min(1)],
         ],
+        lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
         level: [0],
         total: [this.estimate.scaffold.total],
       }),
@@ -855,7 +877,7 @@ export class AddEstimatePage implements OnInit {
         rate: [this.estimate.hire.rate],
         daysStanding: [this.estimate.hire.daysStanding, [Validators.min(1)]],
         total: [this.estimate.hire.total],
-        isWeeks: [this.estimate.hire.isWeeks, Validators.required],
+        isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
       }),
       additionals: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
@@ -872,6 +894,7 @@ export class AddEstimatePage implements OnInit {
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
+        lifts: [a.lifts, [Validators.nullValidator, Validators.min(1)]],
         level: [a.level],
         total: [a.total],
       });
@@ -915,6 +938,17 @@ export class AddEstimatePage implements OnInit {
     this.isLoading = false;
   }
 
+  public findInvalidControls() {
+    const invalid = [];
+    const controls = this.form.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        invalid.push(`${name} is invalid`);
+      }
+    }
+    return invalid;
+  }
+
   private initFrom() {
     this.form = this.masterSvc.fb().group({
       customer: ['', Validators.required],
@@ -936,6 +970,7 @@ export class AddEstimatePage implements OnInit {
         length: ['', [Validators.required, Validators.min(1)]],
         width: ['', [Validators.required, Validators.min(1)]],
         height: ['', [Validators.required, Validators.min(1)]],
+        lifts: ['', [Validators.nullValidator, Validators.min(1)]],
         level: [0],
         total: [0],
       }),
@@ -944,7 +979,7 @@ export class AddEstimatePage implements OnInit {
         rate: [''],
         daysStanding: ['', [Validators.min(1)]],
         total: [0],
-        isWeeks: ['', Validators.required],
+        isWeeks: ['', Validators.nullValidator],
       }),
       boards: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),

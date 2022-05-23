@@ -9,7 +9,8 @@ export interface Item {
   rate?: RateProfile;
   height?: string;
   safe?: string;
-  level?: string;
+  level?: number;
+  lifts?: number;
   breakdown?: {
     dismantle: {
       length: number;

@@ -195,6 +195,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
+      lifts: ['', [Validators.nullValidator, Validators.min(1)]],
       level: ['', [Validators.nullValidator]],
       breakdown: [{ dismantle: [], erection: [] }, [Validators.nullValidator]],
       total: [0],
@@ -587,6 +588,15 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           );
         }
         break;
+      case 9:
+        {
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.length').value *
+              this.field('scaffold.lifts').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
       case 0: {
         this.field('scaffold.total').setValue(
           this.field('scaffold.rate').value.rate
@@ -737,6 +747,17 @@ export class AddModificationComponent implements OnInit, OnDestroy {
             );
         }
         break;
+      case 9:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('lifts').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
       case 0: {
         ref.get('total').setValue(ref.get('rate').value.rate);
       }
@@ -878,7 +899,6 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           this.modification.scaffold.description,
           Validators.nullValidator,
         ],
-
         rate: [this.modification.scaffold.rate, Validators.nullValidator],
         length: [
           this.modification.scaffold.length,
@@ -891,6 +911,10 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         height: [
           this.modification.scaffold.height,
           [Validators.required, Validators.min(1)],
+        ],
+        lifts: [
+          this.modification.scaffold.lifts,
+          [Validators.nullValidator, Validators.min(1)],
         ],
         level: [0, Validators.nullValidator],
         breakdown: [
@@ -907,7 +931,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           [Validators.min(1)],
         ],
         total: [this.modification.hire.total],
-        isWeeks: [this.modification.hire.isWeeks, Validators.required],
+        isWeeks: [this.modification.hire.isWeeks, Validators.nullValidator],
       }),
       additionals: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
@@ -924,6 +948,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
+        lifts: [a.lifts, [Validators.nullValidator, Validators.min(1)]],
         level: [a.level, [Validators.nullValidator]],
         breakdown: [a.breakdown, [Validators.nullValidator]],
         total: [a.total],
@@ -989,6 +1014,10 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         length: [this.scaffold.scaffold.length, [, Validators.min(1)]],
         width: [this.scaffold.scaffold.width, [, Validators.min(1)]],
         height: [this.scaffold.scaffold.height, [, Validators.min(1)]],
+        lifts: [
+          this.scaffold.scaffold.lifts,
+          [Validators.nullValidator, Validators.min(1)],
+        ],
         level: [0, [Validators.nullValidator]],
         breakdown: [
           { dismantle: [], erection: [] },
@@ -1000,7 +1029,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         rate: ['', Validators.nullValidator],
         daysStanding: ['', [Validators.min(1)]],
         total: [0],
-        isWeeks: ['', Validators.required],
+        isWeeks: ['', Validators.nullValidator],
       }),
       boards: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
@@ -1017,6 +1046,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
+        lifts: [a.lifts, [Validators.nullValidator, Validators.min(1)]],
         level: [a.level, [Validators.nullValidator]],
         breakdown: [
           { dismantle: [], erection: [] },

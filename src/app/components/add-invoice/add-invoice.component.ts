@@ -157,6 +157,7 @@ export class AddInvoiceComponent implements OnInit {
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
+      lifts: ['', [Validators.nullValidator, Validators.min(1)]],
       level: [''],
       total: [0],
     });
@@ -565,6 +566,15 @@ export class AddInvoiceComponent implements OnInit {
           );
         }
         break;
+      case 9:
+        {
+          this.field('scaffold.total').setValue(
+            this.field('scaffold.length').value *
+              this.field('scaffold.lifts').value *
+              this.field('scaffold.rate').value.rate
+          );
+        }
+        break;
       case 0: {
         this.field('scaffold.total').setValue(
           this.field('scaffold.rate').value.rate
@@ -712,6 +722,17 @@ export class AddInvoiceComponent implements OnInit {
             );
         }
         break;
+      case 9:
+        {
+          ref
+            .get('total')
+            .setValue(
+              ref.get('length').value *
+                ref.get('lifts').value *
+                ref.get('rate').value.rate
+            );
+        }
+        break;
       case 0: {
         ref.get('total').setValue(ref.get('rate').value.rate);
       }
@@ -855,7 +876,6 @@ export class AddInvoiceComponent implements OnInit {
           this.invoice.scaffold.description,
           Validators.nullValidator,
         ],
-
         rate: [this.invoice.scaffold.rate, Validators.required],
         length: [
           this.invoice.scaffold.length,
@@ -869,6 +889,10 @@ export class AddInvoiceComponent implements OnInit {
           this.invoice.scaffold.height,
           [Validators.required, Validators.min(1)],
         ],
+        lifts: [
+          this.invoice.scaffold.lifts,
+          [Validators.nullValidator, Validators.min(1)],
+        ],
         level: [0],
         total: [this.invoice.scaffold.total],
       }),
@@ -877,7 +901,7 @@ export class AddInvoiceComponent implements OnInit {
         rate: [this.invoice.hire.rate],
         daysStanding: [this.invoice.hire.daysStanding, [Validators.min(1)]],
         total: [this.invoice.hire.total],
-        isWeeks: [this.invoice.hire.isWeeks, Validators.required],
+        isWeeks: [this.invoice.hire.isWeeks, Validators.nullValidator],
       }),
       additionals: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
@@ -894,6 +918,7 @@ export class AddInvoiceComponent implements OnInit {
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
+        lifts: [a.lifts, [Validators.nullValidator, Validators.min(1)]],
         level: [a.level],
         total: [a.total],
       });
@@ -960,6 +985,7 @@ export class AddInvoiceComponent implements OnInit {
         length: ['', [Validators.required, Validators.min(1)]],
         width: ['', [Validators.required, Validators.min(1)]],
         height: ['', [Validators.required, Validators.min(1)]],
+        lifts: ['', [Validators.nullValidator, Validators.min(1)]],
         level: [0],
         total: [0],
       }),
@@ -968,7 +994,7 @@ export class AddInvoiceComponent implements OnInit {
         rate: [''],
         daysStanding: ['', [Validators.min(1)]],
         total: [0],
-        isWeeks: ['', Validators.required],
+        isWeeks: ['', Validators.nullValidator],
       }),
       boards: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),
