@@ -44,6 +44,10 @@ const routes: Routes = [
     loadChildren: () =>
       import('./users/users.module').then((m) => m.UsersPageModule),
   },
+  {
+    path: 'transport',
+    loadChildren: () => import('./transport/transport.module').then( m => m.TransportPageModule)
+  },
 ];
 
 @NgModule({

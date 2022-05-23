@@ -63,7 +63,7 @@ export class LabourPage {
             .getCollectionOrdered(
               `company/${company.id}/brokers`,
               'name',
-              'desc'
+              'asc'
             )
             .pipe(
               tap(() => {

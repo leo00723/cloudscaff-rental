@@ -11,26 +11,25 @@ import {
   SelectionType,
   SortType,
 } from '@swimlane/ngx-datatable';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { LabourBroker } from 'src/app/models/labour-broker.model';
+import { map, Observable } from 'rxjs';
+import { Transport } from 'src/app/models/transport.model';
 
 @Component({
-  selector: 'app-labor-table',
-  templateUrl: './labor-table.component.html',
+  selector: 'app-transport-table',
+  templateUrl: './transport-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LaborTableComponent {
+export class TransportTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<LabourBroker>();
-  brokers$: Observable<LabourBroker[]>;
-  temp$: Observable<LabourBroker[]>;
+  @Output() selectedItem = new EventEmitter<Transport>();
+  transport$: Observable<Transport[]>;
+  temp$: Observable<Transport[]>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
-  @Input() set value(brokers: Observable<LabourBroker[]>) {
-    this.temp$ = brokers;
-    this.brokers$ = brokers;
+  @Input() set value(transport: Observable<Transport[]>) {
+    this.temp$ = transport;
+    this.transport$ = transport;
   }
 
   onSelect({ selected }) {
@@ -39,7 +38,7 @@ export class LaborTableComponent {
 
   updateFilter(event) {
     const val = event.detail.value.toLowerCase() as string;
-    this.temp$ = this.brokers$.pipe(
+    this.temp$ = this.transport$.pipe(
       map((customer) =>
         customer.filter(
           (c) =>

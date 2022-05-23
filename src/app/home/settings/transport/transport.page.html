@@ -1,0 +1,27 @@
+<app-header
+  title="Transport Profiles"
+  [showMenu]="false"
+  [showBack]="true"
+  path="/dashboard/settings"
+></app-header>
+
+<ion-content fullscreen="true">
+  <app-transport-table
+    [value]="transport$"
+    *ngIf="transport$ | async else loading"
+    (selectedItem)="viewItem($event)"
+  ></app-transport-table>
+  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addItem()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

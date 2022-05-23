@@ -37,6 +37,11 @@ export class SettingsPage {
       path: '/dashboard/settings/terms',
     },
     {
+      title: 'Transport Profiles',
+      description: 'Here you manage your transport profiles.',
+      path: '/dashboard/settings/transport',
+    },
+    {
       title: 'User Profiles',
       description: 'Here you manage users.',
       path: '/dashboard/settings/users',
