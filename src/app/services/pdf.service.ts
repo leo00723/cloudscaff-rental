@@ -257,7 +257,9 @@ export class PdfService {
           ...platforms,
           this.addEstimateItem(
             company,
-            `${company.terminology.hire} - (${estimate.hire.daysStanding} days)`,
+            `${company.terminology.hire} - (${estimate.hire.daysStanding} ${
+              estimate.hire.isWeeks ? 'weeks' : 'days'
+            })`,
             estimate.hire.daysStanding,
             estimate.hire.total
           ),
@@ -1190,7 +1192,9 @@ export class PdfService {
           ...platforms,
           this.addEstimateItem(
             company,
-            `${company.terminology.hire} - (${invoice.hire.daysStanding} days)`,
+            `${company.terminology.hire} - (${invoice.hire.daysStanding} ${
+              invoice.hire.isWeeks ? 'weeks' : 'days'
+            })`,
             invoice.hire.daysStanding,
             invoice.hire.total
           ),
@@ -2213,7 +2217,9 @@ export class PdfService {
           ...attachments,
           ...platforms,
           this.addModificationItem(
-            `${company.terminology.hire} - (${data.hire.daysStanding} days)`,
+            `${company.terminology.hire} - (${data.hire.daysStanding} ${
+              data.hire.isWeeks ? 'weeks' : 'days'
+            })`,
             data.hire.daysStanding
           ),
           [
@@ -2318,7 +2324,9 @@ export class PdfService {
           ...platforms,
           this.addEstimateItem(
             company,
-            `${company.terminology.hire} - (${data.hire.daysStanding} days)`,
+            `${company.terminology.hire} - (${data.hire.daysStanding} ${
+              data.hire.isWeeks ? 'weeks' : 'days'
+            })`,
             data.hire.daysStanding,
             data.hire.total
           ),
