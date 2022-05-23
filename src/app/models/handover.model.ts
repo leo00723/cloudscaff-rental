@@ -17,4 +17,5 @@ export interface Handover {
   scaffold?: Scaffold;
   signature?: string;
   signatureRef?: string;
+  signedBy?: string;
 }

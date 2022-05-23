@@ -19,8 +19,9 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class SignaturePadComponent {
   @ViewChild(SignaturePad) signaturePad: SignaturePad;
-  @Output() result = new EventEmitter<string>();
+  @Output() result = new EventEmitter<{ signature: string; name: string }>();
   signature: string;
+  name: string;
   signaturePadOptions: Object = {
     minWidth: 0.1,
     canvasWidth: this.device.width() < 500 ? this.device.width() - 32 : 400,
@@ -39,7 +40,7 @@ export class SignaturePadComponent {
   savePad() {
     this.notificationSvc.presentAlertConfirm(() => {
       const base64Data = this.signaturePad.toDataURL();
-      this.result.emit(base64Data);
+      this.result.emit({ signature: base64Data, name: this.name });
     });
   }
 }

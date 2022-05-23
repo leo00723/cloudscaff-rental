@@ -70,10 +70,10 @@ export class CustomerHandoverPage {
       );
   }
 
-  async sign(handover: Handover, ev) {
+  async sign(handover: Handover, ev: { signature: string; name: string }) {
     this.isLoading = true;
     try {
-      const blob = await (await fetch(ev)).blob();
+      const blob = await (await fetch(ev.signature)).blob();
       const res = await this.imgSvc.uploadBlob(
         blob,
         `company/${handover.company.id}/handovers/${handover.id}/signature`,
@@ -83,6 +83,7 @@ export class CustomerHandoverPage {
         handover.signature = res.url2;
         handover.signatureRef = res.ref;
         handover.status = 'active-Signed';
+        handover.signedBy = ev.name;
         this.editSvc.setDoc(
           `company/${handover.company.id}/handovers`,
           handover,

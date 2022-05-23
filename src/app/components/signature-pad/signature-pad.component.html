@@ -1,4 +1,9 @@
 <div class="mt-5 d-grid justify-content-center">
+  <app-input-text
+    title="Name"
+    placeholder="Enter name"
+    (fieldChange)="name = $event"
+  ></app-input-text>
   <signature-pad [options]="signaturePadOptions"></signature-pad>
 
   <div class="text-end">

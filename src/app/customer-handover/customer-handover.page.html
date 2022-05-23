@@ -228,6 +228,12 @@
               </td>
             </tr>
             <tr class="align-middle" *ngIf="handover.handover.signature">
+              <td>Signed By</td>
+              <td class="text-center">
+                <ion-text slot="end">{{handover.handover.signedBy}}</ion-text>
+              </td>
+            </tr>
+            <tr class="align-middle" *ngIf="handover.handover.signature">
               <td>Signature</td>
               <td class="text-center">
                 <img [src]="handover.handover.signature" />
