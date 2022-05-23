@@ -728,12 +728,15 @@ export class AddInvoiceComponent implements OnInit {
     this.arr('boards').controls.forEach((c) => {
       boards += +c.get('total').value;
     });
+
     switch (this.field('hire.rate').value.code) {
       case 1:
         {
+          const period = this.field('hire.isWeeks').value
+            ? this.field('hire.daysStanding').value * 7
+            : this.field('hire.daysStanding').value;
           this.field('hire.total').setValue(
-            this.field('hire.daysStanding').value *
-              this.field('hire.rate').value.rate
+            period * this.field('hire.rate').value.rate
           );
         }
         break;
@@ -747,19 +750,35 @@ export class AddInvoiceComponent implements OnInit {
         break;
       case 3:
         {
+          const period = this.field('hire.isWeeks').value
+            ? this.field('hire.daysStanding').value * 7
+            : this.field('hire.daysStanding').value;
           this.field('hire.total').setValue(
             (this.field('scaffold.total').value + attachments + boards) *
-              this.field('hire.daysStanding').value *
+              period *
               (this.field('hire.rate').value.rate / 100)
           );
         }
         break;
       case 4:
         {
+          const period = this.field('hire.isWeeks').value
+            ? this.field('hire.daysStanding').value
+            : this.field('hire.daysStanding').value / 7;
           this.field('hire.total').setValue(
             (this.field('scaffold.total').value + attachments + boards) *
-              (this.field('hire.daysStanding').value / 7) *
+              period *
               (this.field('hire.rate').value.rate / 100)
+          );
+        }
+        break;
+      case 5:
+        {
+          const period = this.field('hire.isWeeks').value
+            ? this.field('hire.daysStanding').value
+            : this.field('hire.daysStanding').value / 7;
+          this.field('hire.total').setValue(
+            period * this.field('hire.rate').value.rate
           );
         }
         break;
@@ -858,6 +877,7 @@ export class AddInvoiceComponent implements OnInit {
         rate: [this.invoice.hire.rate],
         daysStanding: [this.invoice.hire.daysStanding, [Validators.min(1)]],
         total: [this.invoice.hire.total],
+        isWeeks: [this.invoice.hire.isWeeks, Validators.required],
       }),
       additionals: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
@@ -948,6 +968,7 @@ export class AddInvoiceComponent implements OnInit {
         rate: [''],
         daysStanding: ['', [Validators.min(1)]],
         total: [0],
+        isWeeks: ['', Validators.required],
       }),
       boards: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),

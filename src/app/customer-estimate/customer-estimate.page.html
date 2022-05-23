@@ -203,7 +203,8 @@
               <th class="text-center" scope="row"></th>
               <td>
                 {{ estimate.company.terminology.hire }} - ({{
-                estimate.estimate.hire.daysStanding }} days)
+                estimate.estimate.hire.daysStanding }} {{
+                estimate.estimate.hire.isWeeks ? "Weeks" : "Days" }})
               </td>
               <td class="text-center">1</td>
               <td class="text-end">

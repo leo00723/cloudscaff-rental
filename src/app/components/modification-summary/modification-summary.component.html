@@ -161,7 +161,7 @@
             {{ company.terminology.hire }} - ({{
               modification.oldScaffold.hire.daysStanding
             }}
-            days)
+            {{ modification.oldScaffold.hire.isWeeks ? "Weeks" : "Days" }})
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -262,7 +262,7 @@
             {{ company.terminology.hire }} - ({{
               modification.hire.daysStanding
             }}
-            days)
+            {{ modification.hire.isWeeks ? "Weeks" : "Days" }})
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -373,7 +373,7 @@
             {{ company.terminology.hire }} - ({{
               modification.hire.daysStanding
             }}
-            days)
+            {{ modification.hire.isWeeks ? "Weeks" : "Days" }})
           </td>
           <td class="text-center">1</td>
           <td class="text-end">

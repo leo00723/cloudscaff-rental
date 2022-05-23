@@ -154,7 +154,7 @@
           <th class="text-center" scope="row"></th>
           <td>
             {{ company.terminology.hire }} - ({{ estimate.hire.daysStanding }}
-            days)
+            {{ estimate.hire.isWeeks ? "Weeks" : "Days" }})
           </td>
           <td class="text-center">1</td>
           <td class="text-end">

@@ -468,12 +468,35 @@
           <ion-col size="12">
             <ion-row formGroupName="hire">
               <ion-col>
+                <app-input-select-reactive
+                  title="Period"
+                  placeholder="Select Hire Period"
+                  controlName="isWeeks"
+                  [form]="field('hire')"
+                  [selectedText]="
+                    field('hire.isWeeks').value ? 'Weeks' : 'Days'
+                  "
+                  (fieldChange)="update('hire')"
+                >
+                  <ng-container>
+                    <ion-select-option [value]="true">Weeks </ion-select-option>
+                    <ion-select-option [value]="false">Days </ion-select-option>
+                  </ng-container>
+                </app-input-select-reactive>
+              </ion-col>
+              <ion-col>
                 <app-input-reactive
-                  title="Days Standing"
+                  [title]="
+                    field('hire.isWeeks').value
+                      ? 'Weeks Standing'
+                      : 'Days Standing'
+                  "
                   type="number"
                   controlName="daysStanding"
                   [form]="field('hire')"
-                  placeholder="Enter days"
+                  [placeholder]="
+                    field('hire.isWeeks').value ? 'Enter Weeks' : 'Enter Days'
+                  "
                   (fieldChange)="update('hire')"
                 >
                 </app-input-reactive>
