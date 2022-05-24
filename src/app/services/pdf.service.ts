@@ -473,7 +473,9 @@ export class PdfService {
         hire: modification.oldScaffold.hire,
         additionals: modification.oldScaffold.additionals,
         labour: modification.oldScaffold.labour,
-        transport: modification.oldScaffold.transport,
+        transport: modification.oldScaffold.transport
+          ? modification.oldScaffold.transport
+          : [],
       },
       company
     );
@@ -485,7 +487,7 @@ export class PdfService {
         hire: modification.hire,
         additionals: modification.additionals,
         labour: modification.labour,
-        transport: modification.transport,
+        transport: modification.transport ? modification.transport : [],
       },
       company
     );
@@ -497,7 +499,7 @@ export class PdfService {
         hire: modification.hire,
         additionals: modification.additionals,
         labour: modification.labour,
-        transport: modification.transport,
+        transport: modification.transport ? modification.transport : [],
       },
       company
     );
@@ -2428,7 +2430,7 @@ export class PdfService {
             {
               text: 'Transport Detail',
               style: 'h4b',
-              colSpan: 2,
+              colSpan: 3,
             },
           ],
           ...transport,
@@ -2440,7 +2442,7 @@ export class PdfService {
             {
               text: 'Additionals Detail',
               style: 'h4b',
-              colSpan: 2,
+              colSpan: 3,
             },
           ],
           ...additionals,
