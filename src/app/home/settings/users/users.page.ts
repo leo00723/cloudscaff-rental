@@ -54,7 +54,9 @@ export class UsersPage implements OnInit {
           User[]
         >;
       } else {
-        console.log('-----------------------try users----------------------');
+        this.masterSvc.log(
+          '-----------------------try users----------------------'
+        );
         this.init();
       }
     }, 200);

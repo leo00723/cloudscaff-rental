@@ -178,6 +178,27 @@
           <td>{{ item.type.name }} - {{ item.rate.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
         </tr>
+        <!-- TRANSPORT -->
+        <ng-container *ngIf="modification.oldScaffold.transport">
+          <tr *ngIf="modification.oldScaffold.transport.length > 0">
+            <th class="text-center" scope="row">3</th>
+            <td colspan="3">Transport</td>
+          </tr>
+          <tr
+            class="small"
+            *ngFor="
+              let item of modification.oldScaffold.transport;
+              let i = index
+            "
+          >
+            <th class="text-center" scope="row"></th>
+            <td>
+              {{ item.type.name }} - {{ item.type.maxLoad
+              }}{{ company.mass.symbol }}
+            </td>
+            <td class="text-center">{{ item.qty }}</td>
+          </tr>
+        </ng-container>
         <!-- ADDITIONALS -->
         <tr *ngIf="modification.oldScaffold.additionals.length > 0">
           <th class="text-center" scope="row">3</th>
@@ -279,9 +300,27 @@
           <td>{{ item.type.name }} - {{ item.rate.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
         </tr>
+        <!-- TRANSPORT -->
+        <ng-container *ngIf="modification.transport">
+          <tr *ngIf="modification.transport.length > 0">
+            <th class="text-center" scope="row">3</th>
+            <td colspan="3">Transport</td>
+          </tr>
+          <tr
+            class="small"
+            *ngFor="let item of modification.transport; let i = index"
+          >
+            <th class="text-center" scope="row"></th>
+            <td>
+              {{ item.type.name }} - {{ item.type.maxLoad
+              }}{{ company.mass.symbol }}
+            </td>
+            <td class="text-center">{{ item.qty }}</td>
+          </tr>
+        </ng-container>
         <!-- ADDITIONALS -->
         <tr *ngIf="modification.additionals.length > 0">
-          <th class="text-center" scope="row">3</th>
+          <th class="text-center" scope="row">4</th>
           <td colspan="3">Additionals</td>
         </tr>
         <tr
@@ -397,9 +436,30 @@
             {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
           </td>
         </tr>
+        <!-- TRANSPORT -->
+        <ng-container *ngIf="modification.transport">
+          <tr *ngIf="modification.transport.length > 0">
+            <th class="text-center" scope="row">3</th>
+            <td colspan="3">Transport</td>
+          </tr>
+          <tr
+            class="small"
+            *ngFor="let item of modification.transport; let i = index"
+          >
+            <th class="text-center" scope="row"></th>
+            <td>
+              {{ item.type.name }} - ({{ item.type.maxLoad
+              }}{{ company.mass.symbol }})
+            </td>
+            <td class="text-center">{{ item.qty }}</td>
+            <td class="text-end">
+              {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            </td>
+          </tr>
+        </ng-container>
         <!-- ADDITIONALS -->
         <tr *ngIf="modification.additionals.length > 0">
-          <th class="text-center" scope="row">3</th>
+          <th class="text-center" scope="row">4</th>
           <td colspan="3">Additionals</td>
         </tr>
         <tr

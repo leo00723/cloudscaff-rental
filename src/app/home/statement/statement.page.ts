@@ -21,7 +21,7 @@ export class StatementPage implements OnInit {
       if (id) {
         this.isLoading = false;
       } else {
-        console.log(
+        this.masterSvc.log(
           '-----------------------try statements----------------------'
         );
         this.init();

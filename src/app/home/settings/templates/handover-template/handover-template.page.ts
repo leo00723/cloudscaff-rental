@@ -91,7 +91,7 @@ export class HandoverTemplatePage implements OnInit, OnDestroy {
             })
         );
       } else {
-        console.log(
+        this.masterSvc.log(
           '-----------------------try templates----------------------'
         );
         this.init();

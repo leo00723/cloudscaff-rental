@@ -218,6 +218,17 @@ export class PdfService {
         )
       );
     });
+    const transport = [];
+    estimate.transport.forEach((l) => {
+      transport.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.type.maxLoad}${company.mass.symbol}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
     const additionals = [];
     estimate.additionals.forEach((a) => {
       additionals.push(this.addEstimateItem(company, a.name, a.qty, a.total));
@@ -278,6 +289,18 @@ export class PdfService {
           [
             {
               text: 3,
+              style: 'h4b',
+            },
+            {
+              text: 'Transport Detail',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...transport,
+          [
+            {
+              text: 4,
               style: 'h4b',
             },
             {
@@ -450,6 +473,7 @@ export class PdfService {
         hire: modification.oldScaffold.hire,
         additionals: modification.oldScaffold.additionals,
         labour: modification.oldScaffold.labour,
+        transport: modification.oldScaffold.transport,
       },
       company
     );
@@ -461,6 +485,7 @@ export class PdfService {
         hire: modification.hire,
         additionals: modification.additionals,
         labour: modification.labour,
+        transport: modification.transport,
       },
       company
     );
@@ -472,6 +497,7 @@ export class PdfService {
         hire: modification.hire,
         additionals: modification.additionals,
         labour: modification.labour,
+        transport: modification.transport,
       },
       company
     );
@@ -1153,6 +1179,17 @@ export class PdfService {
         )
       );
     });
+    const transport = [];
+    invoice.transport.forEach((l) => {
+      transport.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.type.maxLoad}${company.mass.symbol}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
     const additionals = [];
     invoice.additionals.forEach((a) => {
       additionals.push(this.addEstimateItem(company, a.name, a.qty, a.total));
@@ -1213,6 +1250,18 @@ export class PdfService {
           [
             {
               text: 3,
+              style: 'h4b',
+            },
+            {
+              text: 'Transport Detail',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...transport,
+          [
+            {
+              text: 4,
               style: 'h4b',
             },
             {
@@ -2182,6 +2231,12 @@ export class PdfService {
         this.addModificationItem(`${l.type.name} - ${l.rate.name}`, l.qty)
       );
     });
+    const transport = [];
+    data.transport.forEach((l) => {
+      transport.push(
+        this.addModificationItem(`${l.type.name} - ${l.type.maxLoad}`, l.qty)
+      );
+    });
     const additionals = [];
     data.additionals.forEach((a) => {
       additionals.push(this.addModificationItem(a.name, a.qty));
@@ -2240,6 +2295,18 @@ export class PdfService {
               style: 'h4b',
             },
             {
+              text: 'Transport Detail',
+              style: 'h4b',
+              colSpan: 2,
+            },
+          ],
+          ...transport,
+          [
+            {
+              text: 4,
+              style: 'h4b',
+            },
+            {
               text: 'Additionals Detail',
               style: 'h4b',
               colSpan: 2,
@@ -2280,6 +2347,17 @@ export class PdfService {
         this.addEstimateItem(
           company,
           `${l.type.name} - ${l.rate.name}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
+    const transport = [];
+    data.transport.forEach((l) => {
+      transport.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.type.maxLoad}${company.mass.symbol}`,
           l.qty,
           l.total
         )
@@ -2348,9 +2426,21 @@ export class PdfService {
               style: 'h4b',
             },
             {
+              text: 'Transport Detail',
+              style: 'h4b',
+              colSpan: 2,
+            },
+          ],
+          ...transport,
+          [
+            {
+              text: 4,
+              style: 'h4b',
+            },
+            {
               text: 'Additionals Detail',
               style: 'h4b',
-              colSpan: 3,
+              colSpan: 2,
             },
           ],
           ...additionals,

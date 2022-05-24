@@ -71,7 +71,7 @@ export class EstimatesPage implements OnInit {
           .selectSnapshot(EstimatesState.estimates);
         if (!estimates) this.masterSvc.store().dispatch(new GetEstimates(id));
       } else {
-        console.log(
+        this.masterSvc.log(
           '-----------------------try estimates----------------------'
         );
         this.init();

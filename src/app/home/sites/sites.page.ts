@@ -59,7 +59,9 @@ export class SitesPage implements OnInit {
         let sites = !!this.masterSvc.store().selectSnapshot(SitesState.sites);
         if (!sites) this.masterSvc.store().dispatch(new GetSites(id));
       } else {
-        console.log('-----------------------try sites----------------------');
+        this.masterSvc.log(
+          '-----------------------try sites----------------------'
+        );
         this.init();
       }
     }, 200);

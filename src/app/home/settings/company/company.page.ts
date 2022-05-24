@@ -162,7 +162,9 @@ export class CompanyPage {
         });
         this.isLoading = false;
       } else {
-        console.log('-----------------------try company----------------------');
+        this.masterSvc.log(
+          '-----------------------try company----------------------'
+        );
         this.init();
       }
     }, 200);

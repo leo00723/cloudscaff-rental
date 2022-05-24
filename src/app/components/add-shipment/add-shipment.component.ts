@@ -65,7 +65,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
 
   checkError(item: InventoryItem) {
-    console.log('checking error');
     const totalQty = item.availableQty ? item.availableQty : 0;
     const inUseQty = item.inUseQty ? item.inUseQty : 0;
     const damaged = item.damagedQty ? item.damagedQty : 0;

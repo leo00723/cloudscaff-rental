@@ -368,9 +368,11 @@ exports.manageReturn = functions.firestore
               name: item.name,
               weight: +item.weight,
               availableQty: +item.shipmentQty,
-              damagedQty: +item.damagedQty,
-              lostQty: +item.lostQty,
-              inMaintenanceQty: +item.inMaintenanceQty,
+              damagedQty: item.damagedQty ? +item.damagedQty : 0,
+              lostQty: item.lostQty ? +item.lostQty : 0,
+              inMaintenanceQty: item.inMaintenanceQty
+                ? +item.inMaintenanceQty
+                : 0,
             };
           });
 

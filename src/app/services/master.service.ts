@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { ModalController, Platform } from '@ionic/angular';
 import { Store } from '@ngxs/store';
+import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 import { EditService } from './edit.service';
 import { NotificationService } from './notification.service';
@@ -55,5 +56,10 @@ export class MasterService {
 
   store() {
     return this.storeSvc;
+  }
+  log(...message: any[]) {
+    if (!environment.production) {
+      console.log(message.toString());
+    }
   }
 }

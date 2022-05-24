@@ -23,6 +23,9 @@
       <ion-segment-button value="labour">
         <ion-label>Labor</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="transport">
+        <ion-label>Transport</ion-label>
+      </ion-segment-button>
       <ion-segment-button value="additionals">
         <ion-label>Additionals</ion-label>
       </ion-segment-button>
@@ -757,6 +760,162 @@
                 class="m-auto"
                 color="success"
                 (click)="addLabour()"
+              >
+                <ion-icon name="add"></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ng-container>
+        <ion-row>
+          <ion-col size="12" class="text-end">
+            <ion-button shape="round" (click)="nextView('transport')"
+              >Next</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- TRANSPORT TAB -->
+
+      <ion-grid *ngSwitchCase="'transport'">
+        <ion-row class="mt-3" class="card-outline mb-3">
+          <ion-col size="12">
+            <ion-text color="medium">
+              <h4>Transport Information</h4>
+            </ion-text>
+          </ion-col>
+          <ion-col>
+            <app-input-select-reactive
+              title="Transport Profile"
+              placeholder="Select Transport Profile"
+              controlName="transportProfile"
+              [form]="form"
+              [selectedText]="field('transportProfile').value.name"
+              (fieldChange)="changeTransport()"
+            >
+              <ng-container *ngIf="transport$ | async as profiles">
+                <ion-select-option
+                  [value]="profile"
+                  *ngFor="let profile of profiles"
+                  >{{ profile.name }}
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+        </ion-row>
+
+        <ng-container *ngIf="field('transportProfile').value">
+          <ion-row
+            formArrayName="transport"
+            class="card-outline mb-3"
+            *ngFor="let transport of transportForms.controls; let i = index"
+          >
+            <ion-col size="12">
+              <ion-note> Item {{ i + 1 }} </ion-note>
+              <ion-chip
+                outline
+                color="danger"
+                class="ion-float-end"
+                (click)="deleteLabour(i)"
+              >
+                <ion-label>Delete</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col>
+              <app-input-select-reactive
+                title="Type"
+                placeholder="Select Vehicle Type"
+                controlName="type"
+                [form]="transport"
+                [selectedText]="arrField('transport', i, 'type').value.name"
+                (fieldChange)="update('transport', i)"
+              >
+                <ng-container>
+                  <ion-select-option
+                    [value]="vehicle"
+                    *ngFor="
+                      let vehicle of field('transportProfile').value.types
+                    "
+                  >
+                    {{ vehicle.name }}
+                  </ion-select-option>
+                </ng-container>
+              </app-input-select-reactive>
+            </ion-col>
+            <ng-container *ngIf="arrField('transport', i, 'type').value">
+              <ion-col>
+                <app-input-text
+                  title="Max Load ({{ company.mass.symbol }})"
+                  type="number"
+                  [value]="arrField('transport', i, 'type').value.maxLoad"
+                  [readonly]="true"
+                >
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
+                  title="Hours per day"
+                  type="number"
+                  controlName="hours"
+                  [form]="transport"
+                  placeholder="Enter hours"
+                  (fieldChange)="update('transport', i)"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
+                  title="Days needed"
+                  type="number"
+                  controlName="days"
+                  [form]="transport"
+                  placeholder="Enter days"
+                  (fieldChange)="update('transport', i)"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
+                  title="Qty"
+                  type="number"
+                  controlName="qty"
+                  [form]="transport"
+                  placeholder="Qty"
+                  (fieldChange)="update('transport', i)"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-text
+                  title="Rate override ({{ company.currency.symbol }})"
+                  type="number"
+                  [value]="arrField('transport', i, 'type').value.rate"
+                  placeholder="Enter rate"
+                  (fieldChange)="updateRate('transport', $event, i)"
+                >
+                </app-input-text>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
+                  title="Total ({{ company.currency.symbol }})"
+                  type="number"
+                  controlName="total"
+                  [form]="transport"
+                  placeholder="Total"
+                  [readonly]="true"
+                >
+                </app-input-reactive>
+              </ion-col>
+            </ng-container>
+          </ion-row>
+
+          <ion-row>
+            <ion-col>
+              <ion-fab-button
+                size="small"
+                class="m-auto"
+                color="success"
+                (click)="addTransport()"
               >
                 <ion-icon name="add"></ion-icon>
               </ion-fab-button>

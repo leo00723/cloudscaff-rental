@@ -179,6 +179,7 @@ export class AcceptEstimateComponent implements OnInit {
         boards: this.estimate.boards,
         hire: this.estimate.hire,
         labour: this.estimate.labour,
+        transport: this.estimate.transport,
         additionals: this.estimate.additionals,
         poNumber: this.estimate.poNumber,
         woNumber: this.estimate.woNumber,

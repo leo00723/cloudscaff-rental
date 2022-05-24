@@ -104,7 +104,7 @@
                     you cannot exceed the available qty
                   </ion-label>
                 </td>
-                <td class="text-center">
+                <td class="text-center" *ngIf="allowSend">
                   <ion-input
                     #MaintenanceQty
                     debounce="200"
@@ -120,7 +120,7 @@
                     you cannot exceed the shipment qty
                   </ion-label>
                 </td>
-                <td class="text-center">
+                <td class="text-center" *ngIf="allowSend">
                   <ion-input
                     #DamagedQty
                     debounce="200"
@@ -136,7 +136,7 @@
                     you cannot exceed the shipment qty
                   </ion-label>
                 </td>
-                <td class="text-center">
+                <td class="text-center" *ngIf="allowSend">
                   <ion-input
                     #LostQty
                     debounce="200"

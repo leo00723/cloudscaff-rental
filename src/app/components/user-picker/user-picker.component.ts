@@ -71,7 +71,9 @@ export class UserPickerComponent implements OnInit {
             })
         );
       } else {
-        console.log('-----------------------try users----------------------');
+        this.masterSvc.log(
+          '-----------------------try users----------------------'
+        );
         this.init();
       }
     }, 200);

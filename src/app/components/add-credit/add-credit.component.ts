@@ -73,7 +73,7 @@ export class AddCreditComponent implements OnInit {
 
   constructor(private masterSvc: MasterService, private platform: Platform) {
     this.platform.backButton.subscribeWithPriority(0, () => {
-      console.log('-----------------------------sub');
+      this.masterSvc.log('-----------------------------sub');
     });
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);

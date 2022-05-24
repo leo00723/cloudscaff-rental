@@ -68,9 +68,27 @@
         <td class="text-center">{{ item.rate.name }}</td>
         <td class="text-center">{{ item.qty }}</td>
       </tr>
+      <!-- TRANSPORT -->
+      <ng-container *ngIf="scaffold.transport">
+        <tr *ngIf="scaffold.transport.length > 0">
+          <th class="text-center" scope="row">3</th>
+          <td colspan="4">Transport</td>
+        </tr>
+        <tr
+          class="small"
+          *ngFor="let item of scaffold.transport; let i = index"
+        >
+          <th class="text-center" scope="row"></th>
+          <td>{{ item.type.name }}</td>
+          <td class="text-center">
+            {{ item.type.maxLoad }}{{ company.mass.symbol }}
+          </td>
+          <td class="text-center">{{ item.qty }}</td>
+        </tr>
+      </ng-container>
       <!-- ADDITIONALS -->
       <tr *ngIf="scaffold.additionals.length > 0">
-        <th class="text-center" scope="row">3</th>
+        <th class="text-center" scope="row">4</th>
         <td colspan="4">Additionals</td>
       </tr>
       <tr

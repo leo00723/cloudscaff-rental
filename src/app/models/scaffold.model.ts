@@ -2,6 +2,7 @@ import { AdditionalItem } from './additionalItem.model';
 import { HireItem } from './hireItem.model';
 import { Item } from './item.model';
 import { LabourItem } from './labourItem.model';
+import { TransportItem } from './transport.model';
 import { User } from './user.model';
 
 export interface Scaffold {
@@ -19,6 +20,7 @@ export interface Scaffold {
   hire?: HireItem;
   labour?: LabourItem[];
   additionals?: AdditionalItem[];
+  transport?: TransportItem[];
   poNumber?: string;
   woNumber?: string;
   updatedBy?: string;

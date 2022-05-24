@@ -9,7 +9,6 @@ export interface Transport {
   types?: TransportType[];
 }
 export interface TransportItem {
-  rate?: number;
   hours?: string;
   qty?: string;
   days?: string;

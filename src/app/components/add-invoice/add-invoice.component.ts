@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Invoice } from 'src/app/models/invoice.model';
+import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -48,6 +49,8 @@ export class AddInvoiceComponent implements OnInit {
     hire: undefined,
     id: '',
     labour: [],
+    transport: [],
+    transportProfile: undefined,
     message: '',
     scaffold: undefined,
     siteName: '',
@@ -72,6 +75,8 @@ export class AddInvoiceComponent implements OnInit {
   customers$: Observable<Customer[]>;
   rates$: Observable<any>;
   brokers$: Observable<any>;
+  transport$: Observable<Transport[]>;
+
   form: FormGroup;
   loading = false;
   isLoading = true;
@@ -89,6 +94,9 @@ export class AddInvoiceComponent implements OnInit {
     this.brokers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/brokers`);
+    this.transport$ = this.masterSvc
+      .edit()
+      .getCollection(`company/${this.company.id}/transport`);
 
     if (this.isEdit) {
       this.show = 'editCustomer';
@@ -115,6 +123,9 @@ export class AddInvoiceComponent implements OnInit {
   get labourForms() {
     return this.form.get('labour') as FormArray;
   }
+  get transportForms() {
+    return this.form.get('transport') as FormArray;
+  }
   get additionalForms() {
     return this.form.get('additionals') as FormArray;
   }
@@ -128,6 +139,16 @@ export class AddInvoiceComponent implements OnInit {
       total: [0],
     });
     this.labourForms.push(labour);
+  }
+  addTransport() {
+    const transport = this.masterSvc.fb().group({
+      type: ['', Validators.required],
+      hours: ['', Validators.required],
+      days: ['', Validators.required],
+      qty: ['', Validators.required],
+      total: [''],
+    });
+    this.transportForms.push(transport);
   }
   addAdditional() {
     const additional = this.masterSvc.fb().group({
@@ -185,6 +206,11 @@ export class AddInvoiceComponent implements OnInit {
       this.labourForms.removeAt(i);
     });
   }
+  deleteTransport(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.transportForms.removeAt(i);
+    });
+  }
   // END: FORM CRUD
 
   // START: Helper functions
@@ -208,6 +234,12 @@ export class AddInvoiceComponent implements OnInit {
   changeBroker() {
     this.labourForms.clear();
     this.addLabour();
+  }
+
+  // switch transport
+  changeTransport() {
+    this.transportForms.clear();
+    this.addTransport();
   }
 
   // switch customer
@@ -266,8 +298,13 @@ export class AddInvoiceComponent implements OnInit {
           this.calcAdditionalRate(i);
         }
         break;
-      case 'labour': {
-        this.calcLabourRate(i);
+      case 'labour':
+        {
+          this.calcLabourRate(i);
+        }
+        break;
+      case 'transport': {
+        this.calcTransportRate(i);
       }
     }
     this.calcHireRate();
@@ -320,12 +357,21 @@ export class AddInvoiceComponent implements OnInit {
           this.calcAdditionalRate(i);
         }
         break;
-      case 'labour': {
-        this.arrField('labour', i, 'rate').patchValue({
-          ...this.arrField('labour', i, 'rate').value,
+      case 'labour':
+        {
+          this.arrField('labour', i, 'rate').patchValue({
+            ...this.arrField('labour', i, 'rate').value,
+            rate: +args,
+          });
+          this.calcLabourRate(i);
+        }
+        break;
+      case 'transport': {
+        this.arrField('transport', i, 'type').patchValue({
+          ...this.arrField('transport', i, 'type').value,
           rate: +args,
         });
-        this.calcLabourRate(i);
+        this.calcTransportRate(i);
       }
     }
     this.calcHireRate();
@@ -413,13 +459,17 @@ export class AddInvoiceComponent implements OnInit {
     this.arr('labour').controls.forEach((c) => {
       labour += +c.get('total').value;
     });
+    let transport = 0;
+    this.arr('transport').controls.forEach((c) => {
+      transport += +c.get('total').value;
+    });
     let additionals = 0;
     this.arr('additionals').controls.forEach((c) => {
       additionals += +c.get('total').value;
     });
 
     const subtotal =
-      scaffold + attachments + boards + hire + labour + additionals;
+      scaffold + attachments + boards + hire + labour + transport + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
@@ -849,6 +899,20 @@ export class AddInvoiceComponent implements OnInit {
         ).toFixed(2)
       );
   }
+  private calcTransportRate(i: string | number) {
+    const ref = this.transportForms.controls[i] as FormControl;
+
+    ref
+      .get('total')
+      .setValue(
+        +(
+          ref.get('days').value *
+          ref.get('hours').value *
+          ref.get('qty').value *
+          ref.get('type').value.rate
+        ).toFixed(2)
+      );
+  }
   // END: Calculations
 
   // START: Functions to initialise the form
@@ -906,7 +970,12 @@ export class AddInvoiceComponent implements OnInit {
       additionals: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
       broker: [this.invoice.broker],
+      transportProfile: [
+        this.invoice.transportProfile ? this.invoice.transportProfile : '',
+        Validators.nullValidator,
+      ],
       labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
       poNumber: [this.invoice.poNumber],
       woNumber: [this.invoice.woNumber],
       code: [this.invoice.code],
@@ -945,6 +1014,16 @@ export class AddInvoiceComponent implements OnInit {
         total: [l.total],
       });
       this.labourForms.push(labour);
+    });
+    this.invoice.transport.forEach((t) => {
+      const transport = this.masterSvc.fb().group({
+        type: [t.type, Validators.required],
+        hours: [t.hours, Validators.required],
+        days: [t.days, Validators.required],
+        qty: [t.qty, Validators.required],
+        total: [t.total],
+      });
+      this.transportForms.push(transport);
     });
     this.invoice.additionals.forEach((add) => {
       const additional = this.masterSvc.fb().group({
@@ -999,9 +1078,11 @@ export class AddInvoiceComponent implements OnInit {
       boards: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),
       broker: [''],
+      transportProfile: [''],
       poNumber: [''],
       woNumber: [''],
       labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
     });
     // this.addBoard();
     // this.addLabour();

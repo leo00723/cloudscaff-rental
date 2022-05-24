@@ -10,6 +10,7 @@ import { Modification } from 'src/app/models/modification.model';
 import { ScaffoldCost } from 'src/app/models/scaffold-cost';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
+import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -70,6 +71,8 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     hire: undefined,
     id: '',
     labour: [],
+    transport: [],
+    transportProfile: undefined,
     message: '',
     scaffold: undefined,
     siteName: '',
@@ -93,6 +96,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   user: User;
   rates$: Observable<any>;
   brokers$: Observable<any>;
+  transport$: Observable<Transport[]>;
   form: FormGroup;
   loading = false;
   ready = false;
@@ -117,7 +121,9 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     this.brokers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/brokers`);
-
+    this.transport$ = this.masterSvc
+      .edit()
+      .getCollection(`company/${this.company.id}/transport`);
     if (this.isEdit) {
       this.modification = { ...this.modification };
       this.initEditForm();
@@ -153,6 +159,9 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   get labourForms() {
     return this.form.get('labour') as FormArray;
   }
+  get transportForms() {
+    return this.form.get('transport') as FormArray;
+  }
   get additionalForms() {
     return this.form.get('additionals') as FormArray;
   }
@@ -166,6 +175,16 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       total: [0],
     });
     this.labourForms.push(labour);
+  }
+  addTransport() {
+    const transport = this.masterSvc.fb().group({
+      type: ['', Validators.required],
+      hours: ['', Validators.required],
+      days: ['', Validators.required],
+      qty: ['', Validators.required],
+      total: [''],
+    });
+    this.transportForms.push(transport);
   }
   addAdditional() {
     const additional = this.masterSvc.fb().group({
@@ -224,6 +243,11 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       this.labourForms.removeAt(i);
     });
   }
+  deleteTransport(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.transportForms.removeAt(i);
+    });
+  }
   // END: FORM CRUD
 
   // START: Helper functions
@@ -247,6 +271,12 @@ export class AddModificationComponent implements OnInit, OnDestroy {
   changeBroker() {
     this.labourForms.clear();
     this.addLabour();
+  }
+
+  // switch transport
+  changeTransport() {
+    this.transportForms.clear();
+    this.addTransport();
   }
 
   //switch between pages
@@ -291,8 +321,13 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           this.calcAdditionalRate(i);
         }
         break;
-      case 'labour': {
-        this.calcLabourRate(i);
+      case 'labour':
+        {
+          this.calcLabourRate(i);
+        }
+        break;
+      case 'transport': {
+        this.calcTransportRate(i);
       }
     }
     this.calcHireRate();
@@ -345,12 +380,21 @@ export class AddModificationComponent implements OnInit, OnDestroy {
           this.calcAdditionalRate(i);
         }
         break;
-      case 'labour': {
-        this.arrField('labour', i, 'rate').patchValue({
-          ...this.arrField('labour', i, 'rate').value,
+      case 'labour':
+        {
+          this.arrField('labour', i, 'rate').patchValue({
+            ...this.arrField('labour', i, 'rate').value,
+            rate: +args,
+          });
+          this.calcLabourRate(i);
+        }
+        break;
+      case 'transport': {
+        this.arrField('transport', i, 'type').patchValue({
+          ...this.arrField('transport', i, 'type').value,
           rate: +args,
         });
-        this.calcLabourRate(i);
+        this.calcTransportRate(i);
       }
     }
     this.calcHireRate();
@@ -459,13 +503,17 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     this.arr('labour').controls.forEach((c) => {
       labour += +c.get('total').value;
     });
+    let transport = 0;
+    this.arr('transport').controls.forEach((c) => {
+      transport += +c.get('total').value;
+    });
     let additionals = 0;
     this.arr('additionals').controls.forEach((c) => {
       additionals += +c.get('total').value;
     });
 
     const subtotal =
-      scaffold + attachments + boards + hire + labour + additionals;
+      scaffold + attachments + boards + hire + labour + transport + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
@@ -767,7 +815,6 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     const oldScaffold = this.scaffold.attachments[i]
       ? this.scaffold.attachments[i]
       : { length: 0, width: 0, height: 0 };
-    console.log(oldScaffold);
     ref
       .get('breakdown')
       .setValue(this.calcDimension.scaffoldCost(oldScaffold, newScaffold));
@@ -880,6 +927,20 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         ).toFixed(2)
       );
   }
+  private calcTransportRate(i: string | number) {
+    const ref = this.transportForms.controls[i] as FormControl;
+
+    ref
+      .get('total')
+      .setValue(
+        +(
+          ref.get('days').value *
+          ref.get('hours').value *
+          ref.get('qty').value *
+          ref.get('type').value.rate
+        ).toFixed(2)
+      );
+  }
   // END: Calculations
 
   // START: Functions to initialise the form
@@ -936,7 +997,14 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       additionals: this.masterSvc.fb().array([]),
       attachments: this.masterSvc.fb().array([]),
       broker: [this.modification.broker],
+      transportProfile: [
+        this.modification.transportProfile
+          ? this.modification.transportProfile
+          : '',
+        Validators.nullValidator,
+      ],
       labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
       poNumber: [this.modification.poNumber],
       woNumber: [this.modification.woNumber],
       code: [this.modification.code],
@@ -976,6 +1044,16 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         total: [l.total],
       });
       this.labourForms.push(labour);
+    });
+    this.modification.transport.forEach((t) => {
+      const transport = this.masterSvc.fb().group({
+        type: [t.type, Validators.required],
+        hours: [t.hours, Validators.required],
+        days: [t.days, Validators.required],
+        qty: [t.qty, Validators.required],
+        total: [t.total],
+      });
+      this.transportForms.push(transport);
     });
     this.modification.additionals.forEach((add) => {
       const additional = this.masterSvc.fb().group({
@@ -1035,9 +1113,11 @@ export class AddModificationComponent implements OnInit, OnDestroy {
       attachments: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),
       broker: [''],
+      transportProfile: [''],
       poNumber: [''],
       woNumber: [''],
       labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
     });
     this.scaffold.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({

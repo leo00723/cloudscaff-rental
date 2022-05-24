@@ -229,9 +229,29 @@
                 "0.2-2" }}
               </td>
             </tr>
+            <!-- TRANSPORT -->
+            <tr *ngIf="estimate.estimate.transport.length > 0">
+              <th class="text-center" scope="row">3</th>
+              <td colspan="3">Transport</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of estimate.estimate.transport; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{ item.type.name }} - ({{ item.type.maxLoad }}{{
+                estimate.company.mass.symbol }})
+              </td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{ estimate.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
             <!-- ADDITIONALS -->
             <tr *ngIf="estimate.estimate.additionals.length > 0">
-              <th class="text-center" scope="row">3</th>
+              <th class="text-center" scope="row">4</th>
               <td colspan="3">Additionals</td>
             </tr>
             <tr

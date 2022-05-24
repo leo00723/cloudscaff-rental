@@ -149,7 +149,7 @@ export class InspectionTemplatePage implements OnInit, OnDestroy {
             })
         );
       } else {
-        console.log(
+        this.masterSvc.log(
           '-----------------------try templates----------------------'
         );
         this.init();

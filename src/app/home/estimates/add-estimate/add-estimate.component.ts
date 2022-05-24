@@ -292,8 +292,13 @@ export class AddEstimatePage implements OnInit {
           this.calcAdditionalRate(i);
         }
         break;
-      case 'labour': {
-        this.calcLabourRate(i);
+      case 'labour':
+        {
+          this.calcLabourRate(i);
+        }
+        break;
+      case 'transport': {
+        this.calcTransportRate(i);
       }
     }
     this.calcHireRate();
@@ -346,12 +351,21 @@ export class AddEstimatePage implements OnInit {
           this.calcAdditionalRate(i);
         }
         break;
-      case 'labour': {
-        this.arrField('labour', i, 'rate').patchValue({
-          ...this.arrField('labour', i, 'rate').value,
+      case 'labour':
+        {
+          this.arrField('labour', i, 'rate').patchValue({
+            ...this.arrField('labour', i, 'rate').value,
+            rate: +args,
+          });
+          this.calcLabourRate(i);
+        }
+        break;
+      case 'transport': {
+        this.arrField('transport', i, 'type').patchValue({
+          ...this.arrField('transport', i, 'type').value,
           rate: +args,
         });
-        this.calcLabourRate(i);
+        this.calcTransportRate(i);
       }
     }
     this.calcHireRate();
@@ -446,7 +460,6 @@ export class AddEstimatePage implements OnInit {
     if (this.isEdit && this.estimate.status !== 'pending') {
       return;
     }
-    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     const scaffold = +this.field('scaffold.total').value;
     const hire = +this.field('hire.total').value;
     let attachments = 0;
@@ -461,18 +474,23 @@ export class AddEstimatePage implements OnInit {
     this.arr('labour').controls.forEach((c) => {
       labour += +c.get('total').value;
     });
+    let transport = 0;
+    this.arr('transport').controls.forEach((c) => {
+      transport += +c.get('total').value;
+    });
     let additionals = 0;
     this.arr('additionals').controls.forEach((c) => {
       additionals += +c.get('total').value;
     });
 
     const subtotal =
-      scaffold + attachments + boards + hire + labour + additionals;
+      scaffold + attachments + boards + hire + labour + transport + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
     const vat = totalAfterDiscount * (this.company.vat / 100);
     const total = totalAfterDiscount + tax + vat;
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
     const code = `EST${new Date().toLocaleDateString('en', {
       year: '2-digit',
@@ -864,6 +882,20 @@ export class AddEstimatePage implements OnInit {
           ref.get('hours').value *
           ref.get('qty').value *
           ref.get('rate').value.rate
+        ).toFixed(2)
+      );
+  }
+  private calcTransportRate(i: string | number) {
+    const ref = this.transportForms.controls[i] as FormControl;
+
+    ref
+      .get('total')
+      .setValue(
+        +(
+          ref.get('days').value *
+          ref.get('hours').value *
+          ref.get('qty').value *
+          ref.get('type').value.rate
         ).toFixed(2)
       );
   }

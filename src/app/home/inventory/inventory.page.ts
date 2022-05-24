@@ -169,7 +169,7 @@ export class InventoryPage implements OnInit {
           .edit()
           .getCollectionOrdered(`company/${id}/returns`, 'code', 'desc');
       } else {
-        console.log(
+        this.masterSvc.log(
           '-----------------------try inventory----------------------'
         );
         this.init();

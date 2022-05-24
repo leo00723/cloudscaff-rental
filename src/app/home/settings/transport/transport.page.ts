@@ -55,7 +55,7 @@ export class TransportPage implements OnInit {
           .edit()
           .getCollectionOrdered(`company/${id}/transport`, 'name', 'asc');
       } else {
-        console.log(
+        this.masterSvc.log(
           '-----------------------try transport----------------------'
         );
         this.init();

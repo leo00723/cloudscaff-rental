@@ -5,6 +5,7 @@ import { HireItem } from './hireItem.model';
 import { Item } from './item.model';
 import { LabourBroker } from './labour-broker.model';
 import { LabourItem } from './labourItem.model';
+import { Transport, TransportItem } from './transport.model';
 
 export interface Invoice {
   acceptedBy?: string;
@@ -28,6 +29,8 @@ export interface Invoice {
   hire?: HireItem;
   id?: string;
   labour?: LabourItem[];
+  transport?: TransportItem[];
+  transportProfile?: Transport[];
   message?: string;
   poNumber?: string;
   rejectedBy?: string;
