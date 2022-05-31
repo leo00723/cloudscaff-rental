@@ -61,6 +61,7 @@ export class AddEstimatePage implements OnInit {
     updatedBy: '',
     acceptedBy: '',
     rejectedBy: '',
+    budget: undefined,
   };
   user: User;
   company: Company;

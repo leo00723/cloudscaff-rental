@@ -35,6 +35,7 @@
           lines="none"
           detail="false"
           routerLinkActive="selected"
+          *ngIf="p.roles.includes(user.role)"
         >
           <ion-icon slot="start" [name]="p.icon"></ion-icon>
           <ion-label>{{ p.title }}</ion-label>
@@ -50,6 +51,7 @@
           [replaceUrl]="true"
           lines="none"
           detail="false"
+          *ngIf="user.role !== 'Supervisor'"
         >
           <ion-icon slot="start" name="settings-outline"></ion-icon>
           <ion-label>Settings</ion-label>

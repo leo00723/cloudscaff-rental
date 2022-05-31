@@ -1,4 +1,5 @@
 import { AdditionalItem } from './additionalItem.model';
+import { Budget } from './budget.model';
 import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { HireItem } from './hireItem.model';
@@ -42,4 +43,5 @@ export interface Estimate {
   updatedBy: string;
   acceptedBy: string;
   rejectedBy: string;
+  budget?: Budget;
 }

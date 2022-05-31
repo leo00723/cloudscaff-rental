@@ -5,7 +5,7 @@
     [showBack]="true"
     path="/dashboard/site/{{ids[0]}}-{{ids[1]}}"
   >
-    <ion-toolbar>
+    <ion-toolbar *ngIf="user$ |async as user">
       <ion-segment
         scrollable="true"
         (ionChange)="segmentChanged($event)"
@@ -22,16 +22,19 @@
         <ion-segment-button value="handovers">
           <ion-label>Handovers</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="modifications">
+        <ion-segment-button
+          value="modifications"
+          *ngIf="user.role !== 'Supervisor'"
+        >
           <ion-label>Modifications</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="invoices">
+        <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Invoices</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="payments">
+        <ion-segment-button value="payments" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Payments</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="credit">
+        <ion-segment-button value="credit" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Credit Notes</ion-label>
         </ion-segment-button>
       </ion-segment>

@@ -1,0 +1,197 @@
+<form [formGroup]="form" *ngIf="form">
+  <ion-row class="card-outline mb-3">
+    <ion-col>
+      <app-input-reactive
+        title="Profit Margin %"
+        controlName="margin"
+        [form]="form"
+        (fieldChange)="update()"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Total Exc VAT ({{ company.currency.symbol }})"
+        controlName="subtotal"
+        [form]="form"
+        [readonly]="true"
+      >
+      </app-input-reactive>
+    </ion-col>
+
+    <ion-col>
+      <app-input-reactive
+        title="Total Spend ({{ company.currency.symbol }})"
+        controlName="cost"
+        [form]="form"
+        [readonly]="true"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Total Profit ({{ company.currency.symbol }})"
+        controlName="profit"
+        [form]="form"
+        [readonly]="true"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Total Profit %"
+        controlName="profitPercentage"
+        [form]="form"
+        [readonly]="true"
+      >
+      </app-input-reactive>
+    </ion-col>
+  </ion-row>
+
+  <ion-text color="medium">
+    <h4>Spend Breakdown (Private)</h4>
+  </ion-text>
+
+  <ion-grid class="card-outline mb-3">
+    <ion-row>
+      <ion-col>
+        <app-input-text
+          title="Name"
+          value="Labour"
+          [readonly]="true"
+        ></app-input-text>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Labor %"
+          controlName="labourPercentage"
+          [form]="form"
+          (fieldChange)="updateSpend()"
+        >
+        </app-input-reactive>
+        <ion-label color="danger" *ngIf="error">
+          totals cannot exceed 100%
+        </ion-label>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Labor Total ({{ company.currency.symbol }})"
+          controlName="labourTotal"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <app-input-text
+          title="Name"
+          value="Material"
+          [readonly]="true"
+        ></app-input-text>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Material %"
+          controlName="materialPercentage"
+          [form]="form"
+          (fieldChange)="updateSpend()"
+        >
+        </app-input-reactive>
+        <ion-label color="danger" *ngIf="error">
+          totals cannot exceed 100%
+        </ion-label>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Material Total ({{ company.currency.symbol }})"
+          controlName="materialTotal"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <app-input-text
+          title="Name"
+          value="Transport"
+          [readonly]="true"
+        ></app-input-text>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Transport %"
+          controlName="transportPercentage"
+          [form]="form"
+          (fieldChange)="updateSpend()"
+        >
+        </app-input-reactive>
+        <ion-label color="danger" *ngIf="error">
+          totals cannot exceed 100%
+        </ion-label>
+      </ion-col>
+      <ion-col>
+        <app-input-reactive
+          title="Transport Total ({{ company.currency.symbol }})"
+          controlName="transportTotal"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-text color="medium">
+    <h4>Labor Breakdown (Private)</h4>
+  </ion-text>
+  <ion-row class="card-outline">
+    <ion-col>
+      <app-input-reactive
+        title="Labor Rate"
+        controlName="labourRate"
+        [form]="form"
+        (fieldChange)="updateLabour()"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="No. of Ops"
+        controlName="noOps"
+        [form]="form"
+        (fieldChange)="updateLabour()"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Total Per Day"
+        controlName="totalPerDay"
+        [form]="form"
+        [readonly]="true"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Days"
+        controlName="days"
+        [form]="form"
+        [readonly]="true"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Weeks"
+        controlName="weeks"
+        [form]="form"
+        [readonly]="true"
+      >
+      </app-input-reactive>
+    </ion-col>
+  </ion-row>
+</form>

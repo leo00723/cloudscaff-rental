@@ -57,6 +57,7 @@ import { AddRequestComponent } from './add-request/add-request.component';
 import { AddReturnComponent } from './add-return/add-return.component';
 import { ReturnsTableComponent } from '../home/view-site/returns-table/returns-table.component';
 import { CalculatePipe } from './calculate.pipe';
+import { BudgetBreakdownComponent } from './budget-breakdown/budget-breakdown.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -66,10 +67,15 @@ const COMPONENTS = [
   AddInvoiceComponent,
   AddModificationComponent,
   AddPaymentComponent,
+  AddRequestComponent,
+  AddReturnComponent,
   AddShipmentComponent,
   AddSiteComponent,
   AddStockitemComponent,
+  AddTransferComponent,
   AddressSearchComponent,
+  BudgetBreakdownComponent,
+  CalculatePipe,
   CompanyInfoDetailComponent,
   CompanyPage,
   CreditSummaryComponent,
@@ -91,6 +97,7 @@ const COMPONENTS = [
   InspectionSummaryComponent,
   InvoiceSummaryComponent,
   ModificationSummaryComponent,
+  ReturnsTableComponent,
   ScaffoldEditformComponent,
   ScaffoldOverviewTableComponent,
   ShareDocumentComponent,
@@ -104,11 +111,6 @@ const COMPONENTS = [
   ViewInvoiceComponent,
   ViewModificationComponent,
   ViewStockLocationsComponent,
-  AddTransferComponent,
-  AddRequestComponent,
-  AddReturnComponent,
-  ReturnsTableComponent,
-  CalculatePipe,
 ];
 const IMPORTS = [
   CommonModule,

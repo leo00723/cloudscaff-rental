@@ -1,5 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
@@ -9,6 +10,7 @@ import { Estimate } from 'src/app/models/estimate.model';
 import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
@@ -19,6 +21,7 @@ import { AddSiteComponent } from '../sites/add-site/add-site.component';
   templateUrl: './view-site.page.html',
 })
 export class ViewSitePage implements OnDestroy {
+  @Select() user$: Observable<User>;
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
   scaffolds$: Observable<Scaffold[]>;

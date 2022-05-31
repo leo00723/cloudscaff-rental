@@ -21,17 +21,25 @@ export class HomePage implements OnDestroy {
       title: 'Estimates',
       url: '/dashboard/estimates',
       icon: 'options-outline',
+      roles: 'Owner,Admin',
     },
-    { title: 'Sites', url: '/dashboard/sites', icon: 'business-outline' },
+    {
+      title: 'Sites',
+      url: '/dashboard/sites',
+      icon: 'business-outline',
+      roles: 'Owner,Admin,Supervisor',
+    },
     {
       title: 'Inventory',
       url: '/dashboard/inventory',
       icon: 'bar-chart-outline',
+      roles: 'Owner,Admin,Supervisor',
     },
     {
       title: 'Statements',
       url: '/dashboard/statements',
       icon: 'document-text-outline',
+      roles: 'Owner,Admin',
     },
   ];
   loading = false;
