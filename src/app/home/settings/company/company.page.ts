@@ -158,7 +158,6 @@ export class CompanyPage {
             boards: [this.company.terminology.boards, Validators.required],
             hire: [this.company.terminology.hire, Validators.required],
           }),
-          // measurement: ['', Validators.required],
         });
         this.isLoading = false;
       } else {

@@ -58,6 +58,7 @@ import { AddReturnComponent } from './add-return/add-return.component';
 import { ReturnsTableComponent } from '../home/view-site/returns-table/returns-table.component';
 import { CalculatePipe } from './calculate.pipe';
 import { BudgetBreakdownComponent } from './budget-breakdown/budget-breakdown.component';
+import { RequestsTableComponent } from '../home/view-site/requests-table/requests-table.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -111,6 +112,7 @@ const COMPONENTS = [
   ViewInvoiceComponent,
   ViewModificationComponent,
   ViewStockLocationsComponent,
+  RequestsTableComponent,
 ];
 const IMPORTS = [
   CommonModule,

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
+import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
@@ -8,6 +9,7 @@ import { AddTransferComponent } from 'src/app/components/add-transfer/add-transf
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
+import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
 import { Shipment } from 'src/app/models/shipment.model';
 import { Transfer } from 'src/app/models/transfer.model';
@@ -25,6 +27,7 @@ export class InventoryPage implements OnInit {
   inventoryItems$: Observable<InventoryItem[]>;
   shipments$: Observable<Shipment[]>;
   transfers$: Observable<Transfer[]>;
+  requests$: Observable<Request[]>;
   returns$: Observable<Return[]>;
   active = 1;
   constructor(private masterSvc: MasterService) {}
@@ -136,6 +139,20 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async viewRequest(requestData: Return) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddRequestComponent,
+      componentProps: { allowSend: true, isEdit: true, value: requestData },
+      showBackdrop: false,
+      id: 'viewRequest',
+      cssClass: 'fullscreen',
+    });
+    await modal.present();
+    const { role } = await modal.onDidDismiss();
+    role === 'approved' ? (this.active = 2) : null;
+    return true;
+  }
+
   async viewReturn(returnData: Return) {
     const modal = await this.masterSvc.modal().create({
       component: AddReturnComponent,
@@ -148,7 +165,9 @@ export class InventoryPage implements OnInit {
   }
 
   segmentChanged(ev: any) {
-    this.active = ev.detail.value;
+    this.active !== ev.detail.value
+      ? (this.active = ev.detail.value)
+      : console.log('same');
   }
 
   private init() {
@@ -165,6 +184,9 @@ export class InventoryPage implements OnInit {
         this.transfers$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/transfers`, 'code', 'desc');
+        this.requests$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/requests`, 'code', 'desc');
         this.returns$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/returns`, 'code', 'desc');

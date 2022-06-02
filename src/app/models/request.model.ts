@@ -1,9 +1,8 @@
 import { Company } from './company.model';
-import { Customer } from './customer.model';
 import { InventoryItem } from './inventoryItem.model';
 import { Site } from './site.model';
 
-export interface Shipment {
+export interface Request {
   id?: string;
   code?: string;
   company?: Company;

@@ -10,11 +10,11 @@
       <ion-segment-button value="1">
         <ion-label>Overview</ion-label>
       </ion-segment-button>
-      <!-- <ion-segment-button value="2">
-        <ion-label>Requests</ion-label>
-      </ion-segment-button> -->
-      <ion-segment-button value="3">
+      <ion-segment-button value="2">
         <ion-label>Shipments</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="3">
+        <ion-label>Requests</ion-label>
       </ion-segment-button>
       <ion-segment-button value="4">
         <ion-label>Returns</ion-label>
@@ -40,7 +40,7 @@
         </ion-fab-button>
       </ion-fab>
     </div>
-    <div *ngSwitchCase="3">
+    <div *ngSwitchCase="2">
       <app-shipment-table
         [value]="shipments$"
         *ngIf="shipments$ | async else loading"
@@ -51,6 +51,13 @@
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
+    </div>
+    <div *ngSwitchCase="3">
+      <app-requests-table
+        [value]="requests$"
+        *ngIf="requests$ | async else loading"
+        (selectedItem)="viewRequest($event)"
+      ></app-requests-table>
     </div>
     <div *ngSwitchCase="4">
       <app-returns-table

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { increment } from 'firebase/firestore';
+import { increment } from '@angular/fire/firestore';
 import { Company } from 'src/app/models/company.model';
 import { Invoice } from 'src/app/models/invoice.model';
 import { Payment } from 'src/app/models/payment.model';

@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { increment } from 'firebase/firestore';
+import { increment } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';

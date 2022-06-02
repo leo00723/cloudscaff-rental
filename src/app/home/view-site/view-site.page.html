@@ -20,6 +20,9 @@
         <ion-segment-button value="inventory">
           <ion-label>Inventory</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="requests">
+          <ion-label>Requests</ion-label>
+        </ion-segment-button>
         <ion-segment-button value="returns">
           <ion-label>Returns</ion-label>
         </ion-segment-button>
@@ -50,6 +53,18 @@
         <ng-template #empty>
           <app-site-inventory-table [value]="[]"></app-site-inventory-table
         ></ng-template>
+      </div>
+      <div *ngSwitchCase="'requests'">
+        <app-requests-table
+          [value]="requests$"
+          *ngIf="requests$ | async else loading"
+          (selectedItem)="viewRequest($event,site)"
+        ></app-requests-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addRequest(site)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
       </div>
       <div *ngSwitchCase="'returns'">
         <app-returns-table

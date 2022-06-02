@@ -1,17 +1,249 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { increment } from '@angular/fire/firestore';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable, Subscription } from 'rxjs';
+import { Company } from 'src/app/models/company.model';
+import { InventoryItem } from 'src/app/models/inventoryItem.model';
+import { Request } from 'src/app/models/request.model';
+import { Shipment } from 'src/app/models/shipment.model';
+import { Site } from 'src/app/models/site.model';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-add-request',
   templateUrl: './add-request.component.html',
-  styles: [
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddRequestComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
+export class AddRequestComponent implements OnInit, OnDestroy {
+  @Input() isEdit = false;
+  @Input() allowSend = false;
+  @Input() site: Site;
+  @Input() set value(val: Request) {
+    if (val) {
+      Object.assign(this.request, val);
+      this.initEditForm();
+    }
+  }
+  items: InventoryItem[];
+  request: Request = { status: 'pending' };
+  form: FormGroup;
+  user: User;
+  company: Company;
+  loading = false;
+  viewAll = true;
+  error = false;
+  private inventoryItems$: Observable<InventoryItem[]>;
+  private subs = new Subscription();
+  constructor(private masterSvc: MasterService) {
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.inventoryItems$ = this.masterSvc
+      .edit()
+      .getCollectionOrdered(
+        `company/${this.company.id}/stockItems`,
+        'code',
+        'asc'
+      );
   }
 
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
+
+  ngOnInit() {
+    if (!this.isEdit) {
+      this.subs.add(
+        this.inventoryItems$.subscribe((items) => {
+          this.items = items;
+        })
+      );
+      this.initForm();
+    }
+  }
+
+  update(val, item: InventoryItem) {
+    item.shipmentQty = +val.detail.value;
+    this.checkError(item);
+  }
+
+  checkError(item: InventoryItem) {
+    const totalQty = item.availableQty ? item.availableQty : 0;
+    const inUseQty = item.inUseQty ? item.inUseQty : 0;
+    const damaged = item.damagedQty ? item.damagedQty : 0;
+    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
+    const lost = item.lostQty ? item.lostQty : 0;
+    const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
+    if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
+      item.error = true;
+      this.error = true;
+    } else {
+      item.error = false;
+      this.error = false;
+    }
+  }
+
+  createRequest() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        let request: Request = { ...this.form.value };
+        request.items = this.items.filter((item) => item.shipmentQty > 0);
+        this.company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+
+        request.code = `REQ${new Date().toLocaleDateString('en', {
+          year: '2-digit',
+        })}${(this.company.totalRequests ? this.company.totalRequests + 1 : 1)
+          .toString()
+          .padStart(6, '0')}`;
+
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/requests`, request);
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalRequests: increment(1),
+        });
+
+        this.masterSvc
+          .notification()
+          .toast('Request created successfully', 'success');
+        this.close();
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating request. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
+  }
+
+  updateRequest(status: string) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        Object.assign(this.request, this.form.value);
+        this.request.items = this.items.filter((item) => item.shipmentQty > 0);
+        this.request.status = status;
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/requests`,
+            this.request.id,
+            this.request
+          );
+        this.masterSvc
+          .notification()
+          .toast('Request updated successfully', 'success');
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating the request. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
+  }
+
+  approveRequest() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        let shipment: Shipment = { ...this.request };
+        this.company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+
+        shipment.code = `SHI${new Date().toLocaleDateString('en', {
+          year: '2-digit',
+        })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
+          .toString()
+          .padStart(6, '0')}`;
+        this.request.status = 'approved';
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/requests`,
+            this.request.id,
+            this.request
+          );
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/shipments`, shipment);
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalShipments: increment(1),
+        });
+
+        this.masterSvc
+          .notification()
+          .toast('Shipment created successfully', 'success');
+        this.masterSvc.modal().dismiss(true, 'approved');
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating shipment. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
+  }
+
+  close() {
+    this.masterSvc.modal().dismiss();
+  }
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+
+  private initEditForm() {
+    this.form = this.masterSvc.fb().group({
+      site: [this.request.site, Validators.required],
+      startDate: [this.request.startDate, Validators.required],
+      endDate: [this.request.endDate, Validators.required],
+      company: [this.company, Validators.required],
+      status: [this.request.status, Validators.required],
+      updatedBy: [this.user.id, Validators.required],
+    });
+    if (this.request.status === 'pending') {
+      this.subs.add(
+        this.inventoryItems$.subscribe((items) => {
+          this.request.items.forEach((item) => {
+            const inventoryItem = items.find((i) => i.id === item.id);
+            if (inventoryItem) {
+              inventoryItem.shipmentQty = +item.shipmentQty;
+            }
+          });
+          this.items = items;
+        })
+      );
+    } else {
+      this.items = this.request.items;
+    }
+  }
+
+  private initForm() {
+    this.form = this.masterSvc.fb().group({
+      site: [this.site, Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      company: [this.company, Validators.required],
+      status: ['pending', Validators.required],
+      createdBy: [this.user.id, Validators.required],
+    });
+  }
 }

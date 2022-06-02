@@ -7,6 +7,7 @@ import { AddRequestComponent } from 'src/app/components/add-request/add-request.
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
 import { SetSite } from 'src/app/home/sites/state/sites.actions';
 import { Estimate } from 'src/app/models/estimate.model';
+import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
@@ -25,7 +26,8 @@ export class ViewSitePage implements OnDestroy {
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
   scaffolds$: Observable<Scaffold[]>;
-  returns$: Observable<Scaffold[]>;
+  requests$: Observable<Request[]>;
+  returns$: Observable<Return[]>;
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
   ids = [];
@@ -67,6 +69,16 @@ export class ViewSitePage implements OnDestroy {
     this.inventoryItems$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.ids[0]}/siteStock`, this.ids[1]);
+    this.requests$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/requests`,
+        'site.id',
+        '==',
+        this.ids[1],
+        'startDate',
+        'desc'
+      ) as Observable<Request[]>;
     this.returns$ = this.masterSvc
       .edit()
       .getCollectionWhereAndOrder(
@@ -109,14 +121,23 @@ export class ViewSitePage implements OnDestroy {
   async addRequest(site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: AddRequestComponent,
-      componentProps: { siteData: site },
+      componentProps: { site: site },
       showBackdrop: false,
       id: 'addRequest',
       cssClass: 'fullscreen',
     });
     return await modal.present();
   }
-
+  async viewRequest(requestData: Request, site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddRequestComponent,
+      componentProps: { isEdit: true, value: requestData },
+      showBackdrop: false,
+      id: 'viewRequest',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
   async addReturn(site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: AddReturnComponent,

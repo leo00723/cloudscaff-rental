@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea, Platform } from '@ionic/angular';
-import { increment } from 'firebase/firestore';
+import { increment } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { AcceptEstimateComponent } from 'src/app/home/estimates/add-estimate/accept-estimate/accept-estimate.component';
 import { Company } from 'src/app/models/company.model';
