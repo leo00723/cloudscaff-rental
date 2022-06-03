@@ -135,4 +135,11 @@ export class BudgetBreakdownComponent implements OnInit {
     this.field('weeks').setValue(weeks);
     this.estimate.budget = this.form.value;
   }
+
+  async download() {
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateBudget(this.estimate, this.company);
+    this.masterSvc.pdf().handlePdf(pdf, `${this.estimate.code}-Budget`);
+  }
 }

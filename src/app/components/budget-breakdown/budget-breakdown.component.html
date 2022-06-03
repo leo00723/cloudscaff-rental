@@ -1,4 +1,23 @@
 <form [formGroup]="form" *ngIf="form">
+  <ion-row>
+    <ion-col sizeMd="6" size="4">
+      <ion-text color="medium">
+        <h4>Budget Breakdown (Private)</h4>
+      </ion-text>
+    </ion-col>
+    <ion-col sizeMd="6" size="8" class="text-end">
+      <ng-container>
+        <ion-button
+          size="small"
+          (click)="download()"
+          fill="clear"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+      </ng-container>
+    </ion-col>
+  </ion-row>
   <ion-row class="card-outline mb-3">
     <ion-col>
       <app-input-reactive
@@ -57,7 +76,7 @@
       <ion-col>
         <app-input-text
           title="Name"
-          value="Labour"
+          value="Labor"
           [readonly]="true"
         ></app-input-text>
       </ion-col>
@@ -168,7 +187,7 @@
     </ion-col>
     <ion-col>
       <app-input-reactive
-        title="Total Per Day"
+        title="Total Per Day ({{ company.currency.symbol }})"
         controlName="totalPerDay"
         [form]="form"
         [readonly]="true"

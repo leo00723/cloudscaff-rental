@@ -1110,14 +1110,6 @@
       <!-- BUDGET TAB -->
 
       <ion-grid *ngSwitchCase="'budget'">
-        <ion-row class="mt-3">
-          <ion-col size="12">
-            <ion-text color="medium">
-              <h4>Budget Breakdown (Private)</h4>
-            </ion-text>
-          </ion-col>
-        </ion-row>
-
         <app-budget-breakdown [estimate]="estimate"></app-budget-breakdown>
 
         <ion-row>

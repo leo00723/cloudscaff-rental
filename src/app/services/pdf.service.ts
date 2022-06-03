@@ -459,7 +459,311 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
-  // ESTIMATE STANDARD PDF
+  // BUDGET STANDARD PDF
+  async generateBudget(estimate: Estimate, company: Company) {
+    const attachments = [];
+    estimate.attachments.forEach((a) => {
+      attachments.push(
+        this.addEstimateItem(
+          company,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
+          1,
+          a.total
+        )
+      );
+    });
+    const platforms = [];
+    estimate.boards.forEach((b) => {
+      platforms.push(
+        this.addEstimateItem(
+          company,
+          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Level (${b.height}${company.measurement.symbol})`,
+          b.qty,
+          b.total
+        )
+      );
+    });
+    const labour = [];
+    estimate.labour.forEach((l) => {
+      labour.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.rate.name}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
+    const transport = [];
+    estimate.transport.forEach((l) => {
+      transport.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.type.maxLoad}${company.mass.symbol}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
+    const additionals = [];
+    estimate.additionals.forEach((a) => {
+      additionals.push(this.addEstimateItem(company, a.name, a.qty, a.total));
+    });
+    const budget = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['*', '*', '*', '*'],
+        body: [
+          [
+            {
+              text: `Total Exc VAT (${company.currency.symbol})`,
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: `Total Spend (${company.currency.symbol})`,
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: `Total Profit (${company.currency.symbol})`,
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: `Total Profit %`,
+              style: 'h4b',
+              alignment: 'center',
+            },
+          ],
+          [
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.subtotal
+              )}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.cost
+              )}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.profit
+              )}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: `${this.format(estimate.budget.margin)}%`,
+              style: 'h6',
+              alignment: 'center',
+            },
+          ],
+        ],
+      },
+      layout: tLayout,
+    };
+    const spend = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['*', '*', '*'],
+        body: [
+          [
+            {
+              text: 'Name',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            {
+              text: `% of Spend`,
+              style: 'h4b',
+              alignment: 'right',
+            },
+            {
+              text: `Total (${company.currency.symbol})`,
+              style: 'h4b',
+              alignment: 'right',
+            },
+          ],
+          [
+            {
+              text: 'Labor',
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: `${this.format(estimate.budget.labourPercentage)}%`,
+              style: 'h6',
+              alignment: 'right',
+            },
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.labourTotal
+              )}`,
+              style: 'h6',
+              alignment: 'right',
+            },
+          ],
+          [
+            {
+              text: 'Material',
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: `${this.format(estimate.budget.materialPercentage)}%`,
+              style: 'h6',
+              alignment: 'right',
+            },
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.materialTotal
+              )}`,
+              style: 'h6',
+              alignment: 'right',
+            },
+          ],
+          [
+            {
+              text: 'Transport',
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: `${this.format(estimate.budget.transportPercentage)}%`,
+              style: 'h6',
+              alignment: 'right',
+            },
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.transportTotal
+              )}`,
+              style: 'h6',
+              alignment: 'right',
+            },
+          ],
+        ],
+      },
+      layout: tLayout,
+    };
+    const labor = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['*', '*', '*', '*', '*'],
+        body: [
+          [
+            {
+              text: 'Rate',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'No. of Operatives',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: `Total per day (${company.currency.symbol})`,
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Days',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Weeks',
+              style: 'h4b',
+              alignment: 'center',
+            },
+          ],
+          [
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.labourRate
+              )}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: estimate.budget.noOps,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: `${company.currency.symbol} ${this.format(
+                estimate.budget.totalPerDay
+              )}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: estimate.budget.days,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: estimate.budget.weeks,
+              style: 'h6',
+              alignment: 'center',
+            },
+          ],
+        ],
+      },
+      layout: tLayout,
+    };
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Budget-${estimate.code}`),
+      content: [
+        await this.getHeader(
+          'Budget',
+          estimate.code,
+          estimate.siteName,
+          estimate.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          null,
+          []
+        ),
+        hr,
+        {
+          text: 'Budget Breakdown',
+          style: ['h4b', 'm20'],
+        },
+        budget,
+        {
+          text: 'Spend Breakdown',
+          style: ['h4b', 'm20'],
+        },
+        spend,
+        {
+          text: 'Labor Breakdown',
+          style: ['h4b', 'm20'],
+        },
+        labor,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  // MODIFICATION STANDARD PDF
   async generateModification(
     modification: Modification,
     company: Company,
@@ -1924,12 +2228,24 @@ export class PdfService {
     siteName: string,
     date: any,
     url: string,
-    link: string,
-    data: any
+    link?: string,
+    data?: any
   ) {
+    const linkData = link
+      ? [
+          { text: 'View Online:', style: 'h6b' },
+          {
+            text: 'Click here to view online',
+            style: ['h6b', { color: 'blue' }],
+            link,
+          },
+          '',
+          '',
+        ]
+      : [];
+
     const header = {
       style: 'tableExample',
-
       table: {
         widths: ['*', '*', '*', '*'],
 
@@ -1956,17 +2272,7 @@ export class PdfService {
             '',
             '',
           ],
-
-          [
-            { text: 'View Online:', style: 'h6b' },
-            {
-              text: 'Click here to view online',
-              style: ['h6b', { color: 'blue' }],
-              link,
-            },
-            '',
-            '',
-          ],
+          ...linkData,
         ],
       },
       layout: 'noBorders',
