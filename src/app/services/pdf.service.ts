@@ -442,6 +442,29 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
+              [
+                {
+                  text: '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Extra Hire:',
+                  style: 'h3',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.extraHire ? estimate.extraHire : 0
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                },
+              ],
             ],
           },
           layout: 'noBorders',
