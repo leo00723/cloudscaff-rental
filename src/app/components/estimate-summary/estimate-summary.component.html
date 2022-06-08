@@ -89,13 +89,14 @@
           <th class="text-center" scope="col">#</th>
           <th scope="col">Description</th>
           <th class="text-center" scope="col">Qty</th>
+          <th class="text-center" scope="col">Extra Hire</th>
           <th class="text-end" scope="col">Total</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <th class="text-center" scope="row">1</th>
-          <td colspan="3">Scaffold Details</td>
+          <td colspan="4">Scaffold Details</td>
         </tr>
         <!-- SCAFFOLD -->
         <tr class="small">
@@ -110,6 +111,10 @@
             {{ estimate.scaffold.description }}
           </td>
           <td class="text-center">1</td>
+          <td class="text-end">
+            {{ company.currency.symbol }}
+            {{ estimate.scaffold.extraHire | number: "0.2-2" }}
+          </td>
           <td class="text-end">
             {{ company.currency.symbol }}
             {{ estimate.scaffold.total | number: "0.2-2" }}
@@ -131,6 +136,10 @@
           <td class="text-center">1</td>
           <td class="text-end">
             {{ company.currency.symbol }}
+            {{ item.extraHire | number: "0.2-2" }}
+          </td>
+          <td class="text-end">
+            {{ company.currency.symbol }}
             {{ item.total | number: "0.2-2" }}
           </td>
         </tr>
@@ -146,6 +155,10 @@
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
             {{ company.currency.symbol }}
+            {{ item.extraHire | number: "0.2-2" }}
+          </td>
+          <td class="text-end">
+            {{ company.currency.symbol }}
             {{ item.total | number: "0.2-2" }}
           </td>
         </tr>
@@ -157,6 +170,7 @@
             {{ estimate.hire.isWeeks ? "Weeks" : "Days" }})
           </td>
           <td class="text-center">1</td>
+          <td class="text-center"></td>
           <td class="text-end">
             {{ company.currency.symbol }}
             {{ estimate.hire.total | number: "0.2-2" }}
@@ -165,12 +179,13 @@
         <!-- LABOR -->
         <tr *ngIf="estimate.labour.length > 0">
           <th class="text-center" scope="row">2</th>
-          <td colspan="3">Labor</td>
+          <td colspan="4">Labor</td>
         </tr>
         <tr class="small" *ngFor="let item of estimate.labour; let i = index">
           <th class="text-center" scope="row"></th>
           <td>{{ item.type.name }} - {{ item.rate.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
+          <td class="text-center"></td>
           <td class="text-end">
             {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
           </td>
@@ -179,7 +194,7 @@
         <ng-container *ngIf="estimate.transport">
           <tr *ngIf="estimate.transport.length > 0">
             <th class="text-center" scope="row">3</th>
-            <td colspan="3">Transport</td>
+            <td colspan="4">Transport</td>
           </tr>
           <tr
             class="small"
@@ -192,6 +207,10 @@
             </td>
             <td class="text-center">{{ item.qty }}</td>
             <td class="text-end">
+              {{ company.currency.symbol }}
+              {{ item.extraHire | number: "0.2-2" }}
+            </td>
+            <td class="text-end">
               {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
             </td>
           </tr>
@@ -199,7 +218,7 @@
         <!-- ADDITIONALS -->
         <tr *ngIf="estimate.additionals.length > 0">
           <th class="text-center" scope="row">4</th>
-          <td colspan="3">Additionals</td>
+          <td colspan="4">Additionals</td>
         </tr>
         <tr
           class="small"
@@ -209,6 +228,9 @@
           <td>{{ item.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
+            {{ company.currency.symbol }} {{ item.extraHire | number: "0.2-2" }}
+          </td>
+          <td class="text-end">
             {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
           </td>
         </tr>
@@ -216,14 +238,14 @@
       <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
-          <th class="text-end" colspan="2" scope="col">Subtotal</th>
+          <th class="text-end" colspan="3" scope="col">Subtotal</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
             {{ estimate.subtotal | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="2" scope="col">
+          <th class="text-end" colspan="3" scope="col">
             Discount ({{ estimate.discountPercentage }}%)
           </th>
           <th class="text-end text-danger" colspan="2" scope="col">
@@ -232,7 +254,7 @@
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
-          <th class="text-end" colspan="2" scope="col">
+          <th class="text-end" colspan="3" scope="col">
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th class="text-end" colspan="2" scope="col">
@@ -240,7 +262,7 @@
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
-          <th class="text-end" colspan="2" scope="col">
+          <th class="text-end" colspan="3" scope="col">
             VAT ({{ company.vat }}%)
           </th>
           <th class="text-end" colspan="2" scope="col">
@@ -248,9 +270,16 @@
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="2" scope="col">Total</th>
+          <th class="text-end" colspan="3" scope="col">Total</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }} {{ estimate.total | number: "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="3" scope="col">Extra Hire</th>
+          <th class="text-end" colspan="2" scope="col">
+            {{ company.currency.symbol }}
+            {{ estimate.extraHire | number: "0.2-2" }}
           </th>
         </tr>
       </tfoot>

@@ -11,6 +11,8 @@ export interface Item {
   safe?: string;
   level?: number;
   lifts?: number;
+  extraHirePercentage?: number;
+  extraHire?: number;
   breakdown?: {
     dismantle: {
       length: number;

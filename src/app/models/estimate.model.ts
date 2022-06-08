@@ -33,6 +33,7 @@ export interface Estimate {
   subtotal: number;
   tax: number;
   total: number;
+  extraHire: number;
   vat: number;
   poNumber: string;
   woNumber: string;

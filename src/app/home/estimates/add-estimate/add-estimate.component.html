@@ -162,12 +162,34 @@
 
           <ion-col size="12">
             <ion-row formGroupName="scaffold">
-              <ion-col size="12">
+              <ion-col size="6">
                 <app-input-reactive
                   title="Description"
                   controlName="description"
                   placeholder="Enter description"
                   [form]="field('scaffold')"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col size="3">
+                <app-input-reactive
+                  title="Extra Hire %"
+                  type="number"
+                  controlName="extraHirePercentage"
+                  [form]="field('scaffold')"
+                  placeholder="%"
+                  (fieldChange)="update('scaffold')"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col size="3">
+                <app-input-reactive
+                  title="Extra Hire ({{ company.currency.symbol }})"
+                  type="number"
+                  controlName="extraHire"
+                  [form]="field('scaffold')"
+                  [readonly]="true"
+                  placeholder="Total Extra Hire"
                 >
                 </app-input-reactive>
               </ion-col>
@@ -288,12 +310,34 @@
                   <ion-label>Delete</ion-label>
                 </ion-chip>
               </ion-col>
-              <ion-col size="12">
+              <ion-col size="6">
                 <app-input-reactive
                   title="Description"
                   controlName="description"
                   placeholder="Enter description"
                   [form]="attachment"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col size="3">
+                <app-input-reactive
+                  title="Extra Hire %"
+                  type="number"
+                  controlName="extraHirePercentage"
+                  placeholder="%"
+                  [form]="attachment"
+                  (fieldChange)="update('attachments', i)"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col size="3">
+                <app-input-reactive
+                  title="Extra Hire ({{ company.currency.symbol }})"
+                  type="number"
+                  controlName="extraHire"
+                  placeholder="Total Extra Hire"
+                  [form]="attachment"
+                  [readonly]="true"
                 >
                 </app-input-reactive>
               </ion-col>
@@ -510,6 +554,28 @@
               (fieldChange)="updateRate('boards', $event, i)"
             >
             </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Extra Hire %"
+              type="number"
+              controlName="extraHirePercentage"
+              placeholder="%"
+              [form]="board"
+              (fieldChange)="updateRate('boards', null, i)"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Extra Hire ({{ company.currency.symbol }})"
+              type="number"
+              controlName="extraHire"
+              placeholder="Total Extra Hire"
+              [form]="board"
+              [readonly]="true"
+            >
+            </app-input-reactive>
           </ion-col>
           <ion-col>
             <app-input-reactive
@@ -949,6 +1015,28 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
+                  title="Extra Hire %"
+                  type="number"
+                  controlName="extraHirePercentage"
+                  placeholder="%"
+                  [form]="transport"
+                  (fieldChange)="updateRate('transport', null, i)"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
+                  title="Extra Hire ({{ company.currency.symbol }})"
+                  type="number"
+                  controlName="extraHire"
+                  placeholder="Total Extra Hire"
+                  [form]="transport"
+                  [readonly]="true"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col>
+                <app-input-reactive
                   title="Total ({{ company.currency.symbol }})"
                   type="number"
                   controlName="total"
@@ -1072,6 +1160,28 @@
               (fieldChange)="updateRate('additionals', $event, i)"
             >
             </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Extra Hire %"
+              type="number"
+              controlName="extraHirePercentage"
+              placeholder="%"
+              [form]="additional"
+              (fieldChange)="updateRate('additionals', null, i)"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Extra Hire ({{ company.currency.symbol }})"
+              type="number"
+              controlName="extraHire"
+              placeholder="Total Extra Hire"
+              [form]="additional"
+              [readonly]="true"
+            >
+            </app-input-reactive>
           </ion-col>
           <ion-col>
             <app-input-reactive

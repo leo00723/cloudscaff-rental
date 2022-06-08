@@ -115,4 +115,8 @@ export class HomePage implements OnDestroy {
     await this.menu.close();
     this.masterSvc.auth().logout();
   }
+
+  call() {
+    window.open('https://calendly.com/cloudscaff/onboarding', '_blank');
+  }
 }

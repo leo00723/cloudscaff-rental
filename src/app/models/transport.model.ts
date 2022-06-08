@@ -12,6 +12,8 @@ export interface TransportItem {
   hours?: string;
   qty?: string;
   days?: string;
+  extraHirePercentage?: number;
+  extraHire?: number;
   total?: number;
   type?: TransportType;
 }

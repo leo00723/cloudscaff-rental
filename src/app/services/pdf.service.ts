@@ -2242,7 +2242,7 @@ export class PdfService {
           '',
           '',
         ]
-      : [];
+      : ['', '', '', ''];
 
     const header = {
       style: 'tableExample',
@@ -2272,7 +2272,7 @@ export class PdfService {
             '',
             '',
           ],
-          ...linkData,
+          linkData,
         ],
       },
       layout: 'noBorders',

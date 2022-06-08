@@ -51,6 +51,7 @@ export class AddEstimatePage implements OnInit {
     subtotal: 0,
     tax: 0,
     total: 0,
+    extraHire: 0,
     vat: 0,
     poNumber: '',
     woNumber: '',
@@ -141,6 +142,8 @@ export class AddEstimatePage implements OnInit {
       hours: ['', Validators.required],
       days: ['', Validators.required],
       qty: ['', Validators.required],
+      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHire: ['', [Validators.nullValidator]],
       total: [''],
     });
     this.transportForms.push(transport);
@@ -151,6 +154,8 @@ export class AddEstimatePage implements OnInit {
       qty: ['', [Validators.required, Validators.min(1)]],
       name: ['', Validators.required],
       daysStanding: ['', [Validators.required, Validators.min(1)]],
+      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHire: ['', [Validators.nullValidator]],
       total: [0],
     });
     this.additionalForms.push(additional);
@@ -162,6 +167,8 @@ export class AddEstimatePage implements OnInit {
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
       qty: ['', [Validators.required, Validators.min(1)]],
+      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHire: ['', [Validators.nullValidator]],
       total: [0],
     });
     this.boardForms.push(board);
@@ -174,6 +181,8 @@ export class AddEstimatePage implements OnInit {
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
       lifts: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHire: ['', [Validators.nullValidator]],
       level: [''],
       total: [0],
     });
@@ -306,7 +315,7 @@ export class AddEstimatePage implements OnInit {
   }
 
   //Calculate total for a category base on rates
-  updateRate(type: string, args: any, i?: number) {
+  updateRate(type: string, args?: any, i?: number) {
     switch (type) {
       case 'scaffold':
         {
@@ -328,10 +337,12 @@ export class AddEstimatePage implements OnInit {
         break;
       case 'boards':
         {
-          this.arrField('boards', i, 'rate').patchValue({
-            ...this.arrField('boards', i, 'rate').value,
-            rate: +args,
-          });
+          if (args) {
+            this.arrField('boards', i, 'rate').patchValue({
+              ...this.arrField('boards', i, 'rate').value,
+              rate: +args,
+            });
+          }
           this.calcBoardRate(i);
         }
         break;
@@ -345,10 +356,12 @@ export class AddEstimatePage implements OnInit {
         break;
       case 'additionals':
         {
-          this.arrField('additionals', i, 'rate').patchValue({
-            ...this.arrField('additionals', i, 'rate').value,
-            rate: +args,
-          });
+          if (args) {
+            this.arrField('additionals', i, 'rate').patchValue({
+              ...this.arrField('additionals', i, 'rate').value,
+              rate: +args,
+            });
+          }
           this.calcAdditionalRate(i);
         }
         break;
@@ -362,10 +375,12 @@ export class AddEstimatePage implements OnInit {
         }
         break;
       case 'transport': {
-        this.arrField('transport', i, 'type').patchValue({
-          ...this.arrField('transport', i, 'type').value,
-          rate: +args,
-        });
+        if (args) {
+          this.arrField('transport', i, 'type').patchValue({
+            ...this.arrField('transport', i, 'type').value,
+            rate: +args,
+          });
+        }
         this.calcTransportRate(i);
       }
     }
@@ -463,25 +478,30 @@ export class AddEstimatePage implements OnInit {
     }
     const scaffold = +this.field('scaffold.total').value;
     const hire = +this.field('hire.total').value;
+    let extraHire = +this.field('scaffold.extraHire').value;
     let attachments = 0;
     this.arr('attachments').controls.forEach((a) => {
       attachments += +a.get('total').value;
+      extraHire += +a.get('extraHire').value;
     });
     let boards = 0;
-    this.arr('boards').controls.forEach((c) => {
-      boards += +c.get('total').value;
+    this.arr('boards').controls.forEach((b) => {
+      boards += +b.get('total').value;
+      extraHire += +b.get('extraHire').value;
     });
     let labour = 0;
-    this.arr('labour').controls.forEach((c) => {
-      labour += +c.get('total').value;
+    this.arr('labour').controls.forEach((l) => {
+      labour += +l.get('total').value;
     });
     let transport = 0;
-    this.arr('transport').controls.forEach((c) => {
-      transport += +c.get('total').value;
+    this.arr('transport').controls.forEach((t) => {
+      transport += +t.get('total').value;
+      extraHire += +t.get('extraHire').value;
     });
     let additionals = 0;
-    this.arr('additionals').controls.forEach((c) => {
-      additionals += +c.get('total').value;
+    this.arr('additionals').controls.forEach((a) => {
+      additionals += +a.get('total').value;
+      extraHire += +a.get('extraHire').value;
     });
 
     const subtotal =
@@ -524,6 +544,7 @@ export class AddEstimatePage implements OnInit {
       tax,
       vat,
       total,
+      extraHire,
       createdBy: this.isEdit ? this.estimate.createdBy : this.user.id,
       updatedBy: this.user.id,
     });
@@ -621,6 +642,10 @@ export class AddEstimatePage implements OnInit {
     this.field('scaffold.total').setValue(
       +this.field('scaffold.total').value.toFixed(2)
     );
+    this.field('scaffold.extraHire').setValue(
+      +this.field('scaffold.total').value *
+        (+this.field('scaffold.extraHirePercentage').value / 100)
+    );
   }
 
   private calcBoardRate(i: string | number) {
@@ -678,6 +703,12 @@ export class AddEstimatePage implements OnInit {
       }
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
+    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
+    ref
+      .get('extraHire')
+      .setValue(
+        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
+      );
   }
 
   private calcAttachmentRate(i: string | number) {
@@ -775,6 +806,11 @@ export class AddEstimatePage implements OnInit {
       }
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
+    ref
+      .get('extraHire')
+      .setValue(
+        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
+      );
   }
 
   private calcHireRate() {
@@ -871,6 +907,12 @@ export class AddEstimatePage implements OnInit {
       }
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
+    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
+    ref
+      .get('extraHire')
+      .setValue(
+        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
+      );
   }
   private calcLabourRate(i: string | number) {
     const ref = this.labourForms.controls[i] as FormControl;
@@ -898,6 +940,12 @@ export class AddEstimatePage implements OnInit {
           ref.get('qty').value *
           ref.get('type').value.rate
         ).toFixed(2)
+      );
+    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
+    ref
+      .get('extraHire')
+      .setValue(
+        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
       );
   }
   // END: Calculations
@@ -933,6 +981,14 @@ export class AddEstimatePage implements OnInit {
           [Validators.required, Validators.min(1)],
         ],
         lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
+        extraHirePercentage: [
+          this.estimate.scaffold.extraHirePercentage,
+          [Validators.nullValidator],
+        ],
+        extraHire: [
+          this.estimate.scaffold.extraHire,
+          [Validators.nullValidator],
+        ],
         level: [0],
         total: [this.estimate.scaffold.total],
       }),
@@ -964,6 +1020,11 @@ export class AddEstimatePage implements OnInit {
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
         lifts: [a.lifts, [Validators.nullValidator, Validators.min(1)]],
+        extraHirePercentage: [
+          a.extraHirePercentage,
+          [Validators.nullValidator, Validators.min(1)],
+        ],
+        extraHire: [a.extraHire, [Validators.nullValidator]],
         level: [a.level],
         total: [a.total],
       });
@@ -976,6 +1037,11 @@ export class AddEstimatePage implements OnInit {
         width: [b.width, [Validators.required, Validators.min(1)]],
         height: [b.height, [Validators.required, Validators.min(1)]],
         qty: [b.qty, [Validators.required, Validators.min(1)]],
+        extraHirePercentage: [
+          b.extraHirePercentage,
+          [Validators.nullValidator, Validators.min(1)],
+        ],
+        extraHire: [b.extraHire, [Validators.nullValidator]],
         total: [b.total],
       });
       this.boardForms.push(board);
@@ -997,6 +1063,11 @@ export class AddEstimatePage implements OnInit {
         hours: [t.hours, Validators.required],
         days: [t.days, Validators.required],
         qty: [t.qty, Validators.required],
+        extraHirePercentage: [
+          t.extraHirePercentage,
+          [Validators.nullValidator, Validators.min(1)],
+        ],
+        extraHire: [t.extraHire, [Validators.nullValidator]],
         total: [t.total],
       });
       this.transportForms.push(transport);
@@ -1010,6 +1081,11 @@ export class AddEstimatePage implements OnInit {
           add.daysStanding,
           [Validators.required, Validators.min(1)],
         ],
+        extraHirePercentage: [
+          add.extraHirePercentage,
+          [Validators.nullValidator, Validators.min(1)],
+        ],
+        extraHire: [add.extraHire, [Validators.nullValidator]],
         total: [add.total],
       });
       this.additionalForms.push(additional);
@@ -1039,6 +1115,11 @@ export class AddEstimatePage implements OnInit {
         width: ['', [Validators.required, Validators.min(1)]],
         height: ['', [Validators.required, Validators.min(1)]],
         lifts: ['', [Validators.nullValidator, Validators.min(1)]],
+        extraHirePercentage: [
+          '',
+          [Validators.nullValidator, Validators.min(1)],
+        ],
+        extraHire: ['', [Validators.nullValidator]],
         level: [0],
         total: [0],
       }),

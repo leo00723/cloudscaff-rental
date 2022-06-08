@@ -10,4 +10,6 @@ export interface AdditionalItem {
   unit?: string;
   discount?: number;
   discountPercentage?: number;
+  extraHirePercentage?: number;
+  extraHire?: number;
 }
