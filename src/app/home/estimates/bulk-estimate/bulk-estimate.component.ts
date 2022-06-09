@@ -1,0 +1,408 @@
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import { IonTextarea } from '@ionic/angular';
+import { increment } from 'firebase/firestore';
+import { Observable } from 'rxjs';
+import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
+import { Company } from 'src/app/models/company.model';
+import { Customer } from 'src/app/models/customer.model';
+import { Estimate } from 'src/app/models/estimate.model';
+import { Transport } from 'src/app/models/transport.model';
+import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
+import { AcceptEstimateComponent } from '../add-estimate/accept-estimate/accept-estimate.component';
+
+@Component({
+  selector: 'app-bulk-estimate',
+  templateUrl: './bulk-estimate.component.html',
+  styles: [],
+})
+export class BulkEstimateComponent implements OnInit {
+  @Input() set value(val: BulkEstimate) {
+    if (val) {
+      Object.assign(this.bulkEstimate, val);
+      this.initEditForm();
+    }
+  }
+  @Input() isEdit = false;
+  @ViewChild('message') message: IonTextarea;
+  bulkEstimate: BulkEstimate = {
+    code: '',
+    company: undefined,
+    customer: undefined,
+    date: undefined,
+    discount: 0,
+    discountPercentage: 0,
+    estimates: [],
+    endDate: undefined,
+    id: '',
+    message: '',
+    siteName: '',
+    startDate: undefined,
+    status: '',
+    subtotal: 0,
+    tax: 0,
+    total: 0,
+    extraHire: 0,
+    vat: 0,
+    poNumber: '',
+    woNumber: '',
+    siteId: '',
+    createdBy: '',
+    updatedBy: '',
+    acceptedBy: '',
+    rejectedBy: '',
+  };
+  user: User;
+  company: Company;
+  customers$: Observable<Customer[]>;
+  rates$: Observable<any>;
+  brokers$: Observable<any>;
+  transport$: Observable<Transport[]>;
+  form: FormGroup;
+  loading = false;
+  isLoading = true;
+  active = 'overview';
+  activeScaffold = 1;
+  show = '';
+
+  constructor(private masterSvc: MasterService) {
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+  }
+
+  addScaffold() {
+    this.bulkEstimate.estimates.push({
+      additionals: [],
+      attachments: [],
+      boards: [],
+      broker: {},
+      code: '',
+      company: {},
+      customer: {},
+      date: '',
+      discount: 0,
+      discountPercentage: 0,
+      endDate: '',
+      hire: {
+        rate: '',
+        daysStanding: 0,
+        total: 0,
+        isWeeks: false,
+      },
+      id: '',
+      labour: [],
+      transport: [],
+      transportProfile: [],
+      message: '',
+      scaffold: {
+        rate: '',
+        description: '',
+        length: '0',
+        width: '0',
+        height: '0',
+        lifts: 1,
+        extraHirePercentage: 0,
+        extraHire: 0,
+        level: 0,
+        total: 0,
+      },
+      siteName: '',
+      startDate: '',
+      status: '',
+      subtotal: 0,
+      tax: 0,
+      total: 0,
+      extraHire: 0,
+      vat: 0,
+      poNumber: '',
+      woNumber: '',
+      siteId: '',
+      scaffoldId: '',
+      scaffoldCode: '',
+      createdBy: '',
+      updatedBy: '',
+      acceptedBy: '',
+      rejectedBy: '',
+      budget: {},
+    });
+  }
+  deleteScaffold(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.bulkEstimate.estimates.splice(i, 1);
+      if (i === 0) {
+        this.activeScaffold = 0;
+        setTimeout(() => {
+          this.activeScaffold = 1;
+        }, 200);
+      } else {
+        this.activeScaffold--;
+      }
+    }, `Are you sure you want to delete scaffold ${i + 1}?`);
+  }
+  ngOnInit() {
+    this.customers$ = this.masterSvc
+      .edit()
+      .getCollection(`company/${this.company.id}/customers`);
+
+    if (this.isEdit) {
+      this.show = 'editCustomer';
+    } else {
+      this.initFrom();
+      this.isLoading = false;
+    }
+  }
+
+  ionViewDidEnter() {
+    if (this.message) {
+      this.message.autoGrow = true;
+      this.message.rows = 4;
+    }
+  }
+
+  // END: FORM CRUD
+
+  // START: Helper functions
+  close() {
+    this.masterSvc.modal().dismiss();
+  }
+
+  arr(field: string) {
+    return this.form.get(field) as FormArray;
+  }
+
+  arrField(arr: string, index: number, field: string) {
+    return this.arr(arr).controls[index].get(field) as FormControl;
+  }
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+  // END: Helper functions
+
+  // switch customer
+  changeCustomer(args) {
+    if (args !== 'add') {
+      this.show = 'editCustomer';
+    } else {
+      this.show = 'addCustomer';
+    }
+  }
+
+  //event for new customer added
+  newCustomer(args) {
+    this.field('customer').setValue({ ...args });
+  }
+
+  //switch between pages
+  nextView(page: string) {
+    this.active = page;
+  }
+
+  //event for switching between pages
+  segmentChanged(ev: any) {
+    if (ev.detail.value === 'summary') {
+      // this.updateEstimateTotal();
+      this.active = ev.detail.value;
+    } else {
+      this.active = ev.detail.value;
+    }
+  }
+
+  scaffoldSegmentChanged(ev: any) {
+    this.activeScaffold = +ev.detail.value;
+  }
+
+  //create the estimate
+  createEstimate() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.updateEstimateTotal();
+        await this.masterSvc
+          .edit()
+          .addDocument(
+            `company/${this.bulkEstimate.company.id}/estimates`,
+            this.bulkEstimate
+          );
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalEstimates: increment(1),
+        });
+        this.masterSvc
+          .notification()
+          .toast('Estimate created successfully!', 'success');
+        this.close();
+      } catch (error) {
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your estimate, try again!',
+            'danger',
+            2000
+          );
+      }
+    });
+  }
+
+  //update the estimate
+  updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
+    if (status === 'accepted') {
+      this.startAcceptance();
+    } else {
+      this.masterSvc.notification().presentAlertConfirm(() => {
+        this.loading = true;
+        this.updateEstimateTotal();
+        this.bulkEstimate.status = status;
+        this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/estimates`,
+            this.bulkEstimate.id,
+            this.bulkEstimate
+          )
+          .then(() => {
+            this.masterSvc
+              .notification()
+              .toast('Estimate updated successfully!', 'success');
+            this.loading = false;
+          })
+          .catch(() => {
+            this.loading = false;
+            this.masterSvc
+              .notification()
+              .toast(
+                'Something went wrong updating your estimate, try again!',
+                'danger',
+                2000
+              );
+          });
+      });
+    }
+  }
+
+  //start the acceptance process
+  private async startAcceptance() {
+    const modal = await this.masterSvc.modal().create({
+      component: AcceptEstimateComponent,
+      componentProps: {
+        company: this.company,
+        user: this.user,
+        estimate: this.bulkEstimate,
+        form: this.form,
+      },
+      id: 'acceptEstimate',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  //update the estimate total
+  private updateEstimateTotal() {
+    if (this.isEdit && this.bulkEstimate.status !== 'pending') {
+      return;
+    }
+    const scaffold = +this.field('scaffold.total').value;
+    const hire = +this.field('hire.total').value;
+    let extraHire = +this.field('scaffold.extraHire').value;
+    let attachments = 0;
+    this.arr('attachments').controls.forEach((a) => {
+      attachments += +a.get('total').value;
+      extraHire += +a.get('extraHire').value;
+    });
+    let boards = 0;
+    this.arr('boards').controls.forEach((b) => {
+      boards += +b.get('total').value;
+      extraHire += +b.get('extraHire').value;
+    });
+    let labour = 0;
+    this.arr('labour').controls.forEach((l) => {
+      labour += +l.get('total').value;
+    });
+    let transport = 0;
+    this.arr('transport').controls.forEach((t) => {
+      transport += +t.get('total').value;
+      extraHire += +t.get('extraHire').value;
+    });
+    let additionals = 0;
+    this.arr('additionals').controls.forEach((a) => {
+      additionals += +a.get('total').value;
+      extraHire += +a.get('extraHire').value;
+    });
+
+    const subtotal =
+      scaffold + attachments + boards + hire + labour + transport + additionals;
+    const discount = subtotal * (+this.field('discountPercentage').value / 100);
+    const totalAfterDiscount = subtotal - discount;
+    const tax = totalAfterDiscount * (this.company.salesTax / 100);
+    const vat = totalAfterDiscount * (this.company.vat / 100);
+    const total = totalAfterDiscount + tax + vat;
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+
+    const code = `EST${new Date().toLocaleDateString('en', {
+      year: '2-digit',
+    })}${(this.company.totalEstimates ? this.company.totalEstimates + 1 : 1)
+      .toString()
+      .padStart(6, '0')}`;
+
+    Object.assign(this.bulkEstimate, {
+      ...this.form.value,
+      date: this.isEdit ? this.bulkEstimate.date : new Date(),
+      company: this.company,
+      code: this.isEdit ? this.bulkEstimate.code : code,
+      status: this.isEdit ? this.bulkEstimate.status : 'pending',
+      subtotal,
+      discount,
+      tax,
+      vat,
+      total,
+      extraHire,
+      createdBy: this.isEdit ? this.bulkEstimate.createdBy : this.user.id,
+      updatedBy: this.user.id,
+    });
+  }
+
+  // END: Calculations
+
+  // START: Functions to initialise the form
+  private initEditForm() {
+    this.form = this.masterSvc.fb().group({
+      customer: [this.bulkEstimate.customer, Validators.required],
+      message: [this.bulkEstimate.message],
+      siteName: [this.bulkEstimate.siteName, Validators.required],
+      startDate: [this.bulkEstimate.startDate, Validators.nullValidator],
+      endDate: [this.bulkEstimate.endDate, Validators.nullValidator],
+      discountPercentage: [
+        this.bulkEstimate.discountPercentage,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
+      poNumber: [this.bulkEstimate.poNumber],
+      woNumber: [this.bulkEstimate.woNumber],
+      code: [this.bulkEstimate.code],
+    });
+
+    this.isLoading = false;
+  }
+
+  private initFrom() {
+    this.form = this.masterSvc.fb().group({
+      customer: ['', Validators.required],
+      message: [
+        // eslint-disable-next-line max-len
+        'We thank you for your scaffolding enquiry as per the Scope of Work detailed below. We attach herewith our estimate for your perusal.',
+        Validators.required,
+      ],
+      siteName: ['', Validators.required],
+      startDate: ['', Validators.nullValidator],
+      endDate: ['', Validators.nullValidator],
+      discountPercentage: [
+        0,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
+      poNumber: [''],
+      woNumber: [''],
+    });
+    this.addScaffold();
+  }
+}

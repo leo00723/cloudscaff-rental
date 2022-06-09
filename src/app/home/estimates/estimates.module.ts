@@ -6,6 +6,7 @@ import { AddEstimatePage } from './add-estimate/add-estimate.component';
 import { EstimatesPageRoutingModule } from './estimates-routing.module';
 import { EstimatesPage } from './estimates.page';
 import { EstimatesState } from './state/estimate.state';
+import { BulkEstimateComponent } from './bulk-estimate/bulk-estimate.component';
 
 @NgModule({
   imports: [
@@ -13,6 +14,6 @@ import { EstimatesState } from './state/estimate.state';
     EstimatesPageRoutingModule,
     NgxsModule.forFeature([EstimatesState]),
   ],
-  declarations: [EstimatesPage, AddEstimatePage, AcceptEstimateComponent],
+  declarations: [EstimatesPage, AddEstimatePage, AcceptEstimateComponent, BulkEstimateComponent],
 })
 export class EstimatesPageModule {}

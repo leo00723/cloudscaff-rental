@@ -1,0 +1,240 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" color="primary" mode="md">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment
+      scrollable
+      (ionChange)="segmentChanged($event)"
+      selectOnFocus="true"
+      [value]="active"
+      mode="md"
+    >
+      <ion-segment-button value="overview">
+        <ion-label>Overview</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="scaffolds">
+        <ion-label>Scaffolds</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="summary">
+        <ion-label>Summary</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container" *ngIf="company" [ngSwitch]="active">
+    <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
+      <!-- OVERVIEW TAB -->
+      <ion-grid *ngSwitchDefault>
+        <app-title-block> Customer Information </app-title-block>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-input-reactive
+              title="Site Name"
+              controlName="siteName"
+              [form]="form"
+              placeholder="Enter Site Name"
+            >
+            </app-input-reactive>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-input-select-reactive
+              (fieldChange)="changeCustomer($event)"
+              title="Customer"
+              placeholder="Select Customer"
+              controlName="customer"
+              [form]="form"
+              [selectedText]="field('customer').value.name"
+            >
+              <ng-container *ngIf="customers$ | async as customers">
+                <ion-select-option class="fw-bold" value="add">
+                  Create new Customer
+                </ion-select-option>
+                <ion-select-option
+                  [value]="customer"
+                  *ngFor="let customer of customers"
+                  >{{ customer.name }}
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+          <ion-col size="12" *ngIf="show === 'editCustomer'">
+            <app-customer
+              [customer]="field('customer').value"
+              [isUpdate]="bulkEstimate.status === 'pending'"
+              [isCreate]="false"
+              [companyId]="company.id"
+            >
+            </app-customer>
+          </ion-col>
+          <ion-col size="12" *ngIf="show === 'addCustomer'">
+            <app-customer
+              [companyId]="company.id"
+              (newCustomer)="newCustomer($event)"
+              [isCreate]="true"
+            >
+            </app-customer>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <ion-item
+              fill="solid"
+              lines="none"
+              class="rounded-3 my-3"
+              mode="md"
+            >
+              <ion-label position="stacked">Message</ion-label>
+              <ion-textarea #message formControlName="message"></ion-textarea>
+            </ion-item>
+          </ion-col>
+
+          <ion-col sizeMd="4" size="12">
+            <app-input-reactive
+              title="Discount %"
+              controlName="discountPercentage"
+              [form]="form"
+              placeholder="Enter a discount %"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col sizeMd="4" size="6">
+            <app-input-date
+              [form]="form"
+              controlName="startDate"
+              title="Start Date"
+            ></app-input-date>
+          </ion-col>
+          <ion-col sizeMd="4" size="6" *ngIf="field('startDate').value">
+            <app-input-date
+              [form]="form"
+              controlName="endDate"
+              [min]="field('startDate').value"
+              title="End Date"
+            ></app-input-date>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="12" class="text-end">
+            <ion-button shape="round" (click)="nextView('scaffolds')"
+              >Next</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- SCAFFOLDS TAB -->
+
+      <ion-grid *ngSwitchCase="'scaffolds'">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium" class="h4"> Scaffolds </ion-text>
+            <ion-chip
+              outline
+              color="success"
+              class="ion-float-end"
+              (click)="addScaffold()"
+            >
+              <ion-label>Add Scaffold</ion-label>
+            </ion-chip>
+            <ion-chip
+              outline
+              color="danger"
+              class="ion-float-end"
+              (click)="deleteScaffold(activeScaffold - 1)"
+              *ngIf="bulkEstimate.estimates.length > 1"
+            >
+              <ion-label>Delete Scaffold</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+        <ion-segment
+          scrollable
+          selectOnFocus="true"
+          [value]="activeScaffold"
+          (ionChange)="scaffoldSegmentChanged($event)"
+          mode="ios"
+          class="mb-5"
+        >
+          <ion-segment-button
+            [value]="i + 1"
+            *ngFor="let estimate of bulkEstimate.estimates; let i = index"
+          >
+            <ion-label>{{ i + 1 }}</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+        <ng-container [ngSwitch]="activeScaffold">
+          <ng-container
+            *ngFor="let estimate of bulkEstimate.estimates; let i = index"
+          >
+            <app-bulk-estimate-form
+              [estimate]="estimate"
+              *ngSwitchCase="i + 1"
+            ></app-bulk-estimate-form>
+          </ng-container>
+        </ng-container>
+      </ion-grid>
+
+      <ion-grid *ngSwitchCase="'summary'">
+        <!-- <app-estimate-summary
+          [estimate]="estimate"
+          [canDownload]="isEdit && form.valid"
+        ></app-estimate-summary> -->
+
+        <ion-row>
+          <ion-progress-bar
+            type="indeterminate"
+            *ngIf="loading"
+          ></ion-progress-bar>
+          <ion-col *ngIf="isEdit && bulkEstimate.status === 'pending'">
+            <ion-button
+              size="block"
+              shape="round"
+              color="danger"
+              [disabled]="form.invalid"
+              (click)="updateEstimate('rejected')"
+              >Rejected</ion-button
+            >
+          </ion-col>
+          <ion-col *ngIf="isEdit && bulkEstimate.status === 'pending'">
+            <ion-button
+              size="block"
+              shape="round"
+              color="success"
+              [disabled]="form.invalid"
+              (click)="updateEstimate('accepted')"
+            >
+              Accepted
+            </ion-button>
+          </ion-col>
+          <ion-col class="text-end">
+            <ion-button
+              size="block"
+              shape="round"
+              [disabled]="form.invalid"
+              *ngIf="isEdit && bulkEstimate.status === 'pending'"
+              (click)="updateEstimate('pending')"
+              >Update Estimate</ion-button
+            >
+            <ion-button
+              size="block"
+              shape="round"
+              *ngIf="!isEdit"
+              (click)="createEstimate()"
+              >Save Estimate</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </div>
+</ion-content>

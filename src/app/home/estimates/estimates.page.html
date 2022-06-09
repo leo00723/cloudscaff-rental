@@ -6,10 +6,24 @@
     (selectedItem)="editEstimate($event)"
   ></app-estimate-table>
 
-  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+  <!-- <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="addEstimate()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
+  </ion-fab> -->
+  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="start">
+      <ion-button size="small" shape="round" (click)="addEstimate()"
+        >Standard</ion-button
+      >
+      <ion-button size="small" shape="round" (click)="addBulkEstimate()"
+        >Bulk</ion-button
+      >
+      <ion-button size="small" shape="round">Material</ion-button>
+    </ion-fab-list>
   </ion-fab>
   <ng-template #loading>
     <div class="ion-padding">

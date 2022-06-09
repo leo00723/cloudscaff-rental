@@ -8,6 +8,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from '../../shared/company/company.state';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
+import { BulkEstimateComponent } from './bulk-estimate/bulk-estimate.component';
 import { GetEstimates } from './state/estimate.actions';
 import { EstimatesState } from './state/estimate.state';
 @Component({
@@ -58,6 +59,16 @@ export class EstimatesPage implements OnInit {
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'addEstimate',
+    });
+    return await modal.present();
+  }
+
+  async addBulkEstimate() {
+    const modal = await this.masterSvc.modal().create({
+      component: BulkEstimateComponent,
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addBulkEstimate',
     });
     return await modal.present();
   }

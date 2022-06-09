@@ -6,7 +6,7 @@ export interface Item {
   qty?: string;
   total?: number;
   length?: string;
-  rate?: RateProfile;
+  rate?: RateProfile | string;
   height?: string;
   safe?: string;
   level?: number;

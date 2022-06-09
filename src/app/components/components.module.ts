@@ -59,6 +59,8 @@ import { ReturnsTableComponent } from '../home/view-site/returns-table/returns-t
 import { CalculatePipe } from './calculate.pipe';
 import { BudgetBreakdownComponent } from './budget-breakdown/budget-breakdown.component';
 import { RequestsTableComponent } from '../home/view-site/requests-table/requests-table.component';
+import { TitleBlockComponent } from './title-block/title-block.component';
+import { BulkEstimateFormComponent } from './bulk-estimate-form/bulk-estimate-form.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -113,6 +115,8 @@ const COMPONENTS = [
   ViewModificationComponent,
   ViewStockLocationsComponent,
   RequestsTableComponent,
+  TitleBlockComponent,
+  BulkEstimateFormComponent,
 ];
 const IMPORTS = [
   CommonModule,
