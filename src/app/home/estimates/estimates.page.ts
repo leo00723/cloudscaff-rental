@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { ViewEstimateComponent } from 'src/app/components/view-estimate/view-estimate.component';
+import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { User } from 'src/app/models/user.model';
@@ -19,11 +20,16 @@ export class EstimatesPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   @Select() estimates$: Observable<Estimate[]>;
+  bulkEstimates$: Observable<BulkEstimate[]>;
+  active = 'standard';
   isLoading = true;
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit() {
     this.init();
+  }
+  segmentChanged(ev: any) {
+    this.active = ev.detail.value;
   }
 
   async editEstimate(estimate: Estimate) {
@@ -44,6 +50,33 @@ export class EstimatesPage implements OnInit {
         component: ViewEstimateComponent,
         componentProps: {
           estimate,
+        },
+        showBackdrop: false,
+        id: 'viewEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    }
+  }
+
+  async editBulkEstimate(bulkEstimate: BulkEstimate) {
+    if (bulkEstimate.status === 'pending') {
+      const modal = await this.masterSvc.modal().create({
+        component: BulkEstimateComponent,
+        componentProps: {
+          value: bulkEstimate,
+          isEdit: true,
+        },
+        showBackdrop: false,
+        id: 'editEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    } else {
+      const modal = await this.masterSvc.modal().create({
+        component: ViewEstimateComponent,
+        componentProps: {
+          bulkEstimate,
         },
         showBackdrop: false,
         id: 'viewEstimate',
@@ -81,6 +114,9 @@ export class EstimatesPage implements OnInit {
           .store()
           .selectSnapshot(EstimatesState.estimates);
         if (!estimates) this.masterSvc.store().dispatch(new GetEstimates(id));
+        this.bulkEstimates$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/bulkEstimates`, 'code', 'desc');
       } else {
         this.masterSvc.log(
           '-----------------------try estimates----------------------'

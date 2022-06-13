@@ -1,0 +1,164 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Accept Estimate </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form name="estimate" [formGroup]="form2" [ngSwitch]="page">
+    <ion-row *ngSwitchDefault>
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>Attach Purchase Order</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-reactive
+          title="Purchase Order"
+          controlName="poNumber"
+          [form]="form"
+          placeholder="Enter Purchase Order Number"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-reactive
+          title="Work Order"
+          [optional]="true"
+          controlName="woNumber"
+          [form]="form"
+          placeholder="Enter Work Order Number"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col size="12">
+        <ion-button
+          size="block"
+          shape="round"
+          color="success"
+          [disabled]="!form.get('poNumber').value"
+          (click)="page = 1"
+        >
+          Next
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngSwitchCase="1">
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>Add Estimate to Site</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-select-reactive
+          (fieldChange)="changeSite($event)"
+          title="Site"
+          placeholder="Select Site"
+          controlName="site"
+          [form]="form2"
+          [selectedText]="field('site', form2).value.name"
+        >
+          <ng-container *ngIf="sites$ | async as sites">
+            <ion-select-option class="fw-bold" value="add"
+              >Create new Site
+            </ion-select-option>
+
+            <ion-select-option [value]="site" *ngFor="let site of sites"
+              >{{ site.name }}
+            </ion-select-option>
+          </ng-container>
+        </app-input-select-reactive>
+      </ion-col>
+      <ion-col size="12" *ngIf="show === 'selectedSite'">
+        <app-site-form
+          [isCreate]="false"
+          [siteData]="field('site', form2).value"
+        ></app-site-form>
+      </ion-col>
+      <ion-col size="12" *ngIf="show === 'addSite'">
+        <app-site-form
+          [siteData]="site"
+          (newSite)="newSite($event)"
+        ></app-site-form>
+      </ion-col>
+      <ion-col size="12" *ngIf="show === 'selectedSite'">
+        <ion-button
+          size="block"
+          shape="round"
+          color="success"
+          (click)="page = 2"
+        >
+          Next
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngSwitchCase="2">
+      <ion-col size="12">
+        <app-input-reactive
+          title="Estimate"
+          controlName="code"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+        <ion-text>
+          <h5>Attach to</h5>
+        </ion-text>
+      </ion-col>
+      <ion-col size="12">
+        <app-input-reactive
+          title="Site Name"
+          controlName="siteName"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+        <app-input-text
+          *ngFor="let d of data"
+          title="Scaffold"
+          [value]="d.scaffold.code"
+          [readonly]="true"
+        >
+        </app-input-text>
+        <app-input-reactive
+          title="Purchase Order"
+          controlName="poNumber"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+        <app-input-reactive
+          title="Work Order"
+          controlName="woNumber"
+          [form]="form"
+          [readonly]="true"
+        >
+        </app-input-reactive>
+      </ion-col>
+      <ion-col size="12">
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+        <ion-button
+          *ngIf="!loading"
+          size="block"
+          shape="round"
+          color="success"
+          (click)="activate()"
+        >
+          Accept Estimate
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>

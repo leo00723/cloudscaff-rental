@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { SwiperModule } from 'swiper/angular';
 import { EstimateSummaryComponent } from './estimate-summary/estimate-summary.component';
-import { EstimateTableComponent } from '../home/estimates/estimate-table/estimate-table.component';
+import { EstimateTableComponent } from './estimate-table/estimate-table.component';
 import { CompanyPage } from '../home/settings/company/company.page';
 import { AddSiteComponent } from '../home/sites/add-site/add-site.component';
 import { AddressSearchComponent } from './address-search/address-search.component';
@@ -61,6 +61,8 @@ import { BudgetBreakdownComponent } from './budget-breakdown/budget-breakdown.co
 import { RequestsTableComponent } from '../home/view-site/requests-table/requests-table.component';
 import { TitleBlockComponent } from './title-block/title-block.component';
 import { BulkEstimateFormComponent } from './bulk-estimate-form/bulk-estimate-form.component';
+import { BulkEstimateSummaryComponent } from './bulk-estimate-summary/bulk-estimate-summary.component';
+import { BulkEstimateTableComponent } from './bulk-estimate-table/bulk-estimate-table.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -117,6 +119,7 @@ const COMPONENTS = [
   RequestsTableComponent,
   TitleBlockComponent,
   BulkEstimateFormComponent,
+  BulkEstimateSummaryComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -131,8 +134,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS],
+  declarations: [COMPONENTS, BulkEstimateTableComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS],
+  exports: [IMPORTS, COMPONENTS, BulkEstimateTableComponent],
 })
 export class ComponentsModule {}

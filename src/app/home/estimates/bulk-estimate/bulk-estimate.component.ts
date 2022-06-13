@@ -13,6 +13,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { AcceptEstimateComponent } from '../add-estimate/accept-estimate/accept-estimate.component';
+import { AcceptBulkEstimateComponent } from './accept-bulk-estimate/accept-bulk-estimate.component';
 
 @Component({
   selector: 'app-bulk-estimate',
@@ -169,13 +170,6 @@ export class BulkEstimateComponent implements OnInit {
     this.masterSvc.modal().dismiss();
   }
 
-  arr(field: string) {
-    return this.form.get(field) as FormArray;
-  }
-
-  arrField(arr: string, index: number, field: string) {
-    return this.arr(arr).controls[index].get(field) as FormControl;
-  }
   field(field: string) {
     return this.form.get(field) as FormControl;
   }
@@ -203,7 +197,7 @@ export class BulkEstimateComponent implements OnInit {
   //event for switching between pages
   segmentChanged(ev: any) {
     if (ev.detail.value === 'summary') {
-      // this.updateEstimateTotal();
+      this.updateEstimateTotal();
       this.active = ev.detail.value;
     } else {
       this.active = ev.detail.value;
@@ -223,11 +217,11 @@ export class BulkEstimateComponent implements OnInit {
         await this.masterSvc
           .edit()
           .addDocument(
-            `company/${this.bulkEstimate.company.id}/estimates`,
+            `company/${this.bulkEstimate.company.id}/bulkEstimates`,
             this.bulkEstimate
           );
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalEstimates: increment(1),
+          totalBulkEstimates: increment(1),
         });
         this.masterSvc
           .notification()
@@ -258,7 +252,7 @@ export class BulkEstimateComponent implements OnInit {
         this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.company.id}/estimates`,
+            `company/${this.company.id}/bulkEstimates`,
             this.bulkEstimate.id,
             this.bulkEstimate
           )
@@ -285,11 +279,11 @@ export class BulkEstimateComponent implements OnInit {
   //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
-      component: AcceptEstimateComponent,
+      component: AcceptBulkEstimateComponent,
       componentProps: {
         company: this.company,
         user: this.user,
-        estimate: this.bulkEstimate,
+        bulkEstimate: this.bulkEstimate,
         form: this.form,
       },
       id: 'acceptEstimate',
@@ -303,36 +297,13 @@ export class BulkEstimateComponent implements OnInit {
     if (this.isEdit && this.bulkEstimate.status !== 'pending') {
       return;
     }
-    const scaffold = +this.field('scaffold.total').value;
-    const hire = +this.field('hire.total').value;
-    let extraHire = +this.field('scaffold.extraHire').value;
-    let attachments = 0;
-    this.arr('attachments').controls.forEach((a) => {
-      attachments += +a.get('total').value;
-      extraHire += +a.get('extraHire').value;
-    });
-    let boards = 0;
-    this.arr('boards').controls.forEach((b) => {
-      boards += +b.get('total').value;
-      extraHire += +b.get('extraHire').value;
-    });
-    let labour = 0;
-    this.arr('labour').controls.forEach((l) => {
-      labour += +l.get('total').value;
-    });
-    let transport = 0;
-    this.arr('transport').controls.forEach((t) => {
-      transport += +t.get('total').value;
-      extraHire += +t.get('extraHire').value;
-    });
-    let additionals = 0;
-    this.arr('additionals').controls.forEach((a) => {
-      additionals += +a.get('total').value;
-      extraHire += +a.get('extraHire').value;
+    let subtotal = 0;
+    let extraHire = 0;
+    this.bulkEstimate.estimates.forEach((e) => {
+      subtotal += e.subtotal;
+      extraHire += e.extraHire;
     });
 
-    const subtotal =
-      scaffold + attachments + boards + hire + labour + transport + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
@@ -340,9 +311,12 @@ export class BulkEstimateComponent implements OnInit {
     const total = totalAfterDiscount + tax + vat;
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    const code = `EST${new Date().toLocaleDateString('en', {
+    const code = `BEST${new Date().toLocaleDateString('en', {
       year: '2-digit',
-    })}${(this.company.totalEstimates ? this.company.totalEstimates + 1 : 1)
+    })}${(this.company.totalBulkEstimates
+      ? this.company.totalBulkEstimates + 1
+      : 1
+    )
       .toString()
       .padStart(6, '0')}`;
 
@@ -360,6 +334,13 @@ export class BulkEstimateComponent implements OnInit {
       extraHire,
       createdBy: this.isEdit ? this.bulkEstimate.createdBy : this.user.id,
       updatedBy: this.user.id,
+    });
+    this.bulkEstimate.estimates.forEach((e) => {
+      e.customer = this.bulkEstimate.customer;
+      e.startDate = this.bulkEstimate.startDate;
+      e.endDate = this.bulkEstimate.endDate;
+      e.discountPercentage = this.bulkEstimate.discountPercentage;
+      e.message = this.bulkEstimate.message;
     });
   }
 

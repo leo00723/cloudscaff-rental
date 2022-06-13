@@ -1,36 +1,65 @@
-<app-header title="Estimates"></app-header>
+<app-header title="Estimates">
+  <ion-toolbar>
+    <ion-segment
+      scrollable
+      selectOnFocus="true"
+      (ionChange)="segmentChanged($event)"
+      [value]="active"
+      mode="md"
+    >
+      <ion-segment-button value="standard">
+        <ion-label>Standard Estimates</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="bulk">
+        <ion-label>Bulk Estimates</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="material">
+        <ion-label>Material Estimates</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</app-header>
 <ion-content class="ion-padding">
-  <app-estimate-table
-    [value]="estimates$"
-    *ngIf="estimates$ | async else loading"
-    (selectedItem)="editEstimate($event)"
-  ></app-estimate-table>
+  <ng-container [ngSwitch]="active">
+    <ng-container *ngSwitchCase="'standard'">
+      <app-estimate-table
+        [value]="estimates$"
+        *ngIf="estimates$ | async else loading"
+        (selectedItem)="editEstimate($event)"
+      ></app-estimate-table>
+      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addEstimate()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
+    <ng-container *ngSwitchCase="'bulk'">
+      <app-bulk-estimate-table
+        [value]="bulkEstimates$"
+        *ngIf="bulkEstimates$ | async else loading"
+        (selectedItem)="editBulkEstimate($event)"
+      ></app-bulk-estimate-table>
+      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addBulkEstimate()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
+    <ng-container *ngSwitchCase="'material'">
+      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addEstimate()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
 
-  <!-- <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addEstimate()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab> -->
-  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button>
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-list side="start">
-      <ion-button size="small" shape="round" (click)="addEstimate()"
-        >Standard</ion-button
-      >
-      <ion-button size="small" shape="round" (click)="addBulkEstimate()"
-        >Bulk</ion-button
-      >
-      <ion-button size="small" shape="round">Material</ion-button>
-    </ion-fab-list>
-  </ion-fab>
-  <ng-template #loading>
-    <div class="ion-padding">
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-    </div>
-  </ng-template>
+    <ng-template #loading>
+      <div class="ion-padding">
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+      </div>
+    </ng-template>
+  </ng-container>
 </ion-content>
