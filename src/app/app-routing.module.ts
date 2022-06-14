@@ -57,6 +57,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'viewBulkEstimate/:id',
+    loadChildren: () =>
+      import('./customer-bulk-estimate/customer-bulk-estimate.module').then(
+        (m) => m.CustomerBulkEstimatePageModule
+      ),
+  },
+  {
     path: 'viewInvoice/:id',
     loadChildren: () =>
       import('./customer-invoice/customer-invoice.module').then(

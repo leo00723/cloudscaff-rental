@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import { ViewBulkEstimateComponent } from 'src/app/components/view-bulk-estimate/view-bulk-estimate.component';
 import { ViewEstimateComponent } from 'src/app/components/view-estimate/view-estimate.component';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
@@ -74,7 +75,7 @@ export class EstimatesPage implements OnInit {
       return await modal.present();
     } else {
       const modal = await this.masterSvc.modal().create({
-        component: ViewEstimateComponent,
+        component: ViewBulkEstimateComponent,
         componentProps: {
           bulkEstimate,
         },

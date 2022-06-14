@@ -1,9 +1,9 @@
 // {
 //   try {
 //     this.loading = true;
-//     const statement: Statement = this.data.doc.statement;
+//     const bulkEstimate: BulkEstimate = this.data.doc.bulkEstimate;
 //     const company: Company = this.data.doc.company;
-//     const link = `https://app.cloudscaff.com/viewStatement/${company.id}-${statement.id}`;
+//     const link = `https://app.cloudscaff.com/viewBulkEstimate/${company.id}-${bulkEstimate.id}`;
 //     const email = this.form.value;
 //     const cc = email.cc.map((e) => e.email);
 //     const emailData = {
@@ -12,20 +12,20 @@
 //       template: {
 //         name: 'share',
 //         data: {
-//           title: `Hey ${statement.customer.name}, ${company.name} has sent you a Statement.`,
+//           title: `Hey ${bulkEstimate.customer.name}, ${company.name} has sent you a Estimate.`,
 //           message: '',
-//           btnText: 'View Statement',
+//           btnText: 'View Estimate',
 //           link,
-//           subject: `${company.name} Statement - ${statement.code}`,
+//           subject: `${company.name} Estimate - ${bulkEstimate.code}`,
 //         },
 //       },
 //     };
 //     await this.masterSvc
 //       .edit()
 //       .setDoc(
-//         'sharedStatements',
+//         'sharedBulkEstimates',
 //         { ...this.data.doc, cc, email },
-//         `${company.id}-${statement.id}`
+//         `${company.id}-${bulkEstimate.id}`
 //       );
 //     await this.masterSvc
 //       .edit()
@@ -33,7 +33,7 @@
 //     this.form.reset();
 //     this.masterSvc
 //       .notification()
-//       .toast('Statement shared successfully', 'success');
+//       .toast('Estimate shared successfully', 'success');
 //     this.close();
 //     this.loading = false;
 //   } catch (error) {

@@ -1,0 +1,414 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Cloudscaff - Estimate </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container" *ngIf="bulkEstimate$ | async as data">
+    <ion-row class="py-2">
+      <ion-col sizeMd="6" size="4">
+        <ion-text>
+          <h4>Estimate</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col sizeMd="6" size="8" class="text-end">
+        <ion-button
+          size="small"
+          fill="clear"
+          (click)="download(data.terms, data.bulkEstimate,data.company)"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Site name:</h6>
+          <h6>Date Issued:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>{{ data.bulkEstimate.code }}</h6>
+          <h6>{{ data.bulkEstimate.siteName }}</h6>
+          <h6>{{ data.bulkEstimate.date.toDate() | date }}</h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <ion-row class="py-2">
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> To </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ data.bulkEstimate.customer.name }}</h6>
+              <h6>{{ data.bulkEstimate.customer.email }}</h6>
+              <h6>{{ data.bulkEstimate.customer.rep }}</h6>
+              <h6>{{ data.bulkEstimate.customer.phone }}</h6>
+              <h6>{{ data.bulkEstimate.customer.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ data.bulkEstimate.customer.address }} <br />
+                {{ data.bulkEstimate.customer.suburb }}<br />{{
+                data.bulkEstimate.customer.city }}<br />{{
+                data.bulkEstimate.customer.zip }}<br />{{
+                data.bulkEstimate.customer.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12" sizeXl="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="medium"> From </ion-text>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>Company:</h6>
+              <h6>Email:</h6>
+              <h6>Representative:</h6>
+              <h6>Contact No:</h6>
+              <h6>Registration No:</h6>
+              <br />
+              <h6>Address:</h6>
+            </ion-label>
+          </ion-col>
+          <ion-col size="6">
+            <ion-label>
+              <h6>{{ data.company.name }}</h6>
+              <h6>{{ data.company.email }}</h6>
+              <h6>N/A</h6>
+              <h6>{{ data.company.phone }}</h6>
+              <h6>{{ data.company.regNumber }}</h6>
+              <br />
+              <h6>
+                {{ data.company.address }} <br />
+                {{ data.company.suburb }}<br />{{ data.company.city }}<br />{{
+                data.company.zip }}<br />{{ data.company.country }}
+              </h6>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <ion-row class="py-2">
+      <ion-col size="12">
+        <ion-label color="medium">
+          <h6>Message</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="12">
+        <p [innerText]="data.bulkEstimate.message"></p>
+      </ion-col>
+    </ion-row>
+    <ion-row
+      *ngFor="let estimate of data.bulkEstimate.estimates; let i = index"
+    >
+      <ion-col size="12">
+        <ion-text color="medium"> Scaffold {{ i + 1 }} </ion-text>
+      </ion-col>
+      <ion-col>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col">#</th>
+              <th scope="col">Description</th>
+              <th class="text-center" scope="col">Qty</th>
+              <th class="text-center" scope="col">Extra Hire</th>
+              <th class="text-end" scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="text-center" scope="row">1</th>
+              <td colspan="4">Scaffold Details</td>
+            </tr>
+            <!-- SCAFFOLD -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{data.company.terminology.scaffold }} Level {{
+                estimate.scaffold.level ? estimate.scaffold.level : 0 }} - ({{
+                estimate.scaffold.length }}{{data.company.measurement.symbol }}
+                x {{ estimate.scaffold.width }}{{data.company.measurement.symbol
+                }} x {{ estimate.scaffold.height
+                }}{{data.company.measurement.symbol }}) - {{
+                estimate.scaffold.description }}
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ estimate.scaffold.extraHire
+                | number: "0.2-2" }}
+              </td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ estimate.scaffold.total |
+                number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- SCAFFOLD ATTACHMENTS -->
+            <tr
+              class="small"
+              *ngFor="let item of estimate.attachments; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{data.company.terminology.scaffold }} Level {{ item.level ?
+                item.level : 0 }} - ({{ item.length
+                }}{{data.company.measurement.symbol }} x {{ item.width
+                }}{{data.company.measurement.symbol }} x {{ item.height
+                }}{{data.company.measurement.symbol }}) - {{ item.description }}
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ item.extraHire | number:
+                "0.2-2" }}
+              </td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+            <!-- BOARDS -->
+            <tr
+              class="small"
+              *ngFor="let item of estimate.boards; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{data.company.terminology.boards }} - ({{ item.length
+                }}{{data.company.measurement.symbol }} x {{ item.width
+                }}{{data.company.measurement.symbol }}) - Level ({{ item.height
+                }}{{data.company.measurement.symbol }})
+              </td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ item.extraHire | number:
+                "0.2-2" }}
+              </td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+            <!-- HIRE -->
+            <tr class="small">
+              <th class="text-center" scope="row"></th>
+              <td>
+                {{data.company.terminology.hire }} - ({{
+                estimate.hire.daysStanding }} {{ estimate.hire.isWeeks ? "Weeks"
+                : "Days" }})
+              </td>
+              <td class="text-center">1</td>
+              <td class="text-center"></td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ estimate.hire.total |
+                number: "0.2-2" }}
+              </td>
+            </tr>
+            <!-- LABOR -->
+            <tr *ngIf="estimate.labour.length > 0">
+              <th class="text-center" scope="row">2</th>
+              <td colspan="4">Labor</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of estimate.labour; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.type.name }} - {{ item.rate.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-center"></td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+            <!-- TRANSPORT -->
+            <ng-container *ngIf="estimate.transport">
+              <tr *ngIf="estimate.transport.length > 0">
+                <th class="text-center" scope="row">3</th>
+                <td colspan="4">Transport</td>
+              </tr>
+              <tr
+                class="small"
+                *ngFor="let item of estimate.transport; let i = index"
+              >
+                <th class="text-center" scope="row"></th>
+                <td>
+                  {{ item.type.name }} - ({{ item.type.maxLoad
+                  }}{{data.company.mass.symbol }})
+                </td>
+                <td class="text-center">{{ item.qty }}</td>
+                <td class="text-end">
+                  {{data.company.currency.symbol }} {{ item.extraHire | number:
+                  "0.2-2" }}
+                </td>
+                <td class="text-end">
+                  {{data.company.currency.symbol }} {{ item.total | number:
+                  "0.2-2" }}
+                </td>
+              </tr>
+            </ng-container>
+            <!-- ADDITIONALS -->
+            <tr *ngIf="estimate.additionals.length > 0">
+              <th class="text-center" scope="row">4</th>
+              <td colspan="4">Additionals</td>
+            </tr>
+            <tr
+              class="small"
+              *ngFor="let item of estimate.additionals; let i = index"
+            >
+              <th class="text-center" scope="row"></th>
+              <td>{{ item.name }}</td>
+              <td class="text-center">{{ item.qty }}</td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ item.extraHire | number:
+                "0.2-2" }}
+              </td>
+              <td class="text-end">
+                {{data.company.currency.symbol }} {{ item.total | number:
+                "0.2-2" }}
+              </td>
+            </tr>
+          </tbody>
+          <!-- FOOTER TOTALS -->
+          <tfoot>
+            <tr>
+              <th class="text-end" colspan="3" scope="col">Subtotal</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{data.company.currency.symbol }} {{ estimate.subtotal | number:
+                "0.2-2" }}
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <table class="table table-bordered">
+          <tfoot>
+            <tr>
+              <th class="text-end" colspan="3" scope="col">Subtotal</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{data.company.currency.symbol }} {{ data.bulkEstimate.subtotal
+                | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="3" scope="col">
+                Discount ({{ data.bulkEstimate.discountPercentage }}%)
+              </th>
+              <th class="text-end text-danger" colspan="2" scope="col">
+                - {{data.company.currency.symbol }} {{
+                data.bulkEstimate.discount | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr *ngIf="data.company.salesTax > 0">
+              <th class="text-end" colspan="3" scope="col">
+                Sales Tax ({{data.company.salesTax }}%)
+              </th>
+              <th class="text-end" colspan="2" scope="col">
+                {{data.company.currency.symbol }} {{ data.bulkEstimate.tax |
+                number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr *ngIf="data.company.vat > 0">
+              <th class="text-end" colspan="3" scope="col">
+                VAT ({{data.company.vat }}%)
+              </th>
+              <th class="text-end" colspan="2" scope="col">
+                {{data.company.currency.symbol }} {{ data.bulkEstimate.vat |
+                number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="3" scope="col">Total</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{data.company.currency.symbol }} {{ data.bulkEstimate.total |
+                number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="3" scope="col">Extra Hire</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{data.company.currency.symbol }} {{ data.bulkEstimate.extraHire
+                | number: "0.2-2" }}
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12" *ngIf="requestUpdate">
+        <app-input-text
+          [textarea]="true"
+          title="Message"
+          placeholder="Enter your message here"
+          (fieldChange)="message = $event"
+        ></app-input-text>
+      </ion-col>
+      <ion-col size="12" class="text-end" *ngIf="!data.approved">
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+        <ion-button
+          shape="round"
+          color="danger"
+          *ngIf="!loading"
+          (click)="update('reject',data)"
+        >
+          Reject
+        </ion-button>
+        <ion-button
+          shape="round"
+          color="dark"
+          *ngIf="!loading"
+          (click)="update('negotiate',data)"
+        >
+          Negotiate
+        </ion-button>
+        <ion-button
+          shape="round"
+          color="primary"
+          *ngIf="!loading"
+          (click)="update('update', data)"
+        >
+          Request Update
+        </ion-button>
+        <ion-button
+          shape="round"
+          color="success"
+          *ngIf="!loading && !requestUpdate"
+          (click)="update('approve',data)"
+        >
+          Approve
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

@@ -39,10 +39,10 @@ export class BulkEstimateSummaryComponent {
       },
       `${this.company.id}-${this.bulkEstimate.id}`
     );
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateEstimate(this.bulkEstimatestimate, this.company, terms);
-    // this.masterSvc.pdf().handlePdf(pdf, this.bulkEstimatestimate.code);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateBulkEstimate(this.bulkEstimate, this.company, terms);
+    this.masterSvc.pdf().handlePdf(pdf, this.bulkEstimate.code);
   }
   async share(terms: Term | null) {
     const sharedEstimate = {

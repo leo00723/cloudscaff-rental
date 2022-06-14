@@ -63,6 +63,7 @@ import { TitleBlockComponent } from './title-block/title-block.component';
 import { BulkEstimateFormComponent } from './bulk-estimate-form/bulk-estimate-form.component';
 import { BulkEstimateSummaryComponent } from './bulk-estimate-summary/bulk-estimate-summary.component';
 import { BulkEstimateTableComponent } from './bulk-estimate-table/bulk-estimate-table.component';
+import { ViewBulkEstimateComponent } from './view-bulk-estimate/view-bulk-estimate.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -120,6 +121,8 @@ const COMPONENTS = [
   TitleBlockComponent,
   BulkEstimateFormComponent,
   BulkEstimateSummaryComponent,
+  BulkEstimateTableComponent,
+  ViewBulkEstimateComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -134,8 +137,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, BulkEstimateTableComponent],
+  declarations: [COMPONENTS],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, BulkEstimateTableComponent],
+  exports: [IMPORTS, COMPONENTS],
 })
 export class ComponentsModule {}

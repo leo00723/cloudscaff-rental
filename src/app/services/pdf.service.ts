@@ -11,6 +11,7 @@ import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Term } from 'src/app/models/term.model';
 import { environment } from 'src/environments/environment';
+import { BulkEstimate } from '../models/bulkEstimate.model';
 import { Credit } from '../models/credit.model';
 import { Handover } from '../models/handover.model';
 import { Inspection } from '../models/inspection.model';
@@ -460,6 +461,186 @@ export class PdfService {
                 {
                   text: `${company.currency.symbol} ${this.format(
                     estimate.extraHire ? estimate.extraHire : 0
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  // ESTIMATE STANDARD PDF
+  async generateBulkEstimate(
+    bulkEstimate: BulkEstimate,
+    company: Company,
+    terms: Term | null
+  ) {
+    let scaffolds = [];
+    bulkEstimate.estimates.forEach((e, i) => {
+      const summary = this.createEstimateTable(e, company);
+      scaffolds.push({ text: `Scaffold ${i + 1}`, style: ['h4b'] });
+      scaffolds.push(summary);
+      scaffolds.push(hr);
+    });
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Estimate-${bulkEstimate.code}`),
+      content: [
+        await this.getHeader(
+          'Estimate',
+          bulkEstimate.code,
+          bulkEstimate.siteName,
+          bulkEstimate.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          `https://app.cloudscaff.com/viewBulkEstimate/${company.id}-${bulkEstimate.id}`,
+          []
+        ),
+        hr,
+        this.getSubHeader(bulkEstimate.customer, company),
+        hr,
+        { text: bulkEstimate.message },
+        hr,
+        ...scaffolds,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    bulkEstimate.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount (${bulkEstimate.discountPercentage}%):`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    bulkEstimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
+                { text: company.accountNum, alignment: 'left' },
+                {
+                  text:
+                    company.vat > 0
+                      ? `VAT (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          bulkEstimate.vat
+                        )}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          bulkEstimate.tax
+                        )}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    bulkEstimate.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Extra Hire:',
+                  style: 'h3',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    bulkEstimate.extraHire ? bulkEstimate.extraHire : 0
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -2232,6 +2413,7 @@ export class PdfService {
   }
 
   // UTILITY FUNCTIONS
+
   async loadPdfMaker() {
     if (!this.pdfMake) {
       const pdfMakeModule = await import('pdfmake/build/pdfmake');
@@ -2388,6 +2570,141 @@ export class PdfService {
     };
     return address;
   }
+
+  private createEstimateTable(estimate: Estimate, company: Company) {
+    const attachments = [];
+    estimate.attachments.forEach((a) => {
+      attachments.push(
+        this.addEstimateItem(
+          company,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
+          1,
+          a.total
+        )
+      );
+    });
+    const platforms = [];
+    estimate.boards.forEach((b) => {
+      platforms.push(
+        this.addEstimateItem(
+          company,
+          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Level (${b.height}${company.measurement.symbol})`,
+          b.qty,
+          b.total
+        )
+      );
+    });
+    const labour = [];
+    estimate.labour.forEach((l) => {
+      labour.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.rate.name}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
+    const transport = [];
+    estimate.transport.forEach((l) => {
+      transport.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.type.maxLoad}${company.mass.symbol}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
+    const additionals = [];
+    estimate.additionals.forEach((a) => {
+      additionals.push(this.addEstimateItem(company, a.name, a.qty, a.total));
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', 'auto', '*'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          [
+            {
+              text: 1,
+              style: 'h4b',
+            },
+            {
+              text: `${company.terminology.scaffold} Details`,
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          this.addEstimateItem(
+            company,
+            `${company.terminology.scaffold} Level 0 - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol}) - ${estimate.scaffold.description}`,
+            1,
+            estimate.scaffold.total
+          ),
+          ...attachments,
+          ...platforms,
+          this.addEstimateItem(
+            company,
+            `${company.terminology.hire} - (${estimate.hire.daysStanding} ${
+              estimate.hire.isWeeks ? 'weeks' : 'days'
+            })`,
+            estimate.hire.daysStanding,
+            estimate.hire.total
+          ),
+          [
+            {
+              text: 2,
+              style: 'h4b',
+            },
+            {
+              text: 'Labor Details',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...labour,
+          [
+            {
+              text: 3,
+              style: 'h4b',
+            },
+            {
+              text: 'Transport Detail',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...transport,
+          [
+            {
+              text: 4,
+              style: 'h4b',
+            },
+            {
+              text: 'Additionals Detail',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...additionals,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    return summary;
+  }
+
   private addEstimateItem(
     company: Company,
     description: string,
