@@ -13,9 +13,9 @@
       <ion-segment-button value="bulk">
         <ion-label>Bulk Estimates</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="material">
-        <ion-label>Material Estimates</ion-label>
-      </ion-segment-button>
+      <!-- <ion-segment-button value="inventory">
+        <ion-label>Inventory Estimates</ion-label>
+      </ion-segment-button> -->
     </ion-segment>
   </ion-toolbar>
 </app-header>
@@ -45,13 +45,13 @@
         </ion-fab-button>
       </ion-fab>
     </ng-container>
-    <ng-container *ngSwitchCase="'material'">
+    <!-- <ng-container *ngSwitchCase="'inventory'">
       <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addEstimate()">
+        <ion-fab-button (click)="addInventoryEstimate()">
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
-    </ng-container>
+    </ng-container> -->
 
     <ng-template #loading>
       <div class="ion-padding">

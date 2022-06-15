@@ -11,6 +11,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from '../../shared/company/company.state';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
 import { BulkEstimateComponent } from './bulk-estimate/bulk-estimate.component';
+import { InventoryEstimateComponent } from './inventory-estimate/inventory-estimate.component';
 import { GetEstimates } from './state/estimate.actions';
 import { EstimatesState } from './state/estimate.state';
 @Component({
@@ -90,6 +91,16 @@ export class EstimatesPage implements OnInit {
   async addEstimate() {
     const modal = await this.masterSvc.modal().create({
       component: AddEstimatePage,
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addEstimate',
+    });
+    return await modal.present();
+  }
+
+  async addInventoryEstimate() {
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryEstimateComponent,
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'addEstimate',

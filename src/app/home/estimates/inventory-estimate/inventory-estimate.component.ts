@@ -1,23 +1,24 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { increment } from '@angular/fire/firestore';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
+import { increment } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
+import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
-import { MasterService } from '../../../services/master.service';
-import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
+import { AcceptEstimateComponent } from '../add-estimate/accept-estimate/accept-estimate.component';
 
 @Component({
-  selector: 'app-add-estimate',
-  templateUrl: './add-estimate.component.html',
+  selector: 'app-inventory-estimate',
+  templateUrl: './inventory-estimate.component.html',
+  styles: [],
 })
-export class AddEstimatePage implements OnInit {
+export class InventoryEstimateComponent implements OnInit {
   @Input() set value(val: Estimate) {
     if (val) {
       Object.assign(this.estimate, val);
@@ -62,7 +63,7 @@ export class AddEstimatePage implements OnInit {
     updatedBy: '',
     acceptedBy: '',
     rejectedBy: '',
-    budget: {},
+    budget: undefined,
   };
   user: User;
   company: Company;
@@ -408,7 +409,6 @@ export class AddEstimatePage implements OnInit {
         this.close();
       } catch (error) {
         this.loading = false;
-        this.masterSvc.log(error);
         this.masterSvc
           .notification()
           .toast(

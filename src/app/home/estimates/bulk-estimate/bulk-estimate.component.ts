@@ -1,18 +1,16 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { increment } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
-import { Estimate } from 'src/app/models/estimate.model';
 import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
-import { AcceptEstimateComponent } from '../add-estimate/accept-estimate/accept-estimate.component';
 import { AcceptBulkEstimateComponent } from './accept-bulk-estimate/accept-bulk-estimate.component';
 
 @Component({

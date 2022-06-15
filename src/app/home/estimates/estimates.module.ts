@@ -8,6 +8,7 @@ import { EstimatesPage } from './estimates.page';
 import { EstimatesState } from './state/estimate.state';
 import { BulkEstimateComponent } from './bulk-estimate/bulk-estimate.component';
 import { AcceptBulkEstimateComponent } from './bulk-estimate/accept-bulk-estimate/accept-bulk-estimate.component';
+import { InventoryEstimateComponent } from './inventory-estimate/inventory-estimate.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,13 @@ import { AcceptBulkEstimateComponent } from './bulk-estimate/accept-bulk-estimat
     EstimatesPageRoutingModule,
     NgxsModule.forFeature([EstimatesState]),
   ],
-  declarations: [EstimatesPage, AddEstimatePage, AcceptEstimateComponent, BulkEstimateComponent, AcceptBulkEstimateComponent],
+  declarations: [
+    EstimatesPage,
+    AddEstimatePage,
+    AcceptEstimateComponent,
+    BulkEstimateComponent,
+    AcceptBulkEstimateComponent,
+    InventoryEstimateComponent,
+  ],
 })
 export class EstimatesPageModule {}
