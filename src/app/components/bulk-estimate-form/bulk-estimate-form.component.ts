@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnInit,
@@ -70,7 +71,10 @@ export class BulkEstimateFormComponent implements OnInit {
   loading = false;
   isLoading = true;
 
-  constructor(private masterSvc: MasterService) {
+  constructor(
+    private masterSvc: MasterService,
+    private change: ChangeDetectorRef
+  ) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
   }
@@ -88,6 +92,7 @@ export class BulkEstimateFormComponent implements OnInit {
     this.initEditForm();
     this.form.valueChanges.subscribe(() => {
       this.updateEstimateTotal();
+      this.change.detectChanges();
     });
   }
 
