@@ -134,7 +134,10 @@
           <thead>
             <tr>
               <th class="text-center" scope="col">#</th>
-              <th scope="col">Description</th>
+              <th scope="col">
+                {{ estimate.scaffold.description ? estimate.scaffold.description
+                : "Description" }}
+              </th>
               <th class="text-center" scope="col">Qty</th>
               <th class="text-center" scope="col">Extra Hire</th>
               <th class="text-end" scope="col">Total</th>
@@ -154,8 +157,9 @@
                 estimate.scaffold.length }}{{data.company.measurement.symbol }}
                 x {{ estimate.scaffold.width }}{{data.company.measurement.symbol
                 }} x {{ estimate.scaffold.height
-                }}{{data.company.measurement.symbol }}) - {{
-                estimate.scaffold.description }}
+                }}{{data.company.measurement.symbol }}) {{
+                estimate.scaffold.lifts > 0 ? "(" + estimate.scaffold.lifts + "
+                lifts)" : "" }} - {{ estimate.scaffold.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -178,7 +182,8 @@
                 item.level : 0 }} - ({{ item.length
                 }}{{data.company.measurement.symbol }} x {{ item.width
                 }}{{data.company.measurement.symbol }} x {{ item.height
-                }}{{data.company.measurement.symbol }}) - {{ item.description }}
+                }}{{data.company.measurement.symbol }}) {{ item.lifts > 0 ? "("
+                + item.lifts + " lifts)" : "" }} - {{ item.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -324,6 +329,13 @@
               <th class="text-end text-danger" colspan="2" scope="col">
                 - {{data.company.currency.symbol }} {{
                 data.bulkEstimate.discount | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="3" scope="col">Contact Total</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{data.company.currency.symbol }} {{ data.bulkEstimate.subtotal
+                - data.bulkEstimate.discount | number: "0.2-2" }}
               </th>
             </tr>
             <tr *ngIf="data.company.salesTax > 0">

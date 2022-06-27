@@ -191,7 +191,11 @@ export class PdfService {
       attachments.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${
+            company.measurement.symbol
+          } x ${a.width}${company.measurement.symbol} x ${a.height}${
+            company.measurement.symbol
+          }) ${a.lifts > 0 ? '(' + a.lifts + 'lifts)' : ''} - ${a.description}`,
           1,
           a.total
         )
@@ -244,7 +248,13 @@ export class PdfService {
         body: [
           [
             { text: '#', style: 'h4b', alignment: 'left' },
-            { text: 'Description', style: 'h4b', alignment: 'left' },
+            {
+              text: estimate.scaffold.description
+                ? estimate.scaffold.description
+                : 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
             { text: 'Qty', style: 'h4b', alignment: 'center' },
             { text: 'Total', style: 'h4b', alignment: 'right' },
           ],
@@ -261,7 +271,15 @@ export class PdfService {
           ],
           this.addEstimateItem(
             company,
-            `${company.terminology.scaffold} Level 0 - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol}) - ${estimate.scaffold.description}`,
+            `${company.terminology.scaffold} Level 0 - (${
+              estimate.scaffold.length
+            }${company.measurement.symbol} x ${estimate.scaffold.width}${
+              company.measurement.symbol
+            } x ${estimate.scaffold.height}${company.measurement.symbol}) ${
+              estimate.scaffold.lifts > 0
+                ? '(' + estimate.scaffold.lifts + 'lifts)'
+                : ''
+            } - ${estimate.scaffold.description}`,
             1,
             estimate.scaffold.total
           ),
@@ -393,6 +411,29 @@ export class PdfService {
                 { text: 'Account Number:', style: 'h6b', alignment: 'left' },
                 { text: company.accountNum, alignment: 'left' },
                 {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.subtotal - estimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
                   text:
                     company.vat > 0
                       ? `VAT (${company.vat}%):`
@@ -420,12 +461,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  text: '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: company.swiftCode ? company.swiftCode : '',
+                  text: '',
                   alignment: 'left',
                 },
                 {
@@ -573,6 +614,29 @@ export class PdfService {
                 { text: 'Account Number:', style: 'h6b', alignment: 'left' },
                 { text: company.accountNum, alignment: 'left' },
                 {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    bulkEstimate.subtotal - bulkEstimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
                   text:
                     company.vat > 0
                       ? `VAT (${company.vat}%):`
@@ -600,12 +664,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  text: '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: company.swiftCode ? company.swiftCode : '',
+                  text: '',
                   alignment: 'left',
                 },
                 {
@@ -2577,7 +2641,11 @@ export class PdfService {
       attachments.push(
         this.addEstimateItem(
           company,
-          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
+          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${
+            company.measurement.symbol
+          } x ${a.width}${company.measurement.symbol} x ${a.height}${
+            company.measurement.symbol
+          }) ${a.lifts > 0 ? '(' + a.lifts + 'lifts)' : ''} - ${a.description}`,
           1,
           a.total
         )
@@ -2630,7 +2698,13 @@ export class PdfService {
         body: [
           [
             { text: '#', style: 'h4b', alignment: 'left' },
-            { text: 'Description', style: 'h4b', alignment: 'left' },
+            {
+              text: estimate.scaffold.description
+                ? estimate.scaffold.description
+                : 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
             { text: 'Qty', style: 'h4b', alignment: 'center' },
             { text: 'Total', style: 'h4b', alignment: 'right' },
           ],
@@ -2647,7 +2721,15 @@ export class PdfService {
           ],
           this.addEstimateItem(
             company,
-            `${company.terminology.scaffold} Level 0 - (${estimate.scaffold.length}${company.measurement.symbol} x ${estimate.scaffold.width}${company.measurement.symbol} x ${estimate.scaffold.height}${company.measurement.symbol}) - ${estimate.scaffold.description}`,
+            `${company.terminology.scaffold} Level 0 - (${
+              estimate.scaffold.length
+            }${company.measurement.symbol} x ${estimate.scaffold.width}${
+              company.measurement.symbol
+            } x ${estimate.scaffold.height}${company.measurement.symbol}) ${
+              estimate.scaffold.lifts > 0
+                ? '(' + estimate.scaffold.lifts + 'lifts)'
+                : ''
+            } - ${estimate.scaffold.description}`,
             1,
             estimate.scaffold.total
           ),

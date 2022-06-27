@@ -130,7 +130,10 @@
           <thead>
             <tr>
               <th class="text-center" scope="col">#</th>
-              <th scope="col">Description</th>
+              <th scope="col">
+                {{ estimate.estimate.scaffold.description ?
+                estimate.estimate.scaffold.description : "Description" }}
+              </th>
               <th class="text-center" scope="col">Qty</th>
               <th class="text-center" scope="col">Extra Hire</th>
               <th class="text-end" scope="col">Total</th>
@@ -153,7 +156,9 @@
                 estimate.estimate.scaffold.width }}{{
                 estimate.company.measurement.symbol }} x {{
                 estimate.estimate.scaffold.height }}{{
-                estimate.company.measurement.symbol }}) - {{
+                estimate.company.measurement.symbol }}) {{
+                estimate.estimate.scaffold.lifts > 0 ? "(" +
+                estimate.estimate.scaffold.lifts + " lifts)" : "" }} - {{
                 estimate.estimate.scaffold.description }}
               </td>
               <td class="text-center">1</td>
@@ -177,7 +182,8 @@
                 ? item.level : 0 }} - ({{ item.length }}{{
                 estimate.company.measurement.symbol }} x {{ item.width }}{{
                 estimate.company.measurement.symbol }} x {{ item.height }}{{
-                estimate.company.measurement.symbol }}) - {{ item.description }}
+                estimate.company.measurement.symbol }}) {{ item.lifts > 0 ? "("
+                + item.lifts + " lifts)" : "" }} - {{ item.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -306,6 +312,14 @@
               <th class="text-end text-danger" colspan="2" scope="col">
                 - {{ estimate.company.currency.symbol }} {{
                 estimate.estimate.discount | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="3" scope="col">Contract Total</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ estimate.company.currency.symbol }} {{
+                estimate.estimate.subtotal - estimate.estimate.discount| number:
+                "0.2-2" }}
               </th>
             </tr>
             <tr *ngIf="estimate.company.salesTax > 0">
