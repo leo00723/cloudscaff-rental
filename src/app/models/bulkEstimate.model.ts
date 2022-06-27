@@ -1,3 +1,4 @@
+import { Budget } from './budget.model';
 import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { Estimate } from './estimate.model';
@@ -28,4 +29,5 @@ export interface BulkEstimate {
   updatedBy: string;
   acceptedBy: string;
   rejectedBy: string;
+  budget?: Budget;
 }

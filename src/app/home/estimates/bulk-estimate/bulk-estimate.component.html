@@ -21,6 +21,9 @@
       <ion-segment-button value="scaffolds">
         <ion-label>Scaffolds</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="budget">
+        <ion-label>Private Budget</ion-label>
+      </ion-segment-button>
       <ion-segment-button value="summary">
         <ion-label>Summary</ion-label>
       </ion-segment-button>
@@ -182,6 +185,20 @@
             ></app-bulk-estimate-form>
           </ng-container>
         </ng-container>
+      </ion-grid>
+
+      <!-- BUDGET TAB -->
+
+      <ion-grid *ngSwitchCase="'budget'">
+        <app-budget-breakdown [estimate]="bulkEstimate"></app-budget-breakdown>
+
+        <ion-row>
+          <ion-col size="12" class="text-end">
+            <ion-button shape="round" (click)="nextView('summary')"
+              >Next</ion-button
+            >
+          </ion-col>
+        </ion-row>
       </ion-grid>
 
       <ion-grid *ngSwitchCase="'summary'">

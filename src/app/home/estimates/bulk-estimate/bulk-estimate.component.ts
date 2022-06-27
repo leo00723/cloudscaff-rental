@@ -53,6 +53,7 @@ export class BulkEstimateComponent implements OnInit {
     updatedBy: '',
     acceptedBy: '',
     rejectedBy: '',
+    budget: {},
   };
   user: User;
   company: Company;

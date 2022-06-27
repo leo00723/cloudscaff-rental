@@ -5,6 +5,7 @@ import {
   Input,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { User } from 'src/app/models/user.model';
@@ -19,7 +20,7 @@ import { UserState } from 'src/app/shared/user/user.state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BudgetBreakdownComponent implements OnInit {
-  @Input() estimate: Estimate;
+  @Input() estimate: Estimate | BulkEstimate;
   company: Company;
   user: User;
   form: FormGroup;

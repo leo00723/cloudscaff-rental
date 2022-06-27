@@ -728,55 +728,7 @@ export class PdfService {
   }
 
   // BUDGET STANDARD PDF
-  async generateBudget(estimate: Estimate, company: Company) {
-    const attachments = [];
-    estimate.attachments.forEach((a) => {
-      attachments.push(
-        this.addEstimateItem(
-          company,
-          `${company.terminology.scaffold} Level ${a.level} - (${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}) - ${a.description}`,
-          1,
-          a.total
-        )
-      );
-    });
-    const platforms = [];
-    estimate.boards.forEach((b) => {
-      platforms.push(
-        this.addEstimateItem(
-          company,
-          `${company.terminology.boards} - (${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol}) - Level (${b.height}${company.measurement.symbol})`,
-          b.qty,
-          b.total
-        )
-      );
-    });
-    const labour = [];
-    estimate.labour.forEach((l) => {
-      labour.push(
-        this.addEstimateItem(
-          company,
-          `${l.type.name} - ${l.rate.name}`,
-          l.qty,
-          l.total
-        )
-      );
-    });
-    const transport = [];
-    estimate.transport.forEach((l) => {
-      transport.push(
-        this.addEstimateItem(
-          company,
-          `${l.type.name} - ${l.type.maxLoad}${company.mass.symbol}`,
-          l.qty,
-          l.total
-        )
-      );
-    });
-    const additionals = [];
-    estimate.additionals.forEach((a) => {
-      additionals.push(this.addEstimateItem(company, a.name, a.qty, a.total));
-    });
+  async generateBudget(estimate: Estimate | BulkEstimate, company: Company) {
     const budget = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages
