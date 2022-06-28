@@ -141,7 +141,10 @@
           <thead>
             <tr>
               <th class="text-center" scope="col">#</th>
-              <th scope="col">Description</th>
+              <th scope="col">
+                {{ invoice.invoice.scaffold.description ?
+                invoice.invoice.scaffold.description : "Description" }}
+              </th>
               <th class="text-center" scope="col">Qty</th>
               <th class="text-end" scope="col">Total</th>
             </tr>
@@ -162,7 +165,9 @@
                 invoice.invoice.scaffold.width }}{{
                 invoice.company.measurement.symbol }} x {{
                 invoice.invoice.scaffold.height }}{{
-                invoice.company.measurement.symbol }}) - {{
+                invoice.company.measurement.symbol }}) {{
+                invoice.invoice.scaffold.lifts > 0 ? "(" +
+                invoice.invoice.scaffold.lifts + " lifts)" : "" }} - {{
                 invoice.invoice.scaffold.description }}
               </td>
               <td class="text-center">1</td>
@@ -182,7 +187,8 @@
                 item.level : 0 }} - ({{ item.length }}{{
                 invoice.company.measurement.symbol }} x {{ item.width }}{{
                 invoice.company.measurement.symbol }} x {{ item.height }}{{
-                invoice.company.measurement.symbol }}) - {{ item.description }}
+                invoice.company.measurement.symbol }}) {{ item.lifts > 0 ? "(" +
+                item.lifts + " lifts)" : "" }} - {{ item.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
@@ -295,6 +301,14 @@
               <th class="text-end text-danger" colspan="2" scope="col">
                 - {{ invoice.company.currency.symbol }} {{
                 invoice.invoice.discount | number: "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="2" scope="col">Contract Total</th>
+              <th class="text-end" colspan="2" scope="col">
+                {{ invoice.company.currency.symbol }} {{
+                invoice.invoice.subtotal - invoice.invoice.discount| number:
+                "0.2-2" }}
               </th>
             </tr>
             <tr *ngIf="invoice.company.salesTax > 0">

@@ -93,7 +93,13 @@
       <thead>
         <tr>
           <th class="text-center" scope="col">#</th>
-          <th scope="col">Description</th>
+          <th scope="col">
+            {{
+              modification.oldScaffold.scaffold.description
+                ? modification.oldScaffold.scaffold.description
+                : "Description"
+            }}
+          </th>
           <th class="text-center" scope="col">Qty</th>
         </tr>
       </thead>
@@ -117,7 +123,13 @@
             {{ modification.oldScaffold.scaffold.width
             }}{{ company.measurement.symbol }} x
             {{ modification.oldScaffold.scaffold.height
-            }}{{ company.measurement.symbol }}) -
+            }}{{ company.measurement.symbol }})
+            {{
+              modification.oldScaffold.scaffold.lifts > 0
+                ? "(" + modification.oldScaffold.scaffold.lifts + " lifts)"
+                : ""
+            }}
+            -
             {{ modification.oldScaffold.scaffold.description }}
           </td>
           <td class="text-center">1</td>
@@ -136,7 +148,9 @@
             {{ item.level ? item.level : 0 }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
             }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }}) - {{ item.description }}
+            }}{{ company.measurement.symbol }})
+            {{ item.lifts > 0 ? "(" + item.lifts + " lifts)" : "" }} -
+            {{ item.description }}
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -224,7 +238,13 @@
       <thead>
         <tr>
           <th class="text-center" scope="col">#</th>
-          <th scope="col">Description</th>
+          <th scope="col">
+            {{
+              modification.scaffold.description
+                ? modification.scaffold.description
+                : "Description"
+            }}
+          </th>
           <th class="text-center" scope="col">Qty</th>
         </tr>
       </thead>
@@ -243,6 +263,11 @@
             }}{{ company.measurement.symbol }} x {{ modification.scaffold.width
             }}{{ company.measurement.symbol }} x
             {{ modification.scaffold.height }}{{ company.measurement.symbol }})
+            {{
+              modification.scaffold.lifts > 0
+                ? "(" + modification.scaffold.lifts + " lifts)"
+                : ""
+            }}
             - {{ modification.scaffold.description }}
           </td>
           <td class="text-center">1</td>
@@ -258,7 +283,9 @@
             {{ item.level ? item.level : 0 }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
             }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }}) - {{ item.description }}
+            }}{{ company.measurement.symbol }})
+            {{ item.lifts > 0 ? "(" + item.lifts + " lifts)" : "" }} -
+            {{ item.description }}
           </td>
           <td class="text-center">1</td>
         </tr>
@@ -340,7 +367,13 @@
       <thead>
         <tr>
           <th class="text-center" scope="col">#</th>
-          <th scope="col">Description</th>
+          <th scope="col">
+            {{
+              modification.scaffold.description
+                ? modification.scaffold.description
+                : "Description"
+            }}
+          </th>
           <th class="text-center" scope="col">Qty</th>
           <th class="text-end" scope="col">Total</th>
         </tr>
@@ -360,6 +393,11 @@
             }}{{ company.measurement.symbol }} x {{ modification.scaffold.width
             }}{{ company.measurement.symbol }} x
             {{ modification.scaffold.height }}{{ company.measurement.symbol }})
+            {{
+              modification.scaffold.lifts > 0
+                ? "(" + modification.scaffold.lifts + " lifts)"
+                : ""
+            }}
             - {{ modification.scaffold.description }}
           </td>
           <td class="text-center">1</td>
@@ -379,7 +417,9 @@
             {{ item.level ? item.level : 0 }} - ({{ item.length
             }}{{ company.measurement.symbol }} x {{ item.width
             }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }}) - {{ item.description }}
+            }}{{ company.measurement.symbol }})
+            {{ item.lifts > 0 ? "(" + item.lifts + " lifts)" : "" }} -
+            {{ item.description }}
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
@@ -490,6 +530,15 @@
           <th class="text-end text-danger" colspan="2" scope="col">
             - {{ company.currency.symbol }}
             {{ modification.discount | number: "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="2" scope="col">Contract Total</th>
+          <th class="text-end" colspan="2" scope="col">
+            {{ company.currency.symbol }}
+            {{
+              modification.subtotal - modification.discount | number: "0.2-2"
+            }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
