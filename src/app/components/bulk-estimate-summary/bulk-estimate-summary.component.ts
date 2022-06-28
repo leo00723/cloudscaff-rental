@@ -30,15 +30,17 @@ export class BulkEstimateSummaryComponent {
       company: this.company,
       terms: terms,
     };
-    await this.masterSvc.edit().setDoc(
-      'sharedBulkEstimates',
-      {
-        ...sharedEstimate,
-        cc: [],
-        email: [this.bulkEstimate.company.email],
-      },
-      `${this.company.id}-${this.bulkEstimate.id}`
-    );
+    await this.masterSvc
+      .edit()
+      .updateDoc(
+        'sharedBulkEstimates',
+        `${this.company.id}-${this.bulkEstimate.id}`,
+        {
+          ...sharedEstimate,
+          cc: [],
+          email: [this.bulkEstimate.company.email],
+        }
+      );
     const pdf = await this.masterSvc
       .pdf()
       .generateBulkEstimate(this.bulkEstimate, this.company, terms);

@@ -71,11 +71,11 @@ export class ShareDocumentComponent {
             };
             await this.masterSvc
               .edit()
-              .setDoc(
-                'sharedEstimates',
-                { ...this.data.doc, cc, email },
-                `${company.id}-${quote.id}`
-              );
+              .updateDoc('sharedEstimates', `${company.id}-${quote.id}`, {
+                ...this.data.doc,
+                cc,
+                email,
+              });
             await this.masterSvc
               .edit()
               .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
@@ -119,10 +119,10 @@ export class ShareDocumentComponent {
             };
             await this.masterSvc
               .edit()
-              .setDoc(
+              .updateDoc(
                 'sharedBulkEstimates',
-                { ...this.data.doc, cc, email },
-                `${company.id}-${bulkEstimate.id}`
+                `${company.id}-${bulkEstimate.id}`,
+                { ...this.data.doc, cc, email }
               );
             await this.masterSvc
               .edit()

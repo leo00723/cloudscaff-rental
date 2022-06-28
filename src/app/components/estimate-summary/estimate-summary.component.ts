@@ -32,11 +32,11 @@ export class EstimateSummaryComponent {
     };
     await this.masterSvc
       .edit()
-      .setDoc(
-        'sharedEstimates',
-        { ...sharedEstimate, cc: [], email: [this.estimate.company.email] },
-        `${this.company.id}-${this.estimate.id}`
-      );
+      .updateDoc('sharedEstimates', `${this.company.id}-${this.estimate.id}`, {
+        ...sharedEstimate,
+        cc: [],
+        email: [this.estimate.company.email],
+      });
     const pdf = await this.masterSvc
       .pdf()
       .generateEstimate(this.estimate, this.company, terms);
