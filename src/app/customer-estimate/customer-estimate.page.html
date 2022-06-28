@@ -365,6 +365,24 @@
           (fieldChange)="message = $event"
         ></app-input-text>
       </ion-col>
+      <ion-col size="12">
+        <ion-checkbox
+          [(ngModel)]="estimate.estimate.acceptedTerms"
+          [checked]="estimate.estimate.acceptedTerms"
+          [disabled]="estimate.approved"
+        ></ion-checkbox>
+        <ion-label class="ps-2">
+          I have read and agree to the terms and conditions of
+          {{estimate.company.name}}.
+          <ion-text
+            class="fw-bold cursor-pointer"
+            color="primary"
+            (click)="openTerms(estimate.terms.terms)"
+          >
+            Click to view Terms and Conditions
+          </ion-text>
+        </ion-label>
+      </ion-col>
       <ion-col size="12" class="text-end" *ngIf="!estimate.approved">
         <ion-progress-bar
           type="indeterminate"
@@ -399,6 +417,7 @@
           color="success"
           *ngIf="!loading && !requestUpdate"
           (click)="update('approve',estimate)"
+          [disabled]="!estimate.estimate.acceptedTerms"
         >
           Approve
         </ion-button>

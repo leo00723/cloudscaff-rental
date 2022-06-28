@@ -64,6 +64,7 @@ import { BulkEstimateFormComponent } from './bulk-estimate-form/bulk-estimate-fo
 import { BulkEstimateSummaryComponent } from './bulk-estimate-summary/bulk-estimate-summary.component';
 import { BulkEstimateTableComponent } from './bulk-estimate-table/bulk-estimate-table.component';
 import { ViewBulkEstimateComponent } from './view-bulk-estimate/view-bulk-estimate.component';
+import { ViewTermsComponent } from './view-terms/view-terms.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -123,6 +124,7 @@ const COMPONENTS = [
   BulkEstimateSummaryComponent,
   BulkEstimateTableComponent,
   ViewBulkEstimateComponent,
+  ViewTermsComponent,
 ];
 const IMPORTS = [
   CommonModule,

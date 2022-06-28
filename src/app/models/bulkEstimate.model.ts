@@ -30,4 +30,5 @@ export interface BulkEstimate {
   acceptedBy: string;
   rejectedBy: string;
   budget?: Budget;
+  acceptedTerms?: boolean;
 }

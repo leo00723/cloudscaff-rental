@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
+import { ViewTermsComponent } from '../components/view-terms/view-terms.component';
 import { BulkEstimate } from '../models/bulkEstimate.model';
 import { Company } from '../models/company.model';
-import { Estimate } from '../models/estimate.model';
 import { SharedBulkEstimate } from '../models/sharedBulkEstimate.model';
-import { SharedEstimate } from '../models/sharedEstimate.model';
 import { Term } from '../models/term.model';
 import { EditService } from '../services/edit.service';
 import { NotificationService } from '../services/notification.service';
@@ -29,7 +29,8 @@ export class CustomerBulkEstimatePage {
     private activatedRoute: ActivatedRoute,
     private pdf: PdfService,
     private notificationSvc: NotificationService,
-    private store: Store
+    private store: Store,
+    private modalSvc: ModalController
   ) {
     this.ids = this.activatedRoute.snapshot.paramMap.get('id').split('-');
     if (this.ids.length !== 2) {
@@ -60,7 +61,7 @@ export class CustomerBulkEstimatePage {
                 'mail',
                 JSON.parse(JSON.stringify(emailData))
               );
-              await this.editService.updateDoc('sharedEstimates', data.id, {
+              await this.editService.updateDoc('sharedBulkEstimates', data.id, {
                 viewed: true,
               });
             }
@@ -112,7 +113,8 @@ export class CustomerBulkEstimatePage {
             'mail',
             JSON.parse(JSON.stringify(customerEmail))
           );
-          await this.editService.updateDoc('sharedEstimates', data.id, {
+          await this.editService.updateDoc('sharedBulkEstimates', data.id, {
+            ...data,
             approved: true,
           });
           this.notificationSvc.toast(
@@ -252,5 +254,18 @@ export class CustomerBulkEstimatePage {
         3000
       );
     }
+  }
+
+  async openTerms(terms: string) {
+    const modal = await this.modalSvc.create({
+      component: ViewTermsComponent,
+      cssClass: 'accept',
+      componentProps: {
+        terms: terms,
+      },
+      showBackdrop: true,
+      id: 'viewTerms',
+    });
+    return await modal.present();
   }
 }
