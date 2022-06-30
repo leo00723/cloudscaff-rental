@@ -27,6 +27,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'enquiries',
+        loadChildren: () =>
+          import('./enquiries/enquiries.module').then(
+            (m) => m.EnquiriesPageModule
+          ),
+      },
+      {
         path: 'estimates',
         loadChildren: () =>
           import('./estimates/estimates.module').then(

@@ -64,6 +64,7 @@ export class InventoryEstimateComponent implements OnInit {
     acceptedBy: '',
     rejectedBy: '',
     budget: undefined,
+    enquiryId: '',
   };
   user: User;
   company: Company;

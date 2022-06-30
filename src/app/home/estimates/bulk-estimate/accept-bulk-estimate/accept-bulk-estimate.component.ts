@@ -88,7 +88,17 @@ export class AcceptBulkEstimateComponent implements OnInit {
             this.bulkEstimate.id,
             this.bulkEstimate
           );
-
+        if (this.bulkEstimate.enquiryId.length > 0) {
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.company.id}/enquiries`,
+              this.bulkEstimate.enquiryId,
+              {
+                status: 'accepted',
+              }
+            );
+        }
         this.masterSvc
           .notification()
           .toast('Estimate accepted successfully!', 'success');

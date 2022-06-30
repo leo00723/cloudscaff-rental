@@ -65,6 +65,11 @@ import { BulkEstimateSummaryComponent } from './bulk-estimate-summary/bulk-estim
 import { BulkEstimateTableComponent } from './bulk-estimate-table/bulk-estimate-table.component';
 import { ViewBulkEstimateComponent } from './view-bulk-estimate/view-bulk-estimate.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
+import { AcceptEstimateComponent } from '../home/estimates/add-estimate/accept-estimate/accept-estimate.component';
+import { AddEstimatePage } from '../home/estimates/add-estimate/add-estimate.component';
+import { AcceptBulkEstimateComponent } from '../home/estimates/bulk-estimate/accept-bulk-estimate/accept-bulk-estimate.component';
+import { BulkEstimateComponent } from '../home/estimates/bulk-estimate/bulk-estimate.component';
+import { InventoryEstimateComponent } from '../home/estimates/inventory-estimate/inventory-estimate.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -125,6 +130,11 @@ const COMPONENTS = [
   BulkEstimateTableComponent,
   ViewBulkEstimateComponent,
   ViewTermsComponent,
+  AddEstimatePage,
+  AcceptEstimateComponent,
+  BulkEstimateComponent,
+  AcceptBulkEstimateComponent,
+  InventoryEstimateComponent,
 ];
 const IMPORTS = [
   CommonModule,

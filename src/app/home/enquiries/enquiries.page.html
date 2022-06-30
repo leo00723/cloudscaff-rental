@@ -1,0 +1,21 @@
+<app-header title="Enquiries"> </app-header>
+<ion-content class="ion-padding">
+  <app-enquiry-table
+    [value]="enquiries$"
+    *ngIf="enquiries$ | async else loading"
+    (selectedItem)="editEnquiry($event)"
+  ></app-enquiry-table>
+  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addEnquiry()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

@@ -79,6 +79,15 @@ export class ShareDocumentComponent {
             await this.masterSvc
               .edit()
               .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            if (this.data.doc.estimate.enquiryId.length > 0) {
+              await this.masterSvc
+                .edit()
+                .updateDoc(
+                  `company/${company.id}/enquiries`,
+                  this.data.doc.estimate.enquiryId,
+                  { status: 'sent' }
+                );
+            }
             this.form.reset();
             this.masterSvc
               .notification()
@@ -127,6 +136,15 @@ export class ShareDocumentComponent {
             await this.masterSvc
               .edit()
               .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            if (this.data.doc.bulkEstimate.enquiryId.length > 0) {
+              await this.masterSvc
+                .edit()
+                .updateDoc(
+                  `company/${company.id}/enquiries`,
+                  this.data.doc.bulkEstimate.enquiryId,
+                  { status: 'sent' }
+                );
+            }
             this.form.reset();
             this.masterSvc
               .notification()

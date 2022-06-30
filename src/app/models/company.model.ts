@@ -23,6 +23,7 @@ export interface Company {
   currency?: UnitData;
   terminology?: Terminology;
   totalEstimates?: number;
+  totalEnquiries?: number;
   totalBulkEstimates?: number;
   totalMaterialEstimates?: number;
   totalShipments?: number;

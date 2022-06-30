@@ -18,6 +18,7 @@ import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.compo
   templateUrl: './add-estimate.component.html',
 })
 export class AddEstimatePage implements OnInit {
+  @Input() enquiryId: string = '';
   @Input() set value(val: Estimate) {
     if (val) {
       Object.assign(this.estimate, val);
@@ -63,6 +64,7 @@ export class AddEstimatePage implements OnInit {
     acceptedBy: '',
     rejectedBy: '',
     budget: {},
+    enquiryId: '',
   };
   user: User;
   company: Company;
@@ -393,6 +395,7 @@ export class AddEstimatePage implements OnInit {
       try {
         this.loading = true;
         this.updateEstimateTotal();
+        this.estimate.enquiryId = this.enquiryId;
         await this.masterSvc
           .edit()
           .addDocument(
@@ -402,6 +405,15 @@ export class AddEstimatePage implements OnInit {
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalEstimates: increment(1),
         });
+        if (this.estimate.enquiryId.length > 0) {
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.estimate.company.id}/enquiries`,
+              this.estimate.enquiryId,
+              { status: 'estimate created' }
+            );
+        }
         this.masterSvc
           .notification()
           .toast('Estimate created successfully!', 'success');
@@ -436,7 +448,16 @@ export class AddEstimatePage implements OnInit {
             this.estimate.id,
             this.estimate
           )
-          .then(() => {
+          .then(async () => {
+            if (status === 'rejected' && this.estimate.enquiryId.length > 0) {
+              await this.masterSvc
+                .edit()
+                .updateDoc(
+                  `company/${this.estimate.company.id}/enquiries`,
+                  this.estimate.enquiryId,
+                  { status: 'rejected' }
+                );
+            }
             this.masterSvc
               .notification()
               .toast('Estimate updated successfully!', 'success');

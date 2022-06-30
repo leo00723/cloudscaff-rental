@@ -61,6 +61,7 @@ export class BulkEstimateFormComponent implements OnInit {
     acceptedBy: '',
     rejectedBy: '',
     budget: undefined,
+    enquiryId: '',
   };
   company: Company;
   user: User;

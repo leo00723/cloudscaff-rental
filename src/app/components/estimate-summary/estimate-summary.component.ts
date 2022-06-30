@@ -14,6 +14,7 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstimateSummaryComponent {
+  @Input() enquiryId: string = '';
   @Input() estimate: Estimate;
   @Input() canDownload = false;
   terms$: Observable<Term>;
@@ -51,7 +52,10 @@ export class EstimateSummaryComponent {
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,
       componentProps: {
-        data: { type: 'estimate', doc: sharedEstimate },
+        data: {
+          type: 'estimate',
+          doc: sharedEstimate,
+        },
       },
       showBackdrop: true,
       id: 'shareDocument',

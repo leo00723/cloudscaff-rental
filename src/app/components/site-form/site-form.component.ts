@@ -20,13 +20,13 @@ export class SiteFormComponent implements OnInit {
   site: Site = {
     address: '',
     city: '',
-    code: '',
+    suburb: '',
     country: '',
+    zip: '',
+    code: '',
     id: '',
     name: '',
-    suburb: '',
     totalScaffolds: 0,
-    zip: '',
     companyId: '',
     createdBy: '',
     updatedBy: '',
@@ -203,14 +203,14 @@ export class SiteFormComponent implements OnInit {
   private initFrom() {
     this.form = this.masterSvc.fb().group({
       name: ['', Validators.required],
-      address: ['', Validators.required],
       customer: ['', Validators.required],
+      address: ['', Validators.required],
       suburb: [''],
       city: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
       zip: [''],
       country: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
     });
   }
 }

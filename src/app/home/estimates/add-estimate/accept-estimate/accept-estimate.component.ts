@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Invoice } from 'src/app/models/invoice.model';
-import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -125,6 +124,17 @@ export class AcceptEstimateComponent implements OnInit {
           .updateDoc(`company/${this.company.id}/sites`, this.site.id, {
             totalScaffolds: increment(1),
           });
+        if (this.estimate.enquiryId.length > 0) {
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.company.id}/enquiries`,
+              this.estimate.enquiryId,
+              {
+                status: 'accepted',
+              }
+            );
+        }
         this.masterSvc
           .notification()
           .toast('Estimate accepted successfully!', 'success');

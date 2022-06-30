@@ -19,6 +19,7 @@ import { AcceptBulkEstimateComponent } from './accept-bulk-estimate/accept-bulk-
   styles: [],
 })
 export class BulkEstimateComponent implements OnInit {
+  @Input() enquiryId: string = '';
   @Input() set value(val: BulkEstimate) {
     if (val) {
       Object.assign(this.bulkEstimate, val);
@@ -54,6 +55,7 @@ export class BulkEstimateComponent implements OnInit {
     acceptedBy: '',
     rejectedBy: '',
     budget: {},
+    enquiryId: '',
   };
   user: User;
   company: Company;
@@ -127,7 +129,15 @@ export class BulkEstimateComponent implements OnInit {
       acceptedBy: '',
       rejectedBy: '',
       budget: {},
+      enquiryId: '',
     });
+  }
+
+  duplicateScaffold(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.bulkEstimate.estimates.push(this.bulkEstimate.estimates[i]);
+      this.activeScaffold = this.bulkEstimate.estimates.length;
+    }, `Are you sure you want to duplicate scaffold ${i + 1}?`);
   }
   deleteScaffold(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
@@ -213,6 +223,7 @@ export class BulkEstimateComponent implements OnInit {
       try {
         this.loading = true;
         this.updateEstimateTotal();
+        this.bulkEstimate.enquiryId = this.enquiryId;
         await this.masterSvc
           .edit()
           .addDocument(
@@ -222,6 +233,15 @@ export class BulkEstimateComponent implements OnInit {
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalBulkEstimates: increment(1),
         });
+        if (this.bulkEstimate.enquiryId.length > 0) {
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.bulkEstimate.company.id}/enquiries`,
+              this.bulkEstimate.enquiryId,
+              { status: 'estimate created' }
+            );
+        }
         this.masterSvc
           .notification()
           .toast('Estimate created successfully!', 'success');
@@ -255,7 +275,19 @@ export class BulkEstimateComponent implements OnInit {
             this.bulkEstimate.id,
             this.bulkEstimate
           )
-          .then(() => {
+          .then(async () => {
+            if (
+              status === 'rejected' &&
+              this.bulkEstimate.enquiryId.length > 0
+            ) {
+              await this.masterSvc
+                .edit()
+                .updateDoc(
+                  `company/${this.bulkEstimate.company.id}/enquiries`,
+                  this.bulkEstimate.enquiryId,
+                  { status: 'rejected' }
+                );
+            }
             this.masterSvc
               .notification()
               .toast('Estimate updated successfully!', 'success');

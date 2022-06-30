@@ -14,6 +14,7 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BulkEstimateSummaryComponent {
+  @Input() enquiryId: string = '';
   @Input() bulkEstimate: BulkEstimate;
   @Input() canDownload = false;
   terms$: Observable<Term>;
@@ -55,7 +56,10 @@ export class BulkEstimateSummaryComponent {
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,
       componentProps: {
-        data: { type: 'bulkEstimate', doc: sharedEstimate },
+        data: {
+          type: 'bulkEstimate',
+          doc: sharedEstimate,
+        },
       },
       showBackdrop: true,
       id: 'shareDocument',

@@ -1,0 +1,214 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" color="primary" mode="md">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? "Update Enquiry" : "Create Enquiry" }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container" *ngIf="company">
+    <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
+      <ion-grid>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-input-select-reactive
+              (fieldChange)="changeCustomer($event)"
+              title="Customer"
+              placeholder="Select Customer"
+              controlName="customer"
+              [form]="form"
+              [selectedText]="field('customer').value.name"
+            >
+              <ng-container *ngIf="customers$ | async as customers">
+                <ion-select-option class="fw-bold" value="add">
+                  Create new Customer
+                </ion-select-option>
+                <ion-select-option
+                  [value]="customer"
+                  *ngFor="let customer of customers"
+                  >{{ customer.name }}
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+          <ion-col size="12" *ngIf="show === 'editCustomer'">
+            <app-customer
+              [customer]="field('customer').value"
+              [isUpdate]="enquiry.status === 'pending'"
+              [isCreate]="false"
+              [companyId]="company.id"
+            >
+            </app-customer>
+          </ion-col>
+          <ion-col size="12" *ngIf="show === 'addCustomer'">
+            <app-customer
+              [companyId]="company.id"
+              (newCustomer)="newCustomer($event)"
+              [isCreate]="true"
+            >
+            </app-customer>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-input-reactive
+              title="Site Name"
+              controlName="siteName"
+              [form]="form"
+              placeholder="Enter Site Name"
+            >
+            </app-input-reactive>
+          </ion-col>
+
+          <ion-col size="12">
+            <app-address-search
+              (addressData)="updateAddress($event)"
+              placeholder="Search for Site Address"
+            >
+            </app-address-search>
+            <app-input-reactive
+              title="Address"
+              [form]="form"
+              controlName="address"
+            >
+            </app-input-reactive>
+            <app-input-reactive
+              title="suburb"
+              [form]="form"
+              controlName="suburb"
+              [optional]="true"
+            >
+            </app-input-reactive>
+            <ion-row>
+              <ion-col class="py-0 ps-0">
+                <app-input-reactive
+                  title="State/City"
+                  [form]="form"
+                  controlName="city"
+                ></app-input-reactive>
+              </ion-col>
+              <ion-col class="py-0 pe-0">
+                <app-input-reactive
+                  title="Zip"
+                  [form]="form"
+                  controlName="zip"
+                  [optional]="true"
+                ></app-input-reactive>
+              </ion-col>
+            </ion-row>
+            <app-input-reactive
+              title="Country"
+              [form]="form"
+              controlName="country"
+            ></app-input-reactive>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <ion-item
+              fill="solid"
+              lines="none"
+              class="rounded-3 my-3"
+              mode="md"
+            >
+              <ion-label position="stacked">Message</ion-label>
+              <ion-textarea rows="20" formControlName="message"></ion-textarea>
+            </ion-item>
+          </ion-col>
+          <ion-col size="6">
+            <app-input-date
+              [form]="form"
+              controlName="recievedDate"
+              title="Recieved Date"
+            ></app-input-date>
+          </ion-col>
+          <ion-col size="6" *ngIf="field('recievedDate').value">
+            <app-input-date
+              [form]="form"
+              controlName="returnDate"
+              [min]="field('recievedDate').value"
+              title="Return Date"
+            ></app-input-date>
+          </ion-col>
+        </ion-row>
+        <ion-col size="12">
+          <app-input-select-reactive
+            title="Status"
+            controlName="status"
+            [form]="form"
+            [selectedText]="field('status').value"
+          >
+            <ion-select-option class="fw-bold" value="pending">
+              Pending
+            </ion-select-option>
+            <ion-select-option class="fw-bold" value="overdue">
+              Overdue
+            </ion-select-option>
+            <ion-select-option class="fw-bold" value="estimate created">
+              Estimate Created
+            </ion-select-option>
+            <ion-select-option class="fw-bold" value="sent">
+              Sent
+            </ion-select-option>
+            <ion-select-option class="fw-bold" value="accepted">
+              Accepted
+            </ion-select-option>
+            <ion-select-option class="fw-bold" value="rejected">
+              Rejected
+            </ion-select-option>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-row>
+          <ion-progress-bar
+            type="indeterminate"
+            *ngIf="loading"
+          ></ion-progress-bar>
+
+          <ion-col class="text-end">
+            <ion-button
+              size="block"
+              shape="round"
+              *ngIf="!isEdit"
+              (click)="createEnquiry()"
+              >Save Enquiry</ion-button
+            >
+            <ion-button
+              shape="round"
+              [disabled]="form.invalid"
+              *ngIf="
+                (isEdit && enquiry.status === 'pending') ||
+                enquiry.status === 'overdue'
+              "
+              (click)="updateEnquiry()"
+              >Update Enquiry</ion-button
+            >
+            <ion-button
+              color="success"
+              shape="round"
+              *ngIf="
+                (isEdit && enquiry.status === 'pending') ||
+                enquiry.status === 'overdue'
+              "
+              (click)="addEstimate()"
+              >Create Estimate</ion-button
+            >
+            <ion-button
+              color="success"
+              shape="round"
+              *ngIf="
+                (isEdit && enquiry.status === 'pending') ||
+                enquiry.status === 'overdue'
+              "
+              (click)="addBulkEstimate()"
+              >Create Bulk Estimate</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </div>
+</ion-content>

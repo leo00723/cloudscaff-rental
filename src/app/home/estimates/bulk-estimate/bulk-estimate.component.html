@@ -141,13 +141,21 @@
         <ion-row>
           <ion-col size="12">
             <ion-text color="medium" class="h4"> Scaffolds </ion-text>
+
             <ion-chip
               outline
               color="success"
               class="ion-float-end"
               (click)="addScaffold()"
             >
-              <ion-label>Add Scaffold</ion-label>
+              <ion-label>Add Scaffold</ion-label> </ion-chip
+            ><ion-chip
+              outline
+              color="warning"
+              class="ion-float-end"
+              (click)="duplicateScaffold(activeScaffold - 1)"
+            >
+              <ion-label>Duplicate Scaffold</ion-label>
             </ion-chip>
             <ion-chip
               outline

@@ -18,6 +18,12 @@ export class HomePage implements OnDestroy {
   public appPages = [
     // { title: 'Dashboard', url: '/dashboard/dashboard', icon: 'home' },
     {
+      title: 'Enquiries',
+      url: '/dashboard/enquiries',
+      icon: 'options-outline',
+      roles: 'Owner,Admin',
+    },
+    {
       title: 'Estimates',
       url: '/dashboard/estimates',
       icon: 'options-outline',
