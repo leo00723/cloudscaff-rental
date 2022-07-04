@@ -70,6 +70,7 @@ import { AddEstimatePage } from '../home/estimates/add-estimate/add-estimate.com
 import { AcceptBulkEstimateComponent } from '../home/estimates/bulk-estimate/accept-bulk-estimate/accept-bulk-estimate.component';
 import { BulkEstimateComponent } from '../home/estimates/bulk-estimate/bulk-estimate.component';
 import { InventoryEstimateComponent } from '../home/estimates/inventory-estimate/inventory-estimate.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -135,6 +136,7 @@ const COMPONENTS = [
   BulkEstimateComponent,
   AcceptBulkEstimateComponent,
   InventoryEstimateComponent,
+  FileUploadComponent,
 ];
 const IMPORTS = [
   CommonModule,

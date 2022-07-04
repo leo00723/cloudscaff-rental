@@ -1,11 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { FileUploadComponent } from 'src/app/components/file-upload/file-upload.component';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Enquiry } from 'src/app/models/enquiry.model';
+import { UploadedFile } from 'src/app/models/uploadedFile.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -18,7 +20,7 @@ import { BulkEstimateComponent } from '../../estimates/bulk-estimate/bulk-estima
   templateUrl: './add-enquiry.component.html',
   styles: [],
 })
-export class AddEnquiryComponent implements OnInit {
+export class AddEnquiryComponent implements OnInit, OnDestroy {
   @Input() set value(val: Enquiry) {
     if (val) {
       Object.assign(this.enquiry, val);
@@ -42,7 +44,7 @@ export class AddEnquiryComponent implements OnInit {
     message: '',
     siteName: '',
     recievedDate: undefined,
-    status: '',
+    status: 'pending',
     estimateId: '',
     estimateCode: '',
     address: '',
@@ -54,13 +56,20 @@ export class AddEnquiryComponent implements OnInit {
     updatedBy: '',
     acceptedBy: '',
     rejectedBy: '',
+    upload: undefined,
   };
   isLoading = true;
   loading = false;
+  uploadSaved = false;
 
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+  }
+  async ngOnDestroy(): Promise<void> {
+    if (!this.uploadSaved && !this.isEdit && this.enquiry.upload) {
+      await this.masterSvc.img().deleteFile(this.enquiry.upload.ref);
+    }
   }
 
   ngOnInit(): void {
@@ -113,6 +122,7 @@ export class AddEnquiryComponent implements OnInit {
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalEnquiries: increment(1),
         });
+        this.uploadSaved = true;
         this.masterSvc
           .notification()
           .toast('Enquiry created successfully!', 'success');
@@ -134,33 +144,31 @@ export class AddEnquiryComponent implements OnInit {
   //update the enquiry
   updateEnquiry() {
     this.updateEnquiryData();
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-
-      this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.company.id}/enquiries`,
-          this.enquiry.id,
-          this.enquiry
-        )
-        .then(() => {
-          this.masterSvc
-            .notification()
-            .toast('Enquiry updated successfully!', 'success');
-          this.loading = false;
-          this.close();
-        })
-        .catch(() => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong updating your enquiry, try again!',
-              'danger',
-              2000
-            );
-        });
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/enquiries`,
+            this.enquiry.id,
+            this.enquiry
+          );
+        this.masterSvc
+          .notification()
+          .toast('Enquiry updated successfully!', 'success');
+        this.loading = false;
+        this.close();
+      } catch (error) {
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating your enquiry, try again!',
+            'danger',
+            2000
+          );
+      }
     });
   }
 
@@ -211,7 +219,21 @@ export class AddEnquiryComponent implements OnInit {
     return await modal.present();
   }
 
-  createBulkEstimate() {}
+  async saveUpload(data: UploadedFile | null) {
+    this.enquiry.upload = data;
+    if (this.isEdit) {
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/enquiries`,
+          this.enquiry.id,
+          this.enquiry
+        );
+      this.masterSvc
+        .notification()
+        .toast('Enquiry updated successfully!', 'success');
+    }
+  }
 
   // START: Functions to initialise the form
   private initEditForm() {
@@ -219,8 +241,8 @@ export class AddEnquiryComponent implements OnInit {
       customer: [this.enquiry.customer, Validators.required],
       message: [this.enquiry.message],
       siteName: [this.enquiry.siteName, Validators.required],
-      recievedDate: [this.enquiry.recievedDate, Validators.nullValidator],
-      returnDate: [this.enquiry.returnDate, Validators.nullValidator],
+      recievedDate: [this.enquiry.recievedDate, Validators.required],
+      returnDate: [this.enquiry.returnDate, Validators.required],
       code: [this.enquiry.code],
       address: [this.enquiry.address, Validators.required],
       suburb: [this.enquiry.suburb],
@@ -238,8 +260,8 @@ export class AddEnquiryComponent implements OnInit {
       customer: ['', Validators.required],
       message: [''],
       siteName: ['', Validators.required],
-      recievedDate: ['', Validators.nullValidator],
-      returnDate: ['', Validators.nullValidator],
+      recievedDate: ['', Validators.required],
+      returnDate: ['', Validators.required],
       address: ['', Validators.required],
       suburb: [''],
       city: ['', Validators.required],

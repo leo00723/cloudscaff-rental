@@ -134,34 +134,39 @@
               title="Return Date"
             ></app-input-date>
           </ion-col>
+          <ion-col size="12">
+            <app-input-select-reactive
+              title="Status"
+              controlName="status"
+              [form]="form"
+              [selectedText]="field('status').value"
+            >
+              <ion-select-option class="fw-bold" value="pending">
+                Pending
+              </ion-select-option>
+              <ion-select-option class="fw-bold" value="overdue">
+                Overdue
+              </ion-select-option>
+              <ion-select-option class="fw-bold" value="estimate created">
+                Estimate Created
+              </ion-select-option>
+              <ion-select-option class="fw-bold" value="sent">
+                Sent
+              </ion-select-option>
+              <ion-select-option class="fw-bold" value="accepted">
+                Accepted
+              </ion-select-option>
+              <ion-select-option class="fw-bold" value="rejected">
+                Rejected
+              </ion-select-option>
+            </app-input-select-reactive>
+          </ion-col>
         </ion-row>
-        <ion-col size="12">
-          <app-input-select-reactive
-            title="Status"
-            controlName="status"
-            [form]="form"
-            [selectedText]="field('status').value"
-          >
-            <ion-select-option class="fw-bold" value="pending">
-              Pending
-            </ion-select-option>
-            <ion-select-option class="fw-bold" value="overdue">
-              Overdue
-            </ion-select-option>
-            <ion-select-option class="fw-bold" value="estimate created">
-              Estimate Created
-            </ion-select-option>
-            <ion-select-option class="fw-bold" value="sent">
-              Sent
-            </ion-select-option>
-            <ion-select-option class="fw-bold" value="accepted">
-              Accepted
-            </ion-select-option>
-            <ion-select-option class="fw-bold" value="rejected">
-              Rejected
-            </ion-select-option>
-          </app-input-select-reactive>
-        </ion-col>
+        <app-file-upload
+          *ngIf="enquiry.status === 'pending' || enquiry.status === 'overdue'"
+          [value]="enquiry.upload"
+          (result)="saveUpload($event)"
+        ></app-file-upload>
         <ion-row>
           <ion-progress-bar
             type="indeterminate"

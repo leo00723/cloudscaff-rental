@@ -77,8 +77,8 @@ export class ImgUploadComponent {
   async removeImage() {
     try {
       this.loading = true;
-      await this.imgSvc.deletePhoto(`${this.deleteRef}_100x100.webp`);
-      await this.imgSvc.deletePhoto(`${this.deleteRef}_300x100.webp`);
+      await this.imgSvc.deleteFile(`${this.deleteRef}_100x100.webp`);
+      await this.imgSvc.deleteFile(`${this.deleteRef}_300x100.webp`);
       this.url = '';
       this.deleteRef = '';
       this.result.emit({ url1: '', url2: '', ref: '' });

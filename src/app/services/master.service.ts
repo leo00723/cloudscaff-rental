@@ -7,6 +7,7 @@ import { Store } from '@ngxs/store';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 import { EditService } from './edit.service';
+import { ImgService } from './img.service';
 import { NotificationService } from './notification.service';
 import { PdfService } from './pdf.service';
 
@@ -23,7 +24,8 @@ export class MasterService {
     private pdfService: PdfService,
     private platformService: Platform,
     private modalController: ModalController,
-    private storeSvc: Store
+    private storeSvc: Store,
+    private imgSvc: ImgService
   ) {}
   auth() {
     return this.authSvc;
@@ -61,5 +63,8 @@ export class MasterService {
     if (!environment.production) {
       console.log(message.toString());
     }
+  }
+  img() {
+    return this.imgSvc;
   }
 }

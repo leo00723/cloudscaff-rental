@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
+import { FileUploadComponent } from 'src/app/components/file-upload/file-upload.component';
 import { Company } from 'src/app/models/company.model';
 import { Enquiry } from 'src/app/models/enquiry.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
-import { GetEstimates } from '../estimates/state/estimate.actions';
-import { EstimatesState } from '../estimates/state/estimate.state';
 import { AddEnquiryComponent } from './add-enquiry/add-enquiry.component';
 
 @Component({

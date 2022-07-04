@@ -1,0 +1,36 @@
+<ion-row class="card-outline">
+  <app-title-block>Upload File</app-title-block>
+  <ion-col size="12" *ngIf="!fileName">
+    <ion-input type="file" (change)="chooseFile($event)"></ion-input>
+  </ion-col>
+  <ion-col size="12" *ngIf="fileName">
+    <ion-item lines="none">
+      <ion-text>{{ fileName }}</ion-text>
+      <ion-button
+        *ngIf="downloadUrl"
+        slot="end"
+        shape="round"
+        color="danger"
+        size="small"
+        (click)="deleteFile(ref)"
+        >Delete
+      </ion-button>
+      <ion-button
+        *ngIf="downloadUrl"
+        slot="end"
+        shape="round"
+        color="success"
+        size="small"
+        [href]="downloadUrl"
+        target="_blank"
+        >Download
+      </ion-button>
+    </ion-item>
+    <ion-progress-bar
+      *ngIf="uploading"
+      color="success"
+      [value]="progress"
+      buffer="0.5"
+    ></ion-progress-bar>
+  </ion-col>
+</ion-row>
