@@ -1,5 +1,6 @@
 import { Company } from './company.model';
 import { Customer } from './customer.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface Enquiry {
   code: string;
@@ -23,4 +24,5 @@ export interface Enquiry {
   updatedBy: string;
   acceptedBy: string;
   rejectedBy: string;
+  upload?: UploadedFile;
 }

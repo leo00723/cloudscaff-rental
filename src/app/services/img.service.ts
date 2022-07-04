@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Firestore } from '@angular/fire/firestore';
 import {
   deleteObject,
   getDownloadURL,
-  listAll,
   ref,
   Storage,
   uploadBytes,
@@ -13,7 +11,7 @@ import { Photo } from '@capacitor/camera';
   providedIn: 'root',
 })
 export class ImgService {
-  constructor(private firestore: Firestore, private storage: Storage) {}
+  constructor(private storage: Storage) {}
 
   async uploadImage(cameraFile: Photo, path: string, type: string) {
     const storageRef = ref(this.storage, path);
@@ -35,8 +33,8 @@ export class ImgService {
   async uploadBlob(image: Blob, path: string, deleteRef?: string) {
     try {
       if (deleteRef.length > 0) {
-        await this.deletePhoto(`${deleteRef}_100x100.webp`);
-        await this.deletePhoto(`${deleteRef}_300x100.webp`);
+        await this.deleteFile(`${deleteRef}_100x100.webp`);
+        await this.deleteFile(`${deleteRef}_300x100.webp`);
       }
 
       await uploadBytes(ref(this.storage, `${path}.webp`), image);
@@ -81,7 +79,7 @@ export class ImgService {
     }
   }
 
-  async deletePhoto(path: string) {
+  async deleteFile(path: string) {
     const img = ref(this.storage, path);
     return await deleteObject(img);
   }

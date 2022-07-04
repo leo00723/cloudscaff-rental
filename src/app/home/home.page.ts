@@ -20,7 +20,7 @@ export class HomePage implements OnDestroy {
     {
       title: 'Enquiries',
       url: '/dashboard/enquiries',
-      icon: 'options-outline',
+      icon: 'reader-outline',
       roles: 'Owner,Admin',
     },
     {
