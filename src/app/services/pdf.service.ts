@@ -4,17 +4,17 @@ import { Injectable } from '@angular/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { Platform } from '@ionic/angular';
-import { stat } from 'fs';
-import { Observer, of } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Term } from 'src/app/models/term.model';
 import { environment } from 'src/environments/environment';
 import { BulkEstimate } from '../models/bulkEstimate.model';
+import { BulkInventoryEstimate } from '../models/bulkInventoryEstimate.model';
 import { Credit } from '../models/credit.model';
 import { Handover } from '../models/handover.model';
 import { Inspection } from '../models/inspection.model';
+import { InventoryEstimate } from '../models/inventoryEstimate.model';
 import { Invoice } from '../models/invoice.model';
 import { Modification } from '../models/modification.model';
 import { Statement } from '../models/statement.mode';
@@ -728,7 +728,14 @@ export class PdfService {
   }
 
   // BUDGET STANDARD PDF
-  async generateBudget(estimate: Estimate | BulkEstimate, company: Company) {
+  async generateBudget(
+    estimate:
+      | Estimate
+      | BulkEstimate
+      | InventoryEstimate
+      | BulkInventoryEstimate,
+    company: Company
+  ) {
     const budget = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages

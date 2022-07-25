@@ -1,13 +1,15 @@
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
+  Component,
   Input,
+  OnInit,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
+import { BulkInventoryEstimate } from 'src/app/models/bulkInventoryEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
+import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -20,7 +22,11 @@ import { UserState } from 'src/app/shared/user/user.state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BudgetBreakdownComponent implements OnInit {
-  @Input() estimate: Estimate | BulkEstimate;
+  @Input() estimate:
+    | Estimate
+    | BulkEstimate
+    | BulkInventoryEstimate
+    | InventoryEstimate;
   company: Company;
   user: User;
   form: FormGroup;

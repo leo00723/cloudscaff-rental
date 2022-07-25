@@ -1,0 +1,44 @@
+import { AdditionalItem } from './additionalItem.model';
+import { Budget } from './budget.model';
+import { Company } from './company.model';
+import { Customer } from './customer.model';
+import { InventoryItem } from './inventoryItem.model';
+import { LabourBroker } from './labour-broker.model';
+import { LabourItem } from './labourItem.model';
+import { Transport, TransportItem } from './transport.model';
+
+export interface InventoryEstimate {
+  additionals: AdditionalItem[];
+  broker: LabourBroker;
+  code: string;
+  company: Company;
+  customer: Customer;
+  date: any;
+  discount: number;
+  discountPercentage: number;
+  endDate: any;
+  id: string;
+  labour: LabourItem[];
+  transport: TransportItem[];
+  transportProfile: Transport[];
+  message: string;
+  siteName: string;
+  startDate: any;
+  status: string;
+  subtotal: number;
+  tax: number;
+  total: number;
+  extraHire: number;
+  vat: number;
+  poNumber: string;
+  woNumber: string;
+  siteId: string;
+  createdBy: string;
+  updatedBy: string;
+  acceptedBy: string;
+  rejectedBy: string;
+  budget?: Budget;
+  acceptedTerms?: boolean;
+  enquiryId: string;
+  items?: InventoryItem[];
+}

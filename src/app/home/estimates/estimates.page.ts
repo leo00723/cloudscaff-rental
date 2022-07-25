@@ -103,7 +103,7 @@ export class EstimatesPage implements OnInit {
       component: InventoryEstimateComponent,
       cssClass: 'fullscreen',
       showBackdrop: false,
-      id: 'addEstimate',
+      id: 'addInventoryEstimate',
     });
     return await modal.present();
   }

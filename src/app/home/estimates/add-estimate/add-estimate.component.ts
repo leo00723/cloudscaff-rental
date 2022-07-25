@@ -48,7 +48,7 @@ export class AddEstimatePage implements OnInit {
     scaffold: undefined,
     siteName: '',
     startDate: undefined,
-    status: '',
+    status: 'pending',
     subtotal: 0,
     tax: 0,
     total: 0,
