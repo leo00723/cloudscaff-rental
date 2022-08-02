@@ -130,7 +130,7 @@ export class BulkEstimateFormComponent implements OnInit {
       hours: ['', Validators.required],
       days: ['', Validators.required],
       qty: ['', Validators.required],
-      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       total: [''],
     });
@@ -142,7 +142,7 @@ export class BulkEstimateFormComponent implements OnInit {
       qty: ['', [Validators.required, Validators.min(1)]],
       name: ['', Validators.required],
       daysStanding: ['', [Validators.required, Validators.min(1)]],
-      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       total: [0],
     });
@@ -155,7 +155,7 @@ export class BulkEstimateFormComponent implements OnInit {
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
       qty: ['', [Validators.required, Validators.min(1)]],
-      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       total: [0],
     });
@@ -168,8 +168,8 @@ export class BulkEstimateFormComponent implements OnInit {
       length: ['', [Validators.required, Validators.min(1)]],
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
-      lifts: ['', [Validators.nullValidator, Validators.min(1)]],
-      extraHirePercentage: ['', [Validators.nullValidator, Validators.min(1)]],
+      lifts: ['', [Validators.nullValidator]],
+      extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       level: [''],
       total: [0],
@@ -892,10 +892,10 @@ export class BulkEstimateFormComponent implements OnInit {
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
-        lifts: [a.lifts, [Validators.nullValidator, Validators.min(1)]],
+        lifts: [a.lifts, [Validators.nullValidator]],
         extraHirePercentage: [
           a.extraHirePercentage,
-          [Validators.nullValidator, Validators.min(1)],
+          [Validators.nullValidator],
         ],
         extraHire: [a.extraHire, [Validators.nullValidator]],
         level: [a.level],
@@ -912,7 +912,7 @@ export class BulkEstimateFormComponent implements OnInit {
         qty: [b.qty, [Validators.required, Validators.min(1)]],
         extraHirePercentage: [
           b.extraHirePercentage,
-          [Validators.nullValidator, Validators.min(1)],
+          [Validators.nullValidator],
         ],
         extraHire: [b.extraHire, [Validators.nullValidator]],
         total: [b.total],
@@ -938,7 +938,7 @@ export class BulkEstimateFormComponent implements OnInit {
         qty: [t.qty, Validators.required],
         extraHirePercentage: [
           t.extraHirePercentage,
-          [Validators.nullValidator, Validators.min(1)],
+          [Validators.nullValidator],
         ],
         extraHire: [t.extraHire, [Validators.nullValidator]],
         total: [t.total],
@@ -956,7 +956,7 @@ export class BulkEstimateFormComponent implements OnInit {
         ],
         extraHirePercentage: [
           add.extraHirePercentage,
-          [Validators.nullValidator, Validators.min(1)],
+          [Validators.nullValidator],
         ],
         extraHire: [add.extraHire, [Validators.nullValidator]],
         total: [add.total],
