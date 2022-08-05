@@ -6,6 +6,7 @@ import { ModalController, Platform } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { CalculationService } from './calculation.service';
 import { EditService } from './edit.service';
 import { ImgService } from './img.service';
 import { NotificationService } from './notification.service';
@@ -17,6 +18,7 @@ import { PdfService } from './pdf.service';
 export class MasterService {
   constructor(
     private authSvc: AuthService,
+    private calcSvc: CalculationService,
     private editSvc: EditService,
     private notificationSvc: NotificationService,
     private routing: Router,
@@ -29,6 +31,10 @@ export class MasterService {
   ) {}
   auth() {
     return this.authSvc;
+  }
+
+  calc() {
+    return this.calcSvc;
   }
 
   edit() {

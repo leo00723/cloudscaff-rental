@@ -14,7 +14,6 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstimateSummaryComponent {
-  @Input() enquiryId: string = '';
   @Input() estimate: Estimate;
   @Input() canDownload = false;
   terms$: Observable<Term>;

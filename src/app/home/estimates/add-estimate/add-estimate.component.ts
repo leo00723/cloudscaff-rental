@@ -22,7 +22,7 @@ export class AddEstimatePage implements OnInit {
   @Input() set value(val: Estimate) {
     if (val) {
       Object.assign(this.estimate, val);
-      this.initEditForm();
+      this.form.patchValue({ ...this.estimate });
     }
   }
   @Input() isEdit = false;
@@ -77,10 +77,11 @@ export class AddEstimatePage implements OnInit {
   isLoading = true;
   active = 'overview';
   show = '';
-
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.initFrom();
+    this.isLoading = false;
   }
   ngOnInit() {
     this.customers$ = this.masterSvc
@@ -96,12 +97,7 @@ export class AddEstimatePage implements OnInit {
       .edit()
       .getCollection(`company/${this.company.id}/transport`);
 
-    if (this.isEdit) {
-      this.show = 'editCustomer';
-    } else {
-      this.initFrom();
-      this.isLoading = false;
-    }
+    this.isEdit ? (this.show = 'editCustomer') : (this.show = 'addCustomer');
   }
 
   ionViewDidEnter() {
@@ -198,13 +194,13 @@ export class AddEstimatePage implements OnInit {
   deleteAttachment(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.attachmentsForms.removeAt(i);
-      this.calcHireRate();
+      this.update('hire');
     });
   }
   deleteBoard(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.boardForms.removeAt(i);
-      this.calcHireRate();
+      this.update('hire');
     });
   }
   deleteAdditional(i: number) {
@@ -287,38 +283,55 @@ export class AddEstimatePage implements OnInit {
     switch (type) {
       case 'scaffold':
         {
-          this.calcScaffoldRate();
+          this.masterSvc.calc().calcScaffoldRate(this.field('scaffold'));
         }
         break;
       case 'attachments':
         {
-          this.calcAttachmentRate(i);
+          this.masterSvc
+            .calc()
+            .calcAttachmentRate(
+              this.attachmentsForms.controls[i] as FormControl
+            );
         }
         break;
       case 'boards':
         {
-          this.calcBoardRate(i);
-        }
-        break;
-      case 'hire':
-        {
+          this.masterSvc
+            .calc()
+            .calcBoardRate(this.boardForms.controls[i] as FormControl);
         }
         break;
       case 'additionals':
         {
-          this.calcAdditionalRate(i);
+          this.masterSvc
+            .calc()
+            .calcAdditionalRate(
+              this.additionalForms.controls[i] as FormControl
+            );
         }
         break;
       case 'labour':
         {
-          this.calcLabourRate(i);
+          this.masterSvc
+            .calc()
+            .calcLabourRate(this.labourForms.controls[i] as FormControl);
         }
         break;
       case 'transport': {
-        this.calcTransportRate(i);
+        this.masterSvc
+          .calc()
+          .calcTransportRate(this.transportForms.controls[i] as FormControl);
       }
     }
-    this.calcHireRate();
+    this.masterSvc
+      .calc()
+      .calcHireRate(
+        this.field('hire'),
+        +this.field('scaffold.total').value,
+        this.arr('attachments'),
+        this.arr('boards')
+      );
   }
 
   //Calculate total for a category base on rates
@@ -336,7 +349,7 @@ export class AddEstimatePage implements OnInit {
               hireRate: +args,
             });
           }
-          this.calcScaffoldRate();
+          this.update('scaffold');
         }
         break;
       case 'attachments':
@@ -351,7 +364,7 @@ export class AddEstimatePage implements OnInit {
               hireRate: +args,
             });
           }
-          this.calcAttachmentRate(i);
+          this.update('attachments', i);
         }
         break;
       case 'boards':
@@ -362,7 +375,7 @@ export class AddEstimatePage implements OnInit {
               rate: +args,
             });
           }
-          this.calcBoardRate(i);
+          this.update('boards', i);
         }
         break;
       case 'hire':
@@ -381,7 +394,7 @@ export class AddEstimatePage implements OnInit {
               rate: +args,
             });
           }
-          this.calcAdditionalRate(i);
+          this.update('additionals', i);
         }
         break;
       case 'labour':
@@ -390,7 +403,7 @@ export class AddEstimatePage implements OnInit {
             ...this.arrField('labour', i, 'rate').value,
             rate: +args,
           });
-          this.calcLabourRate(i);
+          this.update('labour', i);
         }
         break;
       case 'transport': {
@@ -400,10 +413,10 @@ export class AddEstimatePage implements OnInit {
             rate: +args,
           });
         }
-        this.calcTransportRate(i);
+        this.update('transport', i);
       }
     }
-    this.calcHireRate();
+    this.update('hire');
   }
 
   //create the estimate
@@ -591,662 +604,179 @@ export class AddEstimatePage implements OnInit {
     });
   }
 
-  // START: functions to update each rate category
-  private calcScaffoldRate() {
-    switch (this.field('scaffold.rate').value.code) {
-      case 1:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 2:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.width').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 3:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.height').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 4:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.width').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 5:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.height').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 6:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.height').value *
-              this.field('scaffold.width').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 7:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.width').value *
-              this.field('scaffold.height').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 8:
-        {
-          this.field('scaffold.total').setValue(
-            ((this.field('scaffold.length').value *
-              this.field('scaffold.height').value) /
-              10) *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 9:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.lifts').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 0: {
-        this.field('scaffold.total').setValue(
-          this.field('scaffold.rate').value.rate
-        );
-      }
-    }
-    this.field('scaffold.total').setValue(
-      +this.field('scaffold.total').value.toFixed(2)
-    );
-    this.calcHireRate2(this.field('scaffold'));
-    if (+this.field('scaffold.extraHirePercentage').value > 0) {
-      this.field('scaffold.extraHire').setValue(
-        +this.field('scaffold.total').value *
-          (+this.field('scaffold.extraHirePercentage').value / 100)
-      );
-    }
-  }
-
-  private calcBoardRate(i: string | number) {
-    const ref = this.boardForms.controls[i] as FormControl;
-    switch (ref.get('rate').value.code) {
-      case 1:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 2:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('width').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 3:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('height').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 4:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 0: {
-        ref
-          .get('total')
-          .setValue(ref.get('qty').value * ref.get('rate').value.rate);
-      }
-    }
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    if (+ref.get('extraHirePercentage').value > 0) {
-      ref
-        .get('extraHire')
-        .setValue(
-          +ref.get('total').value *
-            (+ref.get('extraHirePercentage').value / 100)
-        );
-    }
-  }
-
-  private calcAttachmentRate(i: string | number) {
-    const ref = this.attachmentsForms.controls[i] as FormControl;
-    switch (ref.get('rate').value.code) {
-      case 1:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('length').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 2:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('width').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 3:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('height').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 4:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 5:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('height').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 6:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('height').value *
-                ref.get('width').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 7:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('height').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 8:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ((ref.get('length').value * ref.get('height').value) / 10) *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 9:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('lifts').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 0: {
-        ref.get('total').setValue(ref.get('rate').value.rate);
-      }
-    }
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    this.calcHireRate2(ref);
-
-    if (+ref.get('extraHirePercentage').value > 0) {
-      ref
-        .get('extraHire')
-        .setValue(
-          +ref.get('total').value *
-            (+ref.get('extraHirePercentage').value / 100)
-        );
-    }
-  }
-
-  private calcHireRate2(field: FormControl) {
-    switch (field.get('hireRate').value.code) {
-      case 1:
-        {
-          const period = field.get('isWeeks').value
-            ? field.get('daysStanding').value * 7
-            : field.get('daysStanding').value;
-          field
-            .get('hireTotal')
-            .setValue(period * field.get('hireRate').value.rate);
-        }
-        break;
-      case 2:
-        {
-          field
-            .get('hireTotal')
-            .setValue(
-              field.get('total').value *
-                (field.get('hireRate').value.rate / 100)
-            );
-        }
-        break;
-      case 3:
-        {
-          const period = field.get('isWeeks').value
-            ? field.get('daysStanding').value * 7
-            : field.get('daysStanding').value;
-          field
-            .get('hireTotal')
-            .setValue(
-              field.get('total').value *
-                period *
-                (field.get('hireRate').value.rate / 100)
-            );
-        }
-        break;
-      case 4:
-        {
-          const period = field.get('isWeeks').value
-            ? field.get('daysStanding').value
-            : field.get('daysStanding').value / 7;
-          field
-            .get('hireTotal')
-            .setValue(
-              field.get('total').value *
-                period *
-                (field.get('hireRate').value.rate / 100)
-            );
-        }
-        break;
-      case 5:
-        {
-          const period = field.get('isWeeks').value
-            ? field.get('daysStanding').value
-            : field.get('daysStanding').value / 7;
-          field
-            .get('hireTotal')
-            .setValue(period * field.get('hireRate').value.rate);
-        }
-        break;
-      case 0: {
-        field.get('hireTotal').setValue(field.get('hireRate').value.rate);
-      }
-    }
-    field.get('hireTotal').setValue(+field.get('hireTotal').value.toFixed(2));
-  }
-
-  private calcHireRate() {
-    let attachments = 0;
-    this.arr('attachments').controls.forEach((c) => {
-      attachments += +c.get('total').value;
-    });
-    let boards = 0;
-    this.arr('boards').controls.forEach((c) => {
-      boards += +c.get('total').value;
-    });
-
-    switch (this.field('hire.rate').value.code) {
-      case 1:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value * 7
-            : this.field('hire.daysStanding').value;
-          this.field('hire.total').setValue(
-            period * this.field('hire.rate').value.rate
-          );
-        }
-        break;
-      case 2:
-        {
-          this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
-              (this.field('hire.rate').value.rate / 100)
-          );
-        }
-        break;
-      case 3:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value * 7
-            : this.field('hire.daysStanding').value;
-          this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
-              period *
-              (this.field('hire.rate').value.rate / 100)
-          );
-        }
-        break;
-      case 4:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value
-            : this.field('hire.daysStanding').value / 7;
-          this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
-              period *
-              (this.field('hire.rate').value.rate / 100)
-          );
-        }
-        break;
-      case 5:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value
-            : this.field('hire.daysStanding').value / 7;
-          this.field('hire.total').setValue(
-            period * this.field('hire.rate').value.rate
-          );
-        }
-        break;
-      case 0: {
-        this.field('hire.total').setValue(this.field('hire.rate').value.rate);
-      }
-    }
-    this.field('hire.total').setValue(
-      +this.field('hire.total').value.toFixed(2)
-    );
-  }
-
-  private calcAdditionalRate(i: string | number) {
-    const ref = this.additionalForms.controls[i] as FormControl;
-
-    switch (ref.get('rate').value.code) {
-      case 1:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('daysStanding').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 0: {
-        ref
-          .get('total')
-          .setValue(ref.get('qty').value * ref.get('rate').value.rate);
-      }
-    }
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    if (+ref.get('extraHirePercentage').value > 0) {
-      ref
-        .get('extraHire')
-        .setValue(
-          +ref.get('total').value *
-            (+ref.get('extraHirePercentage').value / 100)
-        );
-    }
-  }
-  private calcLabourRate(i: string | number) {
-    const ref = this.labourForms.controls[i] as FormControl;
-
-    ref
-      .get('total')
-      .setValue(
-        +(
-          ref.get('days').value *
-          ref.get('hours').value *
-          ref.get('qty').value *
-          ref.get('rate').value.rate
-        ).toFixed(2)
-      );
-  }
-  private calcTransportRate(i: string | number) {
-    const ref = this.transportForms.controls[i] as FormControl;
-
-    ref
-      .get('total')
-      .setValue(
-        +(
-          ref.get('days').value *
-          ref.get('hours').value *
-          ref.get('qty').value *
-          ref.get('type').value.rate
-        ).toFixed(2)
-      );
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    if (+ref.get('extraHirePercentage').value > 0) {
-      ref
-        .get('extraHire')
-        .setValue(
-          +ref.get('total').value *
-            (+ref.get('extraHirePercentage').value / 100)
-        );
-    }
-  }
-  // END: Calculations
-
   // START: Functions to initialise the form
   private initEditForm() {
-    this.form = this.masterSvc.fb().group({
-      customer: [this.estimate.customer, Validators.required],
-      message: [this.estimate.message],
-      siteName: [this.estimate.siteName, Validators.required],
-      startDate: [this.estimate.startDate, Validators.nullValidator],
-      endDate: [this.estimate.endDate, Validators.nullValidator],
-      discountPercentage: [
-        this.estimate.discountPercentage,
-        [Validators.required, Validators.min(0), Validators.max(100)],
-      ],
-      scaffold: this.masterSvc.fb().group({
-        description: [
-          this.estimate.scaffold.description,
-          Validators.nullValidator,
-        ],
-        rate: [this.estimate.scaffold.rate, Validators.required],
-        length: [
-          this.estimate.scaffold.length,
-          [Validators.required, Validators.min(1)],
-        ],
-        width: [
-          this.estimate.scaffold.width,
-          [Validators.required, Validators.min(1)],
-        ],
-        height: [
-          this.estimate.scaffold.height,
-          [Validators.required, Validators.min(1)],
-        ],
-        lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
-        boardedLifts: [
-          this.estimate.scaffold.boardedLifts,
-          [Validators.nullValidator],
-        ],
-        extraHirePercentage: [
-          this.estimate.scaffold.extraHirePercentage,
-          [Validators.nullValidator],
-        ],
-        extraHire: [
-          this.estimate.scaffold.extraHire,
-          [Validators.nullValidator],
-        ],
-        level: [0],
-        total: [this.estimate.scaffold.total],
-        hireRate: [
-          this.estimate.scaffold.hireRate
-            ? this.estimate.scaffold.hireRate
-            : '',
-        ],
-        daysStanding: [
-          this.estimate.scaffold.daysStanding
-            ? this.estimate.scaffold.daysStanding
-            : '',
-        ],
-        hireTotal: [
-          this.estimate.scaffold.hireTotal
-            ? this.estimate.scaffold.hireTotal
-            : 0,
-        ],
-        isWeeks: [
-          this.estimate.scaffold.isWeeks ? this.estimate.scaffold.isWeeks : '',
-          Validators.nullValidator,
-        ],
-      }),
-      boards: this.masterSvc.fb().array([]),
-      hire: this.masterSvc.fb().group({
-        rate: [this.estimate.hire.rate],
-        daysStanding: [this.estimate.hire.daysStanding],
-        total: [this.estimate.hire.total],
-        isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
-      }),
-      additionals: this.masterSvc.fb().array([]),
-      attachments: this.masterSvc.fb().array([]),
-      broker: [this.estimate.broker],
-      transportProfile: [
-        this.estimate.transportProfile ? this.estimate.transportProfile : '',
-        Validators.nullValidator,
-      ],
-      labour: this.masterSvc.fb().array([]),
-      transport: this.masterSvc.fb().array([]),
-      poNumber: [this.estimate.poNumber],
-      woNumber: [this.estimate.woNumber],
-      code: [this.estimate.code],
-    });
-    this.estimate.attachments.forEach((a) => {
-      const attachment = this.masterSvc.fb().group({
-        description: [a.description, Validators.nullValidator],
-        rate: [a.rate, Validators.required],
-        length: [a.length, [Validators.required, Validators.min(1)]],
-        width: [a.width, [Validators.required, Validators.min(1)]],
-        height: [a.height, [Validators.required, Validators.min(1)]],
-        lifts: [a.lifts, [Validators.nullValidator]],
-        boardedLifts: [a.boardedLifts, [Validators.nullValidator]],
-        extraHirePercentage: [
-          a.extraHirePercentage,
-          [Validators.nullValidator],
-        ],
-        extraHire: [a.extraHire, [Validators.nullValidator]],
-        level: [a.level],
-        total: [a.total],
-        hireRate: [a.hireRate ? a.hireRate : ''],
-        daysStanding: [
-          a.daysStanding ? a.daysStanding : '',
-          [Validators.min(1)],
-        ],
-        hireTotal: [a.hireTotal ? a.hireTotal : 0],
-        isWeeks: [a.isWeeks ? a.isWeeks : '', Validators.nullValidator],
-      });
-      this.attachmentsForms.push(attachment);
-    });
-    this.estimate.boards.forEach((b) => {
-      const board = this.masterSvc.fb().group({
-        rate: [b.rate],
-        length: [b.length, [Validators.required, Validators.min(1)]],
-        width: [b.width, [Validators.required, Validators.min(1)]],
-        height: [b.height, [Validators.required, Validators.min(1)]],
-        qty: [b.qty, [Validators.required, Validators.min(1)]],
-        extraHirePercentage: [
-          b.extraHirePercentage,
-          [Validators.nullValidator],
-        ],
-        extraHire: [b.extraHire, [Validators.nullValidator]],
-        total: [b.total],
-      });
-      this.boardForms.push(board);
-    });
-    this.estimate.labour.forEach((l) => {
-      const labour = this.masterSvc.fb().group({
-        type: [l.type, Validators.required],
-        hours: [l.hours, Validators.required],
-        days: [l.days, Validators.required],
-        rate: [l.rate],
-        qty: [l.qty, Validators.required],
-        total: [l.total],
-      });
-      this.labourForms.push(labour);
-    });
-    this.estimate.transport.forEach((t) => {
-      const transport = this.masterSvc.fb().group({
-        type: [t.type, Validators.required],
-        hours: [t.hours, Validators.required],
-        days: [t.days, Validators.required],
-        qty: [t.qty, Validators.required],
-        extraHirePercentage: [
-          t.extraHirePercentage,
-          [Validators.nullValidator],
-        ],
-        extraHire: [t.extraHire, [Validators.nullValidator]],
-        total: [t.total],
-      });
-      this.transportForms.push(transport);
-    });
-    this.estimate.additionals.forEach((add) => {
-      const additional = this.masterSvc.fb().group({
-        rate: [add.rate, Validators.required],
-        qty: [add.qty, [Validators.required, Validators.min(1)]],
-        name: [add.name, Validators.required],
-        daysStanding: [
-          add.daysStanding,
-          [Validators.required, Validators.min(1)],
-        ],
-        extraHirePercentage: [
-          add.extraHirePercentage,
-          [Validators.nullValidator],
-        ],
-        extraHire: [add.extraHire, [Validators.nullValidator]],
-        total: [add.total],
-      });
-      this.additionalForms.push(additional);
-    });
-    this.isLoading = false;
+    this.form.patchValue({ ...this.estimate });
+    // this.form = this.masterSvc.fb().group({
+    //   customer: [this.estimate.customer, Validators.required],
+    //   message: [this.estimate.message],
+    //   siteName: [this.estimate.siteName, Validators.required],
+    //   startDate: [this.estimate.startDate, Validators.nullValidator],
+    //   endDate: [this.estimate.endDate, Validators.nullValidator],
+    //   discountPercentage: [
+    //     this.estimate.discountPercentage,
+    //     [Validators.required, Validators.min(0), Validators.max(100)],
+    //   ],
+    //   scaffold: this.masterSvc.fb().group({
+    //     description: [
+    //       this.estimate.scaffold.description,
+    //       Validators.nullValidator,
+    //     ],
+    //     rate: [this.estimate.scaffold.rate, Validators.required],
+    //     length: [
+    //       this.estimate.scaffold.length,
+    //       [Validators.required, Validators.min(1)],
+    //     ],
+    //     width: [
+    //       this.estimate.scaffold.width,
+    //       [Validators.required, Validators.min(1)],
+    //     ],
+    //     height: [
+    //       this.estimate.scaffold.height,
+    //       [Validators.required, Validators.min(1)],
+    //     ],
+    //     lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
+    //     boardedLifts: [
+    //       this.estimate.scaffold.boardedLifts,
+    //       [Validators.nullValidator],
+    //     ],
+    //     extraHirePercentage: [
+    //       this.estimate.scaffold.extraHirePercentage,
+    //       [Validators.nullValidator],
+    //     ],
+    //     extraHire: [
+    //       this.estimate.scaffold.extraHire,
+    //       [Validators.nullValidator],
+    //     ],
+    //     level: [0],
+    //     total: [this.estimate.scaffold.total],
+    //     hireRate: [
+    //       this.estimate.scaffold.hireRate
+    //         ? this.estimate.scaffold.hireRate
+    //         : '',
+    //     ],
+    //     daysStanding: [
+    //       this.estimate.scaffold.daysStanding
+    //         ? this.estimate.scaffold.daysStanding
+    //         : '',
+    //     ],
+    //     hireTotal: [
+    //       this.estimate.scaffold.hireTotal
+    //         ? this.estimate.scaffold.hireTotal
+    //         : 0,
+    //     ],
+    //     isWeeks: [
+    //       this.estimate.scaffold.isWeeks ? this.estimate.scaffold.isWeeks : '',
+    //       Validators.nullValidator,
+    //     ],
+    //   }),
+    //   boards: this.masterSvc.fb().array([]),
+    //   hire: this.masterSvc.fb().group({
+    //     rate: [this.estimate.hire.rate],
+    //     daysStanding: [this.estimate.hire.daysStanding],
+    //     total: [this.estimate.hire.total],
+    //     isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
+    //   }),
+    //   additionals: this.masterSvc.fb().array([]),
+    //   attachments: this.masterSvc.fb().array([]),
+    //   broker: [this.estimate.broker],
+    //   transportProfile: [
+    //     this.estimate.transportProfile ? this.estimate.transportProfile : '',
+    //     Validators.nullValidator,
+    //   ],
+    //   labour: this.masterSvc.fb().array([]),
+    //   transport: this.masterSvc.fb().array([]),
+    //   poNumber: [this.estimate.poNumber],
+    //   woNumber: [this.estimate.woNumber],
+    //   code: [this.estimate.code],
+    // });
+    // this.estimate.attachments.forEach((a) => {
+    //   const attachment = this.masterSvc.fb().group({
+    //     description: [a.description, Validators.nullValidator],
+    //     rate: [a.rate, Validators.required],
+    //     length: [a.length, [Validators.required, Validators.min(1)]],
+    //     width: [a.width, [Validators.required, Validators.min(1)]],
+    //     height: [a.height, [Validators.required, Validators.min(1)]],
+    //     lifts: [a.lifts, [Validators.nullValidator]],
+    //     boardedLifts: [a.boardedLifts, [Validators.nullValidator]],
+    //     extraHirePercentage: [
+    //       a.extraHirePercentage,
+    //       [Validators.nullValidator],
+    //     ],
+    //     extraHire: [a.extraHire, [Validators.nullValidator]],
+    //     level: [a.level],
+    //     total: [a.total],
+    //     hireRate: [a.hireRate ? a.hireRate : ''],
+    //     daysStanding: [
+    //       a.daysStanding ? a.daysStanding : '',
+    //       [Validators.min(1)],
+    //     ],
+    //     hireTotal: [a.hireTotal ? a.hireTotal : 0],
+    //     isWeeks: [a.isWeeks ? a.isWeeks : '', Validators.nullValidator],
+    //   });
+    //   this.attachmentsForms.push(attachment);
+    // });
+    // this.estimate.boards.forEach((b) => {
+    //   const board = this.masterSvc.fb().group({
+    //     rate: [b.rate],
+    //     length: [b.length, [Validators.required, Validators.min(1)]],
+    //     width: [b.width, [Validators.required, Validators.min(1)]],
+    //     height: [b.height, [Validators.required, Validators.min(1)]],
+    //     qty: [b.qty, [Validators.required, Validators.min(1)]],
+    //     extraHirePercentage: [
+    //       b.extraHirePercentage,
+    //       [Validators.nullValidator],
+    //     ],
+    //     extraHire: [b.extraHire, [Validators.nullValidator]],
+    //     total: [b.total],
+    //   });
+    //   this.boardForms.push(board);
+    // });
+    // this.estimate.labour.forEach((l) => {
+    //   const labour = this.masterSvc.fb().group({
+    //     type: [l.type, Validators.required],
+    //     hours: [l.hours, Validators.required],
+    //     days: [l.days, Validators.required],
+    //     rate: [l.rate],
+    //     qty: [l.qty, Validators.required],
+    //     total: [l.total],
+    //   });
+    //   this.labourForms.push(labour);
+    // });
+    // this.estimate.transport.forEach((t) => {
+    //   const transport = this.masterSvc.fb().group({
+    //     type: [t.type, Validators.required],
+    //     hours: [t.hours, Validators.required],
+    //     days: [t.days, Validators.required],
+    //     qty: [t.qty, Validators.required],
+    //     extraHirePercentage: [
+    //       t.extraHirePercentage,
+    //       [Validators.nullValidator],
+    //     ],
+    //     extraHire: [t.extraHire, [Validators.nullValidator]],
+    //     total: [t.total],
+    //   });
+    //   this.transportForms.push(transport);
+    // });
+    // this.estimate.additionals.forEach((add) => {
+    //   const additional = this.masterSvc.fb().group({
+    //     rate: [add.rate, Validators.required],
+    //     qty: [add.qty, [Validators.required, Validators.min(1)]],
+    //     name: [add.name, Validators.required],
+    //     daysStanding: [
+    //       add.daysStanding,
+    //       [Validators.required, Validators.min(1)],
+    //     ],
+    //     extraHirePercentage: [
+    //       add.extraHirePercentage,
+    //       [Validators.nullValidator],
+    //     ],
+    //     extraHire: [add.extraHire, [Validators.nullValidator]],
+    //     total: [add.total],
+    //   });
+    //   this.additionalForms.push(additional);
+    // });
+    // this.isLoading = false;
   }
 
   private initFrom() {

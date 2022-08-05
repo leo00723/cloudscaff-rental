@@ -165,8 +165,8 @@
               }}{{ company.measurement.symbol }})
               {{ item.lifts > 0 ? "(" + item.lifts + " lifts)" : "" }}
               {{
-                estimate.scaffold.boardedLifts > 0
-                  ? "(" + estimate.scaffold.boardedLifts + " Boarded lifts)"
+                item.boardedLifts > 0
+                  ? "(" + item.boardedLifts + " Boarded lifts)"
                   : ""
               }}
               - {{ item.description }}
