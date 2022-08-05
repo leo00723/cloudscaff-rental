@@ -183,10 +183,15 @@ export class AddEstimatePage implements OnInit {
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
       lifts: ['', [Validators.nullValidator]],
+      boardedLifts: ['', [Validators.nullValidator]],
       extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       level: [''],
       total: [0],
+      hireRate: [''],
+      daysStanding: [''],
+      hireTotal: [0],
+      isWeeks: ['', Validators.nullValidator],
     });
     this.attachmentsForms.push(attachment);
   }
@@ -269,7 +274,7 @@ export class AddEstimatePage implements OnInit {
 
   //event for switching between pages
   segmentChanged(ev: any) {
-    if (ev.detail.value === 'summary') {
+    if (ev.detail.value === 'summary' || ev.detail.value === 'budget') {
       this.updateEstimateTotal();
       this.active = ev.detail.value;
     } else {
@@ -325,6 +330,12 @@ export class AddEstimatePage implements OnInit {
             ...this.field('scaffold.rate').value,
             rate: +args,
           });
+          if (this.field('scaffold.hireRate').value) {
+            this.field('scaffold.hireRate').patchValue({
+              ...this.field('scaffold.hireRate').value,
+              hireRate: +args,
+            });
+          }
           this.calcScaffoldRate();
         }
         break;
@@ -334,6 +345,12 @@ export class AddEstimatePage implements OnInit {
             ...this.arrField('attachments', i, 'rate').value,
             rate: +args,
           });
+          if (this.arrField('attachments', i, 'hireRate').value) {
+            this.arrField('attachments', i, 'hireRate').patchValue({
+              ...this.arrField('attachments', i, 'hireRate').value,
+              hireRate: +args,
+            });
+          }
           this.calcAttachmentRate(i);
         }
         break;
@@ -498,12 +515,14 @@ export class AddEstimatePage implements OnInit {
     if (this.isEdit && this.estimate.status !== 'pending') {
       return;
     }
-    const scaffold = +this.field('scaffold.total').value;
+    const scaffold =
+      +this.field('scaffold.total').value +
+      +this.field('scaffold.hireTotal').value;
     const hire = +this.field('hire.total').value;
     let extraHire = +this.field('scaffold.extraHire').value;
     let attachments = 0;
     this.arr('attachments').controls.forEach((a) => {
-      attachments += +a.get('total').value;
+      attachments += +a.get('total').value + +a.get('hireTotal').value;
       extraHire += +a.get('extraHire').value;
     });
     let boards = 0;
@@ -664,10 +683,13 @@ export class AddEstimatePage implements OnInit {
     this.field('scaffold.total').setValue(
       +this.field('scaffold.total').value.toFixed(2)
     );
-    this.field('scaffold.extraHire').setValue(
-      +this.field('scaffold.total').value *
-        (+this.field('scaffold.extraHirePercentage').value / 100)
-    );
+    this.calcHireRate2(this.field('scaffold'));
+    if (+this.field('scaffold.extraHirePercentage').value > 0) {
+      this.field('scaffold.extraHire').setValue(
+        +this.field('scaffold.total').value *
+          (+this.field('scaffold.extraHirePercentage').value / 100)
+      );
+    }
   }
 
   private calcBoardRate(i: string | number) {
@@ -726,11 +748,14 @@ export class AddEstimatePage implements OnInit {
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
+    if (+ref.get('extraHirePercentage').value > 0) {
+      ref
+        .get('extraHire')
+        .setValue(
+          +ref.get('total').value *
+            (+ref.get('extraHirePercentage').value / 100)
+        );
+    }
   }
 
   private calcAttachmentRate(i: string | number) {
@@ -828,11 +853,83 @@ export class AddEstimatePage implements OnInit {
       }
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
+    this.calcHireRate2(ref);
+
+    if (+ref.get('extraHirePercentage').value > 0) {
+      ref
+        .get('extraHire')
+        .setValue(
+          +ref.get('total').value *
+            (+ref.get('extraHirePercentage').value / 100)
+        );
+    }
+  }
+
+  private calcHireRate2(field: FormControl) {
+    switch (field.get('hireRate').value.code) {
+      case 1:
+        {
+          const period = field.get('isWeeks').value
+            ? field.get('daysStanding').value * 7
+            : field.get('daysStanding').value;
+          field
+            .get('hireTotal')
+            .setValue(period * field.get('hireRate').value.rate);
+        }
+        break;
+      case 2:
+        {
+          field
+            .get('hireTotal')
+            .setValue(
+              field.get('total').value *
+                (field.get('hireRate').value.rate / 100)
+            );
+        }
+        break;
+      case 3:
+        {
+          const period = field.get('isWeeks').value
+            ? field.get('daysStanding').value * 7
+            : field.get('daysStanding').value;
+          field
+            .get('hireTotal')
+            .setValue(
+              field.get('total').value *
+                period *
+                (field.get('hireRate').value.rate / 100)
+            );
+        }
+        break;
+      case 4:
+        {
+          const period = field.get('isWeeks').value
+            ? field.get('daysStanding').value
+            : field.get('daysStanding').value / 7;
+          field
+            .get('hireTotal')
+            .setValue(
+              field.get('total').value *
+                period *
+                (field.get('hireRate').value.rate / 100)
+            );
+        }
+        break;
+      case 5:
+        {
+          const period = field.get('isWeeks').value
+            ? field.get('daysStanding').value
+            : field.get('daysStanding').value / 7;
+          field
+            .get('hireTotal')
+            .setValue(period * field.get('hireRate').value.rate);
+        }
+        break;
+      case 0: {
+        field.get('hireTotal').setValue(field.get('hireRate').value.rate);
+      }
+    }
+    field.get('hireTotal').setValue(+field.get('hireTotal').value.toFixed(2));
   }
 
   private calcHireRate() {
@@ -930,11 +1027,14 @@ export class AddEstimatePage implements OnInit {
     }
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
+    if (+ref.get('extraHirePercentage').value > 0) {
+      ref
+        .get('extraHire')
+        .setValue(
+          +ref.get('total').value *
+            (+ref.get('extraHirePercentage').value / 100)
+        );
+    }
   }
   private calcLabourRate(i: string | number) {
     const ref = this.labourForms.controls[i] as FormControl;
@@ -964,11 +1064,14 @@ export class AddEstimatePage implements OnInit {
         ).toFixed(2)
       );
     ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
+    if (+ref.get('extraHirePercentage').value > 0) {
+      ref
+        .get('extraHire')
+        .setValue(
+          +ref.get('total').value *
+            (+ref.get('extraHirePercentage').value / 100)
+        );
+    }
   }
   // END: Calculations
 
@@ -1003,6 +1106,10 @@ export class AddEstimatePage implements OnInit {
           [Validators.required, Validators.min(1)],
         ],
         lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
+        boardedLifts: [
+          this.estimate.scaffold.boardedLifts,
+          [Validators.nullValidator],
+        ],
         extraHirePercentage: [
           this.estimate.scaffold.extraHirePercentage,
           [Validators.nullValidator],
@@ -1013,11 +1120,30 @@ export class AddEstimatePage implements OnInit {
         ],
         level: [0],
         total: [this.estimate.scaffold.total],
+        hireRate: [
+          this.estimate.scaffold.hireRate
+            ? this.estimate.scaffold.hireRate
+            : '',
+        ],
+        daysStanding: [
+          this.estimate.scaffold.daysStanding
+            ? this.estimate.scaffold.daysStanding
+            : '',
+        ],
+        hireTotal: [
+          this.estimate.scaffold.hireTotal
+            ? this.estimate.scaffold.hireTotal
+            : 0,
+        ],
+        isWeeks: [
+          this.estimate.scaffold.isWeeks ? this.estimate.scaffold.isWeeks : '',
+          Validators.nullValidator,
+        ],
       }),
       boards: this.masterSvc.fb().array([]),
       hire: this.masterSvc.fb().group({
         rate: [this.estimate.hire.rate],
-        daysStanding: [this.estimate.hire.daysStanding, [Validators.min(1)]],
+        daysStanding: [this.estimate.hire.daysStanding],
         total: [this.estimate.hire.total],
         isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
       }),
@@ -1042,6 +1168,7 @@ export class AddEstimatePage implements OnInit {
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
         lifts: [a.lifts, [Validators.nullValidator]],
+        boardedLifts: [a.boardedLifts, [Validators.nullValidator]],
         extraHirePercentage: [
           a.extraHirePercentage,
           [Validators.nullValidator],
@@ -1049,6 +1176,13 @@ export class AddEstimatePage implements OnInit {
         extraHire: [a.extraHire, [Validators.nullValidator]],
         level: [a.level],
         total: [a.total],
+        hireRate: [a.hireRate ? a.hireRate : ''],
+        daysStanding: [
+          a.daysStanding ? a.daysStanding : '',
+          [Validators.min(1)],
+        ],
+        hireTotal: [a.hireTotal ? a.hireTotal : 0],
+        isWeeks: [a.isWeeks ? a.isWeeks : '', Validators.nullValidator],
       });
       this.attachmentsForms.push(attachment);
     });
@@ -1137,15 +1271,20 @@ export class AddEstimatePage implements OnInit {
         width: ['', [Validators.required, Validators.min(1)]],
         height: ['', [Validators.required, Validators.min(1)]],
         lifts: ['', [Validators.nullValidator]],
+        boardedLifts: ['', [Validators.nullValidator]],
         extraHirePercentage: ['', [Validators.nullValidator]],
         extraHire: ['', [Validators.nullValidator]],
         level: [0],
         total: [0],
+        hireRate: [''],
+        daysStanding: ['', [Validators.min(1)]],
+        hireTotal: [0],
+        isWeeks: ['', Validators.nullValidator],
       }),
       attachments: this.masterSvc.fb().array([]),
       hire: this.masterSvc.fb().group({
         rate: [''],
-        daysStanding: ['', [Validators.min(1)]],
+        daysStanding: [''],
         total: [0],
         isWeeks: ['', Validators.nullValidator],
       }),

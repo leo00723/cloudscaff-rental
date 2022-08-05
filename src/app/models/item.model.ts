@@ -11,6 +11,7 @@ export interface Item {
   safe?: string;
   level?: number;
   lifts?: number;
+  boardedLifts?: number;
   extraHirePercentage?: number;
   extraHire?: number;
   breakdown?: {
@@ -22,4 +23,8 @@ export interface Item {
     }[];
     erection: { length: number; width: number; height: number; type: string }[];
   };
+  hireRate: RateProfile | any;
+  daysStanding: number;
+  hireTotal: number;
+  isWeeks: boolean;
 }
