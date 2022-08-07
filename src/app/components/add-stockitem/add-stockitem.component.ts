@@ -5,6 +5,7 @@ import {
   Input,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { User } from 'src/app/models/user.model';
@@ -43,9 +44,13 @@ export class AddStockitemComponent implements OnInit {
   company: Company;
   user: User;
   loading = false;
+  categories$: Observable<any>;
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.categories$ = this.masterSvc
+      .edit()
+      .getDocById(`company/${this.company.id}/templates`, 'componentTypes');
   }
 
   ngOnInit(): void {
@@ -145,7 +150,15 @@ export class AddStockitemComponent implements OnInit {
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       code: [this.inventoryItem.code, Validators.required],
+      categoryType: [
+        this.inventoryItem.categoryType ? this.inventoryItem.categoryType : '',
+        Validators.required,
+      ],
       category: [this.inventoryItem.category, Validators.required],
+      size: [
+        this.inventoryItem.size ? this.inventoryItem.size : '',
+        Validators.required,
+      ],
       name: [this.inventoryItem.name, Validators.required],
       hireCost: [
         this.inventoryItem.hireCost,
@@ -208,7 +221,9 @@ export class AddStockitemComponent implements OnInit {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       code: ['', Validators.required],
+      categoryType: ['', Validators.required],
       category: ['', Validators.required],
+      size: ['', Validators.required],
       name: ['', Validators.required],
       hireCost: [0, [Validators.required, Validators.min(0)]],
       replacementCost: [0, [Validators.required, Validators.min(0)]],

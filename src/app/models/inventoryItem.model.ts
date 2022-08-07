@@ -7,7 +7,9 @@ export interface CrossHire {
 export interface InventoryItem {
   id?: string;
   code?: string;
+  categoryType?: string;
   category?: string;
+  size?: string;
   name?: string;
   hireCost?: number;
   replacementCost?: number;

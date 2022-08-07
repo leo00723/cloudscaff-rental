@@ -197,7 +197,7 @@ export class PdfService {
             company.measurement.symbol
           }) ${a.lifts > 0 ? '(' + a.lifts + ' Lifts)' : ''} ${
             a.boardedLifts > 0 ? '(' + a.boardedLifts + ' Boarded lifts)' : ''
-          } - ${a.description}`,
+          } - ${a.type} ${a.description}`,
           1,
           a.total
         )
@@ -295,7 +295,7 @@ export class PdfService {
               estimate.scaffold.boardedLifts > 0
                 ? '(' + estimate.scaffold.boardedLifts + ' Boarded lifts)'
                 : ''
-            } - ${estimate.scaffold.description}`,
+            } - ${estimate.scaffold.type} ${estimate.scaffold.description}`,
             1,
             estimate.scaffold.total
           ),

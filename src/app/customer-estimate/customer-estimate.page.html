@@ -158,7 +158,10 @@
                 estimate.estimate.scaffold.height }}{{
                 estimate.company.measurement.symbol }}) {{
                 estimate.estimate.scaffold.lifts > 0 ? "(" +
-                estimate.estimate.scaffold.lifts + " lifts)" : "" }} - {{
+                estimate.estimate.scaffold.lifts + " lifts)" : "" }} {{
+                estimate.estimate.scaffold.boardedLifts > 0 ? "(" +
+                estimate.estimate.scaffold.boardedLifts + " Boarded lifts)" : ""
+                }} - {{ estimate.estimate.scaffold.type }} {{
                 estimate.estimate.scaffold.description }}
               </td>
               <td class="text-center">1</td>
@@ -183,7 +186,9 @@
                 estimate.company.measurement.symbol }} x {{ item.width }}{{
                 estimate.company.measurement.symbol }} x {{ item.height }}{{
                 estimate.company.measurement.symbol }}) {{ item.lifts > 0 ? "("
-                + item.lifts + " lifts)" : "" }} - {{ item.description }}
+                + item.lifts + " lifts)" : "" }} {{ item.boardedLifts > 0 ? "("
+                + item.boardedLifts + " Boarded lifts)" : "" }} - {{ item.type
+                }} {{ item.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">

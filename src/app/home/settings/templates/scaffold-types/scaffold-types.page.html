@@ -1,0 +1,61 @@
+<app-header
+  title="Scaffold Types"
+  [showMenu]="false"
+  [showBack]="true"
+  path="/dashboard/settings/templates"
+></app-header>
+
+<ion-content fullscreen="true" class="ion-padding">
+  <ion-grid class="container">
+    <ion-row class="m-0 p-0">
+      <ng-container
+        *ngFor="let type of types;trackBy: trackItem; let i = index"
+      >
+        <ion-col sizeMd="11.5" size="11">
+          <app-input-text
+            title="Type {{i + 1}}"
+            margin="m-0"
+            [value]="type"
+            (fieldChange)="setItem(i,$event)"
+            placeholder="Enter type"
+          >
+          </app-input-text>
+        </ion-col>
+        <ion-col sizeMd="0.5" size="1" class="m-auto">
+          <ion-fab-button
+            size="small"
+            class="m-auto"
+            color="danger"
+            (click)="delete(i)"
+          >
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-col>
+      </ng-container>
+      <ion-col size="12" class="text-center">
+        <ion-button
+          size="small"
+          shape="round"
+          fill="outline"
+          color="success"
+          class="text-capitalize"
+          (click)="add()"
+          >Add Type</ion-button
+        >
+      </ion-col>
+      <ion-col class="text-end mt-3" size="12">
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+        <ion-button
+          shape="round"
+          color="success"
+          *ngIf="!loading"
+          (click)="update()"
+          >Update Template</ion-button
+        >
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

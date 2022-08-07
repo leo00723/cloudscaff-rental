@@ -22,7 +22,7 @@ export class AddEstimatePage implements OnInit {
   @Input() set value(val: Estimate) {
     if (val) {
       Object.assign(this.estimate, val);
-      this.form.patchValue({ ...this.estimate });
+      this.initEditForm();
     }
   }
   @Input() isEdit = false;
@@ -70,6 +70,7 @@ export class AddEstimatePage implements OnInit {
   company: Company;
   customers$: Observable<Customer[]>;
   rates$: Observable<any>;
+  types$: Observable<any>;
   brokers$: Observable<any>;
   transport$: Observable<Transport[]>;
   form: FormGroup;
@@ -80,8 +81,6 @@ export class AddEstimatePage implements OnInit {
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
-    this.initFrom();
-    this.isLoading = false;
   }
   ngOnInit() {
     this.customers$ = this.masterSvc
@@ -90,6 +89,9 @@ export class AddEstimatePage implements OnInit {
     this.rates$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.company.id}/rateProfiles`, 'estimateRates');
+    this.types$ = this.masterSvc
+      .edit()
+      .getDocById(`company/${this.company.id}/templates`, 'scaffoldTypes');
     this.brokers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/brokers`);
@@ -97,7 +99,12 @@ export class AddEstimatePage implements OnInit {
       .edit()
       .getCollection(`company/${this.company.id}/transport`);
 
-    this.isEdit ? (this.show = 'editCustomer') : (this.show = 'addCustomer');
+    if (this.isEdit) {
+      this.show = 'editCustomer';
+    } else {
+      this.initFrom();
+      this.isLoading = false;
+    }
   }
 
   ionViewDidEnter() {
@@ -603,180 +610,183 @@ export class AddEstimatePage implements OnInit {
       updatedBy: this.user.id,
     });
   }
-
   // START: Functions to initialise the form
   private initEditForm() {
-    this.form.patchValue({ ...this.estimate });
-    // this.form = this.masterSvc.fb().group({
-    //   customer: [this.estimate.customer, Validators.required],
-    //   message: [this.estimate.message],
-    //   siteName: [this.estimate.siteName, Validators.required],
-    //   startDate: [this.estimate.startDate, Validators.nullValidator],
-    //   endDate: [this.estimate.endDate, Validators.nullValidator],
-    //   discountPercentage: [
-    //     this.estimate.discountPercentage,
-    //     [Validators.required, Validators.min(0), Validators.max(100)],
-    //   ],
-    //   scaffold: this.masterSvc.fb().group({
-    //     description: [
-    //       this.estimate.scaffold.description,
-    //       Validators.nullValidator,
-    //     ],
-    //     rate: [this.estimate.scaffold.rate, Validators.required],
-    //     length: [
-    //       this.estimate.scaffold.length,
-    //       [Validators.required, Validators.min(1)],
-    //     ],
-    //     width: [
-    //       this.estimate.scaffold.width,
-    //       [Validators.required, Validators.min(1)],
-    //     ],
-    //     height: [
-    //       this.estimate.scaffold.height,
-    //       [Validators.required, Validators.min(1)],
-    //     ],
-    //     lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
-    //     boardedLifts: [
-    //       this.estimate.scaffold.boardedLifts,
-    //       [Validators.nullValidator],
-    //     ],
-    //     extraHirePercentage: [
-    //       this.estimate.scaffold.extraHirePercentage,
-    //       [Validators.nullValidator],
-    //     ],
-    //     extraHire: [
-    //       this.estimate.scaffold.extraHire,
-    //       [Validators.nullValidator],
-    //     ],
-    //     level: [0],
-    //     total: [this.estimate.scaffold.total],
-    //     hireRate: [
-    //       this.estimate.scaffold.hireRate
-    //         ? this.estimate.scaffold.hireRate
-    //         : '',
-    //     ],
-    //     daysStanding: [
-    //       this.estimate.scaffold.daysStanding
-    //         ? this.estimate.scaffold.daysStanding
-    //         : '',
-    //     ],
-    //     hireTotal: [
-    //       this.estimate.scaffold.hireTotal
-    //         ? this.estimate.scaffold.hireTotal
-    //         : 0,
-    //     ],
-    //     isWeeks: [
-    //       this.estimate.scaffold.isWeeks ? this.estimate.scaffold.isWeeks : '',
-    //       Validators.nullValidator,
-    //     ],
-    //   }),
-    //   boards: this.masterSvc.fb().array([]),
-    //   hire: this.masterSvc.fb().group({
-    //     rate: [this.estimate.hire.rate],
-    //     daysStanding: [this.estimate.hire.daysStanding],
-    //     total: [this.estimate.hire.total],
-    //     isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
-    //   }),
-    //   additionals: this.masterSvc.fb().array([]),
-    //   attachments: this.masterSvc.fb().array([]),
-    //   broker: [this.estimate.broker],
-    //   transportProfile: [
-    //     this.estimate.transportProfile ? this.estimate.transportProfile : '',
-    //     Validators.nullValidator,
-    //   ],
-    //   labour: this.masterSvc.fb().array([]),
-    //   transport: this.masterSvc.fb().array([]),
-    //   poNumber: [this.estimate.poNumber],
-    //   woNumber: [this.estimate.woNumber],
-    //   code: [this.estimate.code],
-    // });
-    // this.estimate.attachments.forEach((a) => {
-    //   const attachment = this.masterSvc.fb().group({
-    //     description: [a.description, Validators.nullValidator],
-    //     rate: [a.rate, Validators.required],
-    //     length: [a.length, [Validators.required, Validators.min(1)]],
-    //     width: [a.width, [Validators.required, Validators.min(1)]],
-    //     height: [a.height, [Validators.required, Validators.min(1)]],
-    //     lifts: [a.lifts, [Validators.nullValidator]],
-    //     boardedLifts: [a.boardedLifts, [Validators.nullValidator]],
-    //     extraHirePercentage: [
-    //       a.extraHirePercentage,
-    //       [Validators.nullValidator],
-    //     ],
-    //     extraHire: [a.extraHire, [Validators.nullValidator]],
-    //     level: [a.level],
-    //     total: [a.total],
-    //     hireRate: [a.hireRate ? a.hireRate : ''],
-    //     daysStanding: [
-    //       a.daysStanding ? a.daysStanding : '',
-    //       [Validators.min(1)],
-    //     ],
-    //     hireTotal: [a.hireTotal ? a.hireTotal : 0],
-    //     isWeeks: [a.isWeeks ? a.isWeeks : '', Validators.nullValidator],
-    //   });
-    //   this.attachmentsForms.push(attachment);
-    // });
-    // this.estimate.boards.forEach((b) => {
-    //   const board = this.masterSvc.fb().group({
-    //     rate: [b.rate],
-    //     length: [b.length, [Validators.required, Validators.min(1)]],
-    //     width: [b.width, [Validators.required, Validators.min(1)]],
-    //     height: [b.height, [Validators.required, Validators.min(1)]],
-    //     qty: [b.qty, [Validators.required, Validators.min(1)]],
-    //     extraHirePercentage: [
-    //       b.extraHirePercentage,
-    //       [Validators.nullValidator],
-    //     ],
-    //     extraHire: [b.extraHire, [Validators.nullValidator]],
-    //     total: [b.total],
-    //   });
-    //   this.boardForms.push(board);
-    // });
-    // this.estimate.labour.forEach((l) => {
-    //   const labour = this.masterSvc.fb().group({
-    //     type: [l.type, Validators.required],
-    //     hours: [l.hours, Validators.required],
-    //     days: [l.days, Validators.required],
-    //     rate: [l.rate],
-    //     qty: [l.qty, Validators.required],
-    //     total: [l.total],
-    //   });
-    //   this.labourForms.push(labour);
-    // });
-    // this.estimate.transport.forEach((t) => {
-    //   const transport = this.masterSvc.fb().group({
-    //     type: [t.type, Validators.required],
-    //     hours: [t.hours, Validators.required],
-    //     days: [t.days, Validators.required],
-    //     qty: [t.qty, Validators.required],
-    //     extraHirePercentage: [
-    //       t.extraHirePercentage,
-    //       [Validators.nullValidator],
-    //     ],
-    //     extraHire: [t.extraHire, [Validators.nullValidator]],
-    //     total: [t.total],
-    //   });
-    //   this.transportForms.push(transport);
-    // });
-    // this.estimate.additionals.forEach((add) => {
-    //   const additional = this.masterSvc.fb().group({
-    //     rate: [add.rate, Validators.required],
-    //     qty: [add.qty, [Validators.required, Validators.min(1)]],
-    //     name: [add.name, Validators.required],
-    //     daysStanding: [
-    //       add.daysStanding,
-    //       [Validators.required, Validators.min(1)],
-    //     ],
-    //     extraHirePercentage: [
-    //       add.extraHirePercentage,
-    //       [Validators.nullValidator],
-    //     ],
-    //     extraHire: [add.extraHire, [Validators.nullValidator]],
-    //     total: [add.total],
-    //   });
-    //   this.additionalForms.push(additional);
-    // });
-    // this.isLoading = false;
+    this.form = this.masterSvc.fb().group({
+      customer: [this.estimate.customer, Validators.required],
+      message: [this.estimate.message],
+      siteName: [this.estimate.siteName, Validators.required],
+      startDate: [this.estimate.startDate, Validators.nullValidator],
+      endDate: [this.estimate.endDate, Validators.nullValidator],
+      discountPercentage: [
+        this.estimate.discountPercentage,
+        [Validators.required, Validators.min(0), Validators.max(100)],
+      ],
+      scaffold: this.masterSvc.fb().group({
+        type: [
+          this.estimate.scaffold.type ? this.estimate.scaffold.type : '',
+          Validators.nullValidator,
+        ],
+        description: [
+          this.estimate.scaffold.description,
+          Validators.nullValidator,
+        ],
+        rate: [this.estimate.scaffold.rate, Validators.required],
+        length: [
+          this.estimate.scaffold.length,
+          [Validators.required, Validators.min(1)],
+        ],
+        width: [
+          this.estimate.scaffold.width,
+          [Validators.required, Validators.min(1)],
+        ],
+        height: [
+          this.estimate.scaffold.height,
+          [Validators.required, Validators.min(1)],
+        ],
+        lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
+        boardedLifts: [
+          this.estimate.scaffold.boardedLifts,
+          [Validators.nullValidator],
+        ],
+        extraHirePercentage: [
+          this.estimate.scaffold.extraHirePercentage,
+          [Validators.nullValidator],
+        ],
+        extraHire: [
+          this.estimate.scaffold.extraHire,
+          [Validators.nullValidator],
+        ],
+        level: [0],
+        total: [this.estimate.scaffold.total],
+        hireRate: [
+          this.estimate.scaffold.hireRate
+            ? this.estimate.scaffold.hireRate
+            : '',
+        ],
+        daysStanding: [
+          this.estimate.scaffold.daysStanding
+            ? this.estimate.scaffold.daysStanding
+            : '',
+        ],
+        hireTotal: [
+          this.estimate.scaffold.hireTotal
+            ? this.estimate.scaffold.hireTotal
+            : 0,
+        ],
+        isWeeks: [
+          this.estimate.scaffold.isWeeks ? this.estimate.scaffold.isWeeks : '',
+          Validators.nullValidator,
+        ],
+      }),
+      boards: this.masterSvc.fb().array([]),
+      hire: this.masterSvc.fb().group({
+        rate: [this.estimate.hire.rate],
+        daysStanding: [this.estimate.hire.daysStanding],
+        total: [this.estimate.hire.total],
+        isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
+      }),
+      additionals: this.masterSvc.fb().array([]),
+      attachments: this.masterSvc.fb().array([]),
+      broker: [this.estimate.broker],
+      transportProfile: [
+        this.estimate.transportProfile ? this.estimate.transportProfile : '',
+        Validators.nullValidator,
+      ],
+      labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
+      poNumber: [this.estimate.poNumber],
+      woNumber: [this.estimate.woNumber],
+      code: [this.estimate.code],
+    });
+    this.estimate.attachments.forEach((a) => {
+      const attachment = this.masterSvc.fb().group({
+        type: [a.type ? a.type : '', Validators.nullValidator],
+        description: [a.description, Validators.nullValidator],
+        rate: [a.rate, Validators.required],
+        length: [a.length, [Validators.required, Validators.min(1)]],
+        width: [a.width, [Validators.required, Validators.min(1)]],
+        height: [a.height, [Validators.required, Validators.min(1)]],
+        lifts: [a.lifts, [Validators.nullValidator]],
+        boardedLifts: [a.boardedLifts, [Validators.nullValidator]],
+        extraHirePercentage: [
+          a.extraHirePercentage,
+          [Validators.nullValidator],
+        ],
+        extraHire: [a.extraHire, [Validators.nullValidator]],
+        level: [a.level],
+        total: [a.total],
+        hireRate: [a.hireRate ? a.hireRate : ''],
+        daysStanding: [
+          a.daysStanding ? a.daysStanding : '',
+          [Validators.min(1)],
+        ],
+        hireTotal: [a.hireTotal ? a.hireTotal : 0],
+        isWeeks: [a.isWeeks ? a.isWeeks : '', Validators.nullValidator],
+      });
+      this.attachmentsForms.push(attachment);
+    });
+    this.estimate.boards.forEach((b) => {
+      const board = this.masterSvc.fb().group({
+        rate: [b.rate],
+        length: [b.length, [Validators.required, Validators.min(1)]],
+        width: [b.width, [Validators.required, Validators.min(1)]],
+        height: [b.height, [Validators.required, Validators.min(1)]],
+        qty: [b.qty, [Validators.required, Validators.min(1)]],
+        extraHirePercentage: [
+          b.extraHirePercentage,
+          [Validators.nullValidator],
+        ],
+        extraHire: [b.extraHire, [Validators.nullValidator]],
+        total: [b.total],
+      });
+      this.boardForms.push(board);
+    });
+    this.estimate.labour.forEach((l) => {
+      const labour = this.masterSvc.fb().group({
+        type: [l.type, Validators.required],
+        hours: [l.hours, Validators.required],
+        days: [l.days, Validators.required],
+        rate: [l.rate],
+        qty: [l.qty, Validators.required],
+        total: [l.total],
+      });
+      this.labourForms.push(labour);
+    });
+    this.estimate.transport.forEach((t) => {
+      const transport = this.masterSvc.fb().group({
+        type: [t.type, Validators.required],
+        hours: [t.hours, Validators.required],
+        days: [t.days, Validators.required],
+        qty: [t.qty, Validators.required],
+        extraHirePercentage: [
+          t.extraHirePercentage,
+          [Validators.nullValidator],
+        ],
+        extraHire: [t.extraHire, [Validators.nullValidator]],
+        total: [t.total],
+      });
+      this.transportForms.push(transport);
+    });
+    this.estimate.additionals.forEach((add) => {
+      const additional = this.masterSvc.fb().group({
+        rate: [add.rate, Validators.required],
+        qty: [add.qty, [Validators.required, Validators.min(1)]],
+        name: [add.name, Validators.required],
+        daysStanding: [
+          add.daysStanding,
+          [Validators.required, Validators.min(1)],
+        ],
+        extraHirePercentage: [
+          add.extraHirePercentage,
+          [Validators.nullValidator],
+        ],
+        extraHire: [add.extraHire, [Validators.nullValidator]],
+        total: [add.total],
+      });
+      this.additionalForms.push(additional);
+    });
+    this.isLoading = false;
   }
 
   private initFrom() {
@@ -796,6 +806,7 @@ export class AddEstimatePage implements OnInit {
       ],
       scaffold: this.masterSvc.fb().group({
         rate: ['', Validators.required],
+        type: ['', Validators.nullValidator],
         description: ['', Validators.nullValidator],
         length: ['', [Validators.required, Validators.min(1)]],
         width: ['', [Validators.required, Validators.min(1)]],
@@ -827,9 +838,6 @@ export class AddEstimatePage implements OnInit {
       labour: this.masterSvc.fb().array([]),
       transport: this.masterSvc.fb().array([]),
     });
-    // this.addBoard();
-    // this.addLabour();
-    // this.addAdditional();
   }
   public findInvalidControls() {
     const invalid = [];
@@ -841,5 +849,4 @@ export class AddEstimatePage implements OnInit {
     }
     return invalid;
   }
-  // END: Form Init
 }

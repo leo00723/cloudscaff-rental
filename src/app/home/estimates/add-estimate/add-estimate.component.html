@@ -174,7 +174,24 @@
 
           <ion-col size="12">
             <ion-row formGroupName="scaffold">
-              <ion-col size="6">
+              <ion-col size="4">
+                <app-input-select-reactive
+                  title="Scaffold Type"
+                  placeholder="Select Type"
+                  controlName="type"
+                  [form]="field('scaffold')"
+                  [selectedText]="field('scaffold.type').value"
+                >
+                  <ng-container *ngIf="types$ | async as types">
+                    <ion-select-option
+                      [value]="type"
+                      *ngFor="let type of types.types"
+                      >{{ type }}
+                    </ion-select-option>
+                  </ng-container>
+                </app-input-select-reactive>
+              </ion-col>
+              <ion-col size="4">
                 <app-input-reactive
                   title="Description"
                   controlName="description"
@@ -183,7 +200,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="3">
+              <ion-col size="2">
                 <app-input-reactive
                   title="Extra Hire %"
                   type="number"
@@ -194,7 +211,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="3">
+              <ion-col size="2">
                 <app-input-reactive
                   title="Extra Hire ({{ company.currency.symbol }})"
                   type="number"
@@ -418,7 +435,24 @@
                   <ion-label>Delete</ion-label>
                 </ion-chip>
               </ion-col>
-              <ion-col size="6">
+              <ion-col size="4">
+                <app-input-select-reactive
+                  title="Scaffold Type"
+                  placeholder="Select Type"
+                  controlName="type"
+                  [form]="attachment"
+                  [selectedText]="arrField('attachments', i, 'type').value"
+                >
+                  <ng-container *ngIf="types$ | async as types">
+                    <ion-select-option
+                      [value]="type"
+                      *ngFor="let type of types.types"
+                      >{{ type }}
+                    </ion-select-option>
+                  </ng-container>
+                </app-input-select-reactive>
+              </ion-col>
+              <ion-col size="4">
                 <app-input-reactive
                   title="Description"
                   controlName="description"
@@ -427,7 +461,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="3">
+              <ion-col size="2">
                 <app-input-reactive
                   title="Extra Hire %"
                   type="number"
@@ -438,7 +472,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="3">
+              <ion-col size="2">
                 <app-input-reactive
                   title="Extra Hire ({{ company.currency.symbol }})"
                   type="number"

@@ -22,6 +22,20 @@ const routes: Routes = [
         (m) => m.HandoverTemplatePageModule
       ),
   },
+  {
+    path: 'scaffold',
+    loadChildren: () =>
+      import('./scaffold-types/scaffold-types.module').then(
+        (m) => m.ScaffoldTypesPageModule
+      ),
+  },
+  {
+    path: 'component',
+    loadChildren: () =>
+      import('./component-types/component-types.module').then(
+        (m) => m.ComponentTypesPageModule
+      ),
+  },
 ];
 
 @NgModule({
