@@ -6,6 +6,18 @@
       </ion-button>
     </ion-buttons>
     <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        slot="end"
+        fill="solid"
+        shape="round"
+        class="text-capitalize"
+        (click)="isEdit ? updateEstimate('pending') : createEstimate()"
+        color="primary"
+      >
+        Save
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment
@@ -189,6 +201,7 @@
           >
             <app-bulk-estimate-form
               [estimate]="estimate"
+              [isEdit]="isEdit"
               *ngSwitchCase="i + 1"
             ></app-bulk-estimate-form>
           </ng-container>

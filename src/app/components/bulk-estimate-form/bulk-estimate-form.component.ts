@@ -66,11 +66,13 @@ export class BulkEstimateFormComponent implements OnInit {
   company: Company;
   user: User;
   rates$: Observable<any>;
+  types$: Observable<any>;
   brokers$: Observable<any>;
   transport$: Observable<Transport[]>;
   form: FormGroup;
   loading = false;
   isLoading = true;
+  updating = false;
 
   constructor(
     private masterSvc: MasterService,
@@ -83,6 +85,10 @@ export class BulkEstimateFormComponent implements OnInit {
     this.rates$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.company.id}/rateProfiles`, 'estimateRates');
+    this.types$ = this.masterSvc
+      .edit()
+      .getDocById(`company/${this.company.id}/templates`, 'scaffoldTypes');
+
     this.brokers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/brokers`);
@@ -141,7 +147,7 @@ export class BulkEstimateFormComponent implements OnInit {
       rate: ['', Validators.required],
       qty: ['', [Validators.required, Validators.min(1)]],
       name: ['', Validators.required],
-      daysStanding: ['', [Validators.required, Validators.min(1)]],
+      daysStanding: ['', [Validators.nullValidator]],
       extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       total: [0],
@@ -169,23 +175,28 @@ export class BulkEstimateFormComponent implements OnInit {
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
       lifts: ['', [Validators.nullValidator]],
+      boardedLifts: ['', [Validators.nullValidator]],
       extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       level: [''],
       total: [0],
+      hireRate: [''],
+      daysStanding: [''],
+      hireTotal: [0],
+      isWeeks: ['', Validators.nullValidator],
     });
     this.attachmentsForms.push(attachment);
   }
   deleteAttachment(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.attachmentsForms.removeAt(i);
-      this.calcHireRate();
+      this.update('hire');
     });
   }
   deleteBoard(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
       this.boardForms.removeAt(i);
-      this.calcHireRate();
+      this.update('hire');
     });
   }
   deleteAdditional(i: number) {
@@ -204,6 +215,8 @@ export class BulkEstimateFormComponent implements OnInit {
     });
   }
   // END: FORM CRUD
+
+  // START: Helper functions
 
   arr(field: string) {
     return this.form.get(field) as FormArray;
@@ -231,43 +244,62 @@ export class BulkEstimateFormComponent implements OnInit {
 
   //update the totals for a category
   update(type: string, i?: number) {
+    this.updating = true;
     switch (type) {
       case 'scaffold':
         {
-          this.calcScaffoldRate();
+          this.masterSvc.calc().calcScaffoldRate(this.field('scaffold'));
         }
         break;
       case 'attachments':
         {
-          this.calcAttachmentRate(i);
+          this.masterSvc
+            .calc()
+            .calcAttachmentRate(
+              this.attachmentsForms.controls[i] as FormControl
+            );
         }
         break;
       case 'boards':
         {
-          this.calcBoardRate(i);
-        }
-        break;
-      case 'hire':
-        {
+          this.masterSvc
+            .calc()
+            .calcBoardRate(this.boardForms.controls[i] as FormControl);
         }
         break;
       case 'additionals':
         {
-          this.calcAdditionalRate(i);
+          this.masterSvc
+            .calc()
+            .calcAdditionalRate(
+              this.additionalForms.controls[i] as FormControl
+            );
         }
         break;
       case 'labour':
         {
-          this.calcLabourRate(i);
+          this.masterSvc
+            .calc()
+            .calcLabourRate(this.labourForms.controls[i] as FormControl);
         }
         break;
       case 'transport': {
-        this.calcTransportRate(i);
+        this.masterSvc
+          .calc()
+          .calcTransportRate(this.transportForms.controls[i] as FormControl);
       }
     }
-    this.calcHireRate();
+    this.masterSvc
+      .calc()
+      .calcHireRate(
+        this.field('hire'),
+        +this.field('scaffold.total').value,
+        this.arr('attachments'),
+        this.arr('boards')
+      );
     if (this.canUpdate) {
       this.updateEstimateTotal();
+      this.updating = false;
     }
   }
 
@@ -280,7 +312,17 @@ export class BulkEstimateFormComponent implements OnInit {
             ...this.field('scaffold.rate').value,
             rate: +args,
           });
-          this.calcScaffoldRate();
+
+          this.update('scaffold');
+        }
+        break;
+      case 'scaffoldHire':
+        {
+          this.field('scaffold.hireRate').patchValue({
+            ...this.field('scaffold.hireRate').value,
+            rate: +args,
+          });
+          this.masterSvc.calc().calcHireRate2(this.field('scaffold'));
         }
         break;
       case 'attachments':
@@ -289,7 +331,20 @@ export class BulkEstimateFormComponent implements OnInit {
             ...this.arrField('attachments', i, 'rate').value,
             rate: +args,
           });
-          this.calcAttachmentRate(i);
+
+          this.update('attachments', i);
+        }
+        break;
+      case 'attachmentHire':
+        {
+          this.arrField('attachments', i, 'hireRate').patchValue({
+            ...this.arrField('attachments', i, 'hireRate').value,
+            rate: +args,
+          });
+
+          this.masterSvc
+            .calc()
+            .calcHireRate2(this.attachmentsForms.controls[i] as FormControl);
         }
         break;
       case 'boards':
@@ -300,7 +355,7 @@ export class BulkEstimateFormComponent implements OnInit {
               rate: +args,
             });
           }
-          this.calcBoardRate(i);
+          this.update('boards', i);
         }
         break;
       case 'hire':
@@ -319,7 +374,7 @@ export class BulkEstimateFormComponent implements OnInit {
               rate: +args,
             });
           }
-          this.calcAdditionalRate(i);
+          this.update('additionals', i);
         }
         break;
       case 'labour':
@@ -328,7 +383,7 @@ export class BulkEstimateFormComponent implements OnInit {
             ...this.arrField('labour', i, 'rate').value,
             rate: +args,
           });
-          this.calcLabourRate(i);
+          this.update('labour', i);
         }
         break;
       case 'transport': {
@@ -338,10 +393,10 @@ export class BulkEstimateFormComponent implements OnInit {
             rate: +args,
           });
         }
-        this.calcTransportRate(i);
+        this.update('transport', i);
       }
     }
-    this.calcHireRate();
+    this.update('hire');
   }
 
   //update the estimate total
@@ -349,12 +404,14 @@ export class BulkEstimateFormComponent implements OnInit {
     if (this.isEdit && this.estimate.status !== 'pending') {
       return;
     }
-    const scaffold = +this.field('scaffold.total').value;
+    const scaffold =
+      +this.field('scaffold.total').value +
+      +this.field('scaffold.hireTotal').value;
     const hire = +this.field('hire.total').value;
     let extraHire = +this.field('scaffold.extraHire').value;
     let attachments = 0;
     this.arr('attachments').controls.forEach((a) => {
-      attachments += +a.get('total').value;
+      attachments += +a.get('total').value + +a.get('hireTotal').value;
       extraHire += +a.get('extraHire').value;
     });
     let boards = 0;
@@ -422,407 +479,6 @@ export class BulkEstimateFormComponent implements OnInit {
       updatedBy: this.user.id,
     });
   }
-
-  // START: functions to update each rate category
-  private calcScaffoldRate() {
-    switch (this.field('scaffold.rate').value.code) {
-      case 1:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 2:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.width').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 3:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.height').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 4:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.width').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 5:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.height').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 6:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.height').value *
-              this.field('scaffold.width').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 7:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.width').value *
-              this.field('scaffold.height').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 8:
-        {
-          this.field('scaffold.total').setValue(
-            ((this.field('scaffold.length').value *
-              this.field('scaffold.height').value) /
-              10) *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 9:
-        {
-          this.field('scaffold.total').setValue(
-            this.field('scaffold.length').value *
-              this.field('scaffold.lifts').value *
-              this.field('scaffold.rate').value.rate
-          );
-        }
-        break;
-      case 0: {
-        this.field('scaffold.total').setValue(
-          this.field('scaffold.rate').value.rate
-        );
-      }
-    }
-    this.field('scaffold.total').setValue(
-      +this.field('scaffold.total').value.toFixed(2)
-    );
-    this.field('scaffold.extraHire').setValue(
-      +this.field('scaffold.total').value *
-        (+this.field('scaffold.extraHirePercentage').value / 100)
-    );
-  }
-
-  private calcBoardRate(i: string | number) {
-    const ref = this.boardForms.controls[i] as FormControl;
-    switch (ref.get('rate').value.code) {
-      case 1:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 2:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('width').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 3:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('height').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 4:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 0: {
-        ref
-          .get('total')
-          .setValue(ref.get('qty').value * ref.get('rate').value.rate);
-      }
-    }
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
-  }
-
-  private calcAttachmentRate(i: string | number) {
-    const ref = this.attachmentsForms.controls[i] as FormControl;
-    switch (ref.get('rate').value.code) {
-      case 1:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('length').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 2:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('width').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 3:
-        {
-          ref
-            .get('total')
-            .setValue(ref.get('height').value * ref.get('rate').value.rate);
-        }
-        break;
-      case 4:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 5:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('height').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 6:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('height').value *
-                ref.get('width').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 7:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('width').value *
-                ref.get('height').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 8:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ((ref.get('length').value * ref.get('height').value) / 10) *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 9:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('length').value *
-                ref.get('lifts').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 0: {
-        ref.get('total').setValue(ref.get('rate').value.rate);
-      }
-    }
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
-  }
-
-  private calcHireRate() {
-    let attachments = 0;
-    this.arr('attachments').controls.forEach((c) => {
-      attachments += +c.get('total').value;
-    });
-    let boards = 0;
-    this.arr('boards').controls.forEach((c) => {
-      boards += +c.get('total').value;
-    });
-
-    switch (this.field('hire.rate').value.code) {
-      case 1:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value * 7
-            : this.field('hire.daysStanding').value;
-          this.field('hire.total').setValue(
-            period * this.field('hire.rate').value.rate
-          );
-        }
-        break;
-      case 2:
-        {
-          this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
-              (this.field('hire.rate').value.rate / 100)
-          );
-        }
-        break;
-      case 3:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value * 7
-            : this.field('hire.daysStanding').value;
-          this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
-              period *
-              (this.field('hire.rate').value.rate / 100)
-          );
-        }
-        break;
-      case 4:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value
-            : this.field('hire.daysStanding').value / 7;
-          this.field('hire.total').setValue(
-            (this.field('scaffold.total').value + attachments + boards) *
-              period *
-              (this.field('hire.rate').value.rate / 100)
-          );
-        }
-        break;
-      case 5:
-        {
-          const period = this.field('hire.isWeeks').value
-            ? this.field('hire.daysStanding').value
-            : this.field('hire.daysStanding').value / 7;
-          this.field('hire.total').setValue(
-            period * this.field('hire.rate').value.rate
-          );
-        }
-        break;
-      case 0: {
-        this.field('hire.total').setValue(this.field('hire.rate').value.rate);
-      }
-    }
-    this.field('hire.total').setValue(
-      +this.field('hire.total').value.toFixed(2)
-    );
-  }
-
-  private calcAdditionalRate(i: string | number) {
-    const ref = this.additionalForms.controls[i] as FormControl;
-
-    switch (ref.get('rate').value.code) {
-      case 1:
-        {
-          ref
-            .get('total')
-            .setValue(
-              ref.get('daysStanding').value *
-                ref.get('qty').value *
-                ref.get('rate').value.rate
-            );
-        }
-        break;
-      case 0: {
-        ref
-          .get('total')
-          .setValue(ref.get('qty').value * ref.get('rate').value.rate);
-      }
-    }
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
-  }
-  private calcLabourRate(i: string | number) {
-    const ref = this.labourForms.controls[i] as FormControl;
-
-    ref
-      .get('total')
-      .setValue(
-        +(
-          ref.get('days').value *
-          ref.get('hours').value *
-          ref.get('qty').value *
-          ref.get('rate').value.rate
-        ).toFixed(2)
-      );
-  }
-  private calcTransportRate(i: string | number) {
-    const ref = this.transportForms.controls[i] as FormControl;
-
-    ref
-      .get('total')
-      .setValue(
-        +(
-          ref.get('days').value *
-          ref.get('hours').value *
-          ref.get('qty').value *
-          ref.get('type').value.rate
-        ).toFixed(2)
-      );
-    ref.get('total').setValue(+ref.get('total').value.toFixed(2));
-    ref
-      .get('extraHire')
-      .setValue(
-        +ref.get('total').value * (+ref.get('extraHirePercentage').value / 100)
-      );
-  }
-  // END: Calculations
-
   // START: Functions to initialise the form
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
@@ -836,6 +492,10 @@ export class BulkEstimateFormComponent implements OnInit {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       scaffold: this.masterSvc.fb().group({
+        type: [
+          this.estimate.scaffold.type ? this.estimate.scaffold.type : '',
+          Validators.nullValidator,
+        ],
         description: [
           this.estimate.scaffold.description,
           Validators.nullValidator,
@@ -854,6 +514,10 @@ export class BulkEstimateFormComponent implements OnInit {
           [Validators.required, Validators.min(1)],
         ],
         lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
+        boardedLifts: [
+          this.estimate.scaffold.boardedLifts,
+          [Validators.nullValidator],
+        ],
         extraHirePercentage: [
           this.estimate.scaffold.extraHirePercentage,
           [Validators.nullValidator],
@@ -864,11 +528,30 @@ export class BulkEstimateFormComponent implements OnInit {
         ],
         level: [0],
         total: [this.estimate.scaffold.total],
+        hireRate: [
+          this.estimate.scaffold.hireRate
+            ? this.estimate.scaffold.hireRate
+            : '',
+        ],
+        daysStanding: [
+          this.estimate.scaffold.daysStanding
+            ? this.estimate.scaffold.daysStanding
+            : '',
+        ],
+        hireTotal: [
+          this.estimate.scaffold.hireTotal
+            ? this.estimate.scaffold.hireTotal
+            : 0,
+        ],
+        isWeeks: [
+          this.estimate.scaffold.isWeeks ? this.estimate.scaffold.isWeeks : '',
+          Validators.nullValidator,
+        ],
       }),
       boards: this.masterSvc.fb().array([]),
       hire: this.masterSvc.fb().group({
         rate: [this.estimate.hire.rate],
-        daysStanding: [this.estimate.hire.daysStanding, [Validators.min(1)]],
+        daysStanding: [this.estimate.hire.daysStanding],
         total: [this.estimate.hire.total],
         isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
       }),
@@ -887,12 +570,14 @@ export class BulkEstimateFormComponent implements OnInit {
     });
     this.estimate.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({
+        type: [a.type ? a.type : '', Validators.nullValidator],
         description: [a.description, Validators.nullValidator],
         rate: [a.rate, Validators.required],
         length: [a.length, [Validators.required, Validators.min(1)]],
         width: [a.width, [Validators.required, Validators.min(1)]],
         height: [a.height, [Validators.required, Validators.min(1)]],
         lifts: [a.lifts, [Validators.nullValidator]],
+        boardedLifts: [a.boardedLifts, [Validators.nullValidator]],
         extraHirePercentage: [
           a.extraHirePercentage,
           [Validators.nullValidator],
@@ -900,6 +585,13 @@ export class BulkEstimateFormComponent implements OnInit {
         extraHire: [a.extraHire, [Validators.nullValidator]],
         level: [a.level],
         total: [a.total],
+        hireRate: [a.hireRate ? a.hireRate : ''],
+        daysStanding: [
+          a.daysStanding ? a.daysStanding : '',
+          [Validators.min(1)],
+        ],
+        hireTotal: [a.hireTotal ? a.hireTotal : 0],
+        isWeeks: [a.isWeeks ? a.isWeeks : '', Validators.nullValidator],
       });
       this.attachmentsForms.push(attachment);
     });
@@ -950,10 +642,7 @@ export class BulkEstimateFormComponent implements OnInit {
         rate: [add.rate, Validators.required],
         qty: [add.qty, [Validators.required, Validators.min(1)]],
         name: [add.name, Validators.required],
-        daysStanding: [
-          add.daysStanding,
-          [Validators.required, Validators.min(1)],
-        ],
+        daysStanding: [add.daysStanding, [Validators.nullValidator]],
         extraHirePercentage: [
           add.extraHirePercentage,
           [Validators.nullValidator],

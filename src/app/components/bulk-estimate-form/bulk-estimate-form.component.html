@@ -6,6 +6,21 @@
   <ion-row class="card-outline mb-3">
     <ion-col size="12">
       <ion-row formGroupName="scaffold">
+        <ion-col size="12">
+          <app-input-select-reactive
+            title="Scaffold Type"
+            placeholder="Select Type"
+            controlName="type"
+            [form]="field('scaffold')"
+            [selectedText]="field('scaffold.type').value"
+          >
+            <ng-container *ngIf="types$ | async as types">
+              <ion-select-option [value]="type" *ngFor="let type of types.types"
+                >{{ type }}
+              </ion-select-option>
+            </ng-container>
+          </app-input-select-reactive>
+        </ion-col>
         <ion-col size="6">
           <app-input-reactive
             title="Description"
@@ -32,7 +47,6 @@
             type="number"
             controlName="extraHire"
             [form]="field('scaffold')"
-            [readonly]="true"
             placeholder="Total Extra Hire"
           >
           </app-input-reactive>
@@ -78,6 +92,16 @@
             [form]="field('scaffold')"
             placeholder="No. Lifts"
             (fieldChange)="update('scaffold')"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Boarded Lifts"
+            type="number"
+            controlName="boardedLifts"
+            [form]="field('scaffold')"
+            placeholder="No. Boarded Lifts"
           >
           </app-input-reactive>
         </ion-col>
@@ -135,12 +159,95 @@
           </app-input-reactive>
         </ion-col>
       </ion-row>
+      <ion-row formGroupName="scaffold">
+        <ion-col size="12">
+          <ion-text class="small" color="medium"
+            >{{ company.terminology.hire }} Details</ion-text
+          >
+        </ion-col>
+        <ion-col>
+          <app-input-select-reactive
+            title="{{ company.terminology.hire }} Period"
+            placeholder="Select Hire Period"
+            controlName="isWeeks"
+            [form]="field('scaffold')"
+            [selectedText]="field('scaffold.isWeeks').value ? 'Weeks' : 'Days'"
+            (fieldChange)="update('scaffold')"
+          >
+            <ng-container>
+              <ion-select-option [value]="true">Weeks </ion-select-option>
+              <ion-select-option [value]="false">Days </ion-select-option>
+            </ng-container>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            [title]="
+              field('scaffold.isWeeks').value
+                ? 'Weeks Standing'
+                : 'Days Standing'
+            "
+            type="number"
+            controlName="daysStanding"
+            [form]="field('scaffold')"
+            [placeholder]="
+              field('scaffold.isWeeks').value ? 'Enter Weeks' : 'Enter Days'
+            "
+            (fieldChange)="update('scaffold')"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-select-reactive
+            title="Rate Profile"
+            placeholder="Select Rate"
+            controlName="hireRate"
+            [form]="field('scaffold')"
+            [selectedText]="field('scaffold.hireRate').value.name"
+            (fieldChange)="update('scaffold')"
+          >
+            <ng-container *ngIf="rates$ | async as rates">
+              <ion-select-option
+                [value]="rate"
+                *ngFor="let rate of rates.hireRates"
+                >{{ rate.name }}
+              </ion-select-option>
+            </ng-container>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col *ngIf="field('scaffold.hireRate').value">
+          <app-input-text
+            title="Rate override ({{
+              field('scaffold.hireRate').value.name.startsWith('%')
+                ? '%'
+                : company.currency.symbol
+            }})"
+            type="number"
+            [value]="field('scaffold.hireRate').value.rate"
+            placeholder="Enter rate"
+            (fieldChange)="updateRate('scaffoldHire', $event)"
+          >
+          </app-input-text>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Total ({{ company.currency.symbol }})"
+            type="number"
+            controlName="hireTotal"
+            [form]="field('scaffold')"
+            [readonly]="true"
+            placeholder="Hire Total"
+          >
+          </app-input-reactive>
+        </ion-col>
+      </ion-row>
       <ion-row
         formArrayName="attachments"
         class="mb-3"
         *ngFor="let attachment of attachmentsForms.controls; let i = index"
       >
         <ion-col size="12">
+          <hr />
           <ion-note> Attachment {{ i + 1 }} </ion-note>
           <ion-chip
             outline
@@ -150,6 +257,21 @@
           >
             <ion-label>Delete</ion-label>
           </ion-chip>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-select-reactive
+            title="Scaffold Type"
+            placeholder="Select Type"
+            controlName="type"
+            [form]="attachment"
+            [selectedText]="arrField('attachments', i, 'type').value"
+          >
+            <ng-container *ngIf="types$ | async as types">
+              <ion-select-option [value]="type" *ngFor="let type of types.types"
+                >{{ type }}
+              </ion-select-option>
+            </ng-container>
+          </app-input-select-reactive>
         </ion-col>
         <ion-col size="6">
           <app-input-reactive
@@ -178,7 +300,6 @@
             controlName="extraHire"
             placeholder="Total Extra Hire"
             [form]="attachment"
-            [readonly]="true"
           >
           </app-input-reactive>
         </ion-col>
@@ -223,6 +344,16 @@
             placeholder="No. of Lifts"
             [form]="attachment"
             (fieldChange)="update('attachments', i)"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Boarded Lifts"
+            type="number"
+            controlName="boardedLifts"
+            [form]="attachment"
+            placeholder="No. Boarded Lifts"
           >
           </app-input-reactive>
         </ion-col>
@@ -278,6 +409,98 @@
             placeholder="Total"
           >
           </app-input-reactive>
+        </ion-col>
+        <ion-col size="12" class="m-0 p-0">
+          <ion-row class="m-0 p-0">
+            <ion-col size="12">
+              <ion-text class="small" color="medium"
+                >{{ company.terminology.hire }} Details</ion-text
+              >
+            </ion-col>
+            <ion-col>
+              <app-input-select-reactive
+                title="{{ company.terminology.hire }} Period"
+                placeholder="Select Hire Period"
+                controlName="isWeeks"
+                [form]="attachment"
+                [selectedText]="
+                  arrField('attachments', i, 'isWeeks').value ? 'Weeks' : 'Days'
+                "
+                (fieldChange)="update('attachments', i)"
+              >
+                <ng-container>
+                  <ion-select-option [value]="true">Weeks </ion-select-option>
+                  <ion-select-option [value]="false">Days </ion-select-option>
+                </ng-container>
+              </app-input-select-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                [title]="
+                  arrField('attachments', i, 'isWeeks').value
+                    ? 'Weeks Standing'
+                    : 'Days Standing'
+                "
+                type="number"
+                controlName="daysStanding"
+                [form]="attachment"
+                [placeholder]="
+                  arrField('attachments', i, 'isWeeks').value
+                    ? 'Enter Weeks'
+                    : 'Enter Days'
+                "
+                (fieldChange)="update('attachments', i)"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-select-reactive
+                title="Rate Profile"
+                placeholder="Select Rate"
+                controlName="hireRate"
+                [form]="attachment"
+                [selectedText]="
+                  arrField('attachments', i, 'hireRate').value.name
+                "
+                (fieldChange)="update('attachments', i)"
+              >
+                <ng-container *ngIf="rates$ | async as rates">
+                  <ion-select-option
+                    [value]="rate"
+                    *ngFor="let rate of rates.hireRates"
+                    >{{ rate.name }}
+                  </ion-select-option>
+                </ng-container>
+              </app-input-select-reactive>
+            </ion-col>
+            <ion-col *ngIf="arrField('attachments', i, 'hireRate').value">
+              <app-input-text
+                title="Rate override ({{
+                  arrField('attachments', i, 'hireRate').value.name.startsWith(
+                    '%'
+                  )
+                    ? '%'
+                    : company.currency.symbol
+                }})"
+                type="number"
+                [value]="arrField('attachments', i, 'hireRate').value.rate"
+                placeholder="Enter rate"
+                (fieldChange)="updateRate('attachmentHire', $event, i)"
+              >
+              </app-input-text>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Total ({{ company.currency.symbol }})"
+                type="number"
+                controlName="hireTotal"
+                [form]="attachment"
+                [readonly]="true"
+                placeholder="Hire Total"
+              >
+              </app-input-reactive>
+            </ion-col>
+          </ion-row>
         </ion-col>
       </ion-row>
       <ion-row class="mb-3">
@@ -435,87 +658,88 @@
     </ion-col>
   </ion-row>
   <!-- HIRE -->
-  <app-title-block> {{ company.terminology.hire }} Details </app-title-block>
-  <ion-row class="card-outline mb-3">
-    <ion-col size="12">
-      <ion-row formGroupName="hire">
-        <ion-col>
-          <app-input-select-reactive
-            title="Period"
-            placeholder="Select Hire Period"
-            controlName="isWeeks"
-            [form]="field('hire')"
-            [selectedText]="field('hire.isWeeks').value ? 'Weeks' : 'Days'"
-            (fieldChange)="update('hire')"
-          >
-            <ng-container>
-              <ion-select-option [value]="true">Weeks </ion-select-option>
-              <ion-select-option [value]="false">Days </ion-select-option>
-            </ng-container>
-          </app-input-select-reactive>
-        </ion-col>
-        <ion-col>
-          <app-input-reactive
-            [title]="
-              field('hire.isWeeks').value ? 'Weeks Standing' : 'Days Standing'
-            "
-            type="number"
-            controlName="daysStanding"
-            [form]="field('hire')"
-            [placeholder]="
-              field('hire.isWeeks').value ? 'Enter Weeks' : 'Enter Days'
-            "
-            (fieldChange)="update('hire')"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col>
-          <app-input-select-reactive
-            title="Rate Profile"
-            placeholder="Select Rate"
-            controlName="rate"
-            [form]="field('hire')"
-            [selectedText]="field('hire.rate').value.name"
-            (fieldChange)="update('hire')"
-          >
-            <ng-container *ngIf="rates$ | async as rates">
-              <ion-select-option
-                [value]="rate"
-                *ngFor="let rate of rates.hireRates"
-                >{{ rate.name }}
-              </ion-select-option>
-            </ng-container>
-          </app-input-select-reactive>
-        </ion-col>
-        <ion-col *ngIf="field('hire.rate').value">
-          <app-input-text
-            title="Rate override ({{
-              field('hire.rate').value.name.startsWith('%')
-                ? '%'
-                : company.currency.symbol
-            }})"
-            type="number"
-            [value]="field('hire.rate').value.rate"
-            placeholder="Enter rate"
-            (fieldChange)="updateRate('hire', $event)"
-          >
-          </app-input-text>
-        </ion-col>
-        <ion-col>
-          <app-input-reactive
-            title="Total ({{ company.currency.symbol }})"
-            type="number"
-            controlName="total"
-            [form]="field('hire')"
-            [readonly]="true"
-            placeholder="Total"
-          >
-          </app-input-reactive>
-        </ion-col>
-      </ion-row>
-    </ion-col>
-  </ion-row>
-
+  <ng-container *ngIf="isEdit && +field('hire').value.total > 0">
+    <app-title-block> {{ company.terminology.hire }} Details </app-title-block>
+    <ion-row class="card-outline mb-3">
+      <ion-col size="12">
+        <ion-row formGroupName="hire">
+          <ion-col>
+            <app-input-select-reactive
+              title="Period"
+              placeholder="Select Hire Period"
+              controlName="isWeeks"
+              [form]="field('hire')"
+              [selectedText]="field('hire.isWeeks').value ? 'Weeks' : 'Days'"
+              (fieldChange)="update('hire')"
+            >
+              <ng-container>
+                <ion-select-option [value]="true">Weeks </ion-select-option>
+                <ion-select-option [value]="false">Days </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              [title]="
+                field('hire.isWeeks').value ? 'Weeks Standing' : 'Days Standing'
+              "
+              type="number"
+              controlName="daysStanding"
+              [form]="field('hire')"
+              [placeholder]="
+                field('hire.isWeeks').value ? 'Enter Weeks' : 'Enter Days'
+              "
+              (fieldChange)="update('hire')"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col>
+            <app-input-select-reactive
+              title="Rate Profile"
+              placeholder="Select Rate"
+              controlName="rate"
+              [form]="field('hire')"
+              [selectedText]="field('hire.rate').value.name"
+              (fieldChange)="update('hire')"
+            >
+              <ng-container *ngIf="rates$ | async as rates">
+                <ion-select-option
+                  [value]="rate"
+                  *ngFor="let rate of rates.hireRates"
+                  >{{ rate.name }}
+                </ion-select-option>
+              </ng-container>
+            </app-input-select-reactive>
+          </ion-col>
+          <ion-col *ngIf="field('hire.rate').value">
+            <app-input-text
+              title="Rate override ({{
+                field('hire.rate').value.name.startsWith('%')
+                  ? '%'
+                  : company.currency.symbol
+              }})"
+              type="number"
+              [value]="field('hire.rate').value.rate"
+              placeholder="Enter rate"
+              (fieldChange)="updateRate('hire', $event)"
+            >
+            </app-input-text>
+          </ion-col>
+          <ion-col>
+            <app-input-reactive
+              title="Total ({{ company.currency.symbol }})"
+              type="number"
+              controlName="total"
+              [form]="field('hire')"
+              [readonly]="true"
+              placeholder="Total"
+            >
+            </app-input-reactive>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ng-container>
   <!-- LABOUR -->
   <app-title-block> Labor Information </app-title-block>
   <ion-row class="mt-3" class="card-outline mb-3">
@@ -983,5 +1207,8 @@
 
   <!-- BUDGET -->
 
-  <app-budget-breakdown [estimate]="estimate"></app-budget-breakdown>
+  <app-budget-breakdown
+    [estimate]="estimate"
+    *ngIf="!updating"
+  ></app-budget-breakdown>
 </form>

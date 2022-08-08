@@ -209,7 +209,7 @@ export class BulkEstimateComponent implements OnInit {
 
   //event for switching between pages
   segmentChanged(ev: any) {
-    if (ev.detail.value === 'summary') {
+    if (ev.detail.value === 'summary' || ev.detail.value === 'budget') {
       this.updateEstimateTotal();
       this.active = ev.detail.value;
     } else {

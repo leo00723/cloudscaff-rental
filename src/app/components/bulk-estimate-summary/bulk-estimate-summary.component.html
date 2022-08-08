@@ -122,8 +122,13 @@
                 ? "(" + estimate.scaffold.lifts + " lifts)"
                 : ""
             }}
+            {{
+              estimate.scaffold.boardedLifts > 0
+                ? "(" + estimate.scaffold.boardedLifts + " Boarded lifts)"
+                : ""
+            }}
             -
-            {{ estimate.scaffold.description }}
+            {{ estimate.scaffold.type }} {{ estimate.scaffold.description }}
           </td>
           <td class="text-center">1</td>
           <td class="text-end">
@@ -135,31 +140,64 @@
             {{ estimate.scaffold.total | number: "0.2-2" }}
           </td>
         </tr>
-        <!-- SCAFFOLD ATTACHMENTS -->
-        <tr
-          class="small"
-          *ngFor="let item of estimate.attachments; let i = index"
-        >
+        <tr class="small" *ngIf="estimate.scaffold.hireTotal > 0">
           <th class="text-center" scope="row"></th>
           <td>
-            {{ company.terminology.scaffold }} Level
-            {{ item.level ? item.level : 0 }} - ({{ item.length
-            }}{{ company.measurement.symbol }} x {{ item.width
-            }}{{ company.measurement.symbol }} x {{ item.height
-            }}{{ company.measurement.symbol }})
-            {{ item.lifts > 0 ? "(" + item.lifts + " lifts)" : "" }} -
-            {{ item.description }}
+            &nbsp;- {{ company.terminology.hire }}
+            {{ estimate.scaffold.description }} - ({{
+              estimate.scaffold.daysStanding
+            }}
+            {{ estimate.scaffold.isWeeks ? "Weeks" : "Days" }})
           </td>
           <td class="text-center">1</td>
+          <td class="text-center"></td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ item.extraHire | number: "0.2-2" }}
-          </td>
-          <td class="text-end">
-            {{ company.currency.symbol }}
-            {{ item.total | number: "0.2-2" }}
+            {{ estimate.scaffold.hireTotal | number: "0.2-2" }}
           </td>
         </tr>
+        <!-- SCAFFOLD ATTACHMENTS -->
+        <ng-container *ngFor="let item of estimate.attachments; let i = index">
+          <tr class="small">
+            <th class="text-center" scope="row"></th>
+            <td>
+              {{ company.terminology.scaffold }} Level
+              {{ item.level ? item.level : 0 }} - ({{ item.length
+              }}{{ company.measurement.symbol }} x {{ item.width
+              }}{{ company.measurement.symbol }} x {{ item.height
+              }}{{ company.measurement.symbol }})
+              {{ item.lifts > 0 ? "(" + item.lifts + " lifts)" : "" }}
+              {{
+                item.boardedLifts > 0
+                  ? "(" + item.boardedLifts + " Boarded lifts)"
+                  : ""
+              }}
+              - {{ item.type }} {{ item.description }}
+            </td>
+            <td class="text-center">1</td>
+            <td class="text-end">
+              {{ company.currency.symbol }}
+              {{ item.extraHire | number: "0.2-2" }}
+            </td>
+            <td class="text-end">
+              {{ company.currency.symbol }}
+              {{ item.total | number: "0.2-2" }}
+            </td>
+          </tr>
+          <tr class="small" *ngIf="item.hireTotal > 0">
+            <th class="text-center" scope="row"></th>
+            <td>
+              &nbsp;- {{ company.terminology.hire }} {{ item.description }} -
+              ({{ item.daysStanding }} {{ item.isWeeks ? "Weeks" : "Days" }})
+            </td>
+            <td class="text-center">1</td>
+            <td class="text-center"></td>
+            <td class="text-end">
+              {{ company.currency.symbol }}
+              {{ item.hireTotal | number: "0.2-2" }}
+            </td>
+          </tr>
+        </ng-container>
         <!-- BOARDS -->
         <tr class="small" *ngFor="let item of estimate.boards; let i = index">
           <th class="text-center" scope="row"></th>
@@ -180,7 +218,7 @@
           </td>
         </tr>
         <!-- HIRE -->
-        <tr class="small">
+        <tr class="small" *ngIf="estimate.hire.total > 0">
           <th class="text-center" scope="row"></th>
           <td>
             {{ company.terminology.hire }} - ({{ estimate.hire.daysStanding }}
