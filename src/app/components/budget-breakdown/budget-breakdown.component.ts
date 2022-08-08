@@ -100,6 +100,7 @@ export class BudgetBreakdownComponent implements OnInit {
         [Validators.required, Validators.min(0)],
       ],
     });
+    this.update();
   }
   field(field: string) {
     return this.form.get(field) as FormControl;

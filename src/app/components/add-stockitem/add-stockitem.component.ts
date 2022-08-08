@@ -223,7 +223,7 @@ export class AddStockitemComponent implements OnInit {
       code: ['', Validators.required],
       categoryType: ['', Validators.required],
       category: ['', Validators.required],
-      size: ['', Validators.required],
+      size: [''],
       name: ['', Validators.required],
       hireCost: [0, [Validators.required, Validators.min(0)]],
       replacementCost: [0, [Validators.required, Validators.min(0)]],

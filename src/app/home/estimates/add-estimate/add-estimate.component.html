@@ -174,7 +174,7 @@
 
           <ion-col size="12">
             <ion-row formGroupName="scaffold">
-              <ion-col size="4">
+              <ion-col size="12">
                 <app-input-select-reactive
                   title="Scaffold Type"
                   placeholder="Select Type"
@@ -191,7 +191,7 @@
                   </ng-container>
                 </app-input-select-reactive>
               </ion-col>
-              <ion-col size="4">
+              <ion-col size="6">
                 <app-input-reactive
                   title="Description"
                   controlName="description"
@@ -200,7 +200,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="2">
+              <ion-col size="3">
                 <app-input-reactive
                   title="Extra Hire %"
                   type="number"
@@ -211,7 +211,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="2">
+              <ion-col size="3">
                 <app-input-reactive
                   title="Extra Hire ({{ company.currency.symbol }})"
                   type="number"
@@ -399,7 +399,7 @@
                   type="number"
                   [value]="field('scaffold.hireRate').value.rate"
                   placeholder="Enter rate"
-                  (fieldChange)="updateRate('scaffold', $event)"
+                  (fieldChange)="updateRate('scaffoldHire', $event)"
                 >
                 </app-input-text>
               </ion-col>
@@ -435,7 +435,7 @@
                   <ion-label>Delete</ion-label>
                 </ion-chip>
               </ion-col>
-              <ion-col size="4">
+              <ion-col size="12">
                 <app-input-select-reactive
                   title="Scaffold Type"
                   placeholder="Select Type"
@@ -452,7 +452,7 @@
                   </ng-container>
                 </app-input-select-reactive>
               </ion-col>
-              <ion-col size="4">
+              <ion-col size="6">
                 <app-input-reactive
                   title="Description"
                   controlName="description"
@@ -461,7 +461,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="2">
+              <ion-col size="3">
                 <app-input-reactive
                   title="Extra Hire %"
                   type="number"
@@ -472,7 +472,7 @@
                 >
                 </app-input-reactive>
               </ion-col>
-              <ion-col size="2">
+              <ion-col size="3">
                 <app-input-reactive
                   title="Extra Hire ({{ company.currency.symbol }})"
                   type="number"
@@ -676,7 +676,7 @@
                         arrField('attachments', i, 'hireRate').value.rate
                       "
                       placeholder="Enter rate"
-                      (fieldChange)="updateRate('attachments', $event, i)"
+                      (fieldChange)="updateRate('attachmentHire', $event, i)"
                     >
                     </app-input-text>
                   </ion-col>

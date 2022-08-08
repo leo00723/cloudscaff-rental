@@ -158,7 +158,7 @@ export class AddEstimatePage implements OnInit {
       rate: ['', Validators.required],
       qty: ['', [Validators.required, Validators.min(1)]],
       name: ['', Validators.required],
-      daysStanding: ['', [Validators.required, Validators.min(1)]],
+      daysStanding: ['', [Validators.nullValidator]],
       extraHirePercentage: ['', [Validators.nullValidator]],
       extraHire: ['', [Validators.nullValidator]],
       total: [0],
@@ -350,13 +350,17 @@ export class AddEstimatePage implements OnInit {
             ...this.field('scaffold.rate').value,
             rate: +args,
           });
-          if (this.field('scaffold.hireRate').value) {
-            this.field('scaffold.hireRate').patchValue({
-              ...this.field('scaffold.hireRate').value,
-              hireRate: +args,
-            });
-          }
+
           this.update('scaffold');
+        }
+        break;
+      case 'scaffoldHire':
+        {
+          this.field('scaffold.hireRate').patchValue({
+            ...this.field('scaffold.hireRate').value,
+            rate: +args,
+          });
+          this.masterSvc.calc().calcHireRate2(this.field('scaffold'));
         }
         break;
       case 'attachments':
@@ -365,13 +369,20 @@ export class AddEstimatePage implements OnInit {
             ...this.arrField('attachments', i, 'rate').value,
             rate: +args,
           });
-          if (this.arrField('attachments', i, 'hireRate').value) {
-            this.arrField('attachments', i, 'hireRate').patchValue({
-              ...this.arrField('attachments', i, 'hireRate').value,
-              hireRate: +args,
-            });
-          }
+
           this.update('attachments', i);
+        }
+        break;
+      case 'attachmentHire':
+        {
+          this.arrField('attachments', i, 'hireRate').patchValue({
+            ...this.arrField('attachments', i, 'hireRate').value,
+            rate: +args,
+          });
+
+          this.masterSvc
+            .calc()
+            .calcHireRate2(this.attachmentsForms.controls[i] as FormControl);
         }
         break;
       case 'boards':
@@ -773,10 +784,7 @@ export class AddEstimatePage implements OnInit {
         rate: [add.rate, Validators.required],
         qty: [add.qty, [Validators.required, Validators.min(1)]],
         name: [add.name, Validators.required],
-        daysStanding: [
-          add.daysStanding,
-          [Validators.required, Validators.min(1)],
-        ],
+        daysStanding: [add.daysStanding, [Validators.nullValidator]],
         extraHirePercentage: [
           add.extraHirePercentage,
           [Validators.nullValidator],

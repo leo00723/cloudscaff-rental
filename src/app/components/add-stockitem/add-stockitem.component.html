@@ -48,29 +48,16 @@
             </ion-select-option>
           </app-input-select-reactive>
         </ion-col>
-        <!-- <ion-col size="12">
-          <app-input-select-reactive
-            title="Category"
-            placeholder="Select Category"
-            controlName="category"
-            [form]="form"
-            [selectedText]="field('category').value"
-          >
-            <ng-container>
-              <ion-select-option
-                [value]="category"
-                *ngFor="let category of categories"
-                >{{ category }}
-              </ion-select-option>
-            </ng-container>
-          </app-input-select-reactive>
-        </ion-col> -->
         <ion-col size="4">
           <app-input-reactive title="Code" controlName="code" [form]="form">
           </app-input-reactive>
         </ion-col>
         <ion-col size="8">
-          <app-input-reactive title="Name" controlName="name" [form]="form">
+          <app-input-reactive
+            title="Description"
+            controlName="name"
+            [form]="form"
+          >
           </app-input-reactive>
         </ion-col>
         <ion-col size="4">
