@@ -46,6 +46,11 @@
       </ion-fab>
     </ng-container>
     <ng-container *ngSwitchCase="'inventory'">
+      <app-inventory-estimate-table
+        [value]="inventoryEstimates$"
+        *ngIf="inventoryEstimates$ | async else loading"
+        (selectedItem)="editInventoryEstimate($event)"
+      ></app-inventory-estimate-table>
       <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button (click)="addInventoryEstimate()">
           <ion-icon name="add"></ion-icon>

@@ -72,6 +72,8 @@ import { BulkEstimateComponent } from '../home/estimates/bulk-estimate/bulk-esti
 import { InventoryEstimateComponent } from '../home/estimates/inventory-estimate/inventory-estimate.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { InventoryEstimateFormComponent } from './inventory-estimate-form/inventory-estimate-form.component';
+import { InventoryEstimateSummaryComponent } from './inventory-estimate-summary/inventory-estimate-summary.component';
+import { InventoryEstimateTableComponent } from './inventory-estimate-table/inventory-estimate-table.component';
 
 const COMPONENTS = [
   AcceptModificationComponent,
@@ -152,8 +154,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, InventoryEstimateFormComponent],
+  declarations: [COMPONENTS, InventoryEstimateFormComponent, InventoryEstimateSummaryComponent, InventoryEstimateTableComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, InventoryEstimateFormComponent],
+  exports: [IMPORTS, COMPONENTS, InventoryEstimateFormComponent, InventoryEstimateSummaryComponent, InventoryEstimateTableComponent],
 })
 export class ComponentsModule {}

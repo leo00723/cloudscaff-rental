@@ -6,6 +6,18 @@
       </ion-button>
     </ion-buttons>
     <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        slot="end"
+        fill="solid"
+        shape="round"
+        class="text-capitalize"
+        (click)="isEdit ? updateEstimate('pending') : createEstimate()"
+        color="primary"
+      >
+        Save
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment
@@ -212,6 +224,10 @@
       </ion-grid>
 
       <ion-grid *ngSwitchCase="'summary'">
+        <app-inventory-estimate-summary
+          [inventoryEstimate]="inventoryEstimate"
+          [canDownload]="isEdit && form.valid"
+        ></app-inventory-estimate-summary>
         <ion-row>
           <ion-progress-bar
             type="indeterminate"

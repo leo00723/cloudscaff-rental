@@ -61,9 +61,6 @@ export class InventoryEstimateComponent implements OnInit {
   user: User;
   company: Company;
   customers$: Observable<Customer[]>;
-  rates$: Observable<any>;
-  brokers$: Observable<any>;
-  transport$: Observable<Transport[]>;
   form: FormGroup;
   loading = false;
   isLoading = true;
@@ -208,11 +205,11 @@ export class InventoryEstimateComponent implements OnInit {
         await this.masterSvc
           .edit()
           .addDocument(
-            `company/${this.inventoryEstimate.company.id}/bulkEstimates`,
+            `company/${this.inventoryEstimate.company.id}/inventoryEstimates`,
             this.inventoryEstimate
           );
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalBulkEstimates: increment(1),
+          totalInventoryEstimates: increment(1),
         });
         if (this.inventoryEstimate.enquiryId.length > 0) {
           await this.masterSvc
@@ -252,7 +249,7 @@ export class InventoryEstimateComponent implements OnInit {
         this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.company.id}/bulkEstimates`,
+            `company/${this.company.id}/inventoryEstimates`,
             this.inventoryEstimate.id,
             this.inventoryEstimate
           )
@@ -323,10 +320,10 @@ export class InventoryEstimateComponent implements OnInit {
     const total = totalAfterDiscount + tax + vat;
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    const code = `BEST${new Date().toLocaleDateString('en', {
+    const code = `IEST${new Date().toLocaleDateString('en', {
       year: '2-digit',
-    })}${(this.company.totalBulkEstimates
-      ? this.company.totalBulkEstimates + 1
+    })}${(this.company.totalInventoryEstimates
+      ? this.company.totalInventoryEstimates + 1
       : 1
     )
       .toString()
@@ -349,8 +346,6 @@ export class InventoryEstimateComponent implements OnInit {
     });
     this.inventoryEstimate.estimates.forEach((e) => {
       e.customer = this.inventoryEstimate.customer;
-      e.startDate = this.inventoryEstimate.startDate;
-      e.endDate = this.inventoryEstimate.endDate;
       e.discountPercentage = this.inventoryEstimate.discountPercentage;
       e.message = this.inventoryEstimate.message;
     });

@@ -25,7 +25,7 @@ export interface Company {
   totalEstimates?: number;
   totalEnquiries?: number;
   totalBulkEstimates?: number;
-  totalMaterialEstimates?: number;
+  totalInventoryEstimates?: number;
   totalShipments?: number;
   totalInvoices?: number;
   totalTransfers?: number;

@@ -13,8 +13,22 @@
         (ionChange)="viewAll = !viewAll"
       ></ion-toggle>
     </ion-col>
+    <ion-col size="6">
+      <app-input-date
+        [form]="form"
+        controlName="startDate"
+        title="Start Date"
+      ></app-input-date>
+    </ion-col>
+    <ion-col size="6" *ngIf="field('startDate').value">
+      <app-input-date
+        [form]="form"
+        controlName="endDate"
+        [min]="field('startDate').value"
+        title="End Date"
+      ></app-input-date>
+    </ion-col>
     <ion-col size="12">
-      {{ updating }}
       <table class="table table-sm table-bordered">
         <thead>
           <tr>

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ViewBulkEstimateComponent } from 'src/app/components/view-bulk-estimate/view-bulk-estimate.component';
 import { ViewEstimateComponent } from 'src/app/components/view-estimate/view-estimate.component';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
+import { BulkInventoryEstimate } from 'src/app/models/bulkInventoryEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { User } from 'src/app/models/user.model';
@@ -23,6 +24,7 @@ export class EstimatesPage implements OnInit {
   @Select() company$: Observable<Company>;
   @Select() estimates$: Observable<Estimate[]>;
   bulkEstimates$: Observable<BulkEstimate[]>;
+  inventoryEstimates$: Observable<BulkInventoryEstimate[]>;
   active = 'standard';
   isLoading = true;
   constructor(private masterSvc: MasterService) {}
@@ -88,6 +90,33 @@ export class EstimatesPage implements OnInit {
     }
   }
 
+  async editInventoryEstimate(inventoryEstimate: BulkInventoryEstimate) {
+    if (inventoryEstimate.status === 'pending') {
+      const modal = await this.masterSvc.modal().create({
+        component: InventoryEstimateComponent,
+        componentProps: {
+          value: inventoryEstimate,
+          isEdit: true,
+        },
+        showBackdrop: false,
+        id: 'editEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    } else {
+      const modal = await this.masterSvc.modal().create({
+        component: ViewBulkEstimateComponent,
+        componentProps: {
+          bulkEstimate: inventoryEstimate,
+        },
+        showBackdrop: false,
+        id: 'viewEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    }
+  }
+
   async addEstimate() {
     const modal = await this.masterSvc.modal().create({
       component: AddEstimatePage,
@@ -129,6 +158,13 @@ export class EstimatesPage implements OnInit {
         this.bulkEstimates$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/bulkEstimates`, 'code', 'desc');
+        this.inventoryEstimates$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(
+            `company/${id}/inventoryEstimates`,
+            'code',
+            'desc'
+          );
       } else {
         this.masterSvc.log(
           '-----------------------try estimates----------------------'

@@ -196,8 +196,6 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
   }
 
   updateItems(val, item: InventoryItem, type: string) {
-    this.updating = true;
-    this.change.detectChanges();
     switch (type) {
       case 'qty':
         {
@@ -211,10 +209,12 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
         }
         break;
     }
-    this.estimate.items = this.items;
+    this.estimate.items = [];
+    this.items.forEach((i) => {
+      +i.shipmentQty > 0 ? this.estimate.items.push(i) : null;
+    });
+
     this.updateEstimateTotal();
-    this.updating = false;
-    this.change.detectChanges();
   }
   checkError(item: InventoryItem) {
     const totalQty = item.availableQty ? item.availableQty : 0;
@@ -286,6 +286,8 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
 
   //update the estimate total
   private updateEstimateTotal() {
+    this.updating = true;
+    this.change.detectChanges();
     if (this.isEdit && this.estimate.status !== 'pending') {
       return;
     }
@@ -319,7 +321,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     const total = totalAfterDiscount + tax + vat;
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    const code = `EST${new Date().toLocaleDateString('en', {
+    const code = `IEST${new Date().toLocaleDateString('en', {
       year: '2-digit',
     })}${(this.company.totalEstimates ? this.company.totalEstimates + 1 : 1)
       .toString()
@@ -354,6 +356,8 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
       createdBy: this.isEdit ? this.estimate.createdBy : this.user.id,
       updatedBy: this.user.id,
     });
+    this.updating = false;
+    this.change.detectChanges();
   }
 
   private calcAdditionalRate(i: string | number) {
