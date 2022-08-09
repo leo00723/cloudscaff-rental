@@ -2695,9 +2695,21 @@ export class PdfService {
             company.measurement.symbol
           } x ${a.width}${company.measurement.symbol} x ${a.height}${
             company.measurement.symbol
-          }) ${a.lifts > 0 ? '(' + a.lifts + 'lifts)' : ''} - ${a.description}`,
+          }) ${a.lifts > 0 ? '(' + a.lifts + ' Lifts)' : ''} ${
+            a.boardedLifts > 0 ? '(' + a.boardedLifts + ' Boarded lifts)' : ''
+          } - ${a.type} ${a.description}`,
           1,
           a.total
+        )
+      );
+      attachments.push(
+        this.addEstimateItem(
+          company,
+          ` - ${company.terminology.hire} ${a.description} - (${
+            a.daysStanding
+          } ${a.isWeeks ? 'weeks' : 'days'})`,
+          a.daysStanding,
+          a.hireTotal
         )
       );
     });
@@ -2777,11 +2789,25 @@ export class PdfService {
               company.measurement.symbol
             } x ${estimate.scaffold.height}${company.measurement.symbol}) ${
               estimate.scaffold.lifts > 0
-                ? '(' + estimate.scaffold.lifts + 'lifts)'
+                ? '(' + estimate.scaffold.lifts + ' lifts)'
                 : ''
-            } - ${estimate.scaffold.description}`,
+            } ${
+              estimate.scaffold.boardedLifts > 0
+                ? '(' + estimate.scaffold.boardedLifts + ' Boarded lifts)'
+                : ''
+            } - ${estimate.scaffold.type} ${estimate.scaffold.description}`,
             1,
             estimate.scaffold.total
+          ),
+          this.addEstimateItem(
+            company,
+            ` - ${company.terminology.hire} ${
+              estimate.scaffold.description
+            } - (${estimate.scaffold.daysStanding} ${
+              estimate.scaffold.isWeeks ? 'weeks' : 'days'
+            })`,
+            estimate.scaffold.daysStanding,
+            estimate.scaffold.hireTotal
           ),
           ...attachments,
           ...platforms,

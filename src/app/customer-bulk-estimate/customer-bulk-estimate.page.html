@@ -152,49 +152,83 @@
             <tr class="small">
               <th class="text-center" scope="row"></th>
               <td>
-                {{data.company.terminology.scaffold }} Level {{
+                {{ data.company.terminology.scaffold }} Level {{
                 estimate.scaffold.level ? estimate.scaffold.level : 0 }} - ({{
-                estimate.scaffold.length }}{{data.company.measurement.symbol }}
-                x {{ estimate.scaffold.width }}{{data.company.measurement.symbol
-                }} x {{ estimate.scaffold.height
-                }}{{data.company.measurement.symbol }}) {{
+                estimate.scaffold.length }}{{ data.company.measurement.symbol }}
+                x {{ estimate.scaffold.width }}{{
+                data.company.measurement.symbol }} x {{ estimate.scaffold.height
+                }}{{ data.company.measurement.symbol }}) {{
                 estimate.scaffold.lifts > 0 ? "(" + estimate.scaffold.lifts + "
-                lifts)" : "" }} - {{ estimate.scaffold.description }}
+                lifts)" : "" }} {{ estimate.scaffold.boardedLifts > 0 ? "(" +
+                estimate.scaffold.boardedLifts + " Boarded lifts)" : "" }} - {{
+                estimate.scaffold.type }} {{ estimate.scaffold.description }}
               </td>
               <td class="text-center">1</td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ estimate.scaffold.extraHire
-                | number: "0.2-2" }}
+                {{ data.company.currency.symbol }} {{
+                estimate.scaffold.extraHire | number: "0.2-2" }}
               </td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ estimate.scaffold.total |
+                {{ data.company.currency.symbol }} {{ estimate.scaffold.total |
                 number: "0.2-2" }}
               </td>
             </tr>
-            <!-- SCAFFOLD ATTACHMENTS -->
-            <tr
-              class="small"
-              *ngFor="let item of estimate.attachments; let i = index"
-            >
+            <tr class="small" *ngIf="estimate.scaffold.hireTotal > 0">
               <th class="text-center" scope="row"></th>
               <td>
-                {{data.company.terminology.scaffold }} Level {{ item.level ?
-                item.level : 0 }} - ({{ item.length
-                }}{{data.company.measurement.symbol }} x {{ item.width
-                }}{{data.company.measurement.symbol }} x {{ item.height
-                }}{{data.company.measurement.symbol }}) {{ item.lifts > 0 ? "("
-                + item.lifts + " lifts)" : "" }} - {{ item.description }}
+                &nbsp;- {{ data.company.terminology.hire }} {{
+                estimate.scaffold.description }} - ({{
+                estimate.scaffold.daysStanding }} {{ estimate.scaffold.isWeeks ?
+                "Weeks" : "Days" }})
               </td>
               <td class="text-center">1</td>
+              <td class="text-center"></td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ item.extraHire | number:
-                "0.2-2" }}
-              </td>
-              <td class="text-end">
-                {{data.company.currency.symbol }} {{ item.total | number:
-                "0.2-2" }}
+                {{ data.company.currency.symbol }} {{
+                estimate.scaffold.hireTotal | number: "0.2-2" }}
               </td>
             </tr>
+            <!-- SCAFFOLD ATTACHMENTS -->
+            <ng-container
+              *ngFor="let item of estimate.attachments; let i = index"
+            >
+              <tr class="small">
+                <th class="text-center" scope="row"></th>
+                <td>
+                  {{ data.company.terminology.scaffold }} Level {{ item.level ?
+                  item.level : 0 }} - ({{ item.length }}{{
+                  data.company.measurement.symbol }} x {{ item.width }}{{
+                  data.company.measurement.symbol }} x {{ item.height }}{{
+                  data.company.measurement.symbol }}) {{ item.lifts > 0 ? "(" +
+                  item.lifts + " lifts)" : "" }} {{ item.boardedLifts > 0 ? "("
+                  + item.boardedLifts + " Boarded lifts)" : "" }} - {{ item.type
+                  }} {{ item.description }}
+                </td>
+                <td class="text-center">1</td>
+                <td class="text-end">
+                  {{ data.company.currency.symbol }} {{ item.extraHire | number:
+                  "0.2-2" }}
+                </td>
+                <td class="text-end">
+                  {{ data.company.currency.symbol }} {{ item.total | number:
+                  "0.2-2" }}
+                </td>
+              </tr>
+              <tr class="small" *ngIf="item.hireTotal > 0">
+                <th class="text-center" scope="row"></th>
+                <td>
+                  &nbsp;- {{ data.company.terminology.hire }} {{
+                  item.description }} - ({{ item.daysStanding }} {{ item.isWeeks
+                  ? "Weeks" : "Days" }})
+                </td>
+                <td class="text-center">1</td>
+                <td class="text-center"></td>
+                <td class="text-end">
+                  {{ data.company.currency.symbol }} {{ item.hireTotal | number:
+                  "0.2-2" }}
+                </td>
+              </tr>
+            </ng-container>
             <!-- BOARDS -->
             <tr
               class="small"
@@ -202,33 +236,33 @@
             >
               <th class="text-center" scope="row"></th>
               <td>
-                {{data.company.terminology.boards }} - ({{ item.length
-                }}{{data.company.measurement.symbol }} x {{ item.width
-                }}{{data.company.measurement.symbol }}) - Level ({{ item.height
-                }}{{data.company.measurement.symbol }})
+                {{ data.company.terminology.boards }} - ({{ item.length }}{{
+                data.company.measurement.symbol }} x {{ item.width }}{{
+                data.company.measurement.symbol }}) - Level ({{ item.height }}{{
+                data.company.measurement.symbol }})
               </td>
               <td class="text-center">{{ item.qty }}</td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ item.extraHire | number:
+                {{ data.company.currency.symbol }} {{ item.extraHire | number:
                 "0.2-2" }}
               </td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ item.total | number:
+                {{ data.company.currency.symbol }} {{ item.total | number:
                 "0.2-2" }}
               </td>
             </tr>
             <!-- HIRE -->
-            <tr class="small">
+            <tr class="small" *ngIf="estimate.hire.total > 0">
               <th class="text-center" scope="row"></th>
               <td>
-                {{data.company.terminology.hire }} - ({{
+                {{ data.company.terminology.hire }} - ({{
                 estimate.hire.daysStanding }} {{ estimate.hire.isWeeks ? "Weeks"
                 : "Days" }})
               </td>
               <td class="text-center">1</td>
               <td class="text-center"></td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ estimate.hire.total |
+                {{ data.company.currency.symbol }} {{ estimate.hire.total |
                 number: "0.2-2" }}
               </td>
             </tr>
@@ -246,7 +280,7 @@
               <td class="text-center">{{ item.qty }}</td>
               <td class="text-center"></td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ item.total | number:
+                {{ data.company.currency.symbol }} {{ item.total | number:
                 "0.2-2" }}
               </td>
             </tr>
@@ -262,16 +296,16 @@
               >
                 <th class="text-center" scope="row"></th>
                 <td>
-                  {{ item.type.name }} - ({{ item.type.maxLoad
-                  }}{{data.company.mass.symbol }})
+                  {{ item.type.name }} - ({{ item.type.maxLoad }}{{
+                  data.company.mass.symbol }})
                 </td>
                 <td class="text-center">{{ item.qty }}</td>
                 <td class="text-end">
-                  {{data.company.currency.symbol }} {{ item.extraHire | number:
+                  {{ data.company.currency.symbol }} {{ item.extraHire | number:
                   "0.2-2" }}
                 </td>
                 <td class="text-end">
-                  {{data.company.currency.symbol }} {{ item.total | number:
+                  {{ data.company.currency.symbol }} {{ item.total | number:
                   "0.2-2" }}
                 </td>
               </tr>
@@ -289,11 +323,11 @@
               <td>{{ item.name }}</td>
               <td class="text-center">{{ item.qty }}</td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ item.extraHire | number:
+                {{ data.company.currency.symbol }} {{ item.extraHire | number:
                 "0.2-2" }}
               </td>
               <td class="text-end">
-                {{data.company.currency.symbol }} {{ item.total | number:
+                {{ data.company.currency.symbol }} {{ item.total | number:
                 "0.2-2" }}
               </td>
             </tr>

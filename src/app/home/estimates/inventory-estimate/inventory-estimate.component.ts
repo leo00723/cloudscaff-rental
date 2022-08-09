@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { BulkInventoryEstimate } from 'src/app/models/bulkInventoryEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
+import { Estimate } from 'src/app/models/estimate.model';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
@@ -113,9 +114,9 @@ export class InventoryEstimateComponent implements OnInit {
 
   duplicateShipment(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
-      this.inventoryEstimate.estimates.push(
-        this.inventoryEstimate.estimates[i]
-      );
+      let est = {};
+      Object.assign(est, this.inventoryEstimate.estimates[i]);
+      this.inventoryEstimate.estimates.push(est as Estimate);
       this.activeShipment = this.inventoryEstimate.estimates.length;
     }, `Are you sure you want to duplicate scaffold ${i + 1}?`);
   }
@@ -185,7 +186,7 @@ export class InventoryEstimateComponent implements OnInit {
 
   //event for switching between pages
   segmentChanged(ev: any) {
-    if (ev.detail.value === 'summary') {
+    if (ev.detail.value === 'summary' || ev.detail.value === 'budget') {
       this.updateEstimateTotal();
       this.active = ev.detail.value;
     } else {

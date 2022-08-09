@@ -69,6 +69,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
   isLoading = true;
   viewAll = true;
   error = false;
+  updating = false;
   items: InventoryItem[];
   inventoryItems$: Observable<InventoryItem[]>;
   private subs = new Subscription();
@@ -194,10 +195,26 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     this.addTransport();
   }
 
-  updateItems(val, item: InventoryItem) {
-    item.shipmentQty = +val.detail.value;
+  updateItems(val, item: InventoryItem, type: string) {
+    this.updating = true;
+    this.change.detectChanges();
+    switch (type) {
+      case 'qty':
+        {
+          item.shipmentQty = +val.detail.value;
+          this.checkError(item);
+        }
+        break;
+      case 'rate':
+        {
+          item.hireCost = +val.detail.value;
+        }
+        break;
+    }
     this.estimate.items = this.items;
-    this.checkError(item);
+    this.updateEstimateTotal();
+    this.updating = false;
+    this.change.detectChanges();
   }
   checkError(item: InventoryItem) {
     const totalQty = item.availableQty ? item.availableQty : 0;
@@ -272,6 +289,11 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     if (this.isEdit && this.estimate.status !== 'pending') {
       return;
     }
+    let items = 0;
+
+    this.estimate.items.forEach((i) => {
+      items += +i.hireCost * (i.shipmentQty ? +i.shipmentQty : 0);
+    });
 
     let extraHire = 0;
     let labour = 0;
@@ -289,7 +311,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
       extraHire += +a.get('extraHire').value;
     });
 
-    const subtotal = labour + transport + additionals;
+    const subtotal = items + labour + transport + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
@@ -474,6 +496,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
           this.estimate.items.forEach((item) => {
             const inventoryItem = items.find((i) => i.id === item.id);
             if (inventoryItem) {
+              inventoryItem.hireCost = +item.hireCost;
               inventoryItem.shipmentQty = +item.shipmentQty;
             }
           });
