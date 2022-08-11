@@ -47,4 +47,5 @@ export interface Estimate {
   budget?: Budget;
   acceptedTerms?: boolean;
   enquiryId: string;
+  revision?: number;
 }

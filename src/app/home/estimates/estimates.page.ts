@@ -37,7 +37,7 @@ export class EstimatesPage implements OnInit {
   }
 
   async editEstimate(estimate: Estimate) {
-    if (estimate.status === 'pending') {
+    if (estimate.status === 'pending' || estimate.status === 'revised') {
       const modal = await this.masterSvc.modal().create({
         component: AddEstimatePage,
         componentProps: {

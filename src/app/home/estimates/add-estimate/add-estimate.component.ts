@@ -481,7 +481,7 @@ export class AddEstimatePage implements OnInit {
   }
 
   //update the estimate
-  updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
+  updateEstimate(status: 'pending' | 'accepted' | 'rejected' | 'revised') {
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
@@ -525,6 +525,55 @@ export class AddEstimatePage implements OnInit {
     }
   }
 
+  createRevision() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.updateEstimateTotal();
+        this.estimate.status = 'revised';
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/estimates`,
+            this.estimate.id,
+            this.estimate
+          );
+        this.estimate.status = 'pending';
+        this.estimate.enquiryId = this.enquiryId;
+        if (this.estimate.revision) {
+          this.estimate.revision++;
+          this.estimate.code =
+            this.estimate.code.split('-')[0] + '-R' + this.estimate.revision;
+        } else {
+          this.estimate.code = this.estimate.code + '-R1';
+          this.estimate.revision = 1;
+        }
+        this.estimate.id = '';
+        await this.masterSvc
+          .edit()
+          .addDocument(
+            `company/${this.estimate.company.id}/estimates`,
+            this.estimate
+          );
+
+        this.masterSvc
+          .notification()
+          .toast('Revision created successfully!', 'success');
+        this.close();
+      } catch (error) {
+        this.loading = false;
+        this.masterSvc.log(error);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your revision, try again!',
+            'danger',
+            2000
+          );
+      }
+    });
+  }
+
   //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
@@ -543,7 +592,11 @@ export class AddEstimatePage implements OnInit {
 
   //update the estimate total
   private updateEstimateTotal() {
-    if (this.isEdit && this.estimate.status !== 'pending') {
+    if (
+      this.estimate.status !== 'pending' &&
+      this.estimate.status !== 'revised'
+    ) {
+      console.log(this.estimate.status);
       return;
     }
     const scaffold =
