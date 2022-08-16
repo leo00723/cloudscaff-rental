@@ -64,7 +64,10 @@ export class EstimatesPage implements OnInit {
   }
 
   async editBulkEstimate(bulkEstimate: BulkEstimate) {
-    if (bulkEstimate.status === 'pending') {
+    if (
+      bulkEstimate.status === 'pending' ||
+      bulkEstimate.status === 'revised'
+    ) {
       const modal = await this.masterSvc.modal().create({
         component: BulkEstimateComponent,
         componentProps: {

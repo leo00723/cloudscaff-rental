@@ -10,10 +10,29 @@
 </ion-header>
 
 <ion-content fullscreen="true" class="ion-padding">
-  <div class="container" *ngIf="company">
+  <div class="container" *ngIf="company && !importing">
+    <ion-item lines="none" class="rounded-lg mb-3" *ngIf="!isEdit">
+      <ion-label position="stacked"> Import Data </ion-label>
+      <ion-input
+        type="file"
+        accept="text/csv"
+        color="primary"
+        mode="ios"
+        (change)="import($event)"
+      ></ion-input>
+    </ion-item>
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <ion-grid>
         <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-input-reactive
+              *ngIf="field('customerName').value"
+              title="Customer Name"
+              controlName="customerName"
+              [form]="form"
+            >
+            </app-input-reactive>
+          </ion-col>
           <ion-col size="12">
             <app-input-select-reactive
               (fieldChange)="changeCustomer($event)"
@@ -184,10 +203,7 @@
             <ion-button
               shape="round"
               [disabled]="form.invalid"
-              *ngIf="
-                (isEdit && enquiry.status === 'pending') ||
-                enquiry.status === 'overdue'
-              "
+              *ngIf="isEdit"
               (click)="updateEnquiry()"
               >Update Enquiry</ion-button
             >
@@ -215,5 +231,20 @@
         </ion-row>
       </ion-grid>
     </form>
+  </div>
+  <div class="container">
+    <div class="row vh-75">
+      <div class="col m-auto text-center">
+        <ion-text><h1>Importing Data</h1></ion-text>
+        <ion-text color="medium"
+          ><h6 class="mb-5">
+            {{ importCounter }} of {{ importSize }}
+          </h6></ion-text
+        >
+        <ion-progress-bar
+          [value]="importCounter / importSize"
+        ></ion-progress-bar>
+      </div>
+    </div>
   </div>
 </ion-content>

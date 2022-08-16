@@ -117,7 +117,7 @@ export class BulkEstimateComponent implements OnInit {
       },
       siteName: '',
       startDate: '',
-      status: '',
+      status: 'pending',
       subtotal: 0,
       tax: 0,
       total: 0,
@@ -264,7 +264,7 @@ export class BulkEstimateComponent implements OnInit {
   }
 
   //update the estimate
-  updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
+  updateEstimate(status: 'pending' | 'accepted' | 'rejected' | 'revised') {
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
@@ -311,6 +311,57 @@ export class BulkEstimateComponent implements OnInit {
     }
   }
 
+  createRevision() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.updateEstimateTotal();
+        this.bulkEstimate.status = 'revised';
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/bulkEstimates`,
+            this.bulkEstimate.id,
+            this.bulkEstimate
+          );
+        this.bulkEstimate.status = 'pending';
+        this.bulkEstimate.enquiryId = this.enquiryId;
+        if (this.bulkEstimate.revision) {
+          this.bulkEstimate.revision++;
+          this.bulkEstimate.code =
+            this.bulkEstimate.code.split('-')[0] +
+            '-R' +
+            this.bulkEstimate.revision;
+        } else {
+          this.bulkEstimate.code = this.bulkEstimate.code + '-R1';
+          this.bulkEstimate.revision = 1;
+        }
+        this.bulkEstimate.id = '';
+        await this.masterSvc
+          .edit()
+          .addDocument(
+            `company/${this.bulkEstimate.company.id}/bulkEstimates`,
+            this.bulkEstimate
+          );
+
+        this.masterSvc
+          .notification()
+          .toast('Revision created successfully!', 'success');
+        this.close();
+      } catch (error) {
+        this.loading = false;
+        this.masterSvc.log(error);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your revision, try again!',
+            'danger',
+            2000
+          );
+      }
+    });
+  }
+
   //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
@@ -329,7 +380,10 @@ export class BulkEstimateComponent implements OnInit {
 
   //update the estimate total
   private updateEstimateTotal() {
-    if (this.isEdit && this.bulkEstimate.status !== 'pending') {
+    if (
+      this.bulkEstimate.status !== 'pending' &&
+      this.bulkEstimate.status !== 'revised'
+    ) {
       return;
     }
     let subtotal = 0;

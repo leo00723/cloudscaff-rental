@@ -32,4 +32,5 @@ export interface BulkEstimate {
   budget?: Budget;
   acceptedTerms?: boolean;
   enquiryId: string;
+  revision?: number;
 }

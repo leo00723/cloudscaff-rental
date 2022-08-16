@@ -1,8 +1,7 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { FileUploadComponent } from 'src/app/components/file-upload/file-upload.component';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
@@ -38,6 +37,7 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     code: '',
     company: undefined,
     customer: undefined,
+    customerName: '',
     date: undefined,
     returnDate: undefined,
     id: '',
@@ -57,8 +57,12 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     acceptedBy: '',
     rejectedBy: '',
     upload: undefined,
+    probability: '',
   };
   isLoading = true;
+  importing = false;
+  importCounter = 0;
+  importSize = 0;
   loading = false;
   uploadSaved = false;
 
@@ -72,12 +76,98 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     }
   }
 
+  import(args: any) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      const files = args.target.files;
+      if (files && files.length > 0) {
+        const file: File = files.item(0);
+        const reader: FileReader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = async (e) => {
+          this.importing = true;
+          const csv: string = reader.result as string;
+          csv.split('\r\n');
+          const data = csv.split('\r\n') as string[];
+          data.splice(0, 1);
+          this.importSize = data.length;
+
+          for await (const d of data) {
+            this.importCounter++;
+            this.company = this.masterSvc
+              .store()
+              .selectSnapshot(CompanyState.company);
+            const code = `ENQ${new Date().toLocaleDateString('en', {
+              year: '2-digit',
+            })}${(this.company.totalEnquiries
+              ? this.company.totalEnquiries + 1
+              : 1
+            )
+              .toString()
+              .padStart(6, '0')}`;
+            const data2 = d.split(';');
+            const enq = {
+              code,
+              company: this.company,
+              customer: null,
+              customerName: data2[0],
+              date: new Date(),
+              returnDate: data2[5].replace(/\//g, '-'),
+              id: '',
+              message: data2[3],
+              siteName: data2[1],
+              recievedDate: data2[4].replace(/\//g, '-'),
+              status: data2[7],
+              estimateId: '',
+              estimateCode: '',
+              address: '',
+              city: '',
+              suburb: '',
+              country: '',
+              zip: '',
+              createdBy: this.user.id,
+              updatedBy: this.user.id,
+              acceptedBy: '',
+              rejectedBy: '',
+              upload: null,
+              probability: data2[6],
+            };
+            try {
+              await this.masterSvc
+                .edit()
+                .addDocument(`company/${this.company.id}/enquiries`, enq);
+              await this.masterSvc
+                .edit()
+                .updateDoc('company', this.company.id, {
+                  totalEnquiries: increment(1),
+                });
+            } catch (error) {
+              this.loading = false;
+              this.masterSvc.log(error);
+              this.masterSvc
+                .notification()
+                .toast(
+                  'Something went wrong creating your enquiry, try again!',
+                  'danger',
+                  2000
+                );
+            }
+          }
+          this.importing = false;
+          this.masterSvc
+            .notification()
+            .toast('Enquiry imported successfully!', 'success');
+          this.close();
+        };
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.customers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/customers`);
     if (this.isEdit) {
-      this.show = 'editCustomer';
+      this.show = this.enquiry.customer ? 'editCustomer' : '';
     } else {
       this.initFrom();
       this.isLoading = false;
@@ -238,18 +328,47 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
   // START: Functions to initialise the form
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
-      customer: [this.enquiry.customer, Validators.required],
-      message: [this.enquiry.message],
-      siteName: [this.enquiry.siteName, Validators.required],
-      recievedDate: [this.enquiry.recievedDate, Validators.required],
-      returnDate: [this.enquiry.returnDate, Validators.required],
-      code: [this.enquiry.code],
-      address: [this.enquiry.address, Validators.required],
-      suburb: [this.enquiry.suburb],
-      city: [this.enquiry.city, Validators.required],
-      zip: [this.enquiry.zip],
-      country: [this.enquiry.country, Validators.required],
-      status: [this.enquiry.status, Validators.required],
+      customer: [
+        this.enquiry.customer ? this.enquiry.customer : '',
+        Validators.required,
+      ],
+      message: [this.enquiry.message ? this.enquiry.message : ''],
+      customerName: [
+        this.enquiry.customerName ? this.enquiry.customerName : '',
+        Validators.required,
+      ],
+      siteName: [
+        this.enquiry.siteName ? this.enquiry.siteName : '',
+        Validators.required,
+      ],
+      recievedDate: [
+        this.enquiry.recievedDate ? this.enquiry.recievedDate : '',
+        Validators.required,
+      ],
+      returnDate: [
+        this.enquiry.returnDate ? this.enquiry.returnDate : '',
+        Validators.required,
+      ],
+      code: [this.enquiry.code ? this.enquiry.code : ''],
+      address: [
+        this.enquiry.address ? this.enquiry.address : '',
+        Validators.required,
+      ],
+      suburb: [this.enquiry.suburb ? this.enquiry.suburb : ''],
+      city: [this.enquiry.city ? this.enquiry.city : '', Validators.required],
+      zip: [this.enquiry.zip ? this.enquiry.zip : ''],
+      country: [
+        this.enquiry.country ? this.enquiry.country : '',
+        Validators.required,
+      ],
+      status: [
+        this.enquiry.status ? this.enquiry.status : '',
+        Validators.required,
+      ],
+      probability: [
+        this.enquiry.probability ? this.enquiry.probability : '',
+        Validators.required,
+      ],
     });
 
     this.isLoading = false;
@@ -259,6 +378,7 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     this.form = this.masterSvc.fb().group({
       customer: ['', Validators.required],
       message: [''],
+      customerName: ['', Validators.required],
       siteName: ['', Validators.required],
       recievedDate: ['', Validators.required],
       returnDate: ['', Validators.required],
@@ -268,6 +388,7 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
       zip: [''],
       country: ['', Validators.required],
       status: ['pending', Validators.required],
+      probability: ['', Validators.required],
     });
   }
 }

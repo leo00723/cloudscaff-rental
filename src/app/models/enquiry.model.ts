@@ -6,6 +6,7 @@ export interface Enquiry {
   code: string;
   company: Company;
   customer: Customer;
+  customerName: string;
   date: any;
   returnDate: any;
   id: string;
@@ -25,4 +26,5 @@ export interface Enquiry {
   acceptedBy: string;
   rejectedBy: string;
   upload?: UploadedFile;
+  probability?: string;
 }

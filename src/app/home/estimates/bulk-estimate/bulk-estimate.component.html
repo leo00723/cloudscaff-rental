@@ -85,7 +85,10 @@
           <ion-col size="12" *ngIf="show === 'editCustomer'">
             <app-customer
               [customer]="field('customer').value"
-              [isUpdate]="bulkEstimate.status === 'pending'"
+              [isUpdate]="
+                bulkEstimate.status === 'pending' ||
+                bulkEstimate.status === 'revised'
+              "
               [isCreate]="false"
               [companyId]="company.id"
             >
@@ -233,7 +236,13 @@
             type="indeterminate"
             *ngIf="loading"
           ></ion-progress-bar>
-          <ion-col *ngIf="isEdit && bulkEstimate.status === 'pending'">
+          <ion-col
+            *ngIf="
+              isEdit &&
+              (bulkEstimate.status === 'pending' ||
+                bulkEstimate.status === 'revised')
+            "
+          >
             <ion-button
               size="block"
               shape="round"
@@ -243,7 +252,13 @@
               >Rejected</ion-button
             >
           </ion-col>
-          <ion-col *ngIf="isEdit && bulkEstimate.status === 'pending'">
+          <ion-col
+            *ngIf="
+              isEdit &&
+              (bulkEstimate.status === 'pending' ||
+                bulkEstimate.status === 'revised')
+            "
+          >
             <ion-button
               size="block"
               shape="round"
@@ -259,8 +274,12 @@
               size="block"
               shape="round"
               [disabled]="form.invalid"
-              *ngIf="isEdit && bulkEstimate.status === 'pending'"
-              (click)="updateEstimate('pending')"
+              *ngIf="
+                isEdit &&
+                (bulkEstimate.status === 'pending' ||
+                  bulkEstimate.status === 'revised')
+              "
+              (click)="updateEstimate(bulkEstimate.status)"
               >Update Estimate</ion-button
             >
             <ion-button
@@ -269,6 +288,19 @@
               *ngIf="!isEdit"
               (click)="createEstimate()"
               >Save Estimate</ion-button
+            >
+          </ion-col>
+          <ion-col
+            class="text-end"
+            *ngIf="isEdit && bulkEstimate.status === 'pending'"
+          >
+            <ion-button
+              size="block"
+              shape="round"
+              color="tertiary"
+              [disabled]="form.invalid"
+              (click)="createRevision()"
+              >Create Revision</ion-button
             >
           </ion-col>
         </ion-row>

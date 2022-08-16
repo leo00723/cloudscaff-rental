@@ -38,7 +38,7 @@ export class BulkEstimateTableComponent {
     switch (status) {
       case 'accepted':
         return 'success';
-      case 'updated':
+      case 'revised':
         return 'tertiary';
       case 'pending':
         return 'primary';
