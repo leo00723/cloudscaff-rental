@@ -102,10 +102,10 @@ export class AddStockitemComponent implements OnInit {
       try {
         await this.masterSvc
           .edit()
-          .addDocument(
-            `company/${this.company.id}/stockItems`,
-            this.form.value
-          );
+          .addDocument(`company/${this.company.id}/stockItems`, {
+            ...this.form.value,
+            category: this.form.value.categoryType.name,
+          });
         this.masterSvc.notification().toast('Stock Item Added', 'success');
         this.close();
         this.loading = false;
@@ -130,7 +130,7 @@ export class AddStockitemComponent implements OnInit {
           .updateDoc(
             `company/${this.company.id}/stockItems`,
             this.inventoryItem.id,
-            this.form.value
+            { ...this.form.value, category: this.form.value.categoryType.name }
           );
         this.masterSvc.notification().toast('Stock Item Updated', 'success');
         this.loading = false;
@@ -154,11 +154,7 @@ export class AddStockitemComponent implements OnInit {
         this.inventoryItem.categoryType ? this.inventoryItem.categoryType : '',
         Validators.required,
       ],
-      category: [this.inventoryItem.category, Validators.required],
-      size: [
-        this.inventoryItem.size ? this.inventoryItem.size : '',
-        Validators.required,
-      ],
+      size: [this.inventoryItem.size ? this.inventoryItem.size : ''],
       name: [this.inventoryItem.name, Validators.required],
       hireCost: [
         this.inventoryItem.hireCost,
@@ -222,7 +218,6 @@ export class AddStockitemComponent implements OnInit {
     this.form = this.masterSvc.fb().group({
       code: ['', Validators.required],
       categoryType: ['', Validators.required],
-      category: ['', Validators.required],
       size: [''],
       name: ['', Validators.required],
       hireCost: [0, [Validators.required, Validators.min(0)]],

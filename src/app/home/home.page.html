@@ -76,6 +76,19 @@
         </ion-button>
       </ion-label>
     </ion-item>
+    <ion-item lines="none" detail="false">
+      <ion-label class="ion-text-center">
+        <ion-button
+          color="dark"
+          size="block"
+          shape="round"
+          href="javascript:;"
+          onclick="tidioChatApi.show();tidioChatApi.open()"
+        >
+          Chat to us live
+        </ion-button>
+      </ion-label>
+    </ion-item>
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
     <ion-item lines="none" detail="false" *ngIf="!loading">
       <ion-label class="ion-text-center">

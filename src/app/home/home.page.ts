@@ -125,4 +125,7 @@ export class HomePage implements OnDestroy {
   call() {
     window.open('https://calendly.com/cloudscaff/onboarding', '_blank');
   }
+  chat() {
+    window.open('https://tawk.to/cloudscaff', '_blank');
+  }
 }

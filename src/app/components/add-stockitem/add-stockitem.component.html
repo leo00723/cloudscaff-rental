@@ -23,6 +23,7 @@
             controlName="categoryType"
             [form]="form"
             [selectedText]="field('categoryType').value.name"
+            (fieldChange)="field('size').setValue('')"
           >
             <ng-container *ngIf="categories$ | async as categories">
               <ion-select-option

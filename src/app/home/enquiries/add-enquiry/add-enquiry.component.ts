@@ -56,7 +56,7 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     updatedBy: '',
     acceptedBy: '',
     rejectedBy: '',
-    upload: undefined,
+    upload: null,
     probability: '',
   };
   isLoading = true;
@@ -199,67 +199,83 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
 
   //create the enquiry
   createEnquiry() {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      try {
-        this.updateEnquiryData();
-        this.loading = true;
-        await this.masterSvc
-          .edit()
-          .addDocument(
-            `company/${this.enquiry.company.id}/enquiries`,
-            this.enquiry
-          );
-        await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalEnquiries: increment(1),
-        });
-        this.uploadSaved = true;
-        this.masterSvc
-          .notification()
-          .toast('Enquiry created successfully!', 'success');
-        this.close();
-      } catch (error) {
-        this.loading = false;
-        this.masterSvc.log(error);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong creating your enquiry, try again!',
-            'danger',
-            2000
-          );
-      }
-    });
+    if (this.form.valid) {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
+        try {
+          this.updateEnquiryData();
+          this.loading = true;
+          await this.masterSvc
+            .edit()
+            .addDocument(
+              `company/${this.enquiry.company.id}/enquiries`,
+              this.enquiry
+            );
+          await this.masterSvc.edit().updateDoc('company', this.company.id, {
+            totalEnquiries: increment(1),
+          });
+          this.uploadSaved = true;
+          this.masterSvc
+            .notification()
+            .toast('Enquiry created successfully!', 'success');
+          this.close();
+        } catch (error) {
+          this.loading = false;
+          this.masterSvc.log(error);
+          this.masterSvc
+            .notification()
+            .toast(
+              'Something went wrong creating your enquiry, try again!',
+              'danger',
+              2000
+            );
+        }
+      });
+    } else {
+      this.isLoading = true;
+      this.form.markAllAsTouched();
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 1);
+    }
   }
 
   //update the enquiry
   updateEnquiry() {
     this.updateEnquiryData();
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      try {
-        this.loading = true;
-        await this.masterSvc
-          .edit()
-          .updateDoc(
-            `company/${this.company.id}/enquiries`,
-            this.enquiry.id,
-            this.enquiry
-          );
-        this.masterSvc
-          .notification()
-          .toast('Enquiry updated successfully!', 'success');
-        this.loading = false;
-        this.close();
-      } catch (error) {
-        this.loading = false;
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating your enquiry, try again!',
-            'danger',
-            2000
-          );
-      }
-    });
+    if (this.form.valid) {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
+        try {
+          this.loading = true;
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.company.id}/enquiries`,
+              this.enquiry.id,
+              this.enquiry
+            );
+          this.masterSvc
+            .notification()
+            .toast('Enquiry updated successfully!', 'success');
+          this.loading = false;
+          this.close();
+        } catch (error) {
+          this.loading = false;
+          this.masterSvc
+            .notification()
+            .toast(
+              'Something went wrong updating your enquiry, try again!',
+              'danger',
+              2000
+            );
+        }
+      });
+    } else {
+      this.isLoading = true;
+      this.form.markAllAsTouched();
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 1);
+    }
   }
 
   updateEnquiryData() {
@@ -335,7 +351,7 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
       message: [this.enquiry.message ? this.enquiry.message : ''],
       customerName: [
         this.enquiry.customerName ? this.enquiry.customerName : '',
-        Validators.required,
+        Validators.nullValidator,
       ],
       siteName: [
         this.enquiry.siteName ? this.enquiry.siteName : '',
@@ -378,7 +394,7 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     this.form = this.masterSvc.fb().group({
       customer: ['', Validators.required],
       message: [''],
-      customerName: ['', Validators.required],
+      customerName: ['', Validators.nullValidator],
       siteName: ['', Validators.required],
       recievedDate: ['', Validators.required],
       returnDate: ['', Validators.required],

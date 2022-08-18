@@ -35,7 +35,7 @@ export class InputTextComponent implements OnInit {
   @Input() set value(val: number | string) {
     this.value1 = val;
     if (this.form && val) {
-      this.field('field').setValue(val);
+      this.form.get('field').setValue(val);
     }
   }
 
@@ -66,11 +66,5 @@ export class InputTextComponent implements OnInit {
     } else {
       this.fieldChange.emit(this.form.valid ? args.detail.value : '');
     }
-  }
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
-  checkStatus(field: FormControl) {
-    return field.invalid && field.touched;
   }
 }

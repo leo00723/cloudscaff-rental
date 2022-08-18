@@ -1,3 +1,5 @@
+import { Category } from './componentTypes.model';
+
 export interface CrossHire {
   company?: string;
   qty?: number;
@@ -7,7 +9,7 @@ export interface CrossHire {
 export interface InventoryItem {
   id?: string;
   code?: string;
-  categoryType?: string;
+  categoryType?: Category;
   category?: string;
   size?: string;
   name?: string;

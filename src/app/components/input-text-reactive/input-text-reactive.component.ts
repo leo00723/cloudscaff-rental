@@ -33,11 +33,4 @@ export class InputTextReactiveComponent {
       this.fieldChange.emit(args.detail.value);
     }
   }
-
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
-  checkStatus(field: FormControl) {
-    return field.invalid && field.touched;
-  }
 }

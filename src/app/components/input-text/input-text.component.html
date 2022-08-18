@@ -34,7 +34,13 @@
       wrap="hard"
     >
     </ion-textarea>
-    <ion-note slot="error" color="danger" *ngIf="checkStatus(field('field'))">
+    <ion-note
+      slot="error"
+      color="danger"
+      *ngIf="
+        form.controls.field.errors?.required && form.controls.field.touched
+      "
+    >
       Please enter a valid {{ title }}
     </ion-note>
     <ion-reorder *ngIf="reorder" slot="end"></ion-reorder>

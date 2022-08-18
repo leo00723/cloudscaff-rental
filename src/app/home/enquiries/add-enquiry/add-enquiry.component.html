@@ -21,7 +21,7 @@
         (change)="import($event)"
       ></ion-input>
     </ion-item>
-    <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
+    <form name="estimate" [formGroup]="form" *ngIf="!isLoading && form">
       <ion-grid>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
@@ -155,6 +155,22 @@
           </ion-col>
           <ion-col size="12">
             <app-input-select-reactive
+              title="Job Probability %"
+              controlName="probability"
+              [form]="form"
+              [selectedText]="field('probability').value"
+            >
+              <ion-select-option
+                class="fw-bold"
+                [value]="(i + 1) * 10 + '%'"
+                *ngFor="let data of [].constructor(10); let i = index"
+              >
+                {{ (i + 1) * 10 }}%
+              </ion-select-option>
+            </app-input-select-reactive>
+          </ion-col>
+          <ion-col size="12">
+            <app-input-select-reactive
               title="Status"
               controlName="status"
               [form]="form"
@@ -200,11 +216,7 @@
               (click)="createEnquiry()"
               >Save Enquiry</ion-button
             >
-            <ion-button
-              shape="round"
-              [disabled]="form.invalid"
-              *ngIf="isEdit"
-              (click)="updateEnquiry()"
+            <ion-button shape="round" *ngIf="isEdit" (click)="updateEnquiry()"
               >Update Enquiry</ion-button
             >
             <ion-button
@@ -232,7 +244,7 @@
       </ion-grid>
     </form>
   </div>
-  <div class="container">
+  <div class="container" *ngIf="importing">
     <div class="row vh-75">
       <div class="col m-auto text-center">
         <ion-text><h1>Importing Data</h1></ion-text>

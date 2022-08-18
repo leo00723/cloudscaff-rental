@@ -16,4 +16,14 @@
   >
     <ng-content></ng-content>
   </ion-select>
+  <ion-note
+    slot="error"
+    color="danger"
+    *ngIf="
+      form.controls[controlName].errors?.required &&
+      form.controls[controlName].touched
+    "
+  >
+    Please enter a valid {{ title }}
+  </ion-note>
 </ion-item>
