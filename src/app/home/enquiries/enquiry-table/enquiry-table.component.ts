@@ -57,13 +57,14 @@ export class EnquiryTableComponent {
     const val = event.detail.value.toLowerCase() as string;
     this.temp$ = this.enquiries$.pipe(
       map((es) =>
-        es.filter(
-          (d) =>
-            d.code.toLowerCase().indexOf(val) !== -1 ||
-            d.siteName.toLowerCase().indexOf(val) !== -1 ||
-            d.customer.name.toLowerCase().indexOf(val) !== -1 ||
-            d.status.toLowerCase().indexOf(val) !== -1 ||
-            !val
+        es.filter((d) =>
+          d.code.toLowerCase().indexOf(val) !== -1 ||
+          d.siteName.toLowerCase().indexOf(val) !== -1 ||
+          d.customerName
+            ? d.customerName?.toLowerCase().indexOf(val) !== -1
+            : d.customer.name?.toLowerCase().indexOf(val) !== -1 ||
+              d.status.toLowerCase().indexOf(val) !== -1 ||
+              !val
         )
       )
     );

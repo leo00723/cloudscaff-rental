@@ -62,4 +62,25 @@ export class EnquiriesPage implements OnInit {
       }
     }, 200);
   }
+
+  // async update(enquiries: Enquiry[]) {
+  //   let counter = 0;
+  //   for await (const enq of enquiries) {
+  //     if (!enq.recievedDate.startsWith('2022') && enq.recievedDate) {
+  //       const rd = enq.recievedDate.split('-');
+  //       const nrd = `${rd[2]}-${rd[1]}-${rd[0]}`;
+  //       enq.recievedDate = nrd;
+  //       const retd = enq.returnDate.split('-');
+  //       const nretd = `${retd[2]}-${retd[1]}-${retd[0]}`;
+  //       enq.returnDate = nretd;
+  //       await this.masterSvc
+  //         .edit()
+  //         .updateDoc(`company/${enq.company.id}/enquiries`, enq.id, {
+  //           recievedDate: enq.recievedDate,
+  //           returnDate: enq.returnDate,
+  //         });
+  //     }
+  //   }
+  //   console.log('update done');
+  // }
 }

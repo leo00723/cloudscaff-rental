@@ -8,11 +8,11 @@ export interface Enquiry {
   customer: Customer;
   customerName: string;
   date: any;
-  returnDate: any;
+  returnDate: string;
   id: string;
   message: string;
   siteName: string;
-  recievedDate: any;
+  recievedDate: string;
   status: string;
   estimateId: string;
   estimateCode: string;
