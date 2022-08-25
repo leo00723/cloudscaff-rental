@@ -20,6 +20,7 @@ export class InputDateComponent {
   @Input() form;
   @Input() controlName: string;
   @Input() min: string | undefined;
+  @Output() fieldChange = new EventEmitter<boolean>();
   constructor(private masterSvc: MasterService) {}
 
   async setDate(field: string) {
@@ -43,5 +44,8 @@ export class InputDateComponent {
     date
       ? this.form.get(this.controlName).setValue(date)
       : this.form.get(this.controlName).value;
+  }
+  change() {
+    this.fieldChange.emit(true);
   }
 }

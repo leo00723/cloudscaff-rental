@@ -25,6 +25,9 @@ export interface InventoryEstimate {
   siteName: string;
   startDate: any;
   status: string;
+  daysOnHire: number;
+  minHire: number;
+  itemHire: number;
   subtotal: number;
   tax: number;
   total: number;

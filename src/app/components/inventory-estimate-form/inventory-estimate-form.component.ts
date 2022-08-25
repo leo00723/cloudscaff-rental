@@ -44,6 +44,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     siteName: '',
     startDate: undefined,
     status: 'pending',
+    itemHire: 0,
     subtotal: 0,
     tax: 0,
     total: 0,
@@ -57,6 +58,8 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     acceptedBy: '',
     rejectedBy: '',
     enquiryId: '',
+    minHire: 28,
+    daysOnHire: 0,
     items: [],
   };
   company: Company;
@@ -244,10 +247,32 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
           this.calcLabourRate(i);
         }
         break;
-      case 'transport': {
-        this.calcTransportRate(i);
-      }
+      case 'transport':
+        {
+          this.calcTransportRate(i);
+        }
+        break;
+      case 'date':
+        {
+          const start = new Date(this.field('startDate').value);
+          const end = new Date(this.field('endDate').value);
+          const days = this.getDayDiff(start, end);
+          const minHire = +this.field('minHire').value;
+          if (days > minHire) {
+            this.field('daysOnHire').setValue(days);
+          } else {
+            this.field('daysOnHire').setValue(minHire);
+          }
+          this.updateEstimateTotal();
+        }
+        break;
     }
+  }
+
+  getDayDiff(startDate: Date, endDate: Date): number {
+    const msInDay = 24 * 60 * 60 * 1000;
+
+    return Math.round(Math.abs(Number(endDate) - Number(startDate)) / msInDay);
   }
   //Calculate total for a category base on rates
   updateRate(type: string, args?: any, i?: number) {
@@ -291,10 +316,13 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     if (this.isEdit && this.estimate.status !== 'pending') {
       return;
     }
-    let items = 0;
+    let itemHire = 0;
 
     this.estimate.items.forEach((i) => {
-      items += +i.hireCost * (i.shipmentQty ? +i.shipmentQty : 0);
+      itemHire +=
+        +i.hireCost *
+        this.estimate.daysOnHire *
+        (i.shipmentQty ? +i.shipmentQty : 0);
     });
 
     let extraHire = 0;
@@ -313,7 +341,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
       extraHire += +a.get('extraHire').value;
     });
 
-    const subtotal = items + labour + transport + additionals;
+    const subtotal = itemHire + labour + transport + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
     const tax = totalAfterDiscount * (this.company.salesTax / 100);
@@ -347,6 +375,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
       },
       code: this.isEdit ? this.estimate.code : code,
       status: this.isEdit ? this.estimate.status : 'pending',
+      itemHire,
       subtotal,
       discount,
       tax,
@@ -447,6 +476,8 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
       transport: this.masterSvc.fb().array([]),
       poNumber: [this.estimate.poNumber],
       woNumber: [this.estimate.woNumber],
+      minHire: [this.estimate.minHire],
+      daysOnHire: [this.estimate.daysOnHire],
       code: [this.estimate.code],
     });
 

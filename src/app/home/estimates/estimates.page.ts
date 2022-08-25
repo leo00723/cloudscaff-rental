@@ -13,8 +13,6 @@ import { CompanyState } from '../../shared/company/company.state';
 import { AddEstimatePage } from './add-estimate/add-estimate.component';
 import { BulkEstimateComponent } from './bulk-estimate/bulk-estimate.component';
 import { InventoryEstimateComponent } from './inventory-estimate/inventory-estimate.component';
-import { GetEstimates } from './state/estimate.actions';
-import { EstimatesState } from './state/estimate.state';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
@@ -22,7 +20,7 @@ import { EstimatesState } from './state/estimate.state';
 export class EstimatesPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
-  @Select() estimates$: Observable<Estimate[]>;
+  estimates$: Observable<Estimate[]>;
   bulkEstimates$: Observable<BulkEstimate[]>;
   inventoryEstimates$: Observable<BulkInventoryEstimate[]>;
   active = 'standard';
@@ -154,10 +152,9 @@ export class EstimatesPage implements OnInit {
     let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
-        let estimates = !!this.masterSvc
-          .store()
-          .selectSnapshot(EstimatesState.estimates);
-        if (!estimates) this.masterSvc.store().dispatch(new GetEstimates(id));
+        this.estimates$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/estimates`, 'code', 'desc');
         this.bulkEstimates$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/bulkEstimates`, 'code', 'desc');

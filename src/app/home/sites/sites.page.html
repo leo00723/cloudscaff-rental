@@ -1,6 +1,7 @@
 <app-header title="Sites"></app-header>
 <ion-content fullscreen="true" class="ion-padding">
   <app-site-table
+    [value]="sites$"
     *ngIf="sites$ | async else loading"
     (selectedItem)="viewSite($event)"
   ></app-site-table>

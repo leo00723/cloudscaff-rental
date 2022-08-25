@@ -44,7 +44,11 @@ export class AppComponent implements OnInit, OnDestroy {
   init() {
     const version = this.masterSvc.store().selectSnapshot(AppState.version);
     if (version) {
-      if (!this.masterSvc.platform().is('cordova')) {
+      if (
+        this.masterSvc.platform().is('mobileweb') ||
+        this.masterSvc.platform().is('desktop') ||
+        this.masterSvc.platform().is('pwa')
+      ) {
         const version = this.masterSvc.store().selectSnapshot(AppState.version);
         this.subs.add(
           this.updates.versionUpdates.subscribe((event) => {

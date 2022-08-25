@@ -1,10 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
-import { GetSites } from 'src/app/home/sites/state/sites.actions';
-import { SitesState } from 'src/app/home/sites/state/sites.state';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Site } from 'src/app/models/site.model';
@@ -34,13 +31,12 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   viewAll = true;
   items: InventoryItem[];
   error = false;
-  @Select() sites$: Observable<Site[]>;
+  sites$: Observable<Site[]>;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
-    let sites = !!this.masterSvc.store().selectSnapshot(SitesState.sites);
-    if (!sites) this.masterSvc.store().dispatch(new GetSites(this.company.id));
+    this.init();
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
@@ -206,5 +202,22 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       company: [this.company],
       date: [new Date()],
     });
+  }
+
+  init() {
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+
+    setTimeout(() => {
+      if (id) {
+        this.sites$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/sites`, 'code', 'desc');
+      } else {
+        this.masterSvc.log(
+          '-----------------------try sites----------------------'
+        );
+        this.init();
+      }
+    }, 200);
   }
 }

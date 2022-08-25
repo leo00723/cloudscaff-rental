@@ -10,6 +10,8 @@
     [formControlName]="controlName"
     readonly="true"
     (click)="setDate('endDate')"
+    (ionChange)="change()"
+    debounce="200"
   >
   </ion-input>
 </ion-item>

@@ -92,6 +92,9 @@ export class InventoryEstimateComponent implements OnInit {
       siteName: '',
       startDate: '',
       status: 'pending',
+      daysOnHire: 0,
+      minHire: 28,
+      itemHire: 0,
       subtotal: 0,
       tax: 0,
       total: 0,
@@ -113,7 +116,7 @@ export class InventoryEstimateComponent implements OnInit {
     this.masterSvc.notification().presentAlertConfirm(() => {
       let est = {};
       Object.assign(est, this.inventoryEstimate.estimates[i]);
-      this.inventoryEstimate.estimates.push(est as Estimate);
+      this.inventoryEstimate.estimates.push(est as InventoryEstimate);
       this.activeShipment = this.inventoryEstimate.estimates.length;
     }, `Are you sure you want to duplicate scaffold ${i + 1}?`);
   }

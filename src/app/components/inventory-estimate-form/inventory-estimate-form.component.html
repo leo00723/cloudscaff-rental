@@ -26,7 +26,19 @@
         controlName="endDate"
         [min]="field('startDate').value"
         title="End Date"
+        (fieldChange)="update('date')"
       ></app-input-date>
+    </ion-col>
+    <ion-col size="12">
+      <app-input-reactive
+        title="Minimum days on hire"
+        type="number"
+        controlName="minHire"
+        [form]="form"
+        placeholder="Enter minimum hire"
+        (fieldChange)="update('date')"
+      >
+      </app-input-reactive>
     </ion-col>
     <ion-col size="12">
       <table class="table table-sm table-bordered">
@@ -38,6 +50,7 @@
             <th scope="col" class="text-center">Total Qty</th>
             <th scope="col" class="text-center">Available Qty</th>
             <th scope="col" class="text-center">Rate</th>
+            <th scope="col" class="text-center">Days on Hire</th>
             <th scope="col" class="text-center">Shipment Qty</th>
             <th scope="col" class="text-end">
               Total ({{ company.currency.symbol }})
@@ -68,6 +81,9 @@
                 </ion-input>
               </td>
               <td class="text-center">
+                {{ estimate.daysOnHire }}
+              </td>
+              <td class="text-center">
                 <ion-input
                   #qty
                   debounce="200"
@@ -85,7 +101,10 @@
               </td>
               <td class="text-end">
                 {{ company.currency.symbol
-                }}{{ item.hireCost * item.shipmentQty | number: "1.2-2" }}
+                }}{{
+                  item.hireCost * item.shipmentQty * estimate.daysOnHire
+                    | number: "1.2-2"
+                }}
               </td>
             </tr>
             <ng-template #viewShipment>
@@ -111,6 +130,9 @@
                   </ion-input>
                 </td>
                 <td class="text-center">
+                  {{ estimate.daysOnHire }}
+                </td>
+                <td class="text-center">
                   <ion-input
                     #qty
                     debounce="200"
@@ -128,12 +150,24 @@
                 </td>
                 <td class="text-end">
                   {{ company.currency.symbol
-                  }}{{ item.hireCost * item.shipmentQty | number: "1.2-2" }}
+                  }}{{
+                    item.hireCost * item.shipmentQty * estimate.daysOnHire
+                      | number: "1.2-2"
+                  }}
                 </td>
               </tr>
             </ng-template>
           </ng-container>
         </tbody>
+        <tfoot>
+          <tr>
+            <th class="text-end" colspan="7" scope="col">Subtotal</th>
+            <th class="text-end" colspan="2" scope="col">
+              {{ company.currency.symbol }}
+              {{ estimate.itemHire | number: "0.2-2" }}
+            </th>
+          </tr>
+        </tfoot>
       </table>
     </ion-col>
   </ion-row>

@@ -54,7 +54,7 @@
 
 <ion-content fullscreen="true" class="ion-padding">
   <div *ngIf="company" [ngSwitch]="active">
-    <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
+    <form name="estimate" [formGroup]="form" *ngIf="!isLoading && form">
       <!-- OVERVIEW TAB -->
       <ion-grid *ngSwitchDefault>
         <ion-row class="card-outline mb-3">

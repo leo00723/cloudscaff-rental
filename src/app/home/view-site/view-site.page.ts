@@ -1,11 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
-import { SetSite } from 'src/app/home/sites/state/sites.actions';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
@@ -21,7 +20,7 @@ import { AddSiteComponent } from '../sites/add-site/add-site.component';
   selector: 'app-view-site',
   templateUrl: './view-site.page.html',
 })
-export class ViewSitePage implements OnDestroy {
+export class ViewSitePage {
   @Select() user$: Observable<User>;
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
@@ -43,7 +42,6 @@ export class ViewSitePage implements OnDestroy {
         tap((site: Site) => {
           if (!site)
             this.masterSvc.store().dispatch(new Navigate('/dashboard/sites'));
-          // this.masterSvc.store().dispatch(new SetSite(site));
         })
       ) as Observable<Site>;
     this.estimates$ = this.masterSvc
@@ -170,9 +168,5 @@ export class ViewSitePage implements OnDestroy {
 
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
-  }
-
-  ngOnDestroy(): void {
-    this.masterSvc.store().dispatch(new SetSite(null));
   }
 }

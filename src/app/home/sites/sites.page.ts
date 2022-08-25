@@ -8,8 +8,6 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from '../../shared/company/company.state';
 import { Navigate } from '../../shared/router.state';
 import { AddSiteComponent } from './add-site/add-site.component';
-import { GetSites } from './state/sites.actions';
-import { SitesState } from './state/sites.state';
 
 @Component({
   selector: 'app-sites',
@@ -18,7 +16,7 @@ import { SitesState } from './state/sites.state';
 export class SitesPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
-  @Select() sites$: Observable<Site[]>;
+  sites$: Observable<Site[]>;
   isLoading = true;
   constructor(private masterSvc: MasterService) {}
 
@@ -56,8 +54,9 @@ export class SitesPage implements OnInit {
 
     setTimeout(() => {
       if (id) {
-        let sites = !!this.masterSvc.store().selectSnapshot(SitesState.sites);
-        if (!sites) this.masterSvc.store().dispatch(new GetSites(id));
+        this.sites$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/sites`, 'code', 'desc');
       } else {
         this.masterSvc.log(
           '-----------------------try sites----------------------'

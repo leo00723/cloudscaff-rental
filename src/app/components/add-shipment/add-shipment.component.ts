@@ -3,8 +3,6 @@ import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
-import { GetSites } from 'src/app/home/sites/state/sites.actions';
-import { SitesState } from 'src/app/home/sites/state/sites.state';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Shipment } from 'src/app/models/shipment.model';
@@ -40,8 +38,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
-    let sites = !!this.masterSvc.store().selectSnapshot(SitesState.sites);
-    if (!sites) this.masterSvc.store().dispatch(new GetSites(this.company.id));
+    this.init();
   }
 
   ngOnDestroy(): void {
@@ -194,5 +191,21 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       status: ['pending', Validators.required],
       createdBy: [this.user.id, Validators.required],
     });
+  }
+  private init() {
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+
+    setTimeout(() => {
+      if (id) {
+        this.sites$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/sites`, 'code', 'desc');
+      } else {
+        this.masterSvc.log(
+          '-----------------------try sites----------------------'
+        );
+        this.init();
+      }
+    }, 200);
   }
 }
