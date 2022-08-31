@@ -34,7 +34,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   viewAll = true;
   error = false;
   private subs = new Subscription();
-  @Select() sites$: Observable<Site[]>;
+  sites$: Observable<Site[]>;
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);

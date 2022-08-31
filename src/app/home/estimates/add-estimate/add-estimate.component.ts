@@ -180,22 +180,24 @@ export class AddEstimatePage implements OnInit {
   }
   addAttachment() {
     const attachment = this.masterSvc.fb().group({
-      description: ['', Validators.nullValidator],
-      rate: ['', Validators.required],
-      length: ['', [Validators.required, Validators.min(1)]],
-      width: ['', [Validators.required, Validators.min(1)]],
-      height: ['', [Validators.required, Validators.min(1)]],
-      lifts: ['', [Validators.nullValidator]],
       boardedLifts: ['', [Validators.nullValidator]],
-      extraHirePercentage: ['', [Validators.nullValidator]],
-      extraHire: ['', [Validators.nullValidator]],
-      level: [''],
-      total: [0],
-      hireRate: [''],
       daysStanding: [''],
+      description: ['', Validators.nullValidator],
+      extraHire: ['', [Validators.nullValidator]],
+      extraHirePercentage: ['', [Validators.nullValidator]],
+      height: ['', [Validators.required, Validators.min(1)]],
+      hireRate: [''],
       hireTotal: [0],
       isWeeks: ['', Validators.nullValidator],
+      length: ['', [Validators.required, Validators.min(1)]],
+      level: [''],
+      lifts: ['', [Validators.nullValidator]],
+      rate: ['', Validators.required],
+      total: [0],
+      type: ['', Validators.nullValidator],
+      width: ['', [Validators.required, Validators.min(1)]],
     });
+
     this.attachmentsForms.push(attachment);
   }
   deleteAttachment(i: number) {
