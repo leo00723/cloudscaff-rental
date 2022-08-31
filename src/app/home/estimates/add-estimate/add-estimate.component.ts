@@ -575,6 +575,45 @@ export class AddEstimatePage implements OnInit {
       }
     });
   }
+  deleteEstimate() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.masterSvc.notification().presentAlertConfirm(
+        async () => {
+          this.masterSvc.notification().presentAlertConfirm(
+            async () => {
+              try {
+                this.loading = true;
+                await this.masterSvc
+                  .edit()
+                  .deleteDocById(
+                    `company/${this.estimate.company.id}/estimates`,
+                    this.estimate.id
+                  );
+                this.masterSvc
+                  .notification()
+                  .toast('Estimate deleted successfully!', 'success');
+                this.close();
+              } catch (error) {
+                this.loading = false;
+                this.masterSvc.log(error);
+                this.masterSvc
+                  .notification()
+                  .toast(
+                    'Something went wrong deleting your estimate, try again!',
+                    'danger',
+                    2000
+                  );
+              }
+            },
+            'Are you 200% sure?',
+            'Okay here we go...'
+          );
+        },
+        'Are you 100% sure?',
+        'This cannot be undone!'
+      );
+    });
+  }
 
   //start the acceptance process
   private async startAcceptance() {

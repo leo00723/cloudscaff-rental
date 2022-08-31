@@ -112,23 +112,33 @@
     <ion-col class="text-end">
       <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
 
-      <ion-button
-        *ngIf="!loading && user.role !== 'Owner' && user.id !== currentUser.id"
-        (click)="delete()"
-        color="danger"
-        shape="round"
+      <ng-container
+        *ngIf="
+          currentUser.role === 'Owner' || currentUser.role === 'Super-admin'
+        "
       >
-        Delete User
-      </ion-button>
-      <ion-button
-        color="success"
-        *ngIf="!loading && user.role !== 'Owner' && user.id !== currentUser.id"
-        (click)="update()"
-        shape="round"
-        [disabled]="form.invalid"
-      >
-        Update User
-      </ion-button>
+        <ion-button
+          *ngIf="
+            !loading && user.role !== 'Owner' && user.id !== currentUser.id
+          "
+          (click)="delete()"
+          color="danger"
+          shape="round"
+        >
+          Delete User
+        </ion-button>
+        <ion-button
+          color="success"
+          *ngIf="
+            !loading && user.role !== 'Owner' && user.id !== currentUser.id
+          "
+          (click)="update()"
+          shape="round"
+          [disabled]="form.invalid"
+        >
+          Update User
+        </ion-button>
+      </ng-container>
     </ion-col>
   </ion-row>
 </ion-content>

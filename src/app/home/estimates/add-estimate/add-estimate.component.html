@@ -1563,6 +1563,19 @@
               >Create Revision</ion-button
             >
           </ion-col>
+          <ion-col
+            size="12"
+            *ngIf="user.role === 'Owner' || user.role === 'Super-Admin'"
+          >
+            <ion-button
+              fill="outline"
+              size="block"
+              shape="round"
+              color="danger"
+              (click)="deleteEstimate()"
+              >Delete Estimate</ion-button
+            >
+          </ion-col>
         </ion-row>
       </ion-grid>
     </form>

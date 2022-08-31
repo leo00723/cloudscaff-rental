@@ -54,14 +54,15 @@ export class EstimateTableComponent {
     const val = event.detail.value.toLowerCase() as string;
     this.temp$ = this.estimates$.pipe(
       map((es) =>
-        es.filter(
-          (d) =>
-            d.code.toLowerCase().indexOf(val) !== -1 ||
-            d.siteName.toLowerCase().indexOf(val) !== -1 ||
-            d.customer.name.toLowerCase().indexOf(val) !== -1 ||
-            d.status.toLowerCase().indexOf(val) !== -1 ||
-            d.total.toString().toLowerCase().indexOf(val) !== -1 ||
-            !val
+        es.filter((d) =>
+          d.code.toLowerCase().indexOf(val) !== -1 || d.siteName
+            ? d.siteName?.toLowerCase().indexOf(val) !== -1
+            : false || d.customer
+            ? d.customer.name?.toLowerCase().indexOf(val) !== -1
+            : false ||
+              d.status.toLowerCase().indexOf(val) !== -1 ||
+              d.total.toString().toLowerCase().indexOf(val) !== -1 ||
+              !val
         )
       )
     );
