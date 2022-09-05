@@ -550,7 +550,7 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
-  // ESTIMATE STANDARD PDF
+  // ESTIMATE BULK PDF
   async generateBulkEstimate(
     bulkEstimate: BulkEstimate,
     company: Company,
@@ -731,6 +731,216 @@ export class PdfService {
                 {
                   text: `${company.currency.symbol} ${this.format(
                     bulkEstimate.extraHire ? bulkEstimate.extraHire : 0
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  // ESTIMATE INVENTORY PDF
+  async generateInventoryEstimate(
+    inventoryEstimate: BulkInventoryEstimate,
+    company: Company,
+    terms: Term | null
+  ) {
+    let shipments = [];
+    inventoryEstimate.estimates.forEach((e, i) => {
+      const summary = this.createInventoryTable(e, company);
+      shipments.push({
+        text: `Shipment ${i + 1} (${e.startDate} - ${e.endDate})`,
+        style: ['h4b'],
+      });
+      shipments.push(summary);
+      shipments.push(hr);
+    });
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(
+        `${company.name}-Estimate-${inventoryEstimate.code}`
+      ),
+      content: [
+        await this.getHeader(
+          'Estimate',
+          inventoryEstimate.code,
+          inventoryEstimate.siteName,
+          inventoryEstimate.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          `https://app.cloudscaff.com/viewInventoryEstimate/${company.id}-${inventoryEstimate.id}`,
+          []
+        ),
+        hr,
+        this.getSubHeader(inventoryEstimate.customer, company),
+        hr,
+        { text: inventoryEstimate.message },
+        hr,
+        ...shipments,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    inventoryEstimate.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount (${inventoryEstimate.discountPercentage}%):`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    inventoryEstimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
+                { text: company.accountNum, alignment: 'left' },
+                {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    inventoryEstimate.subtotal - inventoryEstimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `VAT (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          inventoryEstimate.vat
+                        )}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          inventoryEstimate.tax
+                        )}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    inventoryEstimate.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Extra Hire:',
+                  style: 'h3',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    inventoryEstimate.extraHire
+                      ? inventoryEstimate.extraHire
+                      : 0
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -2819,6 +3029,113 @@ export class PdfService {
             estimate.hire.daysStanding,
             estimate.hire.total
           ),
+          [
+            {
+              text: 2,
+              style: 'h4b',
+            },
+            {
+              text: 'Labor Details',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...labour,
+          [
+            {
+              text: 3,
+              style: 'h4b',
+            },
+            {
+              text: 'Transport Detail',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...transport,
+          [
+            {
+              text: 4,
+              style: 'h4b',
+            },
+            {
+              text: 'Additionals Detail',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...additionals,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    return summary;
+  }
+
+  private createInventoryTable(estimate: InventoryEstimate, company: Company) {
+    const items = [];
+    estimate.items.forEach((i) => {
+      items.push(
+        this.addEstimateItem(company, `${i.name}`, i.shipmentQty, i.totalCost)
+      );
+    });
+    const labour = [];
+    estimate.labour.forEach((l) => {
+      labour.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.rate.name}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
+    const transport = [];
+    estimate.transport.forEach((l) => {
+      transport.push(
+        this.addEstimateItem(
+          company,
+          `${l.type.name} - ${l.type.maxLoad}${company.mass.symbol}`,
+          l.qty,
+          l.total
+        )
+      );
+    });
+    const additionals = [];
+    estimate.additionals.forEach((a) => {
+      additionals.push(this.addEstimateItem(company, a.name, a.qty, a.total));
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', 'auto', '*'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: `Description`,
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          [
+            {
+              text: 1,
+              style: 'h4b',
+            },
+            {
+              text: 'Item Detail',
+              style: 'h4b',
+              colSpan: 3,
+            },
+          ],
+          ...items,
           [
             {
               text: 2,

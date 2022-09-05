@@ -110,7 +110,7 @@
           <td class="text-end"></td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ +item.hireCost * +item.shipmentQty | number: "0.2-2" }}
+            {{ item.totalCost | number: "0.2-2" }}
           </td>
         </tr>
         <!-- LABOR -->

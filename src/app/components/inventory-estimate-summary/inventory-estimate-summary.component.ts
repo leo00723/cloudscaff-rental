@@ -28,14 +28,14 @@ export class InventoryEstimateSummaryComponent {
   }
   async download(terms: Term | null) {
     const sharedEstimate = {
-      bulkEstimate: this.inventoryEstimate,
+      inventoryEstimate: this.inventoryEstimate,
       company: this.company,
       terms: terms,
     };
     await this.masterSvc
       .edit()
       .updateDoc(
-        'sharedBulkEstimates',
+        'sharedInventoryEstimates',
         `${this.company.id}-${this.inventoryEstimate.id}`,
         {
           ...sharedEstimate,
@@ -43,14 +43,14 @@ export class InventoryEstimateSummaryComponent {
           email: [this.inventoryEstimate.company.email],
         }
       );
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateBulkEstimate(this.inventoryEstimate, this.company, terms);
-    // this.masterSvc.pdf().handlePdf(pdf, this.inventoryEstimate.code);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateInventoryEstimate(this.inventoryEstimate, this.company, terms);
+    this.masterSvc.pdf().handlePdf(pdf, this.inventoryEstimate.code);
   }
   async share(terms: Term | null) {
     const sharedEstimate = {
-      bulkEstimate: this.inventoryEstimate,
+      inventoryEstimate: this.inventoryEstimate,
       company: this.company,
       terms: terms,
     };
@@ -58,7 +58,7 @@ export class InventoryEstimateSummaryComponent {
       component: ShareDocumentComponent,
       componentProps: {
         data: {
-          type: 'bulkEstimate',
+          type: 'inventoryEstimate',
           doc: sharedEstimate,
         },
       },

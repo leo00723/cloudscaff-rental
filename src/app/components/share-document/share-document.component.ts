@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
+import { BulkInventoryEstimate } from 'src/app/models/bulkInventoryEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Credit } from 'src/app/models/credit.model';
 import { Estimate } from 'src/app/models/estimate.model';
@@ -145,6 +146,55 @@ export class ShareDocumentComponent {
                   { status: 'sent' }
                 );
             }
+            this.form.reset();
+            this.masterSvc
+              .notification()
+              .toast('Estimate shared successfully', 'success');
+            this.close();
+            this.loading = false;
+          } catch (error) {
+            console.error(error);
+            this.masterSvc
+              .notification()
+              .toast('Something went wrong! Please try again', 'danger');
+            this.loading = false;
+          }
+        }
+        break;
+      case 'inventoryEstimate':
+        {
+          try {
+            this.loading = true;
+            const inventoryEstimate: BulkInventoryEstimate =
+              this.data.doc.inventoryEstimate;
+            const company: Company = this.data.doc.company;
+            const link = `https://app.cloudscaff.com/viewInventoryEstimate/${company.id}-${inventoryEstimate.id}`;
+            const email = this.form.value;
+            const cc = email.cc.map((e) => e.email);
+            const emailData = {
+              to: email.email,
+              cc: cc.length > 0 ? cc : '',
+              template: {
+                name: 'share',
+                data: {
+                  title: `Hey ${inventoryEstimate.customer.name}, ${company.name} has sent you a Estimate.`,
+                  message: '',
+                  btnText: 'View Estimate',
+                  link,
+                  subject: `${company.name} Estimate - ${inventoryEstimate.code}`,
+                },
+              },
+            };
+            await this.masterSvc
+              .edit()
+              .setDoc(
+                'sharedInventoryEstimates',
+                { ...this.data.doc, cc, email },
+                `${company.id}-${inventoryEstimate.id}`
+              );
+            await this.masterSvc
+              .edit()
+              .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
             this.form.reset();
             this.masterSvc
               .notification()

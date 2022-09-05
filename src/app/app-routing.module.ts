@@ -64,6 +64,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'viewInventoryEstimate/:id',
+    loadChildren: () =>
+      import(
+        './customer-inventory-estimate/customer-inventory-estimate.module'
+      ).then((m) => m.CustomerInventoryEstimatePageModule),
+  },
+  {
     path: 'viewInvoice/:id',
     loadChildren: () =>
       import('./customer-invoice/customer-invoice.module').then(

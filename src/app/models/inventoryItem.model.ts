@@ -29,4 +29,5 @@ export interface InventoryItem {
   inService?: boolean;
   crossHire?: CrossHire[];
   error?: boolean;
+  totalCost?: number;
 }

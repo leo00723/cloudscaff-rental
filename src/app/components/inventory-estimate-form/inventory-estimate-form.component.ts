@@ -111,6 +111,10 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  trackItems(index: number, itemObject: any) {
+    return itemObject.code;
+  }
+
   // START: FORM CRUD
   get labourForms() {
     return this.form.get('labour') as FormArray;
@@ -212,9 +216,12 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
         }
         break;
     }
+
     this.estimate.items = [];
     this.items.forEach((i) => {
       +i.shipmentQty > 0 ? this.estimate.items.push(i) : null;
+      item.totalCost =
+        item.hireCost * item.shipmentQty * this.estimate.daysOnHire;
     });
 
     this.updateEstimateTotal();
@@ -533,6 +540,7 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
             if (inventoryItem) {
               inventoryItem.hireCost = +item.hireCost;
               inventoryItem.shipmentQty = +item.shipmentQty;
+              inventoryItem.totalCost = +item.totalCost;
             }
           });
           this.items = items;

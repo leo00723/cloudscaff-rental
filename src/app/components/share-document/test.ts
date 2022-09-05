@@ -1,9 +1,9 @@
 // {
 //   try {
 //     this.loading = true;
-//     const bulkEstimate: BulkEstimate = this.data.doc.bulkEstimate;
+//     const inventoryEstimate: BulkInventoryEstimate = this.data.doc.inventoryEstimate;
 //     const company: Company = this.data.doc.company;
-//     const link = `https://app.cloudscaff.com/viewBulkEstimate/${company.id}-${bulkEstimate.id}`;
+//     const link = `https://app.cloudscaff.com/viewInventoryEstimate/${company.id}-${inventoryEstimate.id}`;
 //     const email = this.form.value;
 //     const cc = email.cc.map((e) => e.email);
 //     const emailData = {
@@ -12,20 +12,20 @@
 //       template: {
 //         name: 'share',
 //         data: {
-//           title: `Hey ${bulkEstimate.customer.name}, ${company.name} has sent you a Estimate.`,
+//           title: `Hey ${inventoryEstimate.customer.name}, ${company.name} has sent you a Estimate.`,
 //           message: '',
 //           btnText: 'View Estimate',
 //           link,
-//           subject: `${company.name} Estimate - ${bulkEstimate.code}`,
+//           subject: `${company.name} Estimate - ${inventoryEstimate.code}`,
 //         },
 //       },
 //     };
 //     await this.masterSvc
 //       .edit()
 //       .setDoc(
-//         'sharedBulkEstimates',
+//         'sharedInventoryEstimates',
 //         { ...this.data.doc, cc, email },
-//         `${company.id}-${bulkEstimate.id}`
+//         `${company.id}-${inventoryEstimate.id}`
 //       );
 //     await this.masterSvc
 //       .edit()

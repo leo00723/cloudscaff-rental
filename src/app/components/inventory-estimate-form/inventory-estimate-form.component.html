@@ -58,7 +58,9 @@
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let item of items; let i = index">
+          <ng-container
+            *ngFor="let item of items; let i = index; trackBy: trackItems"
+          >
             <tr class="align-middle" *ngIf="viewAll; else viewShipment">
               <th scope="row">{{ item.code }}</th>
               <td>{{ item.category }}</td>
@@ -101,10 +103,7 @@
               </td>
               <td class="text-end">
                 {{ company.currency.symbol
-                }}{{
-                  item.hireCost * item.shipmentQty * estimate.daysOnHire
-                    | number: "1.2-2"
-                }}
+                }}{{ item.totalCost | number: "1.2-2" }}
               </td>
             </tr>
             <ng-template #viewShipment>
@@ -150,10 +149,7 @@
                 </td>
                 <td class="text-end">
                   {{ company.currency.symbol
-                  }}{{
-                    item.hireCost * item.shipmentQty * estimate.daysOnHire
-                      | number: "1.2-2"
-                  }}
+                  }}{{ item.totalCost | number: "1.2-2" }}
                 </td>
               </tr>
             </ng-template>

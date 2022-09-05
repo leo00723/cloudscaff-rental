@@ -108,10 +108,10 @@ export class BudgetBreakdownComponent implements OnInit {
   update() {
     const subtotal = +this.field('subtotal').value;
     const margin = +this.field('margin').value / 100;
-    const profit = Math.round(subtotal * margin);
-    const cost = Math.round(subtotal - profit);
+    const profit = +(subtotal * margin).toFixed(2);
+    const cost = +(subtotal - profit).toFixed(2);
     this.field('cost').setValue(cost);
-    this.field('profit').setValue(subtotal - cost);
+    this.field('profit').setValue(profit);
     this.field('profitPercentage').setValue((profit / subtotal) * 100);
     this.updateSpend();
   }
@@ -124,9 +124,9 @@ export class BudgetBreakdownComponent implements OnInit {
       ? (this.error = true)
       : (this.error = false);
 
-    const labourTotal = Math.round(cost * labour);
-    const materialTotal = Math.round(cost * material);
-    const transportTotal = Math.round(cost * transport);
+    const labourTotal = +(cost * labour).toFixed(2);
+    const materialTotal = +(cost * material).toFixed(2);
+    const transportTotal = +(cost * transport).toFixed(2);
     this.field('labourTotal').setValue(labourTotal);
     this.field('materialTotal').setValue(materialTotal);
     this.field('transportTotal').setValue(transportTotal);
@@ -135,7 +135,7 @@ export class BudgetBreakdownComponent implements OnInit {
   updateLabour() {
     const labourRate = +this.field('labourRate').value;
     const noOps = +this.field('noOps').value;
-    const totalPerDay = Math.round(labourRate * noOps);
+    const totalPerDay = +(labourRate * noOps).toFixed(2);
     const days = Math.round(+this.field('labourTotal').value / totalPerDay);
     const weeks = Math.round(days / 5);
     this.field('totalPerDay').setValue(totalPerDay);
