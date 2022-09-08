@@ -74,10 +74,16 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
 import { InventoryEstimateFormComponent } from './inventory-estimate-form/inventory-estimate-form.component';
 import { InventoryEstimateSummaryComponent } from './inventory-estimate-summary/inventory-estimate-summary.component';
 import { InventoryEstimateTableComponent } from './inventory-estimate-table/inventory-estimate-table.component';
+import { ViewInventoryEstimateComponent } from './view-inventory-estimate/view-inventory-estimate.component';
+import { AddBillableShipmentComponent } from './add-billable-shipment/add-billable-shipment.component';
 
 const COMPONENTS = [
+  AcceptBulkEstimateComponent,
+  AcceptEstimateComponent,
   AcceptModificationComponent,
+  AddBillableShipmentComponent,
   AddCreditComponent,
+  AddEstimatePage,
   AddHandoverComponent,
   AddInspectionComponent,
   AddInvoiceComponent,
@@ -91,6 +97,10 @@ const COMPONENTS = [
   AddTransferComponent,
   AddressSearchComponent,
   BudgetBreakdownComponent,
+  BulkEstimateComponent,
+  BulkEstimateFormComponent,
+  BulkEstimateSummaryComponent,
+  BulkEstimateTableComponent,
   CalculatePipe,
   CompanyInfoDetailComponent,
   CompanyPage,
@@ -100,6 +110,7 @@ const COMPONENTS = [
   EditprofileComponent,
   EstimateSummaryComponent,
   EstimateTableComponent,
+  FileUploadComponent,
   GenerateStatementComponent,
   HandoverSummaryComponent,
   HeaderComponent,
@@ -111,8 +122,13 @@ const COMPONENTS = [
   InputTextReactiveComponent,
   InspectionChecklistComponent,
   InspectionSummaryComponent,
+  InventoryEstimateComponent,
+  InventoryEstimateFormComponent,
+  InventoryEstimateSummaryComponent,
+  InventoryEstimateTableComponent,
   InvoiceSummaryComponent,
   ModificationSummaryComponent,
+  RequestsTableComponent,
   ReturnsTableComponent,
   ScaffoldEditformComponent,
   ScaffoldOverviewTableComponent,
@@ -122,24 +138,15 @@ const COMPONENTS = [
   SiteFormComponent,
   SkeletonTextComponent,
   StatementSummaryComponent,
+  TitleBlockComponent,
   UserPickerComponent,
+  ViewBulkEstimateComponent,
   ViewEstimateComponent,
+  ViewInventoryEstimateComponent,
   ViewInvoiceComponent,
   ViewModificationComponent,
   ViewStockLocationsComponent,
-  RequestsTableComponent,
-  TitleBlockComponent,
-  BulkEstimateFormComponent,
-  BulkEstimateSummaryComponent,
-  BulkEstimateTableComponent,
-  ViewBulkEstimateComponent,
   ViewTermsComponent,
-  AddEstimatePage,
-  AcceptEstimateComponent,
-  BulkEstimateComponent,
-  AcceptBulkEstimateComponent,
-  InventoryEstimateComponent,
-  FileUploadComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -154,8 +161,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, InventoryEstimateFormComponent, InventoryEstimateSummaryComponent, InventoryEstimateTableComponent],
+  declarations: [COMPONENTS],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, InventoryEstimateFormComponent, InventoryEstimateSummaryComponent, InventoryEstimateTableComponent],
+  exports: [IMPORTS, COMPONENTS],
 })
 export class ComponentsModule {}

@@ -1,8 +1,6 @@
 <form [formGroup]="form">
+  <app-title-block>Site Details</app-title-block>
   <ion-row class="card-outline mb-3">
-    <ion-col size="12">
-      <ion-text><h4>Site Details</h4> </ion-text>
-    </ion-col>
     <ion-col sizeXl="4" size="12">
       <app-input-reactive
         title="Site name"
@@ -26,9 +24,35 @@
       ></app-input-date>
     </ion-col>
   </ion-row>
+  <app-title-block>Billing Details</app-title-block>
+  <ion-row class="card-outline mb-3">
+    <ion-col sizeXl="4" size="12">
+      <app-input-select-reactive
+        title="Is Site Billable"
+        placeholder="Select option"
+        controlName="billable"
+        [form]="form"
+        [selectedText]="field('billable').value ? 'Yes' : 'No'"
+      >
+        <ion-select-option [value]="false">No </ion-select-option>
+        <ion-select-option [value]="true">Yes </ion-select-option>
+      </app-input-select-reactive>
+    </ion-col>
+    <ng-container *ngIf="field('billable').value">
+      <ion-col sizeXl="4" size="12">
+        <app-input-reactive
+          type="number"
+          title="No. Days in Billing Cycle"
+          [form]="form"
+          controlName="billingCycle"
+          (fieldChange)="changeBillingDate($event)"
+        ></app-input-reactive>
+      </ion-col>
+    </ng-container>
+  </ion-row>
+  <app-title-block>Users</app-title-block>
   <ion-row class="card-outline mb-3">
     <ion-col>
-      <ion-text><h4>Users</h4> </ion-text>
       <ion-item *ngFor="let user of site.users">
         <ion-avatar slot="start">
           <img [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'" />
@@ -50,10 +74,10 @@
       </ion-fab-button>
     </ion-col>
   </ion-row>
+  <app-title-block>Site Address</app-title-block>
+
   <ion-row class="card-outline mb-3">
     <ion-col size="12">
-      <ion-text><h4>Site Address</h4> </ion-text>
-
       <app-address-search
         *ngIf="isCreate || isUpdate"
         (addressData)="updateAddress($event)"
@@ -93,10 +117,9 @@
       ></app-input-reactive>
     </ion-col>
   </ion-row>
+  <app-title-block>Customer Details</app-title-block>
   <ion-row class="card-outline mb-3">
     <ion-col size="12">
-      <ion-text><h4>Customer Details</h4> </ion-text>
-
       <app-input-select-reactive
         title="Customer"
         placeholder="Select Customer"

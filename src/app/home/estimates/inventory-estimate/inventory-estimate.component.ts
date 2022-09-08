@@ -13,6 +13,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { AcceptInventoryEstimateComponent } from './accept-inventory-estimate/accept-inventory-estimate.component';
 
 @Component({
   selector: 'app-inventory-estimate',
@@ -102,7 +103,6 @@ export class InventoryEstimateComponent implements OnInit {
       vat: 0,
       poNumber: '',
       woNumber: '',
-      siteId: '',
       createdBy: '',
       updatedBy: '',
       acceptedBy: '',
@@ -290,18 +290,18 @@ export class InventoryEstimateComponent implements OnInit {
 
   //start the acceptance process
   private async startAcceptance() {
-    // const modal = await this.masterSvc.modal().create({
-    //   component: AcceptBulkEstimateComponent,
-    //   componentProps: {
-    //     company: this.company,
-    //     user: this.user,
-    //     bulkEstimate: this.inventoryEstimate,
-    //     form: this.form,
-    //   },
-    //   id: 'acceptEstimate',
-    //   cssClass: 'fullscreen',
-    // });
-    // return await modal.present();
+    const modal = await this.masterSvc.modal().create({
+      component: AcceptInventoryEstimateComponent,
+      componentProps: {
+        company: this.company,
+        user: this.user,
+        inventoryEstimate: this.inventoryEstimate,
+        form: this.form,
+      },
+      id: 'acceptEstimate',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
   }
 
   //update the estimate total

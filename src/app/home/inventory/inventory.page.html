@@ -1,5 +1,5 @@
-<app-header title="Inventory"
-  ><ion-toolbar>
+<app-header title="Inventory">
+  <ion-toolbar>
     <ion-segment
       scrollable
       (ionChange)="segmentChanged($event)"
@@ -14,17 +14,21 @@
         <ion-label>Shipments</ion-label>
       </ion-segment-button>
       <ion-segment-button value="3">
-        <ion-label>Requests</ion-label>
+        <ion-label>Billable Shipments</ion-label>
       </ion-segment-button>
       <ion-segment-button value="4">
-        <ion-label>Returns</ion-label>
+        <ion-label>Requests</ion-label>
       </ion-segment-button>
       <ion-segment-button value="5">
+        <ion-label>Returns</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="6">
         <ion-label>Transfers</ion-label>
       </ion-segment-button>
     </ion-segment>
-  </ion-toolbar></app-header
->
+  </ion-toolbar>
+</app-header>
+
 <ion-content fullscreen="true" class="ion-padding">
   <ng-container [ngSwitch]="active">
     <div *ngSwitchDefault>
@@ -53,20 +57,27 @@
       </ion-fab>
     </div>
     <div *ngSwitchCase="3">
+      <app-billable-shipments-table
+        [value]="billableShipments$"
+        *ngIf="billableShipments$ | async else loading"
+        (selectedItem)="viewBillableShipment($event)"
+      ></app-billable-shipments-table>
+    </div>
+    <div *ngSwitchCase="4">
       <app-requests-table
         [value]="requests$"
         *ngIf="requests$ | async else loading"
         (selectedItem)="viewRequest($event)"
       ></app-requests-table>
     </div>
-    <div *ngSwitchCase="4">
+    <div *ngSwitchCase="5">
       <app-returns-table
         [value]="returns$"
         *ngIf="returns$ | async else loading"
         (selectedItem)="viewReturn($event)"
       ></app-returns-table>
     </div>
-    <div *ngSwitchCase="5">
+    <div *ngSwitchCase="6">
       <app-transfer-table
         [value]="transfers$"
         *ngIf="transfers$ | async else loading"

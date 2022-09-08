@@ -5,6 +5,7 @@ import { InventoryTableComponent } from './inventory-table/inventory-table.compo
 import { InventoryPage } from './inventory.page';
 import { ShipmentTableComponent } from './shipment-table/shipment-table.component';
 import { TransferTableComponent } from './transfer-table/transfer-table.component';
+import { BillableShipmentsTableComponent } from './billable-shipments-table/billable-shipments-table.component';
 
 @NgModule({
   imports: [ComponentsModule, InventoryPageRoutingModule],
@@ -13,6 +14,7 @@ import { TransferTableComponent } from './transfer-table/transfer-table.componen
     InventoryTableComponent,
     ShipmentTableComponent,
     TransferTableComponent,
+    BillableShipmentsTableComponent,
   ],
 })
 export class InventoryPageModule {}

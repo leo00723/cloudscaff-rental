@@ -52,7 +52,6 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
     vat: 0,
     poNumber: '',
     woNumber: '',
-    siteId: '',
     createdBy: '',
     updatedBy: '',
     acceptedBy: '',

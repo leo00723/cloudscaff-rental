@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
+import { AddBillableShipmentComponent } from 'src/app/components/add-billable-shipment/add-billable-shipment.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
@@ -8,6 +10,7 @@ import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stoc
 import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
+import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
@@ -26,11 +29,18 @@ export class InventoryPage implements OnInit {
   @Select() company$: Observable<Company>;
   inventoryItems$: Observable<InventoryItem[]>;
   shipments$: Observable<Shipment[]>;
+  billableShipments$: Observable<InventoryEstimate[]>;
   transfers$: Observable<Transfer[]>;
   requests$: Observable<Request[]>;
   returns$: Observable<Return[]>;
   active = 1;
-  constructor(private masterSvc: MasterService) {}
+  constructor(
+    private masterSvc: MasterService,
+    private activatedRoute: ActivatedRoute
+  ) {
+    const page = Number(this.activatedRoute.snapshot.queryParamMap.get('page'));
+    this.active = page >= 1 && page <= 6 ? page : 1;
+  }
   ngOnInit() {
     this.init();
   }
@@ -113,6 +123,19 @@ export class InventoryPage implements OnInit {
     });
     return await modal.present();
   }
+  async viewBillableShipment(inventoryEstimate: InventoryEstimate) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddBillableShipmentComponent,
+      componentProps: {
+        isEdit: true,
+        value: inventoryEstimate,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'editShipment',
+    });
+    return await modal.present();
+  }
 
   async addTransfer() {
     const modal = await this.masterSvc.modal().create({
@@ -181,6 +204,13 @@ export class InventoryPage implements OnInit {
         this.shipments$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/shipments`, 'code', 'desc');
+        this.billableShipments$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(
+            `company/${id}/billableShipments`,
+            'code',
+            'desc'
+          );
         this.transfers$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/transfers`, 'code', 'desc');

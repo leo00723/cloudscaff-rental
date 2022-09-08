@@ -41,6 +41,7 @@ export class SiteFormComponent implements OnInit {
   @Input() isUpdate = false;
   @Input() isDelete = false;
   @Input() isCreate = true;
+  private needToUpdateShipments = false;
 
   @Input() set siteData(val: Site) {
     this.site = val;
@@ -55,6 +56,8 @@ export class SiteFormComponent implements OnInit {
         endDate: [this.site.endDate, Validators.required],
         zip: [this.site.zip],
         country: [this.site.country, Validators.required],
+        billingCycle: [this.site.billingCycle, Validators.required],
+        billable: [this.site.billable, Validators.required],
       });
     }
   }
@@ -121,33 +124,35 @@ export class SiteFormComponent implements OnInit {
   }
 
   update() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.site.updatedBy = this.user.name;
-      Object.assign(this.site, this.form.value);
-      this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.site.companyId}/sites`,
-          this.site.id,
-          this.site
-        )
-        .then(() => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast('Site updated successfully!', 'success');
-        })
-        .catch((err) => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong updating your site, try again!',
-              'danger',
-              2000
-            );
-        });
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.site.updatedBy = this.user.name;
+        Object.assign(this.site, this.form.value);
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.site.companyId}/sites`,
+            this.site.id,
+            this.site
+          );
+        // if(this.needToUpdateShipments){
+
+        // } what i wanted to do here is update the invoicedate for all shipments that belong to this site but i need to think about it first
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast('Site updated successfully!', 'success');
+      } catch (err) {
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating your site, try again!',
+            'danger',
+            2000
+          );
+      }
     });
   }
   delete() {
@@ -184,6 +189,13 @@ export class SiteFormComponent implements OnInit {
     this.addUser().then();
   }
 
+  changeBillingDate(days) {
+    const newDate = new Date();
+    newDate.setDate(newDate.getDate() + days);
+    this.site.nextInvoiceDate = newDate;
+    this.needToUpdateShipments = true;
+  }
+
   private async addUser() {
     const modal = await this.masterSvc.modal().create({
       component: UserPickerComponent,
@@ -211,6 +223,8 @@ export class SiteFormComponent implements OnInit {
       country: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
+      billingCycle: ['', Validators.required],
+      billable: ['', Validators.required],
     });
   }
 }

@@ -3,6 +3,7 @@ import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { ViewBulkEstimateComponent } from 'src/app/components/view-bulk-estimate/view-bulk-estimate.component';
 import { ViewEstimateComponent } from 'src/app/components/view-estimate/view-estimate.component';
+import { ViewInventoryEstimateComponent } from 'src/app/components/view-inventory-estimate/view-inventory-estimate.component';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { BulkInventoryEstimate } from 'src/app/models/bulkInventoryEstimate.model';
 import { Company } from 'src/app/models/company.model';
@@ -106,9 +107,9 @@ export class EstimatesPage implements OnInit {
       return await modal.present();
     } else {
       const modal = await this.masterSvc.modal().create({
-        component: ViewBulkEstimateComponent,
+        component: ViewInventoryEstimateComponent,
         componentProps: {
-          bulkEstimate: inventoryEstimate,
+          bulkInventoryEstimate: inventoryEstimate,
         },
         showBackdrop: false,
         id: 'viewEstimate',
