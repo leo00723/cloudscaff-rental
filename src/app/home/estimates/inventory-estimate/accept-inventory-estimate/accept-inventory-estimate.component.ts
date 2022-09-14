@@ -89,6 +89,13 @@ export class AcceptInventoryEstimateComponent implements OnInit {
             this.inventoryEstimate.id,
             this.inventoryEstimate
           );
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/sites`,
+            this.site.id,
+            this.site
+          );
         if (this.inventoryEstimate.enquiryId.length > 0) {
           await this.masterSvc
             .edit()
@@ -178,11 +185,9 @@ export class AcceptInventoryEstimateComponent implements OnInit {
       await this.masterSvc
         .edit()
         .addDocument(`company/${this.company.id}/billableShipments`, shipment);
-      await this.masterSvc
-        .edit()
-        .updateDoc(`company/${this.company.id}/sites`, this.site.id, {
-          totalShipments: increment(1),
-        });
+      await this.masterSvc.edit().updateDoc(`company`, this.company.id, {
+        totalShipments: increment(1),
+      });
     }
   }
 }
