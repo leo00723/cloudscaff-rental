@@ -79,6 +79,7 @@ import { AddBillableShipmentComponent } from './add-billable-shipment/add-billab
 import { BillableShipmentsTableComponent } from '../home/inventory/billable-shipments-table/billable-shipments-table.component';
 import { ShipmentInvoiceSummaryComponent } from './shipment-invoice-summary/shipment-invoice-summary.component';
 import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipment-invoice.component';
+import { AddPaymentApplicationComponent } from './add-payment-application/add-payment-application.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -165,8 +166,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, ShipmentInvoiceSummaryComponent, ViewShipmentInvoiceComponent],
+  declarations: [COMPONENTS, ShipmentInvoiceSummaryComponent, ViewShipmentInvoiceComponent, AddPaymentApplicationComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, ShipmentInvoiceSummaryComponent, ViewShipmentInvoiceComponent],
+  exports: [IMPORTS, COMPONENTS, ShipmentInvoiceSummaryComponent, ViewShipmentInvoiceComponent, AddPaymentApplicationComponent],
 })
 export class ComponentsModule {}

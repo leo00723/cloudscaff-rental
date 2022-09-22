@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AddBillableShipmentComponent } from 'src/app/components/add-billable-shipment/add-billable-shipment.component';
+import { AddPaymentApplicationComponent } from 'src/app/components/add-payment-application/add-payment-application.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
 import { ShipmentInvoiceSummaryComponent } from 'src/app/components/shipment-invoice-summary/shipment-invoice-summary.component';
@@ -24,7 +25,7 @@ import { AddSiteComponent } from '../sites/add-site/add-site.component';
   selector: 'app-view-site',
   templateUrl: './view-site.page.html',
 })
-export class ViewSitePage {
+export class ViewSitePage implements OnInit {
   @Select() user$: Observable<User>;
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
@@ -117,6 +118,19 @@ export class ViewSitePage {
         'date',
         'desc'
       ) as Observable<InventoryEstimate[]>;
+  }
+  async ngOnInit(): Promise<void> {
+    const modal = await this.masterSvc.modal().create({
+      component: AddPaymentApplicationComponent,
+      componentProps: {
+        estimates$: this.estimates$,
+        site$: this.site$,
+      },
+      showBackdrop: false,
+      id: 'addPaymentApplication',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
   }
 
   async viewEstimate(estimate: Estimate) {

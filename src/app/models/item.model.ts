@@ -28,4 +28,6 @@ export interface Item {
   daysStanding: number;
   hireTotal: number;
   isWeeks: boolean;
+  hireDate?: any;
+  handover?: any;
 }
