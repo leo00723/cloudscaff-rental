@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title> {{ invoice.code }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container">
+    <app-shipment-invoice-summary
+      [invoice]="invoice"
+      [canDownload]="true"
+    ></app-shipment-invoice-summary>
+  </div>
+</ion-content>

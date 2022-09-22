@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { SiteFormComponent } from 'src/app/components/site-form/site-form.component';
 import { BulkInventoryEstimate } from 'src/app/models/bulkInventoryEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
@@ -21,6 +22,7 @@ import { UserState } from 'src/app/shared/user/user.state';
   styles: [],
 })
 export class AcceptInventoryEstimateComponent implements OnInit {
+  @ViewChild('siteForm') siteForm: SiteFormComponent;
   @Input() form;
   @Input() inventoryEstimate: BulkInventoryEstimate;
   company: Company;
@@ -32,7 +34,6 @@ export class AcceptInventoryEstimateComponent implements OnInit {
   show = '';
   loading = false;
   data = [];
-
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -153,6 +154,10 @@ export class AcceptInventoryEstimateComponent implements OnInit {
     this.field('siteName', this.form).setValue(site.name);
     this.field('customer', this.form).setValue(site.customer);
     this.page = 2;
+  }
+
+  updateSite(site: Site) {
+    this.field('site', this.form2).setValue({ ...site });
   }
 
   private updateShipments(site: Site) {

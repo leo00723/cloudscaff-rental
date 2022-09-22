@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -15,11 +14,11 @@ import { map, Observable } from 'rxjs';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 
 @Component({
-  selector: 'app-billable-shipments-table',
-  templateUrl: './billable-shipments-table.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-shipment-invoices-table',
+  templateUrl: './shipment-invoices-table.component.html',
+  styles: [],
 })
-export class BillableShipmentsTableComponent {
+export class ShipmentInvoicesTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<InventoryEstimate>();
   shipments$: Observable<InventoryEstimate[]>;

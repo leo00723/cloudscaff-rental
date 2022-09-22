@@ -3,9 +3,13 @@ import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { AddBillableShipmentComponent } from 'src/app/components/add-billable-shipment/add-billable-shipment.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
+import { ShipmentInvoiceSummaryComponent } from 'src/app/components/shipment-invoice-summary/shipment-invoice-summary.component';
+import { ViewShipmentInvoiceComponent } from 'src/app/components/view-shipment-invoice/view-shipment-invoice.component';
 import { Estimate } from 'src/app/models/estimate.model';
+import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
@@ -27,6 +31,9 @@ export class ViewSitePage {
   scaffolds$: Observable<Scaffold[]>;
   requests$: Observable<Request[]>;
   returns$: Observable<Return[]>;
+  billableShipments$: Observable<InventoryEstimate[]>;
+  shipmentInvoices$: Observable<InventoryEstimate[]>;
+
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
   ids = [];
@@ -87,6 +94,29 @@ export class ViewSitePage {
         'date',
         'desc'
       ) as Observable<Return[]>;
+    this.billableShipments$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/billableShipments`,
+        'site.id',
+        '==',
+        this.ids[1],
+        'date',
+        'desc'
+      ) as Observable<InventoryEstimate[]>;
+    this.shipmentInvoices$ = this.masterSvc
+      .edit()
+      .getCollectionWhereWhereAndOrder(
+        `company/${this.ids[0]}/invoices`,
+        'site.id',
+        '==',
+        this.ids[1],
+        'type',
+        '==',
+        'shipment',
+        'date',
+        'desc'
+      ) as Observable<InventoryEstimate[]>;
   }
 
   async viewEstimate(estimate: Estimate) {
@@ -98,6 +128,31 @@ export class ViewSitePage {
       showBackdrop: false,
       id: 'viewEstimate',
       cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewBillableShipment(inventoryEstimate: InventoryEstimate) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddBillableShipmentComponent,
+      componentProps: {
+        isEdit: true,
+        value: inventoryEstimate,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'editShipment',
+    });
+    return await modal.present();
+  }
+  async viewShipmentInvoices(inventoryEstimate: InventoryEstimate) {
+    const modal = await this.masterSvc.modal().create({
+      component: ViewShipmentInvoiceComponent,
+      componentProps: {
+        invoice: inventoryEstimate,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'viewShipmentInvoice',
     });
     return await modal.present();
   }

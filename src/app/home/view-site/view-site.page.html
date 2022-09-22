@@ -32,6 +32,15 @@
         >
           <ion-label>Estimates</ion-label>
         </ion-segment-button>
+        <ion-segment-button
+          value="shipments"
+          *ngIf="user.role !== 'Supervisor'"
+        >
+          <ion-label>Billable Shipments</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
+          <ion-label>Shipment Invoices</ion-label>
+        </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
   </app-header>
@@ -84,6 +93,20 @@
           *ngIf="estimates$ | async else loading"
           (selectedItem)="viewEstimate($event)"
         ></app-estimate-table>
+      </div>
+      <div *ngSwitchCase="'shipments'">
+        <app-billable-shipments-table
+          [value]="billableShipments$"
+          *ngIf="billableShipments$ | async else loading"
+          (selectedItem)="viewBillableShipment($event)"
+        ></app-billable-shipments-table>
+      </div>
+      <div *ngSwitchCase="'invoices'">
+        <app-shipment-invoices-table
+          [value]="shipmentInvoices$"
+          *ngIf="shipmentInvoices$ | async else loading"
+          (selectedItem)="viewShipmentInvoices($event)"
+        ></app-shipment-invoices-table>
       </div>
       <ng-template #loading>
         <div class="ion-padding">

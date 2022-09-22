@@ -14,7 +14,6 @@ import { BillableShipmentsTableComponent } from './billable-shipments-table/bill
     InventoryTableComponent,
     ShipmentTableComponent,
     TransferTableComponent,
-    BillableShipmentsTableComponent,
   ],
 })
 export class InventoryPageModule {}

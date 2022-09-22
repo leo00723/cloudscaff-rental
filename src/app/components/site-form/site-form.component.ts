@@ -1,7 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
@@ -16,7 +23,7 @@ import { UserPickerComponent } from '../user-picker/user-picker.component';
   selector: 'app-site-form',
   templateUrl: './site-form.component.html',
 })
-export class SiteFormComponent implements OnInit {
+export class SiteFormComponent implements OnInit, OnDestroy {
   site: Site = {
     address: '',
     city: '',
@@ -41,7 +48,7 @@ export class SiteFormComponent implements OnInit {
   @Input() isUpdate = false;
   @Input() isDelete = false;
   @Input() isCreate = true;
-  private needToUpdateShipments = false;
+  private subs = new Subscription();
 
   @Input() set siteData(val: Site) {
     this.site = val;
@@ -72,11 +79,20 @@ export class SiteFormComponent implements OnInit {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.initFrom();
   }
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.customers$ = this.masterSvc
       .edit()
       .getCollection(`company/${this.company.id}/customers`);
+    this.subs.add(
+      this.form.valueChanges.subscribe((form) => {
+        Object.assign(this.site, form);
+        this.newSite.emit(this.site);
+      })
+    );
   }
 
   field(field: string) {
@@ -136,9 +152,6 @@ export class SiteFormComponent implements OnInit {
             this.site.id,
             this.site
           );
-        // if(this.needToUpdateShipments){
-
-        // } what i wanted to do here is update the invoicedate for all shipments that belong to this site but i need to think about it first
         this.loading = false;
         this.masterSvc
           .notification()
@@ -193,7 +206,6 @@ export class SiteFormComponent implements OnInit {
     const newDate = new Date();
     newDate.setDate(newDate.getDate() + days);
     this.site.nextInvoiceDate = newDate;
-    this.needToUpdateShipments = true;
   }
 
   private async addUser() {

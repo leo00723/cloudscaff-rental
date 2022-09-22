@@ -3,6 +3,7 @@ import {
   addDoc,
   collection,
   collectionData,
+  collectionGroup,
   deleteDoc,
   doc,
   docData,
@@ -149,6 +150,37 @@ export class EditService {
     ) as Observable<any[]>;
   }
 
+  getCollectionWhereWhereAndOrder(
+    collectionPath: string,
+    field1: string,
+    whereFilter1: WhereFilterOp,
+    value1: any,
+    field2: string,
+    whereFilter2: WhereFilterOp,
+    value2: any,
+    orderField: string,
+    direction: OrderByDirection
+  ) {
+    return collectionData(
+      query(
+        this.collectionRef(collectionPath),
+        where(field1, whereFilter1, value1),
+        where(field2, whereFilter2, value2),
+        orderBy(orderField, direction)
+      ),
+      {
+        idField: 'id',
+      }
+    ).pipe(
+      map((data: any) => {
+        return data.map((d: any) => {
+          if (d.date) return { ...d, date: d.date.toDate() };
+          return d;
+        });
+      })
+    ) as Observable<any[]>;
+  }
+
   getCollectionWhereAndDateRangeAndOrder(
     collectionPath: string,
     field: string,
@@ -167,6 +199,30 @@ export class EditService {
         where(dateField, '>=', startDate),
         where(dateField, '<=', endDate),
         orderBy(orderField, direction)
+      ),
+      {
+        idField: 'id',
+      }
+    ).pipe(
+      map((data: any) => {
+        return data.map((d: any) => {
+          if (d.date) return { ...d, date: d.date.toDate() };
+          return d;
+        });
+      })
+    ) as Observable<any[]>;
+  }
+
+  getCollectionGroup(
+    collection: string,
+    field: string,
+    whereFilter: WhereFilterOp,
+    value: any
+  ) {
+    return collectionData(
+      query(
+        collectionGroup(this.firestore, collection),
+        where(field, whereFilter, value)
       ),
       {
         idField: 'id',

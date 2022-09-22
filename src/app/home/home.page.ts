@@ -7,6 +7,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { environment } from 'src/environments/environment';
 import { EditprofileComponent } from '../components/editprofile/editprofile.component';
+import { InventoryEstimate } from '../models/inventoryEstimate.model';
 import { AppState } from '../shared/app/app.state';
 
 @Component({
@@ -59,6 +60,9 @@ export class HomePage implements OnDestroy {
     private updates: SwUpdate
   ) {}
 
+  daysbetween(startDateSeconds: number, endDateSeconds: number) {
+    return Math.round((startDateSeconds - endDateSeconds) / 60 / 60 / 24);
+  }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }

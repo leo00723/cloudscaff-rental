@@ -63,115 +63,13 @@ exports.deleteUser = functions.https.onCall(async (data) => {
 exports.manageShipment = functions.firestore
   .document('company/{companyId}/shipments/{shipmentId}')
   .onUpdate(async (change, context) => {
-    try {
-      if (
-        change.before.data().status !== 'sent' &&
-        change.after.data().status === 'sent'
-      ) {
-        const shipment = change.after.data();
-        // Get the shipment items on site
-        const siteInventory = await admin
-          .firestore()
-          .doc(
-            `company/${context.params.companyId}/siteStock/${shipment.site.id}`
-          )
-          .get();
-        // check if its the first time the shipment is being sent
-        if (siteInventory.exists) {
-          // Update the site inventory
-          const items = shipment.items.map((item: any) => {
-            return {
-              id: item.id,
-              code: item.code,
-              category: item.category,
-              name: item.name,
-              weight: +item.weight,
-              availableQty: +item.shipmentQty,
-            };
-          });
+    await shipItems(change, context);
+  });
 
-          const oldInventory = siteInventory.data()!.items;
-
-          items.forEach((item: any) => {
-            const inventoryItem = oldInventory.find(
-              (i: any) => i.id === item.id
-            );
-            if (inventoryItem) {
-              inventoryItem.availableQty =
-                inventoryItem.availableQty + item.availableQty;
-            } else {
-              oldInventory.push(item);
-            }
-          });
-
-          const itemIds = oldInventory.map((item: any) => item.id);
-          const updatedInventory = {
-            items: oldInventory,
-            ids: itemIds,
-            site: shipment.site,
-          };
-
-          await admin
-            .firestore()
-            .doc(
-              `company/${context.params.companyId}/siteStock/${shipment.site.id}`
-            )
-            .set(updatedInventory);
-
-          // update the stock list
-          for (const item of items) {
-            await admin
-              .firestore()
-              .doc(`company/${context.params.companyId}/stockItems/${item.id}`)
-              .update({
-                inUseQty: admin.firestore.FieldValue.increment(
-                  item.availableQty
-                ),
-              });
-          }
-        } else {
-          // Create the site inventory
-          const items = shipment.items.map((item: any) => {
-            return {
-              id: item.id,
-              code: item.code,
-              category: item.category,
-              name: item.name,
-              weight: +item.weight,
-              availableQty: +item.shipmentQty,
-            };
-          });
-          const itemIds = shipment.items.map((item: any) => item.id);
-
-          const updatedInventory = {
-            items,
-            ids: itemIds,
-            site: shipment.site,
-          };
-          await admin
-            .firestore()
-            .doc(
-              `company/${context.params.companyId}/siteStock/${shipment.site.id}`
-            )
-            .set(updatedInventory);
-          // update the stock list
-          for (const item of items) {
-            await admin
-              .firestore()
-              .doc(`company/${context.params.companyId}/stockItems/${item.id}`)
-              .update({
-                inUseQty: admin.firestore.FieldValue.increment(
-                  item.availableQty
-                ),
-              });
-          }
-        }
-        return '200';
-      }
-    } catch (error) {
-      logger.error(error);
-      return error;
-    }
+exports.manageBillableShipment = functions.firestore
+  .document('company/{companyId}/billableShipments/{shipmentId}')
+  .onUpdate(async (change, context) => {
+    await shipItems(change, context);
   });
 
 exports.manageTransfer = functions.firestore
@@ -433,3 +331,366 @@ exports.manageReturn = functions.firestore
       return error;
     }
   });
+
+exports.generateInvoices = functions.pubsub
+  .schedule('00 03 * * *')
+  .timeZone('America/Los_Angeles') // Users can choose timezone - default is America/Los_Angeles
+  .onRun(async (context) => {
+    try {
+      //get all billable sites
+      logger.log('Getting all billable sites......');
+      const data = await admin
+        .firestore()
+        .collectionGroup('sites')
+        .where('billable', '==', true)
+        .get();
+      //loop through all sites
+      logger.log('Looping all billable sites......');
+      for (const siteDoc of data.docs) {
+        const site = siteDoc.data();
+        const today = admin.firestore.Timestamp.fromDate(new Date()).seconds;
+        let daysRemaining = null;
+        daysRemaining = daysbetween(site.nextInvoiceDate.seconds, today);
+        //check if site is due for billing on the current day
+        if (daysRemaining <= 0) {
+          //get all shipments for billable site
+          logger.log('Getting all active shipments......');
+          const shipments = await admin
+            .firestore()
+            .collectionGroup('billableShipments')
+            .where('site.id', '==', siteDoc.id)
+            .where('status', '==', 'sent')
+            .get();
+          //loop through all shipments
+          logger.log('Looping all active shipments......');
+          for (const shipmentDoc of shipments.docs) {
+            const shipment = shipmentDoc.data();
+            //check if the shipment ended in the cycle
+            const daysTillEnd = daysbetween(
+              admin.firestore.Timestamp.fromDate(new Date(shipment.endDate))
+                .seconds,
+              today
+            );
+            //check if it is the first invoice for this shipment
+            if (shipment.consumablesCharged) {
+              logger.log('shipment has been charged before');
+              let daysOnHire = 0;
+              if (daysTillEnd <= 0) {
+                //shipment is ended
+                daysOnHire = daysbetween(
+                  admin.firestore.Timestamp.fromDate(new Date(shipment.endDate))
+                    .seconds,
+                  shipment.lastInvoiceDate.seconds
+                );
+                logger.log('shipment ended', daysOnHire);
+              } else {
+                //shipment is still active
+                daysOnHire = daysbetween(
+                  today,
+                  shipment.lastInvoiceDate.seconds
+                );
+                logger.log('shipment active', daysOnHire);
+              }
+              const company = (
+                await admin
+                  .firestore()
+                  .doc(`company/${shipment.company.id}`)
+                  .get()
+              ).data()!;
+              let invoice = { ...shipment };
+              invoice.code = `INV${new Date().toLocaleDateString('en', {
+                year: '2-digit',
+              })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
+                .toString()
+                .padStart(6, '0')}`;
+              invoice.type = 'shipment';
+              invoice.date = admin.firestore.FieldValue.serverTimestamp();
+
+              invoice = calcShipmentCost(invoice, daysOnHire, false, company);
+              await admin
+                .firestore()
+                .collection(`company/${shipment.company.id}/invoices`)
+                .add({
+                  ...invoice,
+                });
+              await admin
+                .firestore()
+                .doc(`company/${shipment.company.id}`)
+                .set(
+                  {
+                    totalInvoices: admin.firestore.FieldValue.increment(1),
+                  },
+                  { merge: true }
+                );
+              await admin
+                .firestore()
+                .doc(
+                  `company/${shipment.company.id}/billableShipments/${shipmentDoc.id}`
+                )
+                .set(
+                  {
+                    lastInvoiceDate:
+                      admin.firestore.FieldValue.serverTimestamp(),
+                  },
+                  { merge: true }
+                );
+            } else {
+              logger.log('first Invoice');
+              if (daysTillEnd <= 0) {
+                //shipment ended so invoice full amount
+                const company = (
+                  await admin
+                    .firestore()
+                    .doc(`company/${shipment.company.id}`)
+                    .get()
+                ).data()!;
+                const invoice = { ...shipment };
+                invoice.code = `INV${new Date().toLocaleDateString('en', {
+                  year: '2-digit',
+                })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
+                  .toString()
+                  .padStart(6, '0')}`;
+                invoice.type = 'shipment';
+                invoice.date = admin.firestore.FieldValue.serverTimestamp();
+                await admin
+                  .firestore()
+                  .collection(`company/${shipment.company.id}/invoices`)
+                  .add({
+                    ...invoice,
+                  });
+                await admin
+                  .firestore()
+                  .doc(`company/${shipment.company.id}`)
+                  .set(
+                    {
+                      totalInvoices: admin.firestore.FieldValue.increment(1),
+                    },
+                    { merge: true }
+                  );
+                await admin
+                  .firestore()
+                  .doc(
+                    `company/${shipment.company.id}/billableShipments/${shipmentDoc.id}`
+                  )
+                  .set(
+                    {
+                      consumablesCharged: true,
+                      status: 'shipment ended',
+                    },
+                    { merge: true }
+                  );
+              } else {
+                //shipment is still active
+                const company = (
+                  await admin
+                    .firestore()
+                    .doc(`company/${shipment.company.id}`)
+                    .get()
+                ).data()!;
+                let invoice = { ...shipment };
+                invoice.code = `INV${new Date().toLocaleDateString('en', {
+                  year: '2-digit',
+                })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
+                  .toString()
+                  .padStart(6, '0')}`;
+                invoice.type = 'shipment';
+                invoice.date = admin.firestore.FieldValue.serverTimestamp();
+                const daysOnHire = daysbetween(
+                  today,
+                  admin.firestore.Timestamp.fromDate(
+                    new Date(shipment.startDate)
+                  ).seconds
+                );
+                invoice = calcShipmentCost(invoice, daysOnHire, true, company);
+                await admin
+                  .firestore()
+                  .collection(`company/${shipment.company.id}/invoices`)
+                  .add({
+                    ...invoice,
+                  });
+                await admin
+                  .firestore()
+                  .doc(`company/${shipment.company.id}`)
+                  .set(
+                    {
+                      totalInvoices: admin.firestore.FieldValue.increment(1),
+                    },
+                    { merge: true }
+                  );
+                await admin
+                  .firestore()
+                  .doc(
+                    `company/${shipment.company.id}/billableShipments/${shipmentDoc.id}`
+                  )
+                  .set(
+                    {
+                      consumablesCharged: true,
+                      lastInvoiceDate:
+                        admin.firestore.FieldValue.serverTimestamp(),
+                    },
+                    { merge: true }
+                  );
+              }
+            }
+          }
+        }
+      }
+      logger.log('completed');
+      return true;
+    } catch (err) {
+      logger.error('something went wrong somewhere', err);
+      return false;
+    }
+  });
+
+async function shipItems(
+  change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
+  context: functions.EventContext
+) {
+  try {
+    if (
+      change.before.data().status !== 'sent' &&
+      change.after.data().status === 'sent'
+    ) {
+      const shipment = change.after.data();
+      // Get the shipment items on site
+      const siteInventory = await admin
+        .firestore()
+        .doc(
+          `company/${context.params.companyId}/siteStock/${shipment.site.id}`
+        )
+        .get();
+      // check if its the first time the shipment is being sent
+      if (siteInventory.exists) {
+        // Update the site inventory
+        const items = shipment.items.map((item: any) => {
+          return {
+            id: item.id,
+            code: item.code,
+            category: item.category,
+            name: item.name,
+            weight: +item.weight,
+            availableQty: +item.shipmentQty,
+          };
+        });
+
+        const oldInventory = siteInventory.data()!.items;
+
+        items.forEach((item: any) => {
+          const inventoryItem = oldInventory.find((i: any) => i.id === item.id);
+          if (inventoryItem) {
+            inventoryItem.availableQty =
+              inventoryItem.availableQty + item.availableQty;
+          } else {
+            oldInventory.push(item);
+          }
+        });
+
+        const itemIds = oldInventory.map((item: any) => item.id);
+        const updatedInventory = {
+          items: oldInventory,
+          ids: itemIds,
+          site: shipment.site,
+        };
+
+        await admin
+          .firestore()
+          .doc(
+            `company/${context.params.companyId}/siteStock/${shipment.site.id}`
+          )
+          .set(updatedInventory);
+
+        // update the stock list
+        for (const item of items) {
+          await admin
+            .firestore()
+            .doc(`company/${context.params.companyId}/stockItems/${item.id}`)
+            .update({
+              inUseQty: admin.firestore.FieldValue.increment(item.availableQty),
+            });
+        }
+      } else {
+        // Create the site inventory
+        const items = shipment.items.map((item: any) => {
+          return {
+            id: item.id,
+            code: item.code,
+            category: item.category,
+            name: item.name,
+            weight: +item.weight,
+            availableQty: +item.shipmentQty,
+          };
+        });
+        const itemIds = shipment.items.map((item: any) => item.id);
+
+        const updatedInventory = {
+          items,
+          ids: itemIds,
+          site: shipment.site,
+        };
+        await admin
+          .firestore()
+          .doc(
+            `company/${context.params.companyId}/siteStock/${shipment.site.id}`
+          )
+          .set(updatedInventory);
+        // update the stock list
+        for (const item of items) {
+          await admin
+            .firestore()
+            .doc(`company/${context.params.companyId}/stockItems/${item.id}`)
+            .update({
+              inUseQty: admin.firestore.FieldValue.increment(item.availableQty),
+            });
+        }
+      }
+      return '200';
+    }
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+}
+
+function daysbetween(startDateSeconds: number, endDateSeconds: number) {
+  return Math.round((startDateSeconds - endDateSeconds) / 60 / 60 / 24);
+}
+
+function calcShipmentCost(
+  shipment: any,
+  daysOnHire: number,
+  chargeConsumables: boolean,
+  company: any
+) {
+  let itemHire = 0;
+
+  shipment.items.forEach((i: any) => {
+    i.totalCost =
+      +i.hireCost * +daysOnHire * (i.shipmentQty ? +i.shipmentQty : 0);
+    itemHire += i.totalCost;
+  });
+
+  let labour = 0;
+  let transport = 0;
+  let additionals = 0;
+  if (chargeConsumables) {
+    shipment.labour.forEach((l: any) => {
+      labour += +l.total;
+    });
+    shipment.transport.forEach((t: any) => {
+      transport += +t.total;
+    });
+    shipment.additionals.forEach((a: any) => {
+      additionals += +a.total;
+    });
+  }
+
+  shipment.subtotal = itemHire + labour + transport + additionals;
+  shipment.discount = shipment.subtotal * (+shipment.discountPercentage / 100);
+  shipment.totalAfterDiscount = shipment.subtotal - shipment.discount;
+  shipment.tax = shipment.totalAfterDiscount * (company.salesTax / 100);
+  shipment.vat = shipment.totalAfterDiscount * (company.vat / 100);
+  shipment.total = shipment.totalAfterDiscount + shipment.tax + shipment.vat;
+
+  return shipment;
+}

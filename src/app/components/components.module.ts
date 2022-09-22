@@ -76,6 +76,9 @@ import { InventoryEstimateSummaryComponent } from './inventory-estimate-summary/
 import { InventoryEstimateTableComponent } from './inventory-estimate-table/inventory-estimate-table.component';
 import { ViewInventoryEstimateComponent } from './view-inventory-estimate/view-inventory-estimate.component';
 import { AddBillableShipmentComponent } from './add-billable-shipment/add-billable-shipment.component';
+import { BillableShipmentsTableComponent } from '../home/inventory/billable-shipments-table/billable-shipments-table.component';
+import { ShipmentInvoiceSummaryComponent } from './shipment-invoice-summary/shipment-invoice-summary.component';
+import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipment-invoice.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -147,6 +150,7 @@ const COMPONENTS = [
   ViewModificationComponent,
   ViewStockLocationsComponent,
   ViewTermsComponent,
+  BillableShipmentsTableComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -161,8 +165,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS],
+  declarations: [COMPONENTS, ShipmentInvoiceSummaryComponent, ViewShipmentInvoiceComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS],
+  exports: [IMPORTS, COMPONENTS, ShipmentInvoiceSummaryComponent, ViewShipmentInvoiceComponent],
 })
 export class ComponentsModule {}
