@@ -139,7 +139,8 @@ export class BulkEstimateComponent implements OnInit {
 
   duplicateScaffold(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
-      this.bulkEstimate.estimates.push(this.bulkEstimate.estimates[i]);
+      const estimate = { ...this.bulkEstimate.estimates[i] };
+      this.bulkEstimate.estimates.push(estimate);
       this.activeScaffold = this.bulkEstimate.estimates.length;
     }, `Are you sure you want to duplicate scaffold ${i + 1}?`);
   }

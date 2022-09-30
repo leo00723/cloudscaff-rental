@@ -60,7 +60,7 @@
               <th scope="col">Description</th>
               <th scope="col" class="text-center">Value</th>
               <th scope="col" class="text-center">On Hire Date</th>
-              <th scope="col" class="text-center">Handover</th>
+              <th scope="col" class="text-center">Handover No.</th>
               <th scope="col" class="text-center">Erect Value</th>
               <th scope="col" class="text-center">Erect % Applied For</th>
               <th scope="col" class="text-center">Erect Value Applied For</th>
@@ -110,6 +110,7 @@
                       type="date"
                       [clearOnEdit]="true"
                       [value]="estimate.scaffold.hireDate"
+                      (ionChange)="change($event, estimate.scaffold, 'HD')"
                     >
                     </ion-input>
                   </td>
@@ -137,11 +138,14 @@
                       debounce="200"
                       type="number"
                       [clearOnEdit]="true"
-                      [value]="estimate.scaffold.handover"
+                      [value]="estimate.scaffold.appliedErectionPercentage"
+                      (ionChange)="change($event, estimate.scaffold, 'EP')"
                     >
                     </ion-input>
                   </td>
-                  <td class="text-center"></td>
+                  <td class="text-center">
+                    {{ estimate.scaffold.appliedErectionValue }}
+                  </td>
                   <td class="text-center">
                     {{
                       (estimate.scaffold.isWeeks
@@ -151,20 +155,18 @@
                     }}
                   </td>
                   <td class="text-center">
-                    <ion-input
-                      debounce="200"
-                      type="date"
-                      [clearOnEdit]="true"
-                      [value]="estimate.scaffold.hireDate"
-                    >
-                    </ion-input>
+                    {{
+                      estimate.scaffold.hireEndDate
+                        ? (estimate.scaffold.hireEndDate | date)
+                        : ""
+                    }}
                   </td>
                   <td class="text-center">
                     <ion-input
                       debounce="200"
                       type="date"
                       [clearOnEdit]="true"
-                      [value]="estimate.scaffold.hireDate"
+                      [value]="estimate.scaffold.dismantleDate"
                     >
                     </ion-input>
                   </td>
@@ -183,11 +185,13 @@
                       debounce="200"
                       type="number"
                       [clearOnEdit]="true"
-                      [value]="estimate.scaffold"
+                      [value]="estimate.scaffold.appliedDismantlePercentage"
                     >
                     </ion-input>
                   </td>
-                  <td class="text-center"></td>
+                  <td class="text-center">
+                    {{ estimate.scaffold.appliedDismantleValue }}
+                  </td>
                   <td class="text-center">
                     {{ estimate.scaffold.extraHirePercentage }}
                   </td>
@@ -195,10 +199,15 @@
                     {{ company.currency.symbol
                     }}{{ estimate.scaffold.extraHire | number: "0.2-2" }}
                   </td>
-                  <td class="text-center"></td>
-                  <td class="text-center"></td>
+                  <td class="text-center">
+                    {{ estimate.scaffold.extraHireWeeks }}
+                  </td>
+                  <td class="text-center">
+                    {{ estimate.scaffold.extraHireCharge }}
+                  </td>
                   <td class="text-end">
-                    {{ company.currency.symbol }}{{ 0 | number: "0.2-2" }}
+                    {{ company.currency.symbol
+                    }}{{ estimate.scaffold.grossTotal | number: "0.2-2" }}
                   </td>
                 </tr>
                 <tr
@@ -246,11 +255,13 @@
                       debounce="200"
                       type="number"
                       [clearOnEdit]="true"
-                      [value]="attachment.hireDate"
+                      [value]="attachment.appliedDismantlePercentage"
                     >
                     </ion-input>
                   </td>
-                  <td class="text-center"></td>
+                  <td class="text-center">
+                    {{ attachment.appliedErectionValue }}
+                  </td>
                   <td class="text-center">
                     {{
                       (attachment.isWeeks
@@ -264,7 +275,7 @@
                       debounce="200"
                       type="date"
                       [clearOnEdit]="true"
-                      [value]="attachment.hireDate"
+                      [value]="attachment.hireEndDate"
                     >
                     </ion-input>
                   </td>
@@ -273,7 +284,7 @@
                       debounce="200"
                       type="date"
                       [clearOnEdit]="true"
-                      [value]="attachment.hireDate"
+                      [value]="attachment.dismantleDate"
                     >
                     </ion-input>
                   </td>
@@ -290,11 +301,13 @@
                       debounce="200"
                       type="number"
                       [clearOnEdit]="true"
-                      [value]="attachment.hireDate"
+                      [value]="attachment.appliedDismantlePercentage"
                     >
                     </ion-input>
                   </td>
-                  <td class="text-center"></td>
+                  <td class="text-center">
+                    {{ attachment.appliedDismantleValue }}
+                  </td>
                   <td class="text-center">
                     {{ attachment.extraHirePercentage }}
                   </td>
@@ -302,10 +315,11 @@
                     {{ company.currency.symbol
                     }}{{ attachment.extraHire | number: "0.2-2" }}
                   </td>
-                  <td class="text-center"></td>
-                  <td class="text-center"></td>
+                  <td class="text-center">{{ attachment.extraHireWeeks }}</td>
+                  <td class="text-center">{{ attachment.extraHireCharge }}</td>
                   <td class="text-end">
-                    {{ company.currency.symbol }}{{ 0 | number: "0.2-2" }}
+                    {{ company.currency.symbol
+                    }}{{ attachment.grossTotal | number: "0.2-2" }}
                   </td>
                 </tr>
               </ng-container>

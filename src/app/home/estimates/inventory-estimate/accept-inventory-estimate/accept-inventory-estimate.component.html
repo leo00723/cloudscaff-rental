@@ -83,7 +83,7 @@
           #siteForm
           [isCreate]="false"
           [siteData]="field('site', form2).value"
-          (newSite)="updateSite($event)"
+          (oldSite)="updateSite($event)"
         ></app-site-form>
       </ion-col>
       <ion-col size="12" *ngIf="show === 'addSite'">

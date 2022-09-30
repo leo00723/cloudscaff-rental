@@ -45,6 +45,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     users: [],
   };
   @Output() newSite = new EventEmitter<Site>();
+  @Output() oldSite = new EventEmitter<Site>();
   @Input() isUpdate = false;
   @Input() isDelete = false;
   @Input() isCreate = true;
@@ -63,8 +64,8 @@ export class SiteFormComponent implements OnInit, OnDestroy {
         endDate: [this.site.endDate, Validators.required],
         zip: [this.site.zip],
         country: [this.site.country, Validators.required],
-        billingCycle: [this.site.billingCycle, Validators.required],
-        billable: [this.site.billable, Validators.required],
+        billingCycle: [this.site.billingCycle],
+        billable: [this.site.billable],
       });
     }
   }
@@ -90,7 +91,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.form.valueChanges.subscribe((form) => {
         Object.assign(this.site, form);
-        this.newSite.emit(this.site);
+        this.oldSite.emit(this.site);
       })
     );
   }

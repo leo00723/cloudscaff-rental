@@ -30,4 +30,13 @@ export interface Item {
   isWeeks: boolean;
   hireDate?: any;
   handover?: any;
+  appliedErectionPercentage?: number;
+  appliedErectionValue?: number;
+  hireEndDate?: any;
+  dismantleDate?: any;
+  appliedDismantlePercentage?: number;
+  appliedDismantleValue?: number;
+  extraHireWeeks?: number;
+  extraHireCharge?: number;
+  grossTotal?: number;
 }
