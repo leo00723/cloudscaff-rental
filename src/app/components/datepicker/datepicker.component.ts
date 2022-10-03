@@ -21,7 +21,7 @@ export class DatepickerComponent {
   confirm() {
     this.date.confirm(false).then(() => {
       this.modalController.dismiss(
-        format(parseISO(this.date.value), 'yyyy-MM-dd'),
+        format(parseISO(this.date.value.toString()), 'yyyy-MM-dd'),
         'button',
         this.field
       );

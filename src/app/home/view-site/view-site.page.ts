@@ -119,7 +119,9 @@ export class ViewSitePage implements OnInit {
         'desc'
       ) as Observable<InventoryEstimate[]>;
   }
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {}
+
+  async addPaymentApplication() {
     const modal = await this.masterSvc.modal().create({
       component: AddPaymentApplicationComponent,
       componentProps: {
