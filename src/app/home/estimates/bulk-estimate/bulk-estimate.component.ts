@@ -41,7 +41,7 @@ export class BulkEstimateComponent implements OnInit {
     message: '',
     siteName: '',
     startDate: undefined,
-    status: '',
+    status: 'pending',
     subtotal: 0,
     tax: 0,
     total: 0,
