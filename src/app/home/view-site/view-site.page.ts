@@ -11,6 +11,7 @@ import { ShipmentInvoiceSummaryComponent } from 'src/app/components/shipment-inv
 import { ViewShipmentInvoiceComponent } from 'src/app/components/view-shipment-invoice/view-shipment-invoice.component';
 import { Estimate } from 'src/app/models/estimate.model';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
+import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
@@ -34,6 +35,7 @@ export class ViewSitePage implements OnInit {
   returns$: Observable<Return[]>;
   billableShipments$: Observable<InventoryEstimate[]>;
   shipmentInvoices$: Observable<InventoryEstimate[]>;
+  paymentApplications$: Observable<PaymentApplication[]>;
 
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
@@ -118,6 +120,16 @@ export class ViewSitePage implements OnInit {
         'date',
         'desc'
       ) as Observable<InventoryEstimate[]>;
+    this.paymentApplications$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/paymentApplications`,
+        'site.id',
+        '==',
+        this.ids[1],
+        'date',
+        'desc'
+      ) as Observable<PaymentApplication[]>;
   }
   ngOnInit() {}
 
@@ -130,6 +142,19 @@ export class ViewSitePage implements OnInit {
       },
       showBackdrop: false,
       id: 'addPaymentApplication',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewPaymentApplication(paymentApplication: PaymentApplication) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddPaymentApplicationComponent,
+      componentProps: {
+        value: paymentApplication,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'viewPaymentApplication',
       cssClass: 'fullscreen',
     });
     return await modal.present();

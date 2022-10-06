@@ -24,4 +24,5 @@ export interface Site {
   nextInvoiceDate?: any;
   billingCycle?: number;
   billable?: boolean;
+  previousGross?: number;
 }

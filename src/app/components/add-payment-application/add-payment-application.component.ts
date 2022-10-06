@@ -5,11 +5,13 @@ import {
   Input,
   OnDestroy,
 } from '@angular/core';
+import { increment } from '@angular/fire/firestore';
 import { Observable, Subscription } from 'rxjs';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Item } from 'src/app/models/item.model';
+import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Site } from 'src/app/models/site.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -17,32 +19,108 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 @Component({
   selector: 'app-add-payment-application',
   templateUrl: './add-payment-application.component.html',
-  styles: [],
+  styles: [
+    `
+      tr {
+        font-size: 0.7rem;
+      }
+    `,
+  ],
 })
 export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   @Input() isEdit = false;
   @Input() site$: Observable<Site>;
   @Input() estimates$: Observable<Estimate[]>;
   @Input() bulkEstimates: BulkEstimate[];
-  estimates: Estimate[];
+  @Input() value: PaymentApplication;
+  paymentApplication = new PaymentApplication();
   loading = false;
   company: Company;
-  date = new Date();
-
-  V = 0;
-  EV = 0;
-  AEV = 0;
-  DV = 0;
-  ADV = 0;
-  EHC = 0;
-  GT = 0;
-
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+  }
+  ngOnInit(): void {
+    if (!this.isEdit) {
+      this.paymentApplication.setCompany(this.company, true);
+      this.subs.add(
+        this.estimates$.subscribe((estimates) => {
+          this.paymentApplication.setEstimates(estimates);
+        })
+      );
+      this.subs.add(
+        this.site$.subscribe((site) => {
+          this.paymentApplication.setSite(site);
+        })
+      );
+    } else {
+      Object.assign(this.paymentApplication, this.value);
+    }
+  }
+
+  createPA() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+
+        this.paymentApplication.setCompany(this.company, true);
+        await this.masterSvc
+          .edit()
+          .addDocument(
+            `company/${this.paymentApplication.company.id}/paymentApplications`,
+            this.paymentApplication
+          );
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalPaymentApplications: increment(1),
+        });
+
+        this.masterSvc
+          .notification()
+          .toast('Payment application created successfully!', 'success');
+        this.close();
+      } catch (error) {
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your payment application, try again!',
+            'danger',
+            2000
+          );
+      }
+    });
+  }
+
+  updatePA() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.paymentApplication.setCompany(this.company);
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.paymentApplication.company.id}/paymentApplications`,
+            this.paymentApplication.id,
+            this.paymentApplication
+          );
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast('Payment application updated successfully!', 'success');
+      } catch (error) {
+        this.loading = false;
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating your payment application, try again!',
+            'danger',
+            2000
+          );
+      }
+    });
   }
 
   change(args, scaffold: Item, category: string) {
@@ -71,8 +149,9 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       case 'HD':
         {
           scaffold.hireDate = args.detail.value;
-          scaffold.hireEndDate = new Date(args.detail.value);
-          scaffold.hireEndDate.setDate(scaffold.hireEndDate.getDate() + days);
+          const hireEndDate = new Date(args.detail.value);
+          hireEndDate.setDate(hireEndDate.getDate() + days);
+          scaffold.hireEndDate = hireEndDate.toDateString();
         }
         break;
       case 'DD':
@@ -97,57 +176,13 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       ? scaffold.appliedDismantleValue
       : 0;
     scaffold.grossTotal = EV + DV + EH;
-    this.updateTotals();
-  }
-
-  ngOnInit(): void {
-    this.subs.add(
-      this.estimates$.subscribe((estimates) => {
-        this.estimates = estimates;
-        this.updateTotals();
-      })
-    );
+    scaffold.currentTotal =
+      scaffold.grossTotal -
+      (scaffold.previousGross ? +scaffold.previousGross : 0);
+    this.paymentApplication.updateTotals();
   }
 
   close() {
     this.masterSvc.modal().dismiss();
-  }
-
-  private updateTotals() {
-    this.V = 0;
-    this.EV = 0;
-    this.AEV = 0;
-    this.DV = 0;
-    this.ADV = 0;
-    this.EHC = 0;
-    this.GT = 0;
-    this.estimates.forEach((e) => {
-      const st = e.scaffold.total ? +e.scaffold.total : 0;
-      const ht = e.scaffold.hireTotal ? +e.scaffold.hireTotal : 0;
-      const t = st + ht;
-      this.V += t;
-      this.EV += t * 0.7;
-      this.AEV += e.scaffold.appliedErectionValue
-        ? +e.scaffold.appliedErectionValue
-        : 0;
-      this.DV += t * 0.3;
-      this.ADV += e.scaffold.appliedDismantleValue
-        ? +e.scaffold.appliedDismantleValue
-        : 0;
-      this.EHC += e.scaffold.extraHireCharge ? +e.scaffold.extraHireCharge : 0;
-      this.GT += e.scaffold.grossTotal ? +e.scaffold.grossTotal : 0;
-      e.attachments.forEach((a) => {
-        const ast = a.total ? +a.total : 0;
-        const aht = a.hireTotal ? +a.hireTotal : 0;
-        const at = ast + aht;
-        this.V += at;
-        this.EV += at * 0.7;
-        this.AEV += a.appliedErectionValue ? +a.appliedErectionValue : 0;
-        this.DV += at * 0.3;
-        this.ADV += a.appliedDismantleValue ? +a.appliedDismantleValue : 0;
-        this.EHC += a.extraHireCharge ? +a.extraHireCharge : 0;
-        this.GT += a.grossTotal ? +a.grossTotal : 0;
-      });
-    });
   }
 }

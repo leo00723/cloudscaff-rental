@@ -26,12 +26,12 @@
         <ion-segment-button value="returns">
           <ion-label>Returns</ion-label>
         </ion-segment-button>
-        <ion-segment-button
+        <!-- <ion-segment-button
           value="estimates"
           *ngIf="user.role !== 'Supervisor'"
         >
           <ion-label>Estimates</ion-label>
-        </ion-segment-button>
+        </ion-segment-button> -->
         <ion-segment-button
           value="shipments"
           *ngIf="user.role !== 'Supervisor'"
@@ -93,13 +93,13 @@
           </ion-fab-button>
         </ion-fab>
       </div>
-      <div *ngSwitchCase="'estimates'">
+      <!-- <div *ngSwitchCase="'estimates'">
         <app-estimate-table
           [value]="estimates$"
           *ngIf="estimates$ | async else loading"
           (selectedItem)="viewEstimate($event)"
         ></app-estimate-table>
-      </div>
+      </div> -->
       <div *ngSwitchCase="'shipments'">
         <app-billable-shipments-table
           [value]="billableShipments$"
@@ -115,6 +115,11 @@
         ></app-shipment-invoices-table>
       </div>
       <div *ngSwitchCase="'paymentApplication'">
+        <app-payment-application-table
+          [value]="paymentApplications$"
+          *ngIf="paymentApplications$ | async else loading"
+          (selectedItem)="viewPaymentApplication($event)"
+        ></app-payment-application-table>
         <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button (click)="addPaymentApplication()">
             <ion-icon name="add"></ion-icon>

@@ -6,6 +6,7 @@ import { SiteInventoryTableComponent } from './site-inventory-table/site-invento
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
 import { ShipmentInvoicesTableComponent } from './shipment-invoices-table/shipment-invoices-table.component';
+import { PaymentApplicationTableComponent } from './payment-application-table/payment-application-table.component';
 
 @NgModule({
   imports: [ComponentsModule, ViewSitePageRoutingModule],
@@ -14,6 +15,10 @@ import { ShipmentInvoicesTableComponent } from './shipment-invoices-table/shipme
     ScaffoldTableComponent,
     SiteInventoryTableComponent,
     ShipmentInvoicesTableComponent,
+    PaymentApplicationTableComponent,
+  ],
+  exports: [
+    PaymentApplicationTableComponent
   ],
 })
 export class ViewSitePageModule {}

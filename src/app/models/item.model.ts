@@ -39,4 +39,7 @@ export interface Item {
   extraHireWeeks?: number;
   extraHireCharge?: number;
   grossTotal?: number;
+  previousGross?: number;
+  currentTotal?: number;
+  totalPaid?: number;
 }

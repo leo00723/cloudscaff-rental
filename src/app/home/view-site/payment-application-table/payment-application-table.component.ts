@@ -12,28 +12,29 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
-import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
+import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 
 @Component({
-  selector: 'app-shipment-invoices-table',
-  templateUrl: './shipment-invoices-table.component.html',
+  selector: 'app-payment-application-table',
+  templateUrl: './payment-application-table.component.html',
+  styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShipmentInvoicesTableComponent {
+export class PaymentApplicationTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<InventoryEstimate>();
-  shipments$: Observable<InventoryEstimate[]>;
-  temp$: Observable<InventoryEstimate[]>;
-  @Input() set value(estimates: Observable<InventoryEstimate[]>) {
+  @Output() selectedItem = new EventEmitter<PaymentApplication>();
+  paymentApplications$: Observable<PaymentApplication[]>;
+  temp$: Observable<PaymentApplication[]>;
+  @Input() set value(estimates: Observable<PaymentApplication[]>) {
     this.temp$ = estimates;
-    this.shipments$ = estimates;
+    this.paymentApplications$ = estimates;
   }
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
 
   constructor() {
-    this.temp$ = this.shipments$;
+    this.temp$ = this.paymentApplications$;
   }
 
   onSelect({ selected }) {
@@ -48,14 +49,12 @@ export class ShipmentInvoicesTableComponent {
         return 'primary';
       case 'void':
         return 'danger';
-      case 'shipment ended':
-        return 'warning';
     }
   }
 
   updateFilter(event) {
     const val = event.detail.value.toLowerCase() as string;
-    this.temp$ = this.shipments$.pipe(
+    this.temp$ = this.paymentApplications$.pipe(
       map((site) =>
         site.filter(
           (s) =>
