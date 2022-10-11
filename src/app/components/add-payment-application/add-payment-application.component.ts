@@ -73,6 +73,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
             `company/${this.paymentApplication.company.id}/paymentApplications`,
             this.paymentApplication
           );
+
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalPaymentApplications: increment(1),
         });
@@ -106,11 +107,22 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
             this.paymentApplication.id,
             this.paymentApplication
           );
+        const est = this.paymentApplication.updatePreviousGross();
+        const batch = this.masterSvc.edit().batch();
+        for (const e of est) {
+          const doc = this.masterSvc
+            .edit()
+            .docRef(`company/${this.company.id}/estimates`, e.id);
+          batch.set(doc, { ...e }, { merge: true });
+        }
+
+        await batch.commit();
         this.loading = false;
         this.masterSvc
           .notification()
           .toast('Payment application updated successfully!', 'success');
       } catch (error) {
+        console.error(error);
         this.loading = false;
         this.masterSvc
           .notification()

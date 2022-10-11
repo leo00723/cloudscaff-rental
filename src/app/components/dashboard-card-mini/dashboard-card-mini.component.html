@@ -1,0 +1,16 @@
+<ion-card class="border-start border-5" ngClass="border-{{ color }}">
+  <ion-row>
+    <ion-col class="text-center align-middle my-auto" size="3">
+      <ion-icon [name]="icon" [color]="color" size="large"></ion-icon
+    ></ion-col>
+    <ion-col class="text-end">
+      <ion-card-header>
+        <ion-card-subtitle>{{ title }}</ion-card-subtitle>
+        <ion-card-title
+          >{{ company.currency.symbol
+          }}{{ total | number: "0.2-2" }}</ion-card-title
+        >
+      </ion-card-header>
+    </ion-col>
+  </ion-row>
+</ion-card>

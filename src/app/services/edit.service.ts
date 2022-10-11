@@ -15,6 +15,7 @@ import {
   setDoc,
   where,
   WhereFilterOp,
+  writeBatch,
 } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { lastValueFrom, Observable } from 'rxjs';
@@ -256,10 +257,14 @@ export class EditService {
     return await ref({ ...data });
   }
 
-  private docRef(collectionName: string, id: string) {
+  docRef(collectionName: string, id: string) {
     return doc(this.firestore, `${collectionName}/${id}`);
   }
-  private collectionRef(collectionName: string) {
+  collectionRef(collectionName: string) {
     return collection(this.firestore, collectionName);
+  }
+
+  batch() {
+    return writeBatch(this.firestore);
   }
 }

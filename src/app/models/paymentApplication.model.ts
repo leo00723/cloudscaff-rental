@@ -11,6 +11,7 @@ export class PaymentApplication {
   dismantleValue: number;
   appliedDismantleValue: number;
   extraHireCharge: number;
+  previousGross: number;
   grossTotal: number;
   currentTotal: number;
   estimates: Estimate[];
@@ -55,6 +56,7 @@ export class PaymentApplication {
     this.appliedDismantleValue = 0;
     this.extraHireCharge = 0;
     this.grossTotal = 0;
+    this.previousGross = 0;
     this.currentTotal = 0;
   }
 
@@ -76,6 +78,9 @@ export class PaymentApplication {
       this.extraHireCharge += e.scaffold.extraHireCharge
         ? +e.scaffold.extraHireCharge
         : 0;
+      this.previousGross += e.scaffold.previousGross
+        ? +e.scaffold.previousGross
+        : 0;
       this.grossTotal += e.scaffold.grossTotal ? +e.scaffold.grossTotal : 0;
       this.currentTotal +=
         (e.scaffold.grossTotal ? +e.scaffold.grossTotal : 0) -
@@ -94,11 +99,33 @@ export class PaymentApplication {
           ? +a.appliedDismantleValue
           : 0;
         this.extraHireCharge += a.extraHireCharge ? +a.extraHireCharge : 0;
+        this.previousGross += a.previousGross ? +a.previousGross : 0;
         this.grossTotal += a.grossTotal ? +a.grossTotal : 0;
         this.currentTotal +=
           (a.grossTotal ? +a.grossTotal : 0) -
           (a.previousGross ? +a.previousGross : 0);
       });
     });
+  }
+
+  updatePreviousGross(): Estimate[] {
+    const est = [];
+    this.estimates.forEach((val) => est.push(Object.assign({}, val)));
+    // est.forEach((e, i) => {
+    //   e.scaffold.previousGross = e.scaffold.grossTotal
+    //     ? +e.scaffold.grossTotal
+    //     : 0;
+    //   e.scaffold.currentTotal = 0;
+    //   console.log(
+    //     e.scaffold.currentTotal,
+    //     '===> ',
+    //     this.estimates[i].scaffold.previousGross
+    //   );
+    //   e.attachments.forEach((a) => {
+    //     a.previousGross = a.grossTotal ? +a.grossTotal : 0;
+    //     a.currentTotal = 0;
+    //   });
+    // });
+    return est;
   }
 }

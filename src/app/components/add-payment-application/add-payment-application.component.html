@@ -10,7 +10,7 @@
       </ion-button>
     </ion-buttons>
     <ion-title
-      >{{ !isEdit ? "Add Payment Application" : "Edit Shipment" }}
+      >{{ !isEdit ? "Add Payment Application" : "Edit Payment Application" }}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -58,6 +58,9 @@
 
     <ion-row>
       <ion-col size="12" *ngIf="paymentApplication.estimates">
+        <ion-button (click)="paymentApplication.updatePreviousGross()"
+          >update</ion-button
+        >
         <div class="table-responsive">
           <table class="table table-sm table-bordered">
             <thead>
@@ -83,6 +86,11 @@
                 <th scope="col" class="text-center">Inspect/EH weeks</th>
                 <th scope="col" class="text-center">Inspect/EH Charge</th>
                 <th scope="col" class="text-end">
+                  Previous Gross ({{
+                    paymentApplication.company.currency.symbol
+                  }})
+                </th>
+                <th scope="col" class="text-end">
                   Total Gross ({{ paymentApplication.company.currency.symbol }})
                 </th>
                 <th scope="col" class="text-end">
@@ -94,7 +102,7 @@
             </thead>
             <tbody>
               <tr class="align-middle">
-                <th scope="row" colspan="19">
+                <th scope="row" colspan="21">
                   <ion-text color="success">Measured Work</ion-text>
                 </th>
               </tr>
@@ -105,7 +113,7 @@
                 "
               >
                 <tr class="align-middle bg-light">
-                  <th scope="row" colspan="20">{{ estimate.code }}</th>
+                  <th scope="row" colspan="21">{{ estimate.code }}</th>
                 </tr>
                 <tr class="align-middle">
                   <th class="text-center" scope="row">1</th>
@@ -263,6 +271,15 @@
                   </td>
                   <td class="text-end">
                     {{ paymentApplication.company.currency.symbol
+                    }}{{
+                      (estimate.scaffold.previousGross
+                        ? estimate.scaffold.previousGross
+                        : 0
+                      ) | number: "0.2-2"
+                    }}
+                  </td>
+                  <td class="text-end">
+                    {{ paymentApplication.company.currency.symbol
                     }}{{ estimate.scaffold.grossTotal | number: "0.2-2" }}
                   </td>
                   <td class="text-end">
@@ -413,6 +430,13 @@
                   </td>
                   <td class="text-end">
                     {{ paymentApplication.company.currency.symbol
+                    }}{{
+                      (attachment.grossTotal ? attachment.grossTotal : 0)
+                        | number: "0.2-2"
+                    }}
+                  </td>
+                  <td class="text-end">
+                    {{ paymentApplication.company.currency.symbol
                     }}{{ attachment.grossTotal | number: "0.2-2" }}
                   </td>
                   <td class="text-end">
@@ -457,6 +481,10 @@
                 <th class="text-end">
                   {{ paymentApplication.company.currency.symbol }}
                   {{ paymentApplication.extraHireCharge | number: "0.2-2" }}
+                </th>
+                <th class="text-end">
+                  {{ paymentApplication.company.currency.symbol }}
+                  {{ paymentApplication.previousGross | number: "0.2-2" }}
                 </th>
                 <th class="text-end">
                   {{ paymentApplication.company.currency.symbol }}
