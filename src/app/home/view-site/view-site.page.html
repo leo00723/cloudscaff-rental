@@ -9,6 +9,7 @@
   >
     <ion-toolbar *ngIf="user$ |async as user">
       <ion-segment
+        [scrollable]="true"
         (ionChange)="segmentChanged($event)"
         selectOnFocus="true"
         [value]="active"
@@ -40,6 +41,12 @@
         </ion-segment-button>
         <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Shipment Invoices</ion-label>
+        </ion-segment-button>
+        <ion-segment-button
+          value="operationApplication"
+          *ngIf="user.role !== 'Supervisor'"
+        >
+          <ion-label>Operation Application</ion-label>
         </ion-segment-button>
         <ion-segment-button
           value="paymentApplication"
@@ -114,14 +121,26 @@
           (selectedItem)="viewShipmentInvoices($event)"
         ></app-shipment-invoices-table>
       </div>
+      <div *ngSwitchCase="'operationApplication'">
+        <app-payment-application-table
+          [value]="operationApplications$"
+          *ngIf="operationApplications$ | async else loading"
+          (selectedItem)="viewPaymentApplication($event,false)"
+        ></app-payment-application-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addPaymentApplication(false)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </div>
       <div *ngSwitchCase="'paymentApplication'">
         <app-payment-application-table
           [value]="paymentApplications$"
           *ngIf="paymentApplications$ | async else loading"
-          (selectedItem)="viewPaymentApplication($event)"
+          (selectedItem)="viewPaymentApplication($event,true)"
         ></app-payment-application-table>
         <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addPaymentApplication()">
+          <ion-fab-button (click)="addPaymentApplication(true)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
         </ion-fab>

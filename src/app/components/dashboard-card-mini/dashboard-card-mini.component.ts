@@ -3,9 +3,11 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   Input,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { Company } from 'src/app/models/company.model';
+import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 
 @Component({
@@ -19,10 +21,32 @@ export class DashboardCardMiniComponent implements OnInit {
   @Input() icon = '';
   @Input() title = '';
   @Input() total = '';
+  @Input() skeleton = true;
   company: Company;
-  constructor(private store: Store) {
-    this.company = this.store.selectSnapshot(CompanyState.company);
+  constructor(
+    private masterSvc: MasterService,
+    private change: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.init();
   }
 
-  ngOnInit(): void {}
+  init() {
+    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    setTimeout(() => {
+      if (id) {
+        this.company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+        this.skeleton = false;
+        this.change.detectChanges();
+      } else {
+        this.masterSvc.log(
+          '-----------------------try card----------------------'
+        );
+        this.init();
+      }
+    }, 200);
+  }
 }

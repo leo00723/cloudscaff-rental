@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 
 @Component({
   selector: 'app-dashboard',

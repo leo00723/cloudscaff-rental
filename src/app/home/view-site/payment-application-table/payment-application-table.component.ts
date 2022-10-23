@@ -45,6 +45,8 @@ export class PaymentApplicationTableComponent {
     switch (status) {
       case 'sent':
         return 'success';
+      case 'P.A Created':
+        return 'success';
       case 'pending':
         return 'primary';
       case 'void':

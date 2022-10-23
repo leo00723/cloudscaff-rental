@@ -1,5 +1,5 @@
-<ion-card class="border-start border-5" ngClass="border-{{ color }}">
-  <ion-row>
+<ion-card class="border-start border-5" ngClass="border-{{ color }}" mode="ios">
+  <ion-row *ngIf="!skeleton; else loading">
     <ion-col class="text-center align-middle my-auto" size="3">
       <ion-icon [name]="icon" [color]="color" size="large"></ion-icon
     ></ion-col>
@@ -11,6 +11,25 @@
           }}{{ total | number: "0.2-2" }}</ion-card-title
         >
       </ion-card-header>
-    </ion-col>
-  </ion-row>
+    </ion-col> </ion-row
+  ><ng-template #loading>
+    <ion-row>
+      <ion-col size="3">
+        <ion-skeleton-text
+          class="mx-auto"
+          style="width: 4rem; height: 4rem"
+        ></ion-skeleton-text>
+      </ion-col>
+      <ion-col class="text-end">
+        <ion-card-header>
+          <ion-card-subtitle>
+            <ion-skeleton-text></ion-skeleton-text>
+          </ion-card-subtitle>
+          <ion-card-title>
+            <ion-skeleton-text style="height: 1rem"></ion-skeleton-text>
+          </ion-card-title>
+        </ion-card-header>
+      </ion-col>
+    </ion-row>
+  </ng-template>
 </ion-card>

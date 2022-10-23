@@ -1,22 +1,32 @@
 <app-header title="Dashboard"></app-header>
 
 <ion-content fullscreen="true">
-  <div class="container">
+  <div>
     <ion-row>
-      <ion-col size="12">
-        <ion-text color="dark">
-          <h4>Dashboard Summary</h4>
-        </ion-text>
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col sizeMd="3" size="12">
+      <ion-col
+        sizeLg="3"
+        sizeMd="6"
+        size="12"
+        *ngFor="let item of [].constructor(1)"
+      >
         <app-dashboard-card-mini
           color="success"
           icon="cash-outline"
           title="Total Estimated Income"
           total="30000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col
+        sizeLg="3"
+        sizeMd="6"
+        size="12"
+        *ngFor="let item of [].constructor(1)"
+      >
+        <app-dashboard-card-mini
+          color="danger"
+          icon="arrow-down-outline"
+          title="Total Income Lost"
+          total="10000"
         ></app-dashboard-card-mini>
       </ion-col>
     </ion-row>

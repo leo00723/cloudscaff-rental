@@ -29,6 +29,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 })
 export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   @Input() isEdit = false;
+  @Input() isPA = false;
   @Input() site$: Observable<Site>;
   @Input() estimates$: Observable<Estimate[]>;
   @Input() bulkEstimates: BulkEstimate[];
@@ -45,7 +46,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     if (!this.isEdit) {
-      this.paymentApplication.setCompany(this.company, true);
+      this.paymentApplication.setCompany(this.company, true, this.isPA);
       this.subs.add(
         this.estimates$.subscribe((estimates) => {
           this.paymentApplication.setEstimates(estimates);
@@ -61,26 +62,55 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     }
   }
 
-  createPA() {
+  createPA(create?: boolean) {
+    const canMakePA = create ? create : this.isPA;
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         this.loading = true;
 
-        this.paymentApplication.setCompany(this.company, true);
-        await this.masterSvc
-          .edit()
-          .addDocument(
-            `company/${this.paymentApplication.company.id}/paymentApplications`,
-            this.paymentApplication
-          );
+        this.paymentApplication.setCompany(this.company, true, canMakePA);
+        if (canMakePA) {
+          await this.masterSvc
+            .edit()
+            .addDocument(
+              `company/${this.paymentApplication.company.id}/paymentApplications`,
+              this.paymentApplication
+            );
 
-        await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalPaymentApplications: increment(1),
-        });
+          await this.masterSvc.edit().updateDoc('company', this.company.id, {
+            totalPaymentApplications: increment(1),
+          });
 
-        this.masterSvc
-          .notification()
-          .toast('Payment application created successfully!', 'success');
+          this.masterSvc
+            .notification()
+            .toast('Payment application created successfully!', 'success');
+        } else {
+          await this.masterSvc
+            .edit()
+            .addDocument(
+              `company/${this.paymentApplication.company.id}/operationApplications`,
+              this.paymentApplication
+            );
+
+          await this.masterSvc.edit().updateDoc('company', this.company.id, {
+            totalOperationApplications: increment(1),
+          });
+
+          this.masterSvc
+            .notification()
+            .toast('Operation application created successfully!', 'success');
+        }
+        if (create) {
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.paymentApplication.company.id}/${
+                this.isPA ? 'paymentApplications' : 'operationApplications'
+              }`,
+              this.paymentApplication.id,
+              { status: 'P.A Created' }
+            );
+        }
         this.close();
       } catch (error) {
         this.loading = false;
@@ -103,7 +133,9 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
         await this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.paymentApplication.company.id}/paymentApplications`,
+            `company/${this.paymentApplication.company.id}/${
+              this.isPA ? 'paymentApplications' : 'operationApplications'
+            }`,
             this.paymentApplication.id,
             this.paymentApplication
           );
@@ -120,7 +152,12 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.masterSvc
           .notification()
-          .toast('Payment application updated successfully!', 'success');
+          .toast(
+            `${
+              this.isPA ? 'Payment' : 'Operation'
+            } application updated successfully!`,
+            'success'
+          );
       } catch (error) {
         console.error(error);
         this.loading = false;

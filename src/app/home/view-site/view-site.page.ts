@@ -36,6 +36,7 @@ export class ViewSitePage implements OnInit {
   billableShipments$: Observable<InventoryEstimate[]>;
   shipmentInvoices$: Observable<InventoryEstimate[]>;
   paymentApplications$: Observable<PaymentApplication[]>;
+  operationApplications$: Observable<PaymentApplication[]>;
 
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
@@ -130,13 +131,24 @@ export class ViewSitePage implements OnInit {
         'date',
         'desc'
       ) as Observable<PaymentApplication[]>;
+    this.operationApplications$ = this.masterSvc
+      .edit()
+      .getCollectionWhereAndOrder(
+        `company/${this.ids[0]}/operationApplications`,
+        'site.id',
+        '==',
+        this.ids[1],
+        'date',
+        'desc'
+      ) as Observable<PaymentApplication[]>;
   }
   ngOnInit() {}
 
-  async addPaymentApplication() {
+  async addPaymentApplication(isPA: boolean) {
     const modal = await this.masterSvc.modal().create({
       component: AddPaymentApplicationComponent,
       componentProps: {
+        isPA,
         estimates$: this.estimates$,
         site$: this.site$,
       },
@@ -146,10 +158,14 @@ export class ViewSitePage implements OnInit {
     });
     return await modal.present();
   }
-  async viewPaymentApplication(paymentApplication: PaymentApplication) {
+  async viewPaymentApplication(
+    paymentApplication: PaymentApplication,
+    isPA: boolean
+  ) {
     const modal = await this.masterSvc.modal().create({
       component: AddPaymentApplicationComponent,
       componentProps: {
+        isPA,
         value: paymentApplication,
         isEdit: true,
       },

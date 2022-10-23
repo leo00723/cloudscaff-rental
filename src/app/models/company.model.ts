@@ -34,6 +34,7 @@ export interface Company {
   totalCredits?: number;
   totalSites?: number;
   totalPaymentApplications?: number;
+  totalOperationApplications?: number;
   users?: string[];
   vat?: number;
   vatNum?: string;

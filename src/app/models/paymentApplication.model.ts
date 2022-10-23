@@ -26,13 +26,22 @@ export class PaymentApplication {
     this.resetTotals();
   }
 
-  setCompany(company: Company, updateCode?: boolean) {
+  setCompany(company: Company, updateCode?: boolean, isPA?: boolean) {
     this.company = company;
-    if (updateCode) {
+    if (updateCode && isPA) {
       this.code = `PAY${new Date().toLocaleDateString('en', {
         year: '2-digit',
       })}${(this.company.totalPaymentApplications
         ? this.company.totalPaymentApplications + 1
+        : 1
+      )
+        .toString()
+        .padStart(6, '0')}`;
+    } else {
+      this.code = `OPA${new Date().toLocaleDateString('en', {
+        year: '2-digit',
+      })}${(this.company.totalOperationApplications
+        ? this.company.totalOperationApplications + 1
         : 1
       )
         .toString()

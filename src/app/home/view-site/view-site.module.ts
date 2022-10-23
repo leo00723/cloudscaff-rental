@@ -17,8 +17,6 @@ import { PaymentApplicationTableComponent } from './payment-application-table/pa
     ShipmentInvoicesTableComponent,
     PaymentApplicationTableComponent,
   ],
-  exports: [
-    PaymentApplicationTableComponent
-  ],
+  exports: [PaymentApplicationTableComponent],
 })
 export class ViewSitePageModule {}

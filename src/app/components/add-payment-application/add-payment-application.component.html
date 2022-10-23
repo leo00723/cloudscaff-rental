@@ -9,9 +9,16 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title
+    <ion-title *ngIf="isPA; else OA"
       >{{ !isEdit ? "Add Payment Application" : "Edit Payment Application" }}
     </ion-title>
+    <ng-template #OA>
+      <ion-title
+        >{{
+          !isEdit ? "Add Operation Application" : "Edit Operation Application"
+        }}
+      </ion-title>
+    </ng-template>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -19,7 +26,7 @@
     <ion-row class="py-2">
       <ion-col size="12">
         <ion-text>
-          <h4>Payment Application</h4>
+          <h4>{{ isPA ? "Payment Application" : "Operation Application" }}</h4>
         </ion-text>
       </ion-col>
 
@@ -58,9 +65,6 @@
 
     <ion-row>
       <ion-col size="12" *ngIf="paymentApplication.estimates">
-        <ion-button (click)="paymentApplication.updatePreviousGross()"
-          >update</ion-button
-        >
         <div class="table-responsive">
           <table class="table table-sm table-bordered">
             <thead>
@@ -94,7 +98,7 @@
                   Total Gross ({{ paymentApplication.company.currency.symbol }})
                 </th>
                 <th scope="col" class="text-end">
-                  Current Month ({{
+                  Current Total ({{
                     paymentApplication.company.currency.symbol
                   }})
                 </th>
@@ -552,19 +556,31 @@
           *ngIf="loading"
         ></ion-progress-bar>
         <ion-button
-          size="block"
           shape="round"
           *ngIf="isEdit && !loading"
           (click)="updatePA()"
-          >Update Payment Application</ion-button
+          >{{
+            isPA
+              ? "Update Payment Application"
+              : "Update Operation
+          Application"
+          }}</ion-button
         >
         <ion-button
-          size="block"
           shape="round"
           *ngIf="!isEdit && !loading"
           (click)="createPA()"
-          >Save Payment Application</ion-button
-        >
+          >{{
+            isPA ? "Save Payment Application" : "Save Operation Application"
+          }}
+        </ion-button>
+        <ion-button
+          color="success"
+          shape="round"
+          *ngIf="isEdit && !loading && !isPA"
+          (click)="createPA(true)"
+          >Create Payment Application
+        </ion-button>
       </ion-col>
     </ion-row>
   </ng-container>
