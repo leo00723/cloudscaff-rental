@@ -15,7 +15,8 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-              "pdfmake/build/pdfmake"
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts"
             ],
             "outputPath": "www",
             "index": "src/index.html",
@@ -35,10 +36,7 @@
               },
               "src/manifest.webmanifest"
             ],
-            "styles": [
-              "src/theme/variables.scss",
-              "src/global.scss"
-            ],
+            "styles": ["src/theme/variables.scss", "src/global.scss"],
             "scripts": [],
             "aot": false,
             "vendorChunk": true,
@@ -132,10 +130,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         },
         "e2e": {
