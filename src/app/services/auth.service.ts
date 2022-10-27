@@ -35,6 +35,8 @@ export class AuthService {
     });
   }
 
+  test() {}
+
   async login({ email, password }) {
     return await signInWithEmailAndPassword(this.auth, email, password);
   }

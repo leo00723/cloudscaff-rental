@@ -81,6 +81,7 @@ import { ShipmentInvoiceSummaryComponent } from './shipment-invoice-summary/ship
 import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipment-invoice.component';
 import { AddPaymentApplicationComponent } from './add-payment-application/add-payment-application.component';
 import { DashboardCardMiniComponent } from './dashboard-card-mini/dashboard-card-mini.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -171,8 +172,8 @@ const IMPORTS = [
 ];
 
 @NgModule({
-  declarations: [COMPONENTS],
+  declarations: [COMPONENTS, NotificationsComponent],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS],
+  exports: [IMPORTS, COMPONENTS, NotificationsComponent],
 })
 export class ComponentsModule {}

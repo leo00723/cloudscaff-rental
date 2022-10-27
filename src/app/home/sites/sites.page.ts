@@ -24,6 +24,10 @@ export class SitesPage implements OnInit {
     this.init();
   }
 
+  test() {
+    this.masterSvc.auth().test();
+  }
+
   async viewSite(siteData: Site) {
     this.masterSvc
       .store()

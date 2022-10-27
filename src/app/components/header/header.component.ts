@@ -1,3 +1,4 @@
+import { NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,6 +6,8 @@ import {
   Input,
   Output,
 } from '@angular/core';
+import { MasterService } from 'src/app/services/master.service';
+import { NotificationsComponent } from '../notifications/notifications.component';
 
 @Component({
   selector: 'app-header',
@@ -16,10 +19,23 @@ export class HeaderComponent {
   @Input() showMenu = true;
   @Input() showBack = false;
   @Input() path = '';
-  @Input() btnName: string;
+  @Input() btnName: string = 'notifications';
+  @Input() iconColor: string = 'danger';
   @Output() updated = new EventEmitter<boolean>();
 
-  update() {
-    this.updated.emit(true);
+  constructor(private masterSvc: MasterService) {}
+
+  async update() {
+    if (this.btnName === 'notifications') {
+      const modal = await this.masterSvc.modal().create({
+        component: NotificationsComponent,
+        cssClass: 'fullscreen',
+        showBackdrop: false,
+        id: 'notifications',
+      });
+      return await modal.present();
+    } else {
+      this.updated.emit(true);
+    }
   }
 }
