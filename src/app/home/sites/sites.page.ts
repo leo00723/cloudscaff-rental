@@ -24,10 +24,6 @@ export class SitesPage implements OnInit {
     this.init();
   }
 
-  test() {
-    this.masterSvc.auth().test();
-  }
-
   async viewSite(siteData: Site) {
     this.masterSvc
       .store()
@@ -54,7 +50,7 @@ export class SitesPage implements OnInit {
   }
 
   init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 
     setTimeout(() => {
       if (id) {

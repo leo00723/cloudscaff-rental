@@ -19,6 +19,7 @@ export class PaymentApplication {
   date: any;
   code: string;
   status: string;
+  dueDate: any;
 
   constructor() {
     this.date = new Date();

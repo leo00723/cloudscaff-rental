@@ -5,6 +5,7 @@
     [showBack]="true"
     path="/dashboard/sites"
     btnName="settings-outline"
+    iconColor="primary"
     (updated)="editSite(site)"
   >
     <ion-toolbar *ngIf="user$ |async as user">

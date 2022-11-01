@@ -23,6 +23,7 @@ export class InventoryTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<InventoryItem>();
   @Output() editItem = new EventEmitter<InventoryItem>();
+  @Output() duplicateItem = new EventEmitter<InventoryItem>();
   inventoryItems$: Observable<InventoryItem[]>;
   temp$: Observable<InventoryItem[]>;
   sortType = SortType;
@@ -58,6 +59,9 @@ export class InventoryTableComponent {
 
   edit() {
     this.editItem.emit(this.selected[0]);
+  }
+  duplicate() {
+    this.duplicateItem.emit(this.selected[0]);
   }
   view() {
     this.selectedItem.emit(this.selected[0]);

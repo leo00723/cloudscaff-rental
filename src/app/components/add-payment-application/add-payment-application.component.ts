@@ -231,6 +231,10 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     this.paymentApplication.updateTotals();
   }
 
+  setDate(args) {
+    this.paymentApplication.dueDate = args.detail.value;
+  }
+
   close() {
     this.masterSvc.modal().dismiss();
   }

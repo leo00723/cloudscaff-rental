@@ -1,8 +1,8 @@
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
+  Component,
   Input,
+  OnInit,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -14,12 +14,12 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
-  selector: 'app-add-stockitem',
-  templateUrl: './add-stockitem.component.html',
+  selector: 'app-duplicate-stock-item',
+  templateUrl: './duplicate-stock-item.component.html',
   styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddStockitemComponent implements OnInit {
-  @Input() isEdit = false;
+export class DuplicateStockItemComponent implements OnInit {
   @Input() set value(val: InventoryItem) {
     if (val) {
       Object.assign(this.inventoryItem, val);
@@ -53,11 +53,7 @@ export class AddStockitemComponent implements OnInit {
       .getDocById(`company/${this.company.id}/templates`, 'componentTypes');
   }
 
-  ngOnInit(): void {
-    if (!this.isEdit) {
-      this.initForm();
-    }
-  }
+  ngOnInit(): void {}
 
   get crossHireForms() {
     return this.form.get('crossHire') as FormArray;
@@ -115,31 +111,6 @@ export class AddStockitemComponent implements OnInit {
           .notification()
           .toast(
             'Something went wrong adding stock item. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
-    });
-  }
-  updateItem() {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        await this.masterSvc
-          .edit()
-          .updateDoc(
-            `company/${this.company.id}/stockItems`,
-            this.inventoryItem.id,
-            { ...this.form.value, category: this.form.value.categoryType.name }
-          );
-        this.masterSvc.notification().toast('Stock Item Updated', 'success');
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating stock item. Please try again!',
             'danger'
           );
         this.loading = false;
@@ -211,29 +182,6 @@ export class AddStockitemComponent implements OnInit {
           })
         )
       ),
-    });
-  }
-
-  private initForm() {
-    this.form = this.masterSvc.fb().group({
-      code: ['', Validators.required],
-      categoryType: ['', Validators.required],
-      size: [''],
-      name: ['', Validators.required],
-      hireCost: [0, [Validators.required, Validators.min(0)]],
-      replacementCost: [0, [Validators.required, Validators.min(0)]],
-      sellingCost: [0, [Validators.required, Validators.min(0)]],
-      weight: [0, [Validators.required, Validators.min(0)]],
-      availableQty: [0, [Validators.required, Validators.min(0)]],
-      yardQty: [0, [Validators.required, Validators.min(0)]],
-      crossHireQty: [0, [Validators.required, Validators.min(0)]],
-      inUseQty: [0, [Validators.required, Validators.min(0)]],
-      reservedQty: [0, [Validators.required, Validators.min(0)]],
-      inMaintenanceQty: [0, [Validators.required, Validators.min(0)]],
-      damagedQty: [0, [Validators.required, Validators.min(0)]],
-      lostQty: [0, [Validators.required, Validators.min(0)]],
-      inService: [true, [Validators.required]],
-      crossHire: this.masterSvc.fb().array([]),
     });
   }
 }

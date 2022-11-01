@@ -35,7 +35,10 @@
             "prefix": "app",
             "style": "camelCase"
           }
-        ]
+        ],
+        "no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "@typescript-eslint/member-ordering": "off"
       }
     },
     {

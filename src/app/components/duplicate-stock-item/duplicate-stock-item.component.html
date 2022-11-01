@@ -1,0 +1,211 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Duplicate Item </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="form">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <app-input-select-reactive
+            title="Category"
+            placeholder="Select Category"
+            controlName="categoryType"
+            [form]="form"
+            [selectedText]="field('categoryType').value.name"
+            (fieldChange)="field('size').setValue('')"
+          >
+            <ng-container *ngIf="categories$ | async as categories">
+              <ion-select-option
+                [value]="category"
+                *ngFor="let category of categories.categories"
+                >{{ category.name }}
+              </ion-select-option>
+            </ng-container>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col size="6">
+          <app-input-select-reactive
+            title="Size"
+            placeholder="Select Size"
+            controlName="size"
+            [form]="form"
+            [selectedText]="field('size').value"
+          >
+            <ion-select-option
+              [value]="size.size"
+              *ngFor="let size of field('categoryType').value.items"
+              >{{ size.size }}
+            </ion-select-option>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col size="4">
+          <app-input-reactive title="Code" controlName="code" [form]="form">
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="8">
+          <app-input-reactive
+            title="Description"
+            controlName="name"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="4">
+          <app-input-reactive
+            title="Yard Qty"
+            type="number"
+            controlName="yardQty"
+            [form]="form"
+            (fieldChange)="update()"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="4">
+          <app-input-reactive
+            title="Cross Hire Qty"
+            type="number"
+            controlName="crossHireQty"
+            [form]="form"
+            [readonly]="true"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="4">
+          <app-input-reactive
+            title="Total Qty "
+            type="number"
+            controlName="availableQty"
+            [form]="form"
+            [readonly]="true"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Weight  ({{ company.mass.symbol }})"
+            type="number"
+            controlName="weight"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="4">
+          <app-input-reactive
+            title="Hire/Rent Cost ({{ company.currency.symbol }})"
+            type="number"
+            controlName="hireCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="4">
+          <app-input-reactive
+            title="Replacement Cost ({{ company.currency.symbol }})"
+            type="number"
+            controlName="replacementCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="4">
+          <app-input-reactive
+            title="Selling Cost ({{ company.currency.symbol }})"
+            type="number"
+            controlName="sellingCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+      </ion-row>
+      <ion-row
+        formArrayName="crossHire"
+        class="mb-3"
+        *ngFor="let hire of crossHireForms.controls; let i = index"
+      >
+        <ion-col size="12">
+          <ion-note> Cross Hire {{ i + 1 }} </ion-note>
+          <ion-chip
+            outline
+            color="danger"
+            class="ion-float-end"
+            (click)="deleteCrossHire(i)"
+          >
+            <ion-label>Delete</ion-label>
+          </ion-chip>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Company"
+            controlName="company"
+            placeholder="Enter Company Name"
+            [form]="hire"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Qty"
+            type="number"
+            controlName="qty"
+            [form]="hire"
+            (fieldChange)="update()"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-date
+            [form]="hire"
+            controlName="date"
+            title="Hire Date"
+          ></app-input-date>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Notes"
+            [textarea]="true"
+            controlName="notes"
+            placeholder="Enter any notes..."
+            [form]="hire"
+          >
+          </app-input-reactive>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12" class="text-center">
+          <ion-button
+            shape="round"
+            color="success"
+            (click)="addCrossHire()"
+            *ngIf="!loading"
+          >
+            Add Cross Hire
+          </ion-button>
+        </ion-col>
+        <ion-col size="12" class="text-end">
+          <ion-progress-bar
+            type="indeterminate"
+            *ngIf="loading"
+          ></ion-progress-bar>
+          <ion-button
+            shape="round"
+            [disabled]="form.invalid"
+            *ngIf="!loading"
+            (click)="createItem()"
+            >Duplicate Item</ion-button
+          >
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

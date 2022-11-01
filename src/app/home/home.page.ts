@@ -17,12 +17,12 @@ import { AppState } from '../shared/app/app.state';
 })
 export class HomePage implements OnDestroy {
   public appPages = [
-    {
-      title: 'Dashboard',
-      url: '/dashboard/view',
-      icon: 'home',
-      roles: 'Owner,Admin,Super-Admin',
-    },
+    // {
+    //   title: 'Dashboard',
+    //   url: '/dashboard/view',
+    //   icon: 'home',
+    //   roles: 'Owner,Admin,Super-Admin',
+    // },
     {
       title: 'Enquiries',
       url: '/dashboard/enquiries',

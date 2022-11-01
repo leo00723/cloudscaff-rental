@@ -19,8 +19,8 @@ export class HeaderComponent {
   @Input() showMenu = true;
   @Input() showBack = false;
   @Input() path = '';
-  @Input() btnName: string = 'notifications';
-  @Input() iconColor: string = 'danger';
+  @Input() btnName = '';
+  @Input() iconColor = '';
   @Output() updated = new EventEmitter<boolean>();
 
   constructor(private masterSvc: MasterService) {}

@@ -3,12 +3,7 @@
 <ion-content fullscreen="true">
   <div>
     <ion-row>
-      <ion-col
-        sizeLg="3"
-        sizeMd="6"
-        size="12"
-        *ngFor="let item of [].constructor(1)"
-      >
+      <ion-col sizeLg="3" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="success"
           icon="cash-outline"
@@ -16,17 +11,28 @@
           total="30000"
         ></app-dashboard-card-mini>
       </ion-col>
-      <ion-col
-        sizeLg="3"
-        sizeMd="6"
-        size="12"
-        *ngFor="let item of [].constructor(1)"
-      >
+      <ion-col sizeLg="3" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="danger"
           icon="arrow-down-outline"
           title="Total Income Lost"
           total="10000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="3" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="arrow-up-outline"
+          title="Total Income Won"
+          total="20000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="3" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="cash-outline"
+          title="Total Income Invoiced"
+          total="15000"
         ></app-dashboard-card-mini>
       </ion-col>
     </ion-row>

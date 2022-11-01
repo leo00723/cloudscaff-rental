@@ -550,6 +550,23 @@
           </table>
         </div>
       </ion-col>
+      <ion-col size="12">
+        <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
+          <ion-label>Application Due Date</ion-label>
+          <ion-datetime-button datetime="dueDate"></ion-datetime-button>
+        </ion-item>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              id="dueDate"
+              presentation="date"
+              (ionChange)="setDate($event)"
+              [showDefaultButtons]="true"
+              [value]="paymentApplication.dueDate"
+            ></ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </ion-col>
       <ion-col class="text-end">
         <ion-progress-bar
           type="indeterminate"

@@ -13,8 +13,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <ng-container *ngFor="let item of [].constructor(10)">
-    <ion-card mode="ios">
+  <!-- <ion-card mode="ios">
       <ion-card-header>
         <ion-card-title>Card Title</ion-card-title>
         <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
@@ -24,6 +23,12 @@
         Here's a small text description for the card content. Nothing more,
         nothing less.
       </ion-card-content>
-    </ion-card>
-  </ng-container>
+    </ion-card> -->
+  <ion-list [inset]="true" mode="ios" color="dark">
+    <ng-container *ngFor="let item of [].constructor(10)">
+      <ion-item>
+        <ion-label> {{ date | date }} - Notification </ion-label>
+      </ion-item>
+    </ng-container>
+  </ion-list>
 </ion-content>

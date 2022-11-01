@@ -37,6 +37,7 @@
         *ngIf="inventoryItems$ | async else loading"
         (selectedItem)="viewItem($event)"
         (editItem)="editItem($event)"
+        (duplicateItem)="duplicateItem($event)"
       ></app-inventory-table>
       <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button (click)="addItem()">

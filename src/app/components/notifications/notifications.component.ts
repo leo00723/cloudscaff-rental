@@ -11,7 +11,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 })
 export class NotificationsComponent implements OnInit {
   company: Company;
-
+  date = new Date();
   constructor(private masterSvc: MasterService) {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
   }

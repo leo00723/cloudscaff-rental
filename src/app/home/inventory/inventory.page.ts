@@ -8,6 +8,7 @@ import { AddReturnComponent } from 'src/app/components/add-return/add-return.com
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
 import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
+import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-item/duplicate-stock-item.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
@@ -70,6 +71,19 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async duplicateItem(item) {
+    const modal = await this.masterSvc.modal().create({
+      component: DuplicateStockItemComponent,
+      componentProps: {
+        value: item,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'duplicateStockItem',
+    });
+    return await modal.present();
+  }
+
   async viewItem(item: InventoryItem) {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     const sites$ = this.masterSvc
@@ -81,12 +95,12 @@ export class InventoryPage implements OnInit {
         item.id
       )
       .pipe(
-        map((data) => {
-          return data.map((doc) => {
+        map((data) =>
+          data.map((doc) => {
             const single = doc.items.find((i: any) => i.id === item.id);
             return { site: doc.site, item: single };
-          });
-        })
+          })
+        )
       );
     const modal = await this.masterSvc.modal().create({
       component: ViewStockLocationsComponent,
@@ -194,7 +208,7 @@ export class InventoryPage implements OnInit {
   }
 
   private init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 
     setTimeout(() => {
       if (id) {
