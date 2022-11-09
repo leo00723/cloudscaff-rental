@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormGroup, Validators } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { IonReorderGroup, ItemReorderEventDetail } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { MasterService } from 'src/app/services/master.service';
@@ -15,8 +16,12 @@ export class ComponentTypesPage implements OnInit, OnDestroy {
   items = [''];
   form: FormGroup;
   loading = false;
+  sanitizedBlobUrl: any;
   private subs = new Subscription();
-  constructor(private masterSvc: MasterService) {}
+  constructor(
+    private masterSvc: MasterService,
+    private sanitizer: DomSanitizer
+  ) {}
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
@@ -116,8 +121,45 @@ export class ComponentTypesPage implements OnInit, OnDestroy {
     });
   }
 
+  export() {}
+
+  onFileChanged(event) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      try {
+        const selectedFile = event.target.files[0];
+        const fileReader = new FileReader();
+        fileReader.readAsText(selectedFile, 'UTF-8');
+        fileReader.onload = async () => {
+          const data = JSON.parse(fileReader.result.toString());
+          const company = this.masterSvc
+            .store()
+            .selectSnapshot(CompanyState.company);
+          const user = this.masterSvc.store().selectSnapshot(UserState.user);
+          const template = {
+            ...data,
+            date: new Date(),
+            updatedBy: user.id,
+            company: company.id,
+          };
+          await this.masterSvc
+            .edit()
+            .setDoc(
+              `company/${company.id}/templates`,
+              template,
+              'componentTypes'
+            );
+          this.masterSvc.notification().toast('Import Successful', 'success');
+        };
+        fileReader.onerror = (error) => {
+          console.log(error);
+        };
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  }
   private init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.subs.add(
@@ -126,20 +168,29 @@ export class ComponentTypesPage implements OnInit, OnDestroy {
             .getDocById(`company/${id}/templates`, 'componentTypes')
             .subscribe((components) => {
               if (components) {
+                if (components.categories.length > 0) {
+                  const blob = new Blob([JSON.stringify(components, null, 2)], {
+                    type: 'application/json',
+                  });
+
+                  this.sanitizedBlobUrl = this.sanitizer.bypassSecurityTrustUrl(
+                    window.URL.createObjectURL(blob)
+                  );
+                }
                 this.form = this.masterSvc.fb().group({
                   categories: this.masterSvc.fb().array(
-                    components.categories.map((c) => {
-                      return this.masterSvc.fb().group({
+                    components.categories.map((c) =>
+                      this.masterSvc.fb().group({
                         name: [c.name, Validators.required],
                         items: this.masterSvc.fb().array(
-                          c.items.map((i) => {
-                            return this.masterSvc.fb().group({
+                          c.items.map((i) =>
+                            this.masterSvc.fb().group({
                               size: [i.size, Validators.required],
-                            });
-                          })
+                            })
+                          )
                         ),
-                      });
-                    })
+                      })
+                    )
                   ),
                 });
               } else {

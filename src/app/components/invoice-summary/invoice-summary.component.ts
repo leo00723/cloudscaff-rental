@@ -28,7 +28,7 @@ export class InvoiceSummaryComponent {
     const sharedInvoice = {
       invoice: this.invoice,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -46,7 +46,7 @@ export class InvoiceSummaryComponent {
     const sharedInvoice = {
       invoice: this.invoice,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

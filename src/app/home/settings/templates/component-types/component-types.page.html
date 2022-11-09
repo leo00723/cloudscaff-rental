@@ -6,6 +6,30 @@
 ></app-header>
 
 <ion-content fullscreen="true" class="ion-padding">
+  <div class="text-end">
+    <input
+      style="display: none"
+      type="file"
+      (change)="onFileChanged($event)"
+      #fileInput
+    />
+    <a
+      type="button"
+      class="btn btn-success btn-sm rounded-pill me-2"
+      (click)="fileInput.click()"
+      >Import Data</a
+    >
+    <a
+      *ngIf="sanitizedBlobUrl"
+      [href]="sanitizedBlobUrl"
+      download="Inventory.json"
+      type="button"
+      class="btn btn-primary btn-sm rounded-pill"
+      (click)="export()"
+    >
+      Export Data
+    </a>
+  </div>
   <ion-grid class="container" *ngIf="form">
     <form [formGroup]="form">
       <!-- ACCESS CATEGORIES -->
