@@ -31,7 +31,7 @@
 
 <ion-content fullscreen="true" class="ion-padding">
   <ng-container [ngSwitch]="active">
-    <div *ngSwitchDefault>
+    <ng-container *ngSwitchDefault>
       <app-inventory-table
         [value]="inventoryItems$"
         *ngIf="inventoryItems$ | async else loading"
@@ -44,7 +44,7 @@
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
-    </div>
+    </ng-container>
     <div *ngSwitchCase="2">
       <app-shipment-table
         [value]="shipments$"

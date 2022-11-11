@@ -20,6 +20,7 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { EditService } from 'src/app/services/edit.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-inventory-table',
@@ -38,6 +39,8 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   selectionType = SelectionType;
   selected = [];
   sanitizedBlobUrl: any;
+
+  isProd = environment.production;
 
   private subs = new Subscription();
 
@@ -100,8 +103,53 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   view() {
     this.selectedItem.emit(this.selected[0]);
   }
+  deleteItem() {
+    this.notificationService.presentAlertConfirm(async () => {
+      const company = this.store.selectSnapshot(CompanyState.company).id;
+
+      await this.editService.deleteDocById(
+        `company/${company}/stockItems`,
+        this.selected[0].id
+      );
+
+      this.notificationService.toast('Item deleted', 'success');
+      this.selected = [];
+    });
+  }
 
   export() {}
+
+  reset() {
+    this.notificationService.presentAlertConfirm(() => {
+      const sub = this.inventoryItems$.subscribe(
+        async (items: InventoryItem[]) => {
+          const batch = this.editService.batch();
+          const company = this.store.selectSnapshot(CompanyState.company).id;
+
+          for (const item of items) {
+            const doc = this.editService.docRef(
+              `company/${company}/stockItems`,
+              item.id
+            );
+            item.yardQty = 0;
+            item.crossHireQty = 0;
+            item.availableQty = 0;
+            item.inUseQty = 0;
+            item.inMaintenanceQty = 0;
+            item.damagedQty = 0;
+            item.lostQty = 0;
+            item.shipmentQty = 0;
+            item.reservedQty = 0;
+            item.crossHire = [];
+            batch.update(doc, { ...item });
+          }
+          await batch.commit();
+          this.notificationService.toast('Reset Complete', 'success');
+          sub.unsubscribe();
+        }
+      );
+    });
+  }
 
   onFileChanged(event) {
     this.notificationService.presentAlertConfirm(() => {
