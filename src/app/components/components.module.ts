@@ -83,6 +83,7 @@ import { AddPaymentApplicationComponent } from './add-payment-application/add-pa
 import { DashboardCardMiniComponent } from './dashboard-card-mini/dashboard-card-mini.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { DuplicateStockItemComponent } from './duplicate-stock-item/duplicate-stock-item.component';
+import { SearchableSelectComponent } from './searchable-select/searchable-select.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -159,6 +160,8 @@ const COMPONENTS = [
   ViewShipmentInvoiceComponent,
   AddPaymentApplicationComponent,
   DashboardCardMiniComponent,
+  NotificationsComponent,
+  DuplicateStockItemComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -170,11 +173,12 @@ const IMPORTS = [
   SwiperModule,
   ScrollingModule,
   SignaturePadModule,
+  SearchableSelectComponent,
 ];
 
 @NgModule({
-  declarations: [COMPONENTS, NotificationsComponent, DuplicateStockItemComponent],
+  declarations: [COMPONENTS],
   imports: [IMPORTS],
-  exports: [IMPORTS, COMPONENTS, NotificationsComponent, DuplicateStockItemComponent],
+  exports: [IMPORTS, COMPONENTS],
 })
 export class ComponentsModule {}

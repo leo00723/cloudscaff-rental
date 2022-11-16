@@ -19,7 +19,7 @@ import { AcceptBulkEstimateComponent } from './accept-bulk-estimate/accept-bulk-
   styles: [],
 })
 export class BulkEstimateComponent implements OnInit {
-  @Input() enquiryId: string = '';
+  @Input() enquiryId = '';
   @Input() set value(val: BulkEstimate) {
     if (val) {
       Object.assign(this.bulkEstimate, val);
@@ -190,8 +190,9 @@ export class BulkEstimateComponent implements OnInit {
   // END: Helper functions
 
   // switch customer
-  changeCustomer(args) {
-    if (args !== 'add') {
+  changeCustomer(event) {
+    if (event[0] !== 'add') {
+      this.field('customer').setValue({ ...event[0] });
       this.show = 'editCustomer';
     } else {
       this.show = 'addCustomer';
@@ -201,6 +202,7 @@ export class BulkEstimateComponent implements OnInit {
   //event for new customer added
   newCustomer(args) {
     this.field('customer').setValue({ ...args });
+    this.show = 'editCustomer';
   }
 
   //switch between pages

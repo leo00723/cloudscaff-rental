@@ -1,0 +1,56 @@
+<ion-item fill="solid" lines="none" class="rounded-3" mode="md">
+  <ion-label position="stacked">{{ title }}</ion-label>
+  <div *ngIf="selected.length; else placeholder">
+    <div class="my-2">
+      <span *ngFor="let item of selected; let last = last">
+        {{ leaf(item) }}{{ last ? "" : ", " }}
+      </span>
+    </div>
+  </div>
+
+  <ng-template #placeholder>
+    <ion-text color="medium" class="my-2">{{ title }}</ion-text>
+  </ng-template>
+</ion-item>
+
+<ion-modal
+  [isOpen]="isOpen"
+  [backdropDismiss]="false"
+  [showBackdrop]="true"
+  [cssClass]="'date'"
+>
+  <ng-template>
+    <ion-header mode="ios">
+      <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+          <ion-button (click)="cancel()"> Cancel </ion-button>
+        </ion-buttons>
+        <ion-title>{{ title }}</ion-title>
+        <ion-buttons slot="end" *ngIf="multiple">
+          <ion-button (click)="select()"> Select </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end" *ngIf="add">
+          <ion-button (click)="addSelected()"> Add New </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar
+          class="py-2"
+          placeholder="Search"
+          (ionChange)="filter($any($event))"
+          [debounce]="250"
+        ></ion-searchbar>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-item *ngFor="let item of filtered" (click)="itemSelected()">
+        <ion-checkbox
+          mode="ios"
+          slot="start"
+          [(ngModel)]="item.selected"
+        ></ion-checkbox>
+        <ion-label>{{ leaf(item) }}</ion-label>
+      </ion-item>
+    </ion-content>
+  </ng-template>
+</ion-modal>

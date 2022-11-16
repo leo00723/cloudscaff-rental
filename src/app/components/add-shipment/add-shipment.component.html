@@ -100,6 +100,15 @@
           ></ion-toggle>
         </ion-col>
         <ion-col size="12">
+          <ion-searchbar
+            debounce="250"
+            mode="ios"
+            placeholder="Search by code, category or name"
+            (ionChange)="search($event)"
+          >
+          </ion-searchbar
+        ></ion-col>
+        <ion-col size="12">
           <table class="table table-sm table-bordered">
             <thead>
               <tr>

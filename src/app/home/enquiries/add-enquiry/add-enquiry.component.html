@@ -11,7 +11,7 @@
 
 <ion-content fullscreen="true" class="ion-padding">
   <div class="container" *ngIf="company && !importing">
-    <ion-item lines="none" class="rounded-lg mb-3" *ngIf="!isEdit">
+    <!-- <ion-item lines="none" class="rounded-lg mb-3" *ngIf="!isEdit">
       <ion-label position="stacked"> Import Data </ion-label>
       <ion-input
         type="file"
@@ -20,7 +20,7 @@
         mode="ios"
         (change)="import($event)"
       ></ion-input>
-    </ion-item>
+    </ion-item> -->
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading && form">
       <ion-grid>
         <ion-row class="card-outline mb-3">
@@ -34,25 +34,16 @@
             </app-input-reactive>
           </ion-col>
           <ion-col size="12">
-            <app-input-select-reactive
-              (fieldChange)="changeCustomer($event)"
-              title="Customer"
-              placeholder="Select Customer"
-              controlName="customer"
-              [form]="form"
-              [selectedText]="field('customer').value.name"
-            >
-              <ng-container *ngIf="customers$ | async as customers">
-                <ion-select-option class="fw-bold" value="add">
-                  Create new Customer
-                </ion-select-option>
-                <ion-select-option
-                  [value]="customer"
-                  *ngFor="let customer of customers"
-                  >{{ customer.name }}
-                </ion-select-option>
-              </ng-container>
-            </app-input-select-reactive>
+            <app-searchable-select
+              (click)="select.open()"
+              *ngIf="customers$ | async as customers"
+              title="Select Customer"
+              [data]="customers"
+              itemTextField="name"
+              [add]="true"
+              (selectedChanged)="changeCustomer($event)"
+              #select
+            ></app-searchable-select>
           </ion-col>
           <ion-col size="12" *ngIf="show === 'editCustomer'">
             <app-customer
@@ -238,6 +229,16 @@
               "
               (click)="addBulkEstimate()"
               >Create Bulk Estimate</ion-button
+            >
+            <ion-button
+              color="success"
+              shape="round"
+              *ngIf="
+                (isEdit && enquiry.status === 'pending') ||
+                enquiry.status === 'overdue'
+              "
+              (click)="addInventoryEstimate()"
+              >Create Inventory Estimate</ion-button
             >
           </ion-col>
         </ion-row>

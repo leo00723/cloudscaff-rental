@@ -26,6 +26,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
   items: InventoryItem[];
+  itemBackup: InventoryItem[];
   shipment: Shipment = { status: 'pending' };
   form: FormGroup;
   user: User;
@@ -62,26 +63,26 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
 
   checkError(item: InventoryItem) {
-    const totalQty = item.availableQty ? item.availableQty : 0;
-    const inUseQty = item.inUseQty ? item.inUseQty : 0;
-    const damaged = item.damagedQty ? item.damagedQty : 0;
-    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
-    const lost = item.lostQty ? item.lostQty : 0;
-    const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
-    if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
-      item.error = true;
-      this.error = true;
-    } else {
-      item.error = false;
-      this.error = false;
-    }
+    // const totalQty = item.availableQty ? item.availableQty : 0;
+    // const inUseQty = item.inUseQty ? item.inUseQty : 0;
+    // const damaged = item.damagedQty ? item.damagedQty : 0;
+    // const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
+    // const lost = item.lostQty ? item.lostQty : 0;
+    // const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
+    // if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
+    //   item.error = true;
+    //   this.error = true;
+    // } else {
+    //   item.error = false;
+    //   this.error = false;
+    // }
   }
 
   createShipment() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        let shipment: Shipment = { ...this.form.value };
+        const shipment: Shipment = { ...this.form.value };
         shipment.items = this.items.filter((item) => item.shipmentQty > 0);
         this.company = this.masterSvc
           .store()
@@ -182,6 +183,18 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
 
+  search(event) {
+    const val = event.detail.value.toLowerCase() as string;
+    this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+    this.items = this.itemBackup.filter(
+      (item) =>
+        item.code.toLowerCase().includes(val) ||
+        item.name.toLowerCase().includes(val) ||
+        item.category.toLowerCase().includes(val) ||
+        !val
+    );
+  }
+
   private initForm() {
     this.form = this.masterSvc.fb().group({
       site: ['', Validators.required],
@@ -193,7 +206,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
   private init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 
     setTimeout(() => {
       if (id) {

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
+import { Customer } from 'src/app/models/customer.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -17,6 +18,7 @@ export class SitesPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   sites$: Observable<Site[]>;
+  customers$: Observable<Customer[]>;
   isLoading = true;
   constructor(private masterSvc: MasterService) {}
 
@@ -49,6 +51,10 @@ export class SitesPage implements OnInit {
     return await modal.present();
   }
 
+  selectChange(event) {
+    console.log(event);
+  }
+
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 
@@ -57,6 +63,9 @@ export class SitesPage implements OnInit {
         this.sites$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/sites`, 'code', 'desc');
+        this.customers$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(`company/${id}/customers`, 'name', 'desc');
       } else {
         this.masterSvc.log(
           '-----------------------try sites----------------------'

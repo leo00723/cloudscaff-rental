@@ -120,31 +120,39 @@
   <app-title-block>Customer Details</app-title-block>
   <ion-row class="card-outline mb-3">
     <ion-col size="12">
-      <app-input-select-reactive
-        title="Customer"
-        placeholder="Select Customer"
-        controlName="customer"
-        [form]="form"
-        [selectedText]="field('customer').value.name"
-      >
-        <ng-container *ngIf="customers$ | async as customers">
-          <ion-select-option
-            [value]="customer"
-            *ngFor="let customer of customers"
-            >{{ customer.name }}
-          </ion-select-option>
-        </ng-container>
-      </app-input-select-reactive>
+      <app-searchable-select
+        (click)="select.open()"
+        *ngIf="customers$ | async as customers"
+        title="Select Customer"
+        [data]="customers"
+        itemTextField="name"
+        [add]="true"
+        (selectedChanged)="changeCustomer($event)"
+        #select
+      ></app-searchable-select>
     </ion-col>
-    <ion-col size="12" *ngIf="field('customer').value">
+    <ion-col
+      size="12"
+      *ngIf="show === 'editCustomer' || field('customer').value"
+    >
       <app-customer
         [customer]="field('customer').value"
+        [isUpdate]="true"
         [isCreate]="false"
         [companyId]="company.id"
       >
       </app-customer>
     </ion-col>
-
+    <ion-col size="12" *ngIf="show === 'addCustomer'">
+      <app-customer
+        [companyId]="company.id"
+        (newCustomer)="newCustomer($event)"
+        [isCreate]="true"
+      >
+      </app-customer>
+    </ion-col>
+  </ion-row>
+  <ion-row class="mb-3">
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
     <ion-col size="12" class="text-end">
       <ion-button

@@ -13,6 +13,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { AddEstimatePage } from '../../estimates/add-estimate/add-estimate.component';
 import { BulkEstimateComponent } from '../../estimates/bulk-estimate/bulk-estimate.component';
+import { InventoryEstimateComponent } from '../../estimates/inventory-estimate/inventory-estimate.component';
 
 @Component({
   selector: 'app-add-enquiry',
@@ -165,7 +166,11 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.customers$ = this.masterSvc
       .edit()
-      .getCollection(`company/${this.company.id}/customers`);
+      .getCollectionOrdered(
+        `company/${this.company.id}/customers`,
+        'name',
+        'asc'
+      );
     if (this.isEdit) {
       this.show = this.enquiry.customer ? 'editCustomer' : '';
     } else {
@@ -175,8 +180,9 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
   }
 
   // switch customer
-  changeCustomer(args) {
-    if (args !== 'add') {
+  changeCustomer(event) {
+    if (event[0] !== 'add') {
+      this.field('customer').setValue({ ...event[0] });
       this.show = 'editCustomer';
     } else {
       this.show = 'addCustomer';
@@ -184,8 +190,9 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
   }
 
   //event for new customer added
-  newCustomer(args) {
-    this.field('customer').setValue({ ...args });
+  newCustomer(event) {
+    this.field('customer').setValue({ ...event });
+    this.show = 'editCustomer';
   }
   field(field: string) {
     return this.form.get(field) as FormControl;
@@ -321,6 +328,19 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'addBulkEstimate',
+    });
+    return await modal.present();
+  }
+  async addInventoryEstimate() {
+    this.close();
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryEstimateComponent,
+      componentProps: {
+        enquiryId: this.enquiry.id,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addInventoryEstimate',
     });
     return await modal.present();
   }

@@ -76,25 +76,16 @@
         </ion-row>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
-            <app-input-select-reactive
-              (fieldChange)="changeCustomer($event)"
-              title="Customer"
-              placeholder="Select Customer"
-              controlName="customer"
-              [form]="form"
-              [selectedText]="field('customer').value.name"
-            >
-              <ng-container *ngIf="customers$ | async as customers">
-                <ion-select-option class="fw-bold" value="add">
-                  Create new Customer
-                </ion-select-option>
-                <ion-select-option
-                  [value]="customer"
-                  *ngFor="let customer of customers"
-                  >{{ customer.name }}
-                </ion-select-option>
-              </ng-container>
-            </app-input-select-reactive>
+            <app-searchable-select
+              (click)="select.open()"
+              *ngIf="customers$ | async as customers"
+              title="Select Customer"
+              [data]="customers"
+              itemTextField="name"
+              [add]="true"
+              (selectedChanged)="changeCustomer($event)"
+              #select
+            ></app-searchable-select>
           </ion-col>
           <ion-col size="12" *ngIf="show === 'editCustomer'">
             <app-customer

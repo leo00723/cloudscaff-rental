@@ -1,11 +1,9 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { settings } from '@angular/fire/analytics';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
-import { environment } from 'src/environments/environment';
 import { GetVersion } from './shared/app/app.actions';
 import { AppState } from './shared/app/app.state';
 import { SplashPage } from './splash/splash.page';
@@ -16,11 +14,7 @@ import { SplashPage } from './splash/splash.page';
 export class AppComponent implements OnInit, OnDestroy {
   @Select() user$: Observable<User>;
   private subs = new Subscription();
-  constructor(
-    private updates: SwUpdate,
-    private masterSvc: MasterService,
-    private ngZone: NgZone
-  ) {
+  constructor(private updates: SwUpdate, private masterSvc: MasterService) {
     this.splash();
     this.masterSvc.store().dispatch(new GetVersion('version'));
   }
@@ -49,7 +43,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.masterSvc.platform().is('desktop') ||
         this.masterSvc.platform().is('pwa')
       ) {
-        const version = this.masterSvc.store().selectSnapshot(AppState.version);
         this.subs.add(
           this.updates.versionUpdates.subscribe((event) => {
             if (event.type === 'VERSION_READY') {

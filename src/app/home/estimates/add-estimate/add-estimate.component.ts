@@ -18,7 +18,7 @@ import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.compo
   templateUrl: './add-estimate.component.html',
 })
 export class AddEstimatePage implements OnInit {
-  @Input() enquiryId: string = '';
+  @Input() enquiryId = '';
   @Input() set value(val: Estimate) {
     if (val) {
       Object.assign(this.estimate, val);
@@ -259,8 +259,9 @@ export class AddEstimatePage implements OnInit {
   }
 
   // switch customer
-  changeCustomer(args) {
-    if (args !== 'add') {
+  changeCustomer(event) {
+    if (event[0] !== 'add') {
+      this.field('customer').setValue({ ...event[0] });
       this.show = 'editCustomer';
     } else {
       this.show = 'addCustomer';
@@ -270,6 +271,7 @@ export class AddEstimatePage implements OnInit {
   //event for new customer added
   newCustomer(args) {
     this.field('customer').setValue({ ...args });
+    this.show = 'editCustomer';
   }
 
   //switch between pages

@@ -38,7 +38,10 @@ export class BudgetBreakdownComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.masterSvc.fb().group({
-      subtotal: [this.estimate.subtotal, Validators.required],
+      subtotal: [
+        this.estimate.subtotal - this.estimate.discount,
+        Validators.required,
+      ],
       margin: [
         this.estimate.budget ? this.estimate.budget.margin : 0,
         [Validators.required, Validators.min(0)],

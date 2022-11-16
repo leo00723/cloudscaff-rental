@@ -209,6 +209,22 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     this.site.nextInvoiceDate = newDate;
   }
 
+  // switch customer
+  changeCustomer(event) {
+    if (event[0] !== 'add') {
+      this.field('customer').setValue({ ...event[0] });
+      this.show = 'editCustomer';
+    } else {
+      this.show = 'addCustomer';
+    }
+  }
+
+  //event for new customer added
+  newCustomer(args) {
+    this.field('customer').setValue({ ...args });
+    this.show = 'editCustomer';
+  }
+
   private async addUser() {
     const modal = await this.masterSvc.modal().create({
       component: UserPickerComponent,
@@ -236,8 +252,8 @@ export class SiteFormComponent implements OnInit, OnDestroy {
       country: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      billingCycle: ['', Validators.required],
-      billable: ['', Validators.required],
+      billingCycle: [''],
+      billable: [''],
     });
   }
 }

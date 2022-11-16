@@ -21,7 +21,7 @@ import { AcceptInventoryEstimateComponent } from './accept-inventory-estimate/ac
   styles: [],
 })
 export class InventoryEstimateComponent implements OnInit {
-  @Input() enquiryId: string = '';
+  @Input() enquiryId = '';
   @Input() set value(val: InventoryEstimate) {
     if (val) {
       Object.assign(this.inventoryEstimate, val);
@@ -114,7 +114,7 @@ export class InventoryEstimateComponent implements OnInit {
 
   duplicateShipment(i: number) {
     this.masterSvc.notification().presentAlertConfirm(() => {
-      let est = {};
+      const est = {};
       Object.assign(est, this.inventoryEstimate.estimates[i]);
       this.inventoryEstimate.estimates.push(est as InventoryEstimate);
       this.activeShipment = this.inventoryEstimate.estimates.length;
@@ -166,8 +166,9 @@ export class InventoryEstimateComponent implements OnInit {
   // END: Helper functions
 
   // switch customer
-  changeCustomer(args) {
-    if (args !== 'add') {
+  changeCustomer(event) {
+    if (event[0] !== 'add') {
+      this.field('customer').setValue({ ...event[0] });
       this.show = 'editCustomer';
     } else {
       this.show = 'addCustomer';
@@ -177,6 +178,7 @@ export class InventoryEstimateComponent implements OnInit {
   //event for new customer added
   newCustomer(args) {
     this.field('customer').setValue({ ...args });
+    this.show = 'editCustomer';
   }
 
   //switch between pages
