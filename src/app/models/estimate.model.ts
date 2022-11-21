@@ -48,4 +48,5 @@ export interface Estimate {
   acceptedTerms?: boolean;
   enquiryId: string;
   revision?: number;
+  type?: string;
 }

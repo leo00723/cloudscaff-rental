@@ -65,25 +65,25 @@
       defer
     ></script>
 
-    <!-- <script
-    src="//code.tidio.co/e0bcdlfrywvgy8podpppax91ivzqhmcu.js"
-    async
-  ></script>
-  <script>
-    (function () {
-      function onTidioChatApiReady() {
-        window.tidioChatApi.hide();
-        window.tidioChatApi.on("close", function () {
+    <script
+      src="//code.tidio.co/e0bcdlfrywvgy8podpppax91ivzqhmcu.js"
+      async
+    ></script>
+    <script>
+      (function () {
+        function onTidioChatApiReady() {
           window.tidioChatApi.hide();
-        });
-      }
+          window.tidioChatApi.on("close", function () {
+            window.tidioChatApi.hide();
+          });
+        }
 
-      if (window.tidioChatApi) {
-        window.tidioChatApi.on("ready", onTidioChatApiReady);
-      } else {
-        document.addEventListener("tidioChat-ready", onTidioChatApiReady);
-      }
-    })();
-  </script> -->
+        if (window.tidioChatApi) {
+          window.tidioChatApi.on("ready", onTidioChatApiReady);
+        } else {
+          document.addEventListener("tidioChat-ready", onTidioChatApiReady);
+        }
+      })();
+    </script>
   </body>
 </html>

@@ -56,7 +56,17 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subs.add(
       this.inventoryItems$.subscribe((items) => {
-        const blob = new Blob([JSON.stringify(items, null, 2)], {
+        const newItems = [];
+        items.forEach((i) => {
+          const item = {
+            id: i.id,
+            code: i.code,
+            name: i.name,
+            yardQty: i.yardQty,
+          };
+          newItems.push(item);
+        });
+        const blob = new Blob([JSON.stringify(newItems, null, 2)], {
           type: 'application/json',
         });
 
@@ -131,9 +141,7 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
               `company/${company}/stockItems`,
               item.id
             );
-            item.yardQty = 0;
             item.crossHireQty = 0;
-            item.availableQty = 0;
             item.inUseQty = 0;
             item.inMaintenanceQty = 0;
             item.damagedQty = 0;

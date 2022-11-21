@@ -6,7 +6,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
-import { Observable, Subscription } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
@@ -37,6 +37,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   paymentApplication = new PaymentApplication();
   loading = false;
   company: Company;
+  editField = false;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -48,9 +49,31 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     if (!this.isEdit) {
       this.paymentApplication.setCompany(this.company, true, this.isPA);
       this.subs.add(
-        this.estimates$.subscribe((estimates) => {
-          this.paymentApplication.setEstimates(estimates);
-        })
+        this.estimates$
+          .pipe(
+            map((data) =>
+              data.map((e) => {
+                const obj = {
+                  id: e.id,
+                  code: e.code,
+                  scaffold: {
+                    ...e.scaffold,
+                    total:
+                      e.scaffold.total +
+                      (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
+                  },
+                  attachments: e.attachments.map((a) => ({
+                    ...a,
+                    total: a.total + (a.hireTotal ? a.hireTotal : 0),
+                  })),
+                } as Estimate;
+                return obj;
+              })
+            )
+          )
+          .subscribe((estimates) => {
+            this.paymentApplication.setEstimates(estimates);
+          })
       );
       this.subs.add(
         this.site$.subscribe((site) => {
@@ -68,7 +91,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       try {
         this.loading = true;
 
-        this.paymentApplication.setCompany(this.company, true, canMakePA);
+        this.paymentApplication.setCompany(this.company, true, this.isPA);
         if (canMakePA) {
           await this.masterSvc
             .edit()
@@ -139,16 +162,16 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
             this.paymentApplication.id,
             this.paymentApplication
           );
-        const est = this.paymentApplication.updatePreviousGross();
-        const batch = this.masterSvc.edit().batch();
-        for (const e of est) {
-          const doc = this.masterSvc
-            .edit()
-            .docRef(`company/${this.company.id}/estimates`, e.id);
-          batch.set(doc, { ...e }, { merge: true });
-        }
+        // const est = this.paymentApplication.updatePreviousGross();
+        // const batch = this.masterSvc.edit().batch();
+        // for (const e of est) {
+        //   const doc = this.masterSvc
+        //     .edit()
+        //     .docRef(`company/${this.company.id}/estimates`, e.id);
+        //   batch.set(doc, { ...e }, { merge: true });
+        // }
 
-        await batch.commit();
+        // await batch.commit();
         this.loading = false;
         this.masterSvc
           .notification()
@@ -173,46 +196,62 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   }
 
   change(args, scaffold: Item, category: string) {
+    const value = args.detail.value;
     const days = scaffold.isWeeks
       ? +scaffold.daysStanding / 7
       : +scaffold.daysStanding;
     switch (category) {
       case 'EP':
         {
-          scaffold.appliedErectionPercentage = args.detail.value;
+          scaffold.appliedErectionPercentage = value;
           scaffold.appliedErectionValue =
-            (scaffold.total + scaffold.hireTotal) *
-            0.7 *
-            (scaffold.appliedErectionPercentage / 100);
+            scaffold.total * 0.7 * (scaffold.appliedErectionPercentage / 100);
         }
         break;
       case 'DP':
         {
-          scaffold.appliedDismantlePercentage = args.detail.value;
+          scaffold.appliedDismantlePercentage = value;
           scaffold.appliedDismantleValue =
-            (scaffold.total + scaffold.hireTotal) *
-            0.3 *
-            (scaffold.appliedDismantlePercentage / 100);
+            scaffold.total * 0.3 * (scaffold.appliedDismantlePercentage / 100);
         }
         break;
       case 'HD':
         {
-          scaffold.hireDate = args.detail.value;
-          const hireEndDate = new Date(args.detail.value);
+          scaffold.hireDate = value;
+          const hireEndDate = new Date(value);
           hireEndDate.setDate(hireEndDate.getDate() + days);
           scaffold.hireEndDate = hireEndDate.toDateString();
         }
         break;
       case 'DD':
         {
-          scaffold.dismantleDate = args.detail.value;
+          scaffold.dismantleDate = value;
         }
         break;
       case 'EH':
         {
-          scaffold.extraHireWeeks = +args.detail.value;
+          scaffold.extraHireWeeks = +value;
           scaffold.extraHireCharge =
             +scaffold.extraHire * scaffold.extraHireWeeks;
+        }
+        break;
+      case 'SD':
+        {
+          scaffold.description = value;
+        }
+        break;
+      case 'SV':
+        {
+          scaffold.total = +value;
+        }
+        break;
+      case 'SH':
+        {
+          scaffold.isWeeks = false;
+          scaffold.daysStanding = +value * 7;
+          const hireEndDate = new Date(scaffold.hireDate);
+          hireEndDate.setDate(hireEndDate.getDate() + scaffold.daysStanding);
+          scaffold.hireEndDate = hireEndDate.toDateString();
         }
         break;
     }
@@ -233,6 +272,53 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
 
   setDate(args) {
     this.paymentApplication.dueDate = args.detail.value;
+  }
+
+  addItem() {
+    const newEstimate: Estimate = {
+      additionals: [],
+      attachments: [],
+      boards: [],
+      broker: undefined,
+      code: '',
+      company: this.paymentApplication.company,
+      customer: this.paymentApplication.site.customer,
+      date: new Date(),
+      discount: 0,
+      discountPercentage: 0,
+      endDate: undefined,
+      hire: undefined,
+      id: '',
+      labour: [],
+      transport: [],
+      transportProfile: [],
+      message: '',
+      scaffold: {},
+      siteName: this.paymentApplication.site.name,
+      startDate: new Date(),
+      status: '',
+      subtotal: 0,
+      tax: 0,
+      total: 0,
+      extraHire: 0,
+      vat: 0,
+      poNumber: '',
+      woNumber: '',
+      siteId: '',
+      scaffoldId: '',
+      scaffoldCode: '',
+      createdBy: '',
+      updatedBy: '',
+      acceptedBy: '',
+      rejectedBy: '',
+      enquiryId: '',
+      type: 'custom',
+    };
+    this.paymentApplication.estimates.push(newEstimate);
+  }
+
+  deleteItem(index: number) {
+    this.paymentApplication.estimates.splice(index, 1);
   }
 
   close() {

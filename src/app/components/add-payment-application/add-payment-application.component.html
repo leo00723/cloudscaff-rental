@@ -117,19 +117,54 @@
                 "
               >
                 <tr class="align-middle bg-light">
-                  <th scope="row" colspan="21">{{ estimate.code }}</th>
+                  <ng-container
+                    *ngIf="estimate.type === 'custom'; else standard"
+                  >
+                    <th scope="row" colspan="20">{{ estimate.code }}</th>
+                    <th
+                      scope="row"
+                      colspan="1"
+                      class="text-center cursor-pointer"
+                      (click)="deleteItem(j)"
+                    >
+                      <ion-icon
+                        class="fs-6 p-0 m-0"
+                        name="close-circle"
+                        color="danger"
+                      ></ion-icon>
+                    </th>
+                  </ng-container>
+                  <ng-template #standard>
+                    <th scope="row" colspan="21">{{ estimate.code }}</th>
+                  </ng-template>
                 </tr>
                 <tr class="align-middle">
                   <th class="text-center" scope="row">1</th>
-                  <td>{{ estimate.scaffold.description }}</td>
-                  <td class="text-end">
-                    {{ paymentApplication.company.currency.symbol
-                    }}{{
-                      estimate.scaffold.total +
-                        (estimate.scaffold.hireTotal
-                          ? estimate.scaffold.hireTotal
-                          : 0) | number: "0.2-2"
-                    }}
+                  <td>
+                    <ion-textarea
+                      autoGrow="true"
+                      debounce="200"
+                      type="text"
+                      [value]="estimate.scaffold.description"
+                      (ionChange)="change($event, estimate.scaffold, 'SD')"
+                    >
+                    </ion-textarea>
+                  </td>
+                  <td class="text-end" id="value-{{ j }}">
+                    <ion-label
+                      >{{ paymentApplication.company.currency.symbol
+                      }}{{ estimate.scaffold.total | number: "0.2-2" }}
+                    </ion-label>
+                    <ion-popover trigger="value-{{ j }}" triggerAction="click">
+                      <ng-template>
+                        <ion-input
+                          type="number"
+                          [value]="estimate.scaffold.total"
+                          (ionChange)="change($event, estimate.scaffold, 'SV')"
+                        >
+                        </ion-input>
+                      </ng-template>
+                    </ion-popover>
                   </td>
                   <td
                     class="text-center"
@@ -161,13 +196,7 @@
                   </td>
                   <td class="text-center">
                     {{ paymentApplication.company.currency.symbol
-                    }}{{
-                      (estimate.scaffold.total +
-                        (estimate.scaffold.hireTotal
-                          ? estimate.scaffold.hireTotal
-                          : 0)) *
-                        0.7 | number: "0.2-2"
-                    }}
+                    }}{{ estimate.scaffold.total * 0.7 | number: "0.2-2" }}
                   </td>
                   <td class="text-center">
                     <ion-input
@@ -185,13 +214,25 @@
                       estimate.scaffold.appliedErectionValue | number: "0.2-2"
                     }}
                   </td>
-                  <td class="text-center">
-                    {{
-                      (estimate.scaffold.isWeeks
-                        ? estimate.scaffold.daysStanding
-                        : estimate.scaffold.daysStanding / 7
-                      ) | number: "0.1-1"
-                    }}
+                  <td class="text-end" id="hire-{{ j }}">
+                    <ion-label
+                      >{{
+                        (estimate.scaffold.isWeeks
+                          ? estimate.scaffold.daysStanding
+                          : estimate.scaffold.daysStanding / 7
+                        ) | number: "0.1-1"
+                      }}
+                    </ion-label>
+                    <ion-popover trigger="hire-{{ j }}" triggerAction="click">
+                      <ng-template>
+                        <ion-input
+                          type="number"
+                          [value]=""
+                          (ionChange)="change($event, estimate.scaffold, 'SH')"
+                        >
+                        </ion-input>
+                      </ng-template>
+                    </ion-popover>
                   </td>
                   <td
                     class="text-center"
@@ -228,13 +269,7 @@
                   </td>
                   <td class="text-center">
                     {{ paymentApplication.company.currency.symbol
-                    }}{{
-                      (estimate.scaffold.total +
-                        (estimate.scaffold.hireTotal
-                          ? estimate.scaffold.hireTotal
-                          : 0)) *
-                        0.3 | number: "0.2-2"
-                    }}
+                    }}{{ estimate.scaffold.total * 0.3 | number: "0.2-2" }}
                   </td>
                   <td class="text-center">
                     <ion-input
@@ -296,14 +331,34 @@
                   *ngFor="let attachment of estimate.attachments; let i = index"
                 >
                   <th class="text-center" scope="row">{{ i + 2 }}</th>
-                  <td>{{ attachment.description }}</td>
-                  <td class="text-end">
-                    {{ paymentApplication.company.currency.symbol
-                    }}{{
-                      attachment.total +
-                        (attachment.hireTotal ? attachment.hireTotal : 0)
-                        | number: "0.2-2"
-                    }}
+                  <td>
+                    <ion-textarea
+                      autoGrow="true"
+                      debounce="200"
+                      type="text"
+                      [value]="attachment.description"
+                      (ionChange)="change($event, attachment, 'SD')"
+                    >
+                    </ion-textarea>
+                  </td>
+                  <td class="text-end" id="value-att-{{ i }}">
+                    <ion-label
+                      >{{ paymentApplication.company.currency.symbol
+                      }}{{ attachment.total | number: "0.2-2" }}
+                    </ion-label>
+                    <ion-popover
+                      trigger="value-att-{{ i }}"
+                      triggerAction="click"
+                    >
+                      <ng-template>
+                        <ion-input
+                          type="number"
+                          [value]="attachment.total"
+                          (ionChange)="change($event, attachment, 'SV')"
+                        >
+                        </ion-input>
+                      </ng-template>
+                    </ion-popover>
                   </td>
                   <td
                     class="text-center"
@@ -335,11 +390,7 @@
                   </td>
                   <td class="text-center">
                     {{ paymentApplication.company.currency.symbol
-                    }}{{
-                      (attachment.total +
-                        (attachment.hireTotal ? attachment.hireTotal : 0)) *
-                        0.7 | number: "0.2-2"
-                    }}
+                    }}{{ attachment.total * 0.7 | number: "0.2-2" }}
                   </td>
                   <td class="text-center">
                     <ion-input
@@ -355,13 +406,28 @@
                     {{ paymentApplication.company.currency.symbol
                     }}{{ attachment.appliedErectionValue | number: "0.2-2" }}
                   </td>
-                  <td class="text-center">
-                    {{
-                      (attachment.isWeeks
-                        ? attachment.daysStanding
-                        : attachment.daysStanding / 7
-                      ) | number: "0.1-1"
-                    }}
+                  <td class="text-end" id="hire-att-{{ i }}">
+                    <ion-label
+                      >{{
+                        (attachment.isWeeks
+                          ? attachment.daysStanding
+                          : attachment.daysStanding / 7
+                        ) | number: "0.1-1"
+                      }}
+                    </ion-label>
+                    <ion-popover
+                      trigger="hire-att-{{ i }}"
+                      triggerAction="click"
+                    >
+                      <ng-template>
+                        <ion-input
+                          type="number"
+                          [value]=""
+                          (ionChange)="change($event, attachment, 'SH')"
+                        >
+                        </ion-input>
+                      </ng-template>
+                    </ion-popover>
                   </td>
                   <td
                     class="text-center"
@@ -391,11 +457,7 @@
                   </td>
                   <td class="text-center">
                     {{ paymentApplication.company.currency.symbol
-                    }}{{
-                      (attachment.total +
-                        (attachment.hireTotal ? attachment.hireTotal : 0)) *
-                        0.3 | number: "0.2-2"
-                    }}
+                    }}{{ attachment.total * 0.3 | number: "0.2-2" }}
                   </td>
                   <td class="text-center">
                     <ion-input
@@ -449,6 +511,18 @@
                   </td>
                 </tr>
               </ng-container>
+              <tr class="align-middle">
+                <th scope="row" colspan="21">
+                  <ion-fab-button
+                    size="small"
+                    class="m-auto"
+                    color="success"
+                    (click)="addItem()"
+                  >
+                    <ion-icon name="add"></ion-icon>
+                  </ion-fab-button>
+                </th>
+              </tr>
             </tbody>
             <tfoot>
               <tr>

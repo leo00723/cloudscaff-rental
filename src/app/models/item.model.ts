@@ -24,10 +24,10 @@ export interface Item {
     }[];
     erection: { length: number; width: number; height: number; type: string }[];
   };
-  hireRate: RateProfile | any;
-  daysStanding: number;
-  hireTotal: number;
-  isWeeks: boolean;
+  hireRate?: RateProfile | any;
+  daysStanding?: number;
+  hireTotal?: number;
+  isWeeks?: boolean;
   hireDate?: any;
   handover?: any;
   appliedErectionPercentage?: number;
