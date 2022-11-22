@@ -3,6 +3,7 @@ import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
+import { Estimate } from 'src/app/models/estimate.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -53,6 +54,17 @@ export class SitesPage implements OnInit {
 
   selectChange(event) {
     console.log(event);
+  }
+
+  update() {
+    // this.masterSvc
+    //   .edit()
+    //   .getCollectionGroup('estimates')
+    //   .subscribe(async (es: Estimate[]) => {
+    //     for (const e of es) {
+    //       console.log(e.company.name, e.type);
+    //     }
+    //   });
   }
 
   init() {

@@ -66,6 +66,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
                     ...a,
                     total: a.total + (a.hireTotal ? a.hireTotal : 0),
                   })),
+                  type: e.type,
                 } as Estimate;
                 return obj;
               })
@@ -254,6 +255,22 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
           scaffold.hireEndDate = hireEndDate.toDateString();
         }
         break;
+      case 'EHP':
+        {
+          scaffold.extraHirePercentage = +value;
+          scaffold.extraHire =
+            scaffold.total * (scaffold.extraHirePercentage / 100);
+          scaffold.extraHireCharge =
+            +scaffold.extraHire * scaffold.extraHireWeeks;
+        }
+        break;
+      case 'EHA':
+        {
+          scaffold.extraHire = +value;
+          scaffold.extraHireCharge =
+            +scaffold.extraHire * scaffold.extraHireWeeks;
+        }
+        break;
     }
 
     const EH = scaffold.extraHireCharge ? scaffold.extraHireCharge : 0;
@@ -274,7 +291,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     this.paymentApplication.dueDate = args.detail.value;
   }
 
-  addItem() {
+  addItem(type: string) {
     const newEstimate: Estimate = {
       additionals: [],
       attachments: [],
@@ -312,13 +329,14 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       acceptedBy: '',
       rejectedBy: '',
       enquiryId: '',
-      type: 'custom',
+      type,
     };
     this.paymentApplication.estimates.push(newEstimate);
   }
 
   deleteItem(index: number) {
     this.paymentApplication.estimates.splice(index, 1);
+    this.paymentApplication.updateTotals();
   }
 
   close() {

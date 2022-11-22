@@ -62,7 +62,9 @@ export class EditService {
     }).pipe(
       map((data: any) => {
         if (data) {
-          if (data.date) return { ...data, date: data.date.toDate() };
+          if (data.date) {
+            return { ...data, date: data.date.toDate() };
+          }
           return data;
         }
       })
@@ -72,12 +74,14 @@ export class EditService {
     return collectionData(this.collectionRef(collectionPath), {
       idField: 'id',
     }).pipe(
-      map((data: any) => {
-        return data.map((d: any) => {
-          if (d.date) return { ...d, date: d.date.toDate() };
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
           return d;
-        });
-      })
+        })
+      )
     ) as Observable<any[]>;
   }
 
@@ -92,12 +96,14 @@ export class EditService {
         idField: 'id',
       }
     ).pipe(
-      map((data: any) => {
-        return data.map((d: any) => {
-          if (d.date) return { ...d, date: d.date.toDate() };
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
           return d;
-        });
-      })
+        })
+      )
     ) as Observable<any[]>;
   }
   getCollectionWhere(
@@ -115,12 +121,14 @@ export class EditService {
         idField: 'id',
       }
     ).pipe(
-      map((data: any) => {
-        return data.map((d: any) => {
-          if (d.date) return { ...d, date: d.date.toDate() };
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
           return d;
-        });
-      })
+        })
+      )
     ) as Observable<any[]>;
   }
 
@@ -142,12 +150,14 @@ export class EditService {
         idField: 'id',
       }
     ).pipe(
-      map((data: any) => {
-        return data.map((d: any) => {
-          if (d.date) return { ...d, date: d.date.toDate() };
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
           return d;
-        });
-      })
+        })
+      )
     ) as Observable<any[]>;
   }
 
@@ -173,12 +183,14 @@ export class EditService {
         idField: 'id',
       }
     ).pipe(
-      map((data: any) => {
-        return data.map((d: any) => {
-          if (d.date) return { ...d, date: d.date.toDate() };
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
           return d;
-        });
-      })
+        })
+      )
     ) as Observable<any[]>;
   }
 
@@ -205,36 +217,58 @@ export class EditService {
         idField: 'id',
       }
     ).pipe(
-      map((data: any) => {
-        return data.map((d: any) => {
-          if (d.date) return { ...d, date: d.date.toDate() };
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
           return d;
-        });
-      })
+        })
+      )
     ) as Observable<any[]>;
   }
 
-  getCollectionGroup(
-    collection: string,
+  getCollectionGroupWhere(
+    collectionName: string,
     field: string,
     whereFilter: WhereFilterOp,
     value: any
   ) {
     return collectionData(
       query(
-        collectionGroup(this.firestore, collection),
+        collectionGroup(this.firestore, collectionName),
         where(field, whereFilter, value)
       ),
       {
         idField: 'id',
       }
     ).pipe(
-      map((data: any) => {
-        return data.map((d: any) => {
-          if (d.date) return { ...d, date: d.date.toDate() };
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
           return d;
-        });
-      })
+        })
+      )
+    ) as Observable<any[]>;
+  }
+
+  getCollectionGroup(collectionName: string) {
+    return collectionData(
+      query(collectionGroup(this.firestore, collectionName)),
+      {
+        idField: 'id',
+      }
+    ).pipe(
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
+          return d;
+        })
+      )
     ) as Observable<any[]>;
   }
 
