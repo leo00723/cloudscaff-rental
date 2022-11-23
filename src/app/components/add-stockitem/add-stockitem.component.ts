@@ -96,6 +96,11 @@ export class AddStockitemComponent implements OnInit {
     return this.form.get(field) as FormControl;
   }
 
+  changeCategory(event) {
+    this.field('categoryType').setValue(event[0]);
+    this.field('size').setValue('');
+  }
+
   createItem() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;

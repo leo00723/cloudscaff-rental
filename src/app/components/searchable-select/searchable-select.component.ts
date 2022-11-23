@@ -31,7 +31,15 @@ export class SearchableSelectComponent implements OnChanges {
   constructor() {}
 
   ngOnChanges(): void {
-    this.filtered = this.data;
+    this.filtered = this.data.sort((a, b) => {
+      if (this.leaf(a) < this.leaf(b)) {
+        return -1;
+      }
+      if (this.leaf(a) > this.leaf(b)) {
+        return 1;
+      }
+      return 0;
+    });
   }
 
   open() {

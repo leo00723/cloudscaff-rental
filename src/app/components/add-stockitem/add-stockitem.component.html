@@ -17,22 +17,17 @@
     <ion-grid>
       <ion-row>
         <ion-col size="6">
-          <app-input-select-reactive
-            title="Category"
-            placeholder="Select Category"
-            controlName="categoryType"
-            [form]="form"
-            [selectedText]="field('categoryType').value.name"
-            (fieldChange)="field('size').setValue('')"
-          >
-            <ng-container *ngIf="categories$ | async as categories">
-              <ion-select-option
-                [value]="category"
-                *ngFor="let category of categories.categories"
-                >{{ category.name }}
-              </ion-select-option>
-            </ng-container>
-          </app-input-select-reactive>
+          <ng-container *ngIf="categories$ | async as categories">
+            <app-searchable-select
+              (click)="select.open()"
+              title="Select Category"
+              [data]="categories.categories"
+              itemTextField="name"
+              [add]="true"
+              (selectedChanged)="changeCategory($event)"
+              #select
+            ></app-searchable-select>
+          </ng-container>
         </ion-col>
         <ion-col size="6">
           <app-input-select-reactive

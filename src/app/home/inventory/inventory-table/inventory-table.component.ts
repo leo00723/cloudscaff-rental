@@ -17,9 +17,11 @@ import {
 } from '@swimlane/ngx-datatable';
 import { map, Observable, Subscription } from 'rxjs';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
+import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -40,7 +42,10 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   selected = [];
   sanitizedBlobUrl: any;
 
+  itemsBackup: InventoryItem[];
+
   isProd = environment.production;
+  user: User;
 
   private subs = new Subscription();
 
@@ -54,17 +59,19 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
   ngOnInit(): void {
+    this.user = this.store.selectSnapshot(UserState.user);
     this.subs.add(
       this.inventoryItems$.subscribe((items) => {
+        this.itemsBackup = items;
         const newItems = [];
         items.forEach((i) => {
-          const item = {
-            id: i.id,
-            code: i.code,
-            name: i.name,
-            yardQty: i.yardQty,
-          };
-          newItems.push(item);
+          // const item = {
+          //   id: i.id,
+          //   code: i.code,
+          //   name: i.name,
+          //   yardQty: i.yardQty,
+          // };
+          newItems.push(i);
         });
         const blob = new Blob([JSON.stringify(newItems, null, 2)], {
           type: 'application/json',
@@ -170,10 +177,36 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
             fileReader.result.toString()
           );
           const company = this.store.selectSnapshot(CompanyState.company).id;
+          // let counter = 0;
+          // for (const i of this.itemsBackup) {
+          //   // if (i.name.includes('TRAD')) {
+          //   //   counter++;
+          //   //   console.log(counter, i.id, i.name);
+          //   //   await this.editService.deleteDocById(
+          //   //     `company/${company}/stockItems`,
+          //   //     i.id
+          //   //   );
+          //   // }
+
+          //   // const index = data.findIndex((v) => v.id === i.id);
+          //   // if (index !== -1) {
+          //   //   counter++;
+          //   //   const newItem = data[index];
+          //   //   i.name = newItem.name;
+          //   //   i.yardQty = newItem.yardQty;
+          //   //   console.log(i.name, i.yardQty);
+          //   //   await this.editService.updateDoc(
+          //   //     `company/${company}/stockItems`,
+          //   //     i.id,
+          //   //     i
+          //   //   );
+          //   // }
+          // }
           for (const item of data) {
-            await this.editService.addDocument(
+            await this.editService.setDoc(
               `company/${company}/stockItems`,
-              item
+              item,
+              item.id
             );
           }
           this.notificationService.toast('Import Successful', 'success');

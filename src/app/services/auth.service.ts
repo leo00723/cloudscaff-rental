@@ -18,11 +18,7 @@ import { Navigate } from '../shared/router.state';
 })
 export class AuthService {
   loggedIn = false;
-  constructor(
-    private auth: Auth,
-    private store: Store,
-    private router: Router
-  ) {
+  constructor(private auth: Auth, private store: Store) {
     onAuthStateChanged(this.auth, async (user) => {
       if (user) {
         this.loggedIn = true;

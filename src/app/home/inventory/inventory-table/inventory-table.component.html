@@ -153,7 +153,7 @@
                 [button]="true"
                 [detail]="false"
                 (click)="deleteItem()"
-                *ngIf="!isProd"
+                *ngIf="user.role === 'Owner' || user.role === 'Super-Admin'"
               >
                 <ion-label>Delete</ion-label>
               </ion-item>
