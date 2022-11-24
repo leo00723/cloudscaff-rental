@@ -28,7 +28,7 @@ export class EstimateSummaryComponent {
     const sharedEstimate = {
       estimate: this.estimate,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -46,7 +46,7 @@ export class EstimateSummaryComponent {
     const sharedEstimate = {
       estimate: this.estimate,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

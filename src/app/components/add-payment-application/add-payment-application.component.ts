@@ -13,8 +13,10 @@ import { Estimate } from 'src/app/models/estimate.model';
 import { Item } from 'src/app/models/item.model';
 import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Site } from 'src/app/models/site.model';
+import { Term } from 'src/app/models/term.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { ShareDocumentComponent } from '../share-document/share-document.component';
 
 @Component({
   selector: 'app-add-payment-application',
@@ -34,6 +36,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   @Input() estimates$: Observable<Estimate[]>;
   @Input() bulkEstimates: BulkEstimate[];
   @Input() value: PaymentApplication;
+  terms$: Observable<Term>;
   paymentApplication = new PaymentApplication();
   loading = false;
   company: Company;
@@ -41,6 +44,9 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.terms$ = this.masterSvc
+      .edit()
+      .getDocById(`company/${this.company.id}/terms`, 'Payment');
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
@@ -91,19 +97,27 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         this.loading = true;
-
-        this.paymentApplication.setCompany(this.company, true, this.isPA);
+        this.paymentApplication.setCompany(this.company, true, canMakePA);
         if (canMakePA) {
           await this.masterSvc
             .edit()
             .addDocument(
               `company/${this.paymentApplication.company.id}/paymentApplications`,
-              this.paymentApplication
+              { ...this.paymentApplication, status: 'pending' }
             );
 
           await this.masterSvc.edit().updateDoc('company', this.company.id, {
             totalPaymentApplications: increment(1),
           });
+          if (create) {
+            await this.masterSvc
+              .edit()
+              .updateDoc(
+                `company/${this.paymentApplication.company.id}/operationApplications`,
+                this.paymentApplication.id,
+                { status: 'P.A Created' }
+              );
+          }
 
           this.masterSvc
             .notification()
@@ -124,19 +138,10 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
             .notification()
             .toast('Operation application created successfully!', 'success');
         }
-        if (create) {
-          await this.masterSvc
-            .edit()
-            .updateDoc(
-              `company/${this.paymentApplication.company.id}/${
-                this.isPA ? 'paymentApplications' : 'operationApplications'
-              }`,
-              this.paymentApplication.id,
-              { status: 'P.A Created' }
-            );
-        }
+
         this.close();
       } catch (error) {
+        console.error(error);
         this.loading = false;
         this.masterSvc
           .notification()
@@ -292,45 +297,13 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   }
 
   addItem(type: string) {
-    const newEstimate: Estimate = {
-      additionals: [],
+    const newEstimate = {
       attachments: [],
-      boards: [],
-      broker: undefined,
       code: '',
-      company: this.paymentApplication.company,
-      customer: this.paymentApplication.site.customer,
-      date: new Date(),
-      discount: 0,
-      discountPercentage: 0,
-      endDate: undefined,
-      hire: undefined,
       id: '',
-      labour: [],
-      transport: [],
-      transportProfile: [],
-      message: '',
       scaffold: {},
-      siteName: this.paymentApplication.site.name,
-      startDate: new Date(),
-      status: '',
-      subtotal: 0,
-      tax: 0,
-      total: 0,
-      extraHire: 0,
-      vat: 0,
-      poNumber: '',
-      woNumber: '',
-      siteId: '',
-      scaffoldId: '',
-      scaffoldCode: '',
-      createdBy: '',
-      updatedBy: '',
-      acceptedBy: '',
-      rejectedBy: '',
-      enquiryId: '',
       type,
-    };
+    } as Estimate;
     this.paymentApplication.estimates.push(newEstimate);
   }
 
@@ -341,5 +314,48 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
 
   close() {
     this.masterSvc.modal().dismiss();
+  }
+
+  async download(terms: Term | null) {
+    // const sharedPaymentApplication = {
+    //   paymentApplication: this.paymentApplication,
+    //   company: this.company,
+    //   terms,
+    // };
+    // await this.masterSvc
+    //   .edit()
+    //   .updateDoc(
+    //     'sharedEstimates',
+    //     `${this.company.id}-${this.paymentApplication.id}`,
+    //     {
+    //       ...sharedPaymentApplication,
+    //       cc: [],
+    //       email: [this.paymentApplication.company.email],
+    //     }
+    //   );
+    const pdf = await this.masterSvc
+      .pdf()
+      .generatePaymentApplication(this.paymentApplication, this.company, terms);
+    this.masterSvc.pdf().handlePdf(pdf, this.paymentApplication.code);
+  }
+  async share(terms: Term | null) {
+    const sharedPaymentApplication = {
+      estimate: this.paymentApplication,
+      company: this.company,
+      terms,
+    };
+    const modal = await this.masterSvc.modal().create({
+      component: ShareDocumentComponent,
+      componentProps: {
+        data: {
+          type: 'paymentApplication',
+          doc: sharedPaymentApplication,
+        },
+      },
+      showBackdrop: true,
+      id: 'shareDocument',
+      cssClass: 'accept',
+    });
+    return await modal.present();
   }
 }

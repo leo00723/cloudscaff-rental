@@ -38,7 +38,7 @@ export class PaymentApplication {
       )
         .toString()
         .padStart(6, '0')}`;
-    } else {
+    } else if (updateCode) {
       this.code = `OPA${new Date().toLocaleDateString('en', {
         year: '2-digit',
       })}${(this.company.totalOperationApplications
