@@ -28,6 +28,7 @@
             "style": "kebab-case"
           }
         ],
+
         "@angular-eslint/directive-selector": [
           "error",
           {

@@ -35,12 +35,32 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   @Input() site$: Observable<Site>;
   @Input() estimates$: Observable<Estimate[]>;
   @Input() bulkEstimates: BulkEstimate[];
-  @Input() value: PaymentApplication;
+  @Input() set value(val: PaymentApplication) {
+    if (val) {
+      Object.assign(this.paymentApplication, val);
+    }
+  }
   terms$: Observable<Term>;
   paymentApplication = new PaymentApplication();
   loading = false;
   company: Company;
-  editField = false;
+  types = [
+    {
+      title: 'Measured Work',
+      type1: 'measured',
+      type2: 'measured-custom',
+    },
+    {
+      title: 'Variation Orders',
+      type1: 'variation',
+      type2: 'variation-custom',
+    },
+    // {
+    //   title: 'Daily Works',
+    //   type1: 'daily-works',
+    //   type2: 'daily-works-custom',
+    // },
+  ];
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -67,10 +87,32 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
                     total:
                       e.scaffold.total +
                       (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
+                    erectionValue: e.scaffold.total * 0.7,
+                    dismantleValue: e.scaffold.total * 0.3,
                   },
                   attachments: e.attachments.map((a) => ({
                     ...a,
                     total: a.total + (a.hireTotal ? a.hireTotal : 0),
+                    erectionValue: a.total * 0.7,
+                    dismantleValue: a.total * 0.3,
+                  })),
+                  additionals: e.additionals.map((a) => ({
+                    ...a,
+                    total: a.total,
+                    erectionValue: a.total * 0.7,
+                    dismantleValue: a.total * 0.3,
+                  })),
+                  labour: e.labour.map((a) => ({
+                    ...a,
+                    total: a.total,
+                  })),
+                  transport: e.transport.map((a) => ({
+                    ...a,
+                    total: a.total,
+                  })),
+                  boards: e.boards.map((a) => ({
+                    ...a,
+                    total: a.total,
                   })),
                   type: e.type,
                 } as Estimate;
@@ -87,8 +129,6 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
           this.paymentApplication.setSite(site);
         })
       );
-    } else {
-      Object.assign(this.paymentApplication, this.value);
     }
   }
 
@@ -199,117 +239,6 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
           );
       }
     });
-  }
-
-  change(args, scaffold: Item, category: string) {
-    const value = args.detail.value;
-    const days = scaffold.isWeeks
-      ? +scaffold.daysStanding / 7
-      : +scaffold.daysStanding;
-    switch (category) {
-      case 'EP':
-        {
-          scaffold.appliedErectionPercentage = value;
-          scaffold.appliedErectionValue =
-            scaffold.total * 0.7 * (scaffold.appliedErectionPercentage / 100);
-        }
-        break;
-      case 'DP':
-        {
-          scaffold.appliedDismantlePercentage = value;
-          scaffold.appliedDismantleValue =
-            scaffold.total * 0.3 * (scaffold.appliedDismantlePercentage / 100);
-        }
-        break;
-      case 'HD':
-        {
-          scaffold.hireDate = value;
-          const hireEndDate = new Date(value);
-          hireEndDate.setDate(hireEndDate.getDate() + days);
-          scaffold.hireEndDate = hireEndDate.toDateString();
-        }
-        break;
-      case 'DD':
-        {
-          scaffold.dismantleDate = value;
-        }
-        break;
-      case 'EH':
-        {
-          scaffold.extraHireWeeks = +value;
-          scaffold.extraHireCharge =
-            +scaffold.extraHire * scaffold.extraHireWeeks;
-        }
-        break;
-      case 'SD':
-        {
-          scaffold.description = value;
-        }
-        break;
-      case 'SV':
-        {
-          scaffold.total = +value;
-        }
-        break;
-      case 'SH':
-        {
-          scaffold.isWeeks = false;
-          scaffold.daysStanding = +value * 7;
-          const hireEndDate = new Date(scaffold.hireDate);
-          hireEndDate.setDate(hireEndDate.getDate() + scaffold.daysStanding);
-          scaffold.hireEndDate = hireEndDate.toDateString();
-        }
-        break;
-      case 'EHP':
-        {
-          scaffold.extraHirePercentage = +value;
-          scaffold.extraHire =
-            scaffold.total * (scaffold.extraHirePercentage / 100);
-          scaffold.extraHireCharge =
-            +scaffold.extraHire * scaffold.extraHireWeeks;
-        }
-        break;
-      case 'EHA':
-        {
-          scaffold.extraHire = +value;
-          scaffold.extraHireCharge =
-            +scaffold.extraHire * scaffold.extraHireWeeks;
-        }
-        break;
-    }
-
-    const EH = scaffold.extraHireCharge ? scaffold.extraHireCharge : 0;
-    const EV = scaffold.appliedErectionValue
-      ? scaffold.appliedErectionValue
-      : 0;
-    const DV = scaffold.appliedDismantleValue
-      ? scaffold.appliedDismantleValue
-      : 0;
-    scaffold.grossTotal = EV + DV + EH;
-    scaffold.currentTotal =
-      scaffold.grossTotal -
-      (scaffold.previousGross ? +scaffold.previousGross : 0);
-    this.paymentApplication.updateTotals();
-  }
-
-  setDate(args) {
-    this.paymentApplication.dueDate = args.detail.value;
-  }
-
-  addItem(type: string) {
-    const newEstimate = {
-      attachments: [],
-      code: '',
-      id: '',
-      scaffold: {},
-      type,
-    } as Estimate;
-    this.paymentApplication.estimates.push(newEstimate);
-  }
-
-  deleteItem(index: number) {
-    this.paymentApplication.estimates.splice(index, 1);
-    this.paymentApplication.updateTotals();
   }
 
   close() {

@@ -942,7 +942,9 @@ export class PdfService {
                   alignment: 'right',
                 },
                 {
-                  text: `${company.currency.symbol} ${this.format(0)}`,
+                  text: `${company.currency.symbol} ${this.format(
+                    paymentApplication.currentTotal
+                  )}`,
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -970,7 +972,9 @@ export class PdfService {
                   alignment: 'right',
                 },
                 {
-                  text: `${company.currency.symbol} ${this.format(0)}`,
+                  text: `${company.currency.symbol} ${this.format(
+                    paymentApplication.currentTotal
+                  )}`,
                   alignment: 'right',
                   style: 'h6b',
                 },
@@ -998,9 +1002,13 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `${company.currency.symbol} ${this.format(0)}`
+                      ? `${company.currency.symbol} ${this.format(
+                          paymentApplication.vat
+                        )}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(0)}`
+                      ? `${company.currency.symbol} ${this.format(
+                          paymentApplication.tax
+                        )}`
                       : '',
 
                   alignment: 'right',
@@ -1025,7 +1033,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    paymentApplication.grossTotal
+                    paymentApplication.total
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -3587,7 +3595,7 @@ export class PdfService {
       },
       { text: scaffold.handover, style: 'custom', alignment: 'center' },
       {
-        text: this.currency(scaffold.total * 0.7, company.currency.symbol),
+        text: this.currency(scaffold.erectionValue, company.currency.symbol),
         style: 'custom',
         alignment: 'right',
       },
@@ -3618,7 +3626,7 @@ export class PdfService {
         alignment: 'center',
       },
       {
-        text: this.currency(scaffold.total * 0.3, company.currency.symbol),
+        text: this.currency(scaffold.dismantleValue, company.currency.symbol),
         style: 'custom',
         alignment: 'right',
       },

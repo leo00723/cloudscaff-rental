@@ -1,5 +1,6 @@
 import { Company } from './company.model';
 import { Estimate } from './estimate.model';
+import { Item } from './item.model';
 import { Site } from './site.model';
 
 export class PaymentApplication {
@@ -20,6 +21,10 @@ export class PaymentApplication {
   code: string;
   status: string;
   dueDate: any;
+  contractTotal: number;
+  vat: number;
+  tax: number;
+  total: number;
 
   constructor() {
     this.date = new Date();
@@ -68,6 +73,9 @@ export class PaymentApplication {
     this.grossTotal = 0;
     this.previousGross = 0;
     this.currentTotal = 0;
+    this.vat = 0;
+    this.tax = 0;
+    this.total = 0;
   }
 
   updateTotals() {
@@ -116,6 +124,13 @@ export class PaymentApplication {
           (a.previousGross ? +a.previousGross : 0);
       });
     });
+    this.vat =
+      this.company.vat > 0 ? this.currentTotal * (this.company.vat / 100) : 0;
+    this.tax =
+      this.company.salesTax > 0
+        ? this.currentTotal * (this.company.salesTax / 100)
+        : 0;
+    this.total = this.currentTotal + this.vat + this.tax;
   }
 
   updatePreviousGross(): Estimate[] {
@@ -137,5 +152,159 @@ export class PaymentApplication {
     //   });
     // });
     return est;
+  }
+
+  addItem(type: string) {
+    const newEstimate = {
+      attachments: [],
+      boards: [],
+      labour: [],
+      transport: [],
+      additionals: [],
+      code: '',
+      id: '',
+      scaffold: {},
+      type,
+    } as Estimate;
+    this.estimates.push(newEstimate);
+  }
+
+  deleteItem(index: number) {
+    this.estimates.splice(index, 1);
+    this.updateTotals();
+  }
+
+  change(args, scaffold: Item, category: string) {
+    const value = args.detail.value;
+    const days = scaffold.isWeeks
+      ? +scaffold.daysStanding / 7
+      : +scaffold.daysStanding;
+    switch (category) {
+      case 'EP':
+        {
+          scaffold.appliedErectionPercentage = value;
+          scaffold.appliedErectionValue =
+            scaffold.erectionValue * (scaffold.appliedErectionPercentage / 100);
+        }
+        break;
+      case 'DP':
+        {
+          scaffold.appliedDismantlePercentage = value;
+          scaffold.appliedDismantleValue =
+            scaffold.dismantleValue *
+            (scaffold.appliedDismantlePercentage / 100);
+        }
+        break;
+      case 'HD':
+        {
+          scaffold.hireDate = value;
+          const hireEndDate = new Date(value);
+          hireEndDate.setDate(hireEndDate.getDate() + days);
+          scaffold.hireEndDate = hireEndDate.toDateString();
+        }
+        break;
+      case 'DD':
+        {
+          scaffold.dismantleDate = value;
+        }
+        break;
+      case 'EH':
+        {
+          scaffold.extraHireWeeks = +value;
+          scaffold.extraHireCharge =
+            +scaffold.extraHire * scaffold.extraHireWeeks;
+        }
+        break;
+      case 'SD':
+        {
+          scaffold.description = value;
+        }
+        break;
+      case 'SV':
+        {
+          scaffold.total = +value;
+          scaffold.erectionValue = +(scaffold.total * 0.7).toFixed(2);
+          scaffold.dismantleValue = +(scaffold.total * 0.3).toFixed(2);
+          scaffold.appliedDismantleValue =
+            scaffold.dismantleValue *
+            (scaffold.appliedDismantlePercentage / 100);
+          scaffold.appliedErectionValue =
+            scaffold.erectionValue * (scaffold.appliedErectionPercentage / 100);
+        }
+        break;
+      case 'SH':
+        {
+          scaffold.isWeeks = false;
+          scaffold.daysStanding = +value * 7;
+          const hireEndDate = new Date(scaffold.hireDate);
+          hireEndDate.setDate(hireEndDate.getDate() + scaffold.daysStanding);
+          scaffold.hireEndDate = hireEndDate.toDateString();
+        }
+        break;
+      case 'EHP':
+        {
+          scaffold.extraHirePercentage = +value;
+          scaffold.extraHire =
+            scaffold.total * (scaffold.extraHirePercentage / 100);
+          scaffold.extraHireCharge =
+            +scaffold.extraHire * scaffold.extraHireWeeks;
+        }
+        break;
+      case 'EHA':
+        {
+          scaffold.extraHire = +value;
+          scaffold.extraHireCharge =
+            +scaffold.extraHire * scaffold.extraHireWeeks;
+        }
+        break;
+      case 'EV':
+        {
+          scaffold.erectionValue = +value;
+          scaffold.dismantleValue = +(
+            scaffold.total - scaffold.erectionValue
+          ).toFixed(2);
+          scaffold.appliedErectionValue =
+            scaffold.erectionValue * (scaffold.appliedErectionPercentage / 100);
+          scaffold.appliedDismantleValue =
+            scaffold.dismantleValue *
+            (scaffold.appliedDismantlePercentage / 100);
+        }
+        break;
+      case 'DV':
+        {
+          scaffold.dismantleValue = +value;
+          scaffold.erectionValue = +(
+            scaffold.total - scaffold.dismantleValue
+          ).toFixed(2);
+          scaffold.appliedErectionValue =
+            scaffold.erectionValue * (scaffold.appliedErectionPercentage / 100);
+          scaffold.appliedDismantleValue =
+            scaffold.dismantleValue *
+            (scaffold.appliedDismantlePercentage / 100);
+        }
+        break;
+      case 'PG':
+        {
+          scaffold.previousGross = +value;
+        }
+        break;
+    }
+
+    const EH = scaffold.extraHireCharge ? scaffold.extraHireCharge : 0;
+    const EV = scaffold.appliedErectionValue
+      ? scaffold.appliedErectionValue
+      : 0;
+    const DV = scaffold.appliedDismantleValue
+      ? scaffold.appliedDismantleValue
+      : 0;
+    scaffold.grossTotal = EV + DV + EH;
+    scaffold.currentTotal =
+      scaffold.grossTotal -
+      (scaffold.previousGross ? +scaffold.previousGross : 0);
+    this.updateTotals();
+  }
+
+  setDate(args) {
+    this.dueDate = args.detail.value;
   }
 }

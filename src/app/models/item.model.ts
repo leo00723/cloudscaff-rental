@@ -31,10 +31,12 @@ export interface Item {
   hireDate?: any;
   handover?: any;
   appliedErectionPercentage?: number;
+  erectionValue?: number;
   appliedErectionValue?: number;
   hireEndDate?: any;
   dismantleDate?: any;
   appliedDismantlePercentage?: number;
+  dismantleValue?: number;
   appliedDismantleValue?: number;
   extraHireWeeks?: number;
   extraHireCharge?: number;
