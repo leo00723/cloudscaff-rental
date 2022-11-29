@@ -774,13 +774,13 @@ export class PdfService {
       },
     ];
     scaffolds.push(type1);
-    const counterT1 = 0;
+    let counterT1 = 0;
     paymentApplication.estimates.forEach((e) => {
       if (e.type === 'measured') {
-        this.addPAScaffold(e, scaffolds, counterT1, company);
+        counterT1 = this.addPAScaffold(e, scaffolds, counterT1, company);
       }
       if (e.type === 'measured-custom') {
-        this.addPAScaffold(e, scaffolds, counterT1, company);
+        counterT1 = this.addPAScaffold(e, scaffolds, counterT1, company);
       }
     });
     const type2 = [
@@ -791,13 +791,13 @@ export class PdfService {
       },
     ];
     scaffolds.push(type2);
-    const counterT2 = 0;
+    let counterT2 = 0;
     paymentApplication.estimates.forEach((e, i) => {
       if (e.type === 'variation') {
-        this.addPAScaffold(e, scaffolds, counterT2, company);
+        counterT2 = this.addPAScaffold(e, scaffolds, counterT2, company);
       }
       if (e.type === 'variation-custom') {
-        this.addPAScaffold(e, scaffolds, counterT2, company);
+        counterT2 = this.addPAScaffold(e, scaffolds, counterT2, company);
       }
     });
     const summary = {
@@ -3704,6 +3704,7 @@ export class PdfService {
       const attrow = this.addPARow(att, counter, company);
       scaffolds.push(attrow);
     });
+    return counter;
   }
 
   private async getFooter() {
