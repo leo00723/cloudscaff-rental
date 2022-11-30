@@ -30,6 +30,7 @@ export class PaymentApplication {
     this.date = new Date();
     this.status = 'pending';
     this.resetTotals();
+    this.estimates = [];
   }
 
   setCompany(company: Company, updateCode?: boolean, isPA?: boolean) {
@@ -59,7 +60,12 @@ export class PaymentApplication {
     this.site = site;
   }
   setEstimates(estimates: Estimate[]) {
-    this.estimates = estimates;
+    estimates.forEach((ne) => {
+      const index = this.estimates.findIndex((e) => e.id === ne.id);
+      if (index === -1) {
+        this.estimates.push(ne);
+      }
+    });
     this.updateTotals();
   }
 

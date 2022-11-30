@@ -1,16 +1,9 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-  OnDestroy,
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
-import { map, Observable, Subscription } from 'rxjs';
+import { map, Observable, Subscription, take, takeLast } from 'rxjs';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
-import { Item } from 'src/app/models/item.model';
 import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Site } from 'src/app/models/site.model';
 import { Term } from 'src/app/models/term.model';
@@ -32,14 +25,15 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
 export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   @Input() isEdit = false;
   @Input() isPA = false;
+  @Input() siteId = '';
   @Input() site$: Observable<Site>;
-  @Input() estimates$: Observable<Estimate[]>;
-  @Input() bulkEstimates: BulkEstimate[];
   @Input() set value(val: PaymentApplication) {
     if (val) {
       Object.assign(this.paymentApplication, val);
     }
   }
+  bulkEstimates: BulkEstimate[];
+  estimates$: Observable<Estimate[]>;
   terms$: Observable<Term>;
   paymentApplication = new PaymentApplication();
   loading = false;
@@ -75,61 +69,76 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     if (!this.isEdit) {
       this.paymentApplication.setCompany(this.company, true, this.isPA);
       this.subs.add(
-        this.estimates$
-          .pipe(
-            map((data) =>
-              data.map((e) => {
-                const obj = {
-                  id: e.id,
-                  code: e.code,
-                  scaffold: {
-                    ...e.scaffold,
-                    total:
-                      e.scaffold.total +
-                      (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
-                    erectionValue: e.scaffold.total * 0.7,
-                    dismantleValue: e.scaffold.total * 0.3,
-                  },
-                  attachments: e.attachments.map((a) => ({
-                    ...a,
-                    total: a.total + (a.hireTotal ? a.hireTotal : 0),
-                    erectionValue: a.total * 0.7,
-                    dismantleValue: a.total * 0.3,
-                  })),
-                  additionals: e.additionals.map((a) => ({
-                    ...a,
-                    total: a.total,
-                    erectionValue: a.total * 0.7,
-                    dismantleValue: a.total * 0.3,
-                  })),
-                  labour: e.labour.map((a) => ({
-                    ...a,
-                    total: a.total,
-                  })),
-                  transport: e.transport.map((a) => ({
-                    ...a,
-                    total: a.total,
-                  })),
-                  boards: e.boards.map((a) => ({
-                    ...a,
-                    total: a.total,
-                  })),
-                  type: e.type,
-                } as Estimate;
-                return obj;
-              })
-            )
-          )
-          .subscribe((estimates) => {
-            this.paymentApplication.setEstimates(estimates);
-          })
-      );
-      this.subs.add(
         this.site$.subscribe((site) => {
           this.paymentApplication.setSite(site);
         })
       );
     }
+    this.estimates$ = this.masterSvc
+      .edit()
+      .getCollectionWhereWhereAndOrder(
+        `company/${this.company.id}/estimates`,
+        'siteId',
+        '==',
+        this.siteId,
+        'addedToPA',
+        '==',
+        false,
+        'date',
+        'desc'
+      )
+      .pipe(
+        map((data) =>
+          data.map((e) => {
+            const obj = {
+              id: e.id,
+              code: e.code,
+              scaffold: {
+                ...e.scaffold,
+                total:
+                  e.scaffold.total +
+                  (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
+                erectionValue: e.scaffold.total * 0.7,
+                dismantleValue: e.scaffold.total * 0.3,
+              },
+              attachments: e.attachments.map((a) => ({
+                ...a,
+                total: a.total + (a.hireTotal ? a.hireTotal : 0),
+                erectionValue: a.total * 0.7,
+                dismantleValue: a.total * 0.3,
+              })),
+              additionals: e.additionals.map((a) => ({
+                ...a,
+                total: a.total,
+                erectionValue: a.total * 0.7,
+                dismantleValue: a.total * 0.3,
+              })),
+              labour: e.labour.map((a) => ({
+                ...a,
+                total: a.total,
+              })),
+              transport: e.transport.map((a) => ({
+                ...a,
+                total: a.total,
+              })),
+              boards: e.boards.map((a) => ({
+                ...a,
+                total: a.total,
+              })),
+              type: e.type,
+              addedToPA: e.addedToPA,
+            } as Estimate;
+            return obj;
+          })
+        )
+      ) as Observable<Estimate[]>;
+    this.subs.add(
+      this.estimates$.subscribe((estimates) => {
+        if (estimates.length > 0) {
+          this.paymentApplication.setEstimates(estimates);
+        }
+      })
+    );
   }
 
   createPA(create?: boolean) {
@@ -208,16 +217,18 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
             this.paymentApplication.id,
             this.paymentApplication
           );
-        // const est = this.paymentApplication.updatePreviousGross();
-        // const batch = this.masterSvc.edit().batch();
-        // for (const e of est) {
-        //   const doc = this.masterSvc
-        //     .edit()
-        //     .docRef(`company/${this.company.id}/estimates`, e.id);
-        //   batch.set(doc, { ...e }, { merge: true });
-        // }
+        const est = this.paymentApplication.updatePreviousGross();
+        const batch = this.masterSvc.edit().batch();
+        for (const e of est) {
+          if (e.id && e.code) {
+            const doc = this.masterSvc
+              .edit()
+              .docRef(`company/${this.company.id}/estimates`, e.id);
+            batch.set(doc, { ...e, addedToPA: true }, { merge: true });
+          }
+        }
 
-        // await batch.commit();
+        await batch.commit();
         this.loading = false;
         this.masterSvc
           .notification()

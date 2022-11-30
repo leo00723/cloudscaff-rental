@@ -902,13 +902,20 @@ export class PdfService {
         await this.getHeader(
           'Payment Application',
           paymentApplication.code,
-          paymentApplication.site.name,
+          `${paymentApplication.site.code}-${paymentApplication.site.name}`,
           paymentApplication.date,
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
           null,
-          []
+          [
+            [
+              { text: 'Due Date:', style: 'h6b' },
+              this.toDate(paymentApplication.dueDate),
+              '',
+              '',
+            ],
+          ]
         ),
         hr,
         this.getSubHeader(paymentApplication.site.customer, company),

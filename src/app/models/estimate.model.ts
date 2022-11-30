@@ -49,4 +49,5 @@ export interface Estimate {
   enquiryId: string;
   revision?: number;
   type?: string;
+  addedToPA?: boolean;
 }

@@ -7,6 +7,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { environment } from 'src/environments/environment';
 import { EditprofileComponent } from '../components/editprofile/editprofile.component';
+import { Company } from '../models/company.model';
 import { InventoryEstimate } from '../models/inventoryEstimate.model';
 import { AppState } from '../shared/app/app.state';
 
@@ -57,6 +58,7 @@ export class HomePage implements OnDestroy {
   loading = false;
   version = environment.version;
   @Select() user$: Observable<User>;
+  @Select() company$: Observable<Company>;
   isIphone = this.masterSvc.platform().is('iphone');
   private subs = new Subscription();
   constructor(
@@ -82,18 +84,15 @@ export class HomePage implements OnDestroy {
     const version = this.masterSvc.store().selectSnapshot(AppState.version);
     if (version) {
       if (!this.masterSvc.platform().is('cordova')) {
-        const version = this.masterSvc.store().selectSnapshot(AppState.version);
         this.updates
           .checkForUpdate()
           .then((res) => {
             if (res) {
               this.masterSvc.notification().presentAlertConfirm(
                 () => {
-                  this.updates.activateUpdate().then((res) => {
-                    if (res) {
-                      window.location.reload();
-                    }
-                  });
+                  this.updates
+                    .activateUpdate()
+                    .then(() => window.location.reload());
                 },
                 `${version.version} available!`,
                 `${version.message.toString().replace(',', '</br>')}`,

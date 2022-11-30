@@ -123,28 +123,44 @@
         ></app-shipment-invoices-table>
       </div>
       <div *ngSwitchCase="'operationApplication'">
-        <app-payment-application-table
-          [value]="operationApplications$"
-          *ngIf="operationApplications$ | async else loading"
-          (selectedItem)="viewPaymentApplication($event,false)"
-        ></app-payment-application-table>
-        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addPaymentApplication(false)">
-            <ion-icon name="add"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
+        <ng-container
+          *ngIf="operationApplications$ | async as operationApplications else loading"
+        >
+          <app-payment-application-table
+            [value]="operationApplications$"
+            (selectedItem)="viewPaymentApplication($event,false)"
+          ></app-payment-application-table>
+          <ion-fab
+            class="m-2"
+            vertical="bottom"
+            horizontal="end"
+            slot="fixed"
+            *ngIf="operationApplications.length <= 0"
+          >
+            <ion-fab-button (click)="addPaymentApplication(false)">
+              <ion-icon name="add"></ion-icon>
+            </ion-fab-button> </ion-fab
+        ></ng-container>
       </div>
       <div *ngSwitchCase="'paymentApplication'">
-        <app-payment-application-table
-          [value]="paymentApplications$"
-          *ngIf="paymentApplications$ | async else loading"
-          (selectedItem)="viewPaymentApplication($event,true)"
-        ></app-payment-application-table>
-        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addPaymentApplication(true)">
-            <ion-icon name="add"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
+        <ng-container
+          *ngIf="paymentApplications$ | async as paymentApplications  else loading"
+        >
+          <app-payment-application-table
+            [value]="paymentApplications$"
+            (selectedItem)="viewPaymentApplication($event,true)"
+          ></app-payment-application-table>
+          <ion-fab
+            class="m-2"
+            vertical="bottom"
+            horizontal="end"
+            slot="fixed"
+            *ngIf="paymentApplications.length <= 0"
+          >
+            <ion-fab-button (click)="addPaymentApplication(true)">
+              <ion-icon name="add"></ion-icon>
+            </ion-fab-button> </ion-fab
+        ></ng-container>
       </div>
       <ng-template #loading>
         <div class="ion-padding">

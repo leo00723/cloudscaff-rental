@@ -51,8 +51,9 @@ export class ViewSitePage implements OnInit {
       .getDocById(`company/${this.ids[0]}/sites`, this.ids[1])
       .pipe(
         tap((site: Site) => {
-          if (!site)
+          if (!site) {
             this.masterSvc.store().dispatch(new Navigate('/dashboard/sites'));
+          }
         })
       ) as Observable<Site>;
     this.estimates$ = this.masterSvc
@@ -149,7 +150,7 @@ export class ViewSitePage implements OnInit {
       component: AddPaymentApplicationComponent,
       componentProps: {
         isPA,
-        estimates$: this.estimates$,
+        siteId: this.ids[1],
         site$: this.site$,
       },
       showBackdrop: false,
@@ -166,6 +167,7 @@ export class ViewSitePage implements OnInit {
       component: AddPaymentApplicationComponent,
       componentProps: {
         isPA,
+        siteId: this.ids[1],
         value: paymentApplication,
         isEdit: true,
       },
@@ -231,7 +233,7 @@ export class ViewSitePage implements OnInit {
   async addRequest(site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: AddRequestComponent,
-      componentProps: { site: site },
+      componentProps: { site },
       showBackdrop: false,
       id: 'addRequest',
       cssClass: 'fullscreen',
