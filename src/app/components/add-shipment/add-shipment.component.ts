@@ -58,8 +58,13 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
 
   update(val, item: InventoryItem) {
-    item.shipmentQty = +val.detail.value;
-    this.checkError(item);
+    if (isNaN(+val.detail.value)) {
+      return (item.error = true);
+    } else {
+      item.error = false;
+      item.shipmentQty = +val.detail.value;
+      this.checkError(item);
+    }
   }
 
   checkError(item: InventoryItem) {
@@ -82,8 +87,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
+        this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
         const shipment: Shipment = { ...this.form.value };
-        shipment.items = this.items.filter((item) => item.shipmentQty > 0);
+        shipment.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
         this.company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
@@ -123,8 +129,11 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
+        this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
         Object.assign(this.shipment, this.form.value);
-        this.shipment.items = this.items.filter((item) => item.shipmentQty > 0);
+        this.shipment.items = this.itemBackup.filter(
+          (item) => item.shipmentQty > 0
+        );
         this.shipment.status = status;
         await this.masterSvc
           .edit()
@@ -150,11 +159,32 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
 
+  // async delete() {
+  //   await this.masterSvc
+  //     .edit()
+  //     .deleteDocById(`company/${this.company.id}/shipments`, this.shipment.id);
+  //   this.close();
+  // }
+
   close() {
     this.masterSvc.modal().dismiss();
   }
   field(field: string) {
     return this.form.get(field) as FormControl;
+  }
+
+  changeSite(event) {
+    this.field('site').setValue(event[0]);
+  }
+
+  autoSave() {
+    if (this.isEdit) {
+      if (this.shipment.status === 'pending') {
+        this.autoUpdate();
+      }
+    } else {
+      this.autoCreate();
+    }
   }
 
   private initEditForm() {
@@ -220,5 +250,74 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.init();
       }
     }, 200);
+  }
+
+  private async autoUpdate() {
+    this.loading = true;
+    try {
+      this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+      Object.assign(this.shipment, this.form.value);
+      this.shipment.items = this.itemBackup.filter(
+        (item) => item.shipmentQty > 0
+      );
+      this.shipment.status = 'pending';
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/shipments`,
+          this.shipment.id,
+          this.shipment
+        );
+
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating the shipment. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
+  }
+
+  private async autoCreate() {
+    this.loading = true;
+    try {
+      this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+      const shipment: Shipment = { ...this.form.value };
+      shipment.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
+      this.company = this.masterSvc
+        .store()
+        .selectSnapshot(CompanyState.company);
+
+      shipment.code = `SHI${new Date().toLocaleDateString('en', {
+        year: '2-digit',
+      })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
+        .toString()
+        .padStart(6, '0')}`;
+
+      const doc = await this.masterSvc
+        .edit()
+        .addDocument(`company/${this.company.id}/shipments`, shipment);
+
+      this.shipment.id = doc.id;
+      this.isEdit = true;
+      await this.masterSvc.edit().updateDoc('company', this.company.id, {
+        totalShipments: increment(1),
+      });
+
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong creating shipment. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
   }
 }
