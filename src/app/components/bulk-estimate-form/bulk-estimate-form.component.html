@@ -1147,9 +1147,11 @@
     <ion-col *ngIf="arrField('additionals', i, 'rate').value">
       <app-input-text
         title="Rate override ({{
-          arrField('additionals', i, 'rate').value.name.startsWith('%')
-            ? '%'
-            : company.currency.symbol
+          arrField('additionals', i, 'rate').value.name
+            ? arrField('additionals', i, 'rate').value.name.startsWith('%')
+              ? '%'
+              : company.currency.symbol
+            : ''
         }})"
         type="number"
         [value]="arrField('additionals', i, 'rate').value.rate"
