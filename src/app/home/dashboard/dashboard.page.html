@@ -152,5 +152,35 @@
         ></app-dashboard-card-mini>
       </ion-col>
     </ion-row>
+    <app-title-block>Man Hours</app-title-block>
+    <ion-row>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="primary"
+          icon="cube-outline"
+          [isCurrency]="false"
+          title="Total Scaffolds"
+          value="1800"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="caret-up-outline"
+          [isCurrency]="false"
+          title="Active Scaffolds"
+          value="800"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="danger"
+          icon="caret-down-outline"
+          [isCurrency]="false"
+          title="Completed Scaffolds"
+          value="800"
+        ></app-dashboard-card-mini>
+      </ion-col>
+    </ion-row>
   </div>
 </ion-content>
