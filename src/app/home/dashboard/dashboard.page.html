@@ -1,38 +1,154 @@
-<app-header title="Dashboard"></app-header>
+<app-header title="Dashboard">
+  <ion-toolbar mode="ios" color="primary">
+    <ion-segment
+      scrollable
+      selectOnFocus="true"
+      (ionChange)="segmentChanged($event)"
+      [value]="active"
+    >
+      <ion-segment-button value="week">
+        <ion-label>Week</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="month">
+        <ion-label>Month</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="year">
+        <ion-label>Year</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</app-header>
 
 <ion-content fullscreen="true">
-  <div>
+  <div class="container-fluid mt-3">
+    <app-title-block>Estimates</app-title-block>
+    <ion-row>
+      <ion-col sizeLg="4" sizeMd="6">
+        <app-dashboard-card-mini
+          color="primary"
+          icon="cash-outline"
+          title="Total Value"
+          value="30000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6">
+        <app-dashboard-card-mini
+          color="danger"
+          icon="caret-down-outline"
+          title=" Lost"
+          value="10000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="caret-up-outline"
+          title=" Won"
+          value="20000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <!-- <ion-col sizeLg="3" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="cash-outline"
+          title="value Income Invoiced"
+          value="15000"
+        ></app-dashboard-card-mini>
+      </ion-col> -->
+    </ion-row>
+    <app-title-block>Inventory</app-title-block>
     <ion-row>
       <ion-col sizeLg="3" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="success"
-          icon="cash-outline"
-          title="Total Estimated Income"
-          total="30000"
+          icon="construct-outline"
+          [isCurrency]="false"
+          title="Total Available"
+          value="10 tons"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="3" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="primary"
+          icon="caret-up-outline"
+          [isCurrency]="false"
+          title="In Use"
+          value="8.5 tons"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="3" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="warning"
+          icon="caret-down-outline"
+          [isCurrency]="false"
+          title="In Maintenance"
+          value="2.5 tons"
         ></app-dashboard-card-mini>
       </ion-col>
       <ion-col sizeLg="3" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="danger"
-          icon="arrow-down-outline"
-          title="Total Income Lost"
-          total="10000"
+          icon="caret-down-outline"
+          [isCurrency]="false"
+          title="Damaged / Lost"
+          value="3.5 tons"
         ></app-dashboard-card-mini>
       </ion-col>
-      <ion-col sizeLg="3" sizeMd="6" size="12">
+    </ion-row>
+    <app-title-block>Invoices</app-title-block>
+    <ion-row>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
         <app-dashboard-card-mini
-          color="success"
-          icon="arrow-up-outline"
-          title="Total Income Won"
-          total="20000"
-        ></app-dashboard-card-mini>
-      </ion-col>
-      <ion-col sizeLg="3" sizeMd="6" size="12">
-        <app-dashboard-card-mini
-          color="success"
+          color="primary"
           icon="cash-outline"
-          title="Total Income Invoiced"
-          total="15000"
+          title="Total Invoiced"
+          value="24000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="caret-up-outline"
+          title="Total Paid"
+          value="20000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="warning"
+          icon="caret-down-outline"
+          title="Total Outstanding"
+          value="4000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+    </ion-row>
+    <app-title-block>Scaffolds</app-title-block>
+    <ion-row>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="primary"
+          icon="cube-outline"
+          [isCurrency]="false"
+          title="Total Scaffolds"
+          value="1800"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="caret-up-outline"
+          [isCurrency]="false"
+          title="Active Scaffolds"
+          value="800"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="danger"
+          icon="caret-down-outline"
+          [isCurrency]="false"
+          title="Completed Scaffolds"
+          value="800"
         ></app-dashboard-card-mini>
       </ion-col>
     </ion-row>

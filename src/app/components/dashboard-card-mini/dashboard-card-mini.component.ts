@@ -20,7 +20,8 @@ export class DashboardCardMiniComponent implements OnInit {
   @Input() color: 'primary' | 'success' | 'warning' | 'danger';
   @Input() icon = '';
   @Input() title = '';
-  @Input() total = '';
+  @Input() value = '';
+  @Input() isCurrency = true;
   @Input() skeleton = true;
   company: Company;
   constructor(
