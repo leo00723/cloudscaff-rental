@@ -7,7 +7,10 @@ import { CompanyState } from 'src/app/shared/company/company.state';
   templateUrl: './dashboard.page.html',
 })
 export class DashboardPage implements OnInit {
+  active = 'week';
   constructor() {}
 
   ngOnInit() {}
+
+  segmentChanged(event) {}
 }

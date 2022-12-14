@@ -6,10 +6,13 @@
     <ion-col class="text-end">
       <ion-card-header>
         <ion-card-subtitle>{{ title }}</ion-card-subtitle>
-        <ion-card-title
+        <ion-card-title *ngIf="isCurrency; else text"
           >{{ company.currency.symbol
-          }}{{ total | number: "0.2-2" }}</ion-card-title
+          }}{{ value | number : "0.2-2" }}</ion-card-title
         >
+        <ng-template #text>
+          <ion-card-title>{{ value }}</ion-card-title>
+        </ng-template>
       </ion-card-header>
     </ion-col> </ion-row
   ><ng-template #loading>
