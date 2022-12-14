@@ -21,6 +21,41 @@
 
 <ion-content fullscreen="true">
   <div class="container-fluid mt-3">
+    <app-title-block>Overview</app-title-block>
+    <ion-row>
+      <ion-col sizeLg="4" sizeMd="6">
+        <app-dashboard-card-mini
+          color="primary"
+          icon="cash-outline"
+          title="Total Income"
+          value="20000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6">
+        <app-dashboard-card-mini
+          color="danger"
+          icon="caret-down-outline"
+          title=" Total Expenses"
+          value="10800"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="caret-up-outline"
+          title=" Total Profit"
+          value="9200"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <!-- <ion-col sizeLg="3" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="cash-outline"
+          title="value Income Invoiced"
+          value="15000"
+        ></app-dashboard-card-mini>
+      </ion-col> -->
+    </ion-row>
     <app-title-block>Estimates</app-title-block>
     <ion-row>
       <ion-col sizeLg="4" sizeMd="6">
@@ -124,7 +159,7 @@
     </ion-row>
     <app-title-block>Scaffolds</app-title-block>
     <ion-row>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
+      <ion-col sizeLg="3" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="primary"
           icon="cube-outline"
@@ -133,7 +168,7 @@
           value="1800"
         ></app-dashboard-card-mini>
       </ion-col>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
+      <ion-col sizeLg="3" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="success"
           icon="caret-up-outline"
@@ -142,7 +177,16 @@
           value="800"
         ></app-dashboard-card-mini>
       </ion-col>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
+      <ion-col sizeLg="3" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="warning"
+          icon="caret-up-outline"
+          [isCurrency]="false"
+          title="Pending Scaffolds"
+          value="200"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="3" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="danger"
           icon="caret-down-outline"
@@ -154,31 +198,22 @@
     </ion-row>
     <app-title-block>Man Hours</app-title-block>
     <ion-row>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
+      <ion-col sizeLg="6" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="primary"
           icon="cube-outline"
           [isCurrency]="false"
-          title="Total Scaffolds"
-          value="1800"
+          title="Total Hours"
+          value="3600"
         ></app-dashboard-card-mini>
       </ion-col>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
+      <ion-col sizeLg="6" sizeMd="6" size="12">
         <app-dashboard-card-mini
           color="success"
           icon="caret-up-outline"
-          [isCurrency]="false"
-          title="Active Scaffolds"
-          value="800"
-        ></app-dashboard-card-mini>
-      </ion-col>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
-        <app-dashboard-card-mini
-          color="danger"
-          icon="caret-down-outline"
-          [isCurrency]="false"
-          title="Completed Scaffolds"
-          value="800"
+          [isCurrency]="true"
+          title="Total Labor Cost"
+          value="10800"
         ></app-dashboard-card-mini>
       </ion-col>
     </ion-row>
