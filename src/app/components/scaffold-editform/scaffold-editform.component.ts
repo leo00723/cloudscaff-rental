@@ -41,9 +41,9 @@ export class ScaffoldEditformComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.form = this.fb.group({
       scaffold: this.fb.group({
-        length: ['', [Validators.required, Validators.min(1)]],
-        width: ['', [Validators.required, Validators.min(1)]],
-        height: ['', [Validators.required, Validators.min(1)]],
+        length: ['', [Validators.required, Validators.min(0)]],
+        width: ['', [Validators.required, Validators.min(0)]],
+        height: ['', [Validators.required, Validators.min(0)]],
         safe: ['', [Validators.required]],
         level: [1, [Validators.nullValidator]],
       }),
@@ -64,9 +64,9 @@ export class ScaffoldEditformComponent implements OnInit, OnDestroy {
   }
   addAttachment() {
     const attachment = this.fb.group({
-      length: ['', [Validators.required, Validators.min(1)]],
-      width: ['', [Validators.required, Validators.min(1)]],
-      height: ['', [Validators.required, Validators.min(1)]],
+      length: ['', [Validators.required, Validators.min(0)]],
+      width: ['', [Validators.required, Validators.min(0)]],
+      height: ['', [Validators.required, Validators.min(0)]],
       safe: ['', [Validators.required]],
       level: ['', [Validators.nullValidator]],
     });
@@ -83,9 +83,9 @@ export class ScaffoldEditformComponent implements OnInit, OnDestroy {
   }
   addBoard() {
     const board = this.fb.group({
-      length: ['', [Validators.required, Validators.min(1)]],
-      width: ['', [Validators.required, Validators.min(1)]],
-      height: ['', [Validators.required, Validators.min(1)]],
+      length: ['', [Validators.required, Validators.min(0)]],
+      width: ['', [Validators.required, Validators.min(0)]],
+      height: ['', [Validators.required, Validators.min(0)]],
       qty: ['', [Validators.required, Validators.min(1)]],
     });
     this.boardForms.push(board);

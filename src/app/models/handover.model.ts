@@ -11,6 +11,7 @@ export interface Handover {
   detail?: string;
   maxLoad?: string;
   createdBy?: string;
+  createdByName?: string;
   safe?: string;
   company?: Company;
   customer?: Customer;
@@ -18,4 +19,5 @@ export interface Handover {
   signature?: string;
   signatureRef?: string;
   signedBy?: string;
+  type?: string;
 }

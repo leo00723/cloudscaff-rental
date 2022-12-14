@@ -1,4 +1,5 @@
 import { AdditionalItem } from './additionalItem.model';
+import { Handover } from './handover.model';
 import { HireItem } from './hireItem.model';
 import { Item } from './item.model';
 import { LabourItem } from './labourItem.model';
@@ -32,4 +33,7 @@ export interface Scaffold {
   totalHandovers?: number;
   totalModifications?: number;
   totalInvoices?: number;
+  totalArea?: number;
+  totalPlatforms?: number;
+  latestHandover?: Handover;
 }

@@ -19,6 +19,9 @@
         <ion-segment-button value="scaffolds">
           <ion-label>Scaffolds</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="register">
+          <ion-label>Scaffold Register</ion-label>
+        </ion-segment-button>
         <ion-segment-button value="inventory">
           <ion-label>Inventory</ion-label>
         </ion-segment-button>
@@ -64,6 +67,15 @@
       <div *ngSwitchDefault>
         <app-scaffold-table
           [value]="scaffolds$"
+          *ngIf="scaffolds$ | async else loading"
+          (selectedItem)="viewScaffold($event)"
+        ></app-scaffold-table>
+      </div>
+      <div *ngSwitchCase="'register'">
+        <app-scaffold-table
+          [value]="scaffolds$"
+          [showRegister]="true"
+          [showScaffoldList]="false"
           *ngIf="scaffolds$ | async else loading"
           (selectedItem)="viewScaffold($event)"
         ></app-scaffold-table>

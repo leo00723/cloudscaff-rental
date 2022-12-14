@@ -84,6 +84,7 @@ import { DashboardCardMiniComponent } from './dashboard-card-mini/dashboard-card
 import { NotificationsComponent } from './notifications/notifications.component';
 import { DuplicateStockItemComponent } from './duplicate-stock-item/duplicate-stock-item.component';
 import { SearchableSelectComponent } from './searchable-select/searchable-select.component';
+import { CallbackPipe } from './callback.pipe';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -110,6 +111,7 @@ const COMPONENTS = [
   BulkEstimateSummaryComponent,
   BulkEstimateTableComponent,
   CalculatePipe,
+  CallbackPipe,
   CompanyInfoDetailComponent,
   CompanyPage,
   CreditSummaryComponent,

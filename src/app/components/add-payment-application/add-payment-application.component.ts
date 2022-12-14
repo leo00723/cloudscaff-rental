@@ -76,14 +76,11 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     }
     this.estimates$ = this.masterSvc
       .edit()
-      .getCollectionWhereWhereAndOrder(
+      .getCollectionWhereAndOrder(
         `company/${this.company.id}/estimates`,
         'siteId',
         '==',
         this.siteId,
-        'addedToPA',
-        '==',
-        false,
         'date',
         'desc'
       )

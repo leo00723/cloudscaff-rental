@@ -25,6 +25,7 @@ export class AddHandoverComponent implements OnInit {
   template$: Observable<HandoverTemplate>;
   handover: Handover = {
     safe: '',
+    type: '',
     maxLoad: '',
     status: 'pending-Needs Signature',
     date: new Date(),
@@ -62,6 +63,13 @@ export class AddHandoverComponent implements OnInit {
     this.scaffold.scaffold = ev.scaffold;
     this.scaffold.boards = ev.boards;
     this.scaffold.attachments = ev.attachments;
+    this.scaffold.totalArea = 0;
+    this.scaffold.totalPlatforms = 0;
+    this.scaffold.boards.forEach((b) => {
+      const area = +b.length * +b.width * +b.qty;
+      this.scaffold.totalArea += area;
+      this.scaffold.totalPlatforms += +b.qty;
+    });
   }
   create(customer: Customer) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
@@ -72,6 +80,7 @@ export class AddHandoverComponent implements OnInit {
           .store()
           .selectSnapshot(CompanyState.company);
         this.handover.createdBy = user.id;
+        this.handover.createdByName = user.name;
         this.handover.company = company;
         this.handover.customer = customer;
         this.handover.scaffold = this.scaffold;
@@ -82,6 +91,7 @@ export class AddHandoverComponent implements OnInit {
           .edit()
           .updateDoc(`company/${company.id}/scaffolds`, this.scaffold.id, {
             totalHandovers: increment(1),
+            latestHandover: { ...this.handover },
           });
         this.masterSvc
           .notification()

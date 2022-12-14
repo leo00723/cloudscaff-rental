@@ -71,6 +71,25 @@
                 </ion-radio-group>
               </td>
             </tr>
+            <tr class="align-middle">
+              <td>Handover Type?</td>
+              <td class="text-center">
+                <ion-radio-group slot="end" [(ngModel)]="handover.type">
+                  <ion-item lines="none">
+                    <ion-label>Erection</ion-label>
+                    <ion-radio slot="end" value="Erected" mode="md"></ion-radio>
+                  </ion-item>
+                  <ion-item lines="none">
+                    <ion-label>Dismantle</ion-label>
+                    <ion-radio
+                      slot="end"
+                      value="Dismantling"
+                      mode="md"
+                    ></ion-radio>
+                  </ion-item>
+                </ion-radio-group>
+              </td>
+            </tr>
           </tbody>
         </table>
         <app-input-text

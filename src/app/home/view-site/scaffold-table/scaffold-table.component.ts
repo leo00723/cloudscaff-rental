@@ -19,7 +19,13 @@ import { Scaffold } from 'src/app/models/scaffold.model';
 @Component({
   selector: 'app-scaffold-table',
   templateUrl: './scaffold-table.component.html',
-  styles: [],
+  styles: [
+    `
+      tr {
+        font-size: 0.8rem;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScaffoldTableComponent {
@@ -31,9 +37,14 @@ export class ScaffoldTableComponent {
     this.temp$ = estimates;
     this.scaffolds$ = estimates;
   }
+  @Input() showScaffoldList = true;
+  @Input() showRegister = false;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
+  filterScaffold(scaffold: Scaffold) {
+    return scaffold.latestHandover ? true : false;
+  }
 
   constructor() {
     this.temp$ = this.scaffolds$;
@@ -57,8 +68,8 @@ export class ScaffoldTableComponent {
   updateFilter(event) {
     const val = event.detail.value.toLowerCase() as string;
     this.temp$ = this.scaffolds$.pipe(
-      map((site) =>
-        site.filter(
+      map((data) =>
+        data.filter(
           (s) =>
             s.code.toLowerCase().indexOf(val) !== -1 ||
             s.status.toLowerCase().indexOf(val) !== -1 ||
@@ -66,6 +77,8 @@ export class ScaffoldTableComponent {
         )
       )
     );
-    this.table.offset = 0;
+    if (this.showScaffoldList) {
+      this.table.offset = 0;
+    }
   }
 }
