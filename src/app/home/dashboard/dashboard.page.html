@@ -91,6 +91,34 @@
         ></app-dashboard-card-mini>
       </ion-col> -->
     </ion-row>
+
+    <app-title-block>Invoices</app-title-block>
+    <ion-row>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="primary"
+          icon="cash-outline"
+          title="Total Invoiced"
+          value="24000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="caret-up-outline"
+          title="Total Paid"
+          value="20000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="4" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="warning"
+          icon="caret-down-outline"
+          title="Total Outstanding"
+          value="4000"
+        ></app-dashboard-card-mini>
+      </ion-col>
+    </ion-row>
     <app-title-block>Inventory</app-title-block>
     <ion-row>
       <ion-col sizeLg="3" sizeMd="6" size="12">
@@ -127,33 +155,6 @@
           [isCurrency]="false"
           title="Damaged / Lost"
           value="3.5 tons"
-        ></app-dashboard-card-mini>
-      </ion-col>
-    </ion-row>
-    <app-title-block>Invoices</app-title-block>
-    <ion-row>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
-        <app-dashboard-card-mini
-          color="primary"
-          icon="cash-outline"
-          title="Total Invoiced"
-          value="24000"
-        ></app-dashboard-card-mini>
-      </ion-col>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
-        <app-dashboard-card-mini
-          color="success"
-          icon="caret-up-outline"
-          title="Total Paid"
-          value="20000"
-        ></app-dashboard-card-mini>
-      </ion-col>
-      <ion-col sizeLg="4" sizeMd="6" size="12">
-        <app-dashboard-card-mini
-          color="warning"
-          icon="caret-down-outline"
-          title="Total Outstanding"
-          value="4000"
         ></app-dashboard-card-mini>
       </ion-col>
     </ion-row>
@@ -217,5 +218,86 @@
         ></app-dashboard-card-mini>
       </ion-col>
     </ion-row>
+
+    <app-title-block>Resource Utilization</app-title-block>
+    <ion-row>
+      <ion-col sizeLg="6" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="caret-up-outline"
+          [isCurrency]="false"
+          title="Cubic Meters Erected"
+          value="1 450 065"
+        ></app-dashboard-card-mini>
+      </ion-col>
+      <ion-col sizeLg="6" sizeMd="6" size="12">
+        <app-dashboard-card-mini
+          color="success"
+          icon="calculator-outline"
+          [isCurrency]="false"
+          title="Cubic Meters Erected"
+          value="1 450 065"
+        ></app-dashboard-card-mini>
+      </ion-col>
+    </ion-row>
+    <ion-col sizeLg="6" sizeMd="6" size="12">
+      <app-dashboard-card-mini
+        color="warning"
+        icon="trending-up-outline"
+        [isCurrency]="false"
+        title="Progress Tracking"
+        value="0.87"
+      ></app-dashboard-card-mini>
+    </ion-col>
+
+    <ion-col sizeLg="6" sizeMd="6" size="12">
+      <app-dashboard-card-mini
+        color="danger"
+        icon="warning-outline"
+        [isCurrency]="false"
+        title="Safety Incidents"
+        value="3"
+      ></app-dashboard-card-mini>
+    </ion-col>
+
+    <ion-col sizeLg="6" sizeMd="6" size="12">
+      <app-dashboard-card-mini
+        color="danger"
+        icon="pricetag-outline"
+        [isCurrency]="true"
+        title="Cost Data"
+        value="4500"
+      ></app-dashboard-card-mini>
+    </ion-col>
+
+    <ion-col sizeLg="6" sizeMd="6" size="12">
+      <app-dashboard-card-mini
+        color="primary"
+        icon="happy-outline"
+        [isCurrency]="false"
+        title="Customer Satisfaction"
+        value="4.5"
+      ></app-dashboard-card-mini>
+    </ion-col>
+
+    <ion-col sizeLg="6" sizeMd="6" size="12">
+      <app-dashboard-card-mini
+        color="success"
+        icon="briefcase-outline"
+        [isCurrency]="false"
+        title="Project Data"
+        value="12"
+      ></app-dashboard-card-mini>
+    </ion-col>
+
+    <ion-col sizeLg="6" sizeMd="6" size="12">
+      <app-dashboard-card-mini
+        color="primary"
+        icon="cube-outline"
+        [isCurrency]="false"
+        title="Inventory Data"
+        value="200"
+      ></app-dashboard-card-mini>
+    </ion-col>
   </div>
 </ion-content>
