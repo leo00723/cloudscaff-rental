@@ -12,4 +12,6 @@ export const environment = {
   },
   production: true,
   version: 'v0.0.15',
+  clientID: '5C93C5512BE849F0BFAB488727B9F29F',
+  clientSecret: 'F1I5W-zPLxaa5jtfkR6UEUwiKsj9p_GWeYb6WGUZr4QRNbBZ',
 };

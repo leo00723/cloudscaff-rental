@@ -5,11 +5,14 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
+import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { Observable } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Currencies } from 'src/app/models/currencies.model';
+import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { MasterService } from '../../../services/master.service';
 
@@ -63,7 +66,19 @@ export class CompanyPage {
   loading = false;
   isLoading = true;
 
-  constructor(private fb: FormBuilder, private masterSvc: MasterService) {
+  constructor(
+    private fb: FormBuilder,
+    private masterSvc: MasterService,
+    private oauthService: OAuthService,
+    private activatedRoute: ActivatedRoute,
+    private xeroService: XeroService
+  ) {
+    const code = this.activatedRoute.snapshot.queryParamMap.get('code');
+    if (code) {
+      this.xeroService.getAccessToken(code).subscribe((res) => {
+        console.log(res);
+      });
+    }
     this.init();
   }
 
@@ -119,8 +134,28 @@ export class CompanyPage {
         );
     }
   }
+  connect() {
+    const authCodeFlowConfig: AuthConfig = {
+      issuer: 'https://identity.xero.com',
+      loginUrl: 'https://login.xero.com/identity/connect/authorize',
+      redirectUri: 'http://localhost:8100/dashboard/settings/company',
+      tokenEndpoint: 'https://identity.xero.com/connect/token',
+      clientId: '5C93C5512BE849F0BFAB488727B9F29F',
+      responseType: 'code',
+      scope:
+        'offline_access accounting.transactions openid profile email accounting.contacts accounting.settings',
+      showDebugInformation: true,
+      strictDiscoveryDocumentValidation: false,
+      clearHashAfterLogin: true,
+      requestAccessToken: true,
+    };
+    this.oauthService.configure(authCodeFlowConfig);
+    this.oauthService.setStorage(sessionStorage);
+    console.log(this.oauthService);
+    this.oauthService.initCodeFlow();
+  }
   init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         Object.assign(

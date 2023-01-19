@@ -40,6 +40,7 @@
     "@ngxs/logger-plugin": "^3.7.5",
     "@ngxs/store": "^3.7.5",
     "@swimlane/ngx-datatable": "^20.1.0",
+    "angular-oauth2-oidc": "^14.0.1",
     "angular2-signaturepad": "^4.0.2",
     "bootstrap": "^5.2.2",
     "cordova-plugin-file-opener2": "^3.0.5",

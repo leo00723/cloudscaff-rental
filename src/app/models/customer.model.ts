@@ -12,4 +12,5 @@ export interface Customer {
   company?: string;
   regNumber?: string;
   vatNum?: string;
+  selected?: boolean;
 }
