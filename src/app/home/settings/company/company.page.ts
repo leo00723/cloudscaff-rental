@@ -173,6 +173,12 @@ export class CompanyPage implements OnDestroy {
     }
   }
 
+  getInvoices() {
+    this.xeroService.getInvoices(this.company).subscribe((data) => {
+      console.log(data);
+    });
+  }
+
   refresh() {
     try {
       this.subs.add(

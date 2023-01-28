@@ -96,6 +96,17 @@ export class XeroService {
       .post(API_URL, BODY, HTTP_OPTIONS)
       .pipe(catchError(XeroService.handleError));
   }
+
+  getInvoices(company: Company) {
+    return this.http
+      .get('https://api.xero.com/api.xro/2.0/Invoices', {
+        headers: {
+          Authorization: `Bearer ${company.tokens.accessToken}`,
+          'Xero-tenant-id': company.tokens.tenantID,
+        },
+      })
+      .pipe(catchError(XeroService.handleError));
+  }
   private authHeader(accessToken: string) {
     return {
       headers: {

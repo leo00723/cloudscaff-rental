@@ -353,7 +353,7 @@
               <ion-label>
                 Last Updated: <br />
                 <p class="bg-light rounded-lg p-3">
-                  {{company.tokens.lastUpdated.toDate?
+                  {{company.tokens.lastUpdated.toDate()?
                   company.tokens.lastUpdated.toDate() :
                   company.tokens.lastUpdated}}
                 </p>
@@ -387,6 +387,14 @@
                 shape="round"
               >
                 Connect Tenant
+              </ion-button>
+              <ion-button
+                (click)="getInvoices()"
+                expand="block"
+                fill="clear"
+                shape="round"
+              >
+                get Invoicess
               </ion-button>
             </ion-col>
           </ion-row>
