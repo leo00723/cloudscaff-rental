@@ -9,6 +9,8 @@ import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { catchError, of, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Company } from '../models/company.model';
+import { EditService } from './edit.service';
 
 const API_URL = 'https://identity.xero.com/connect/token';
 const authCodeFlowConfig: AuthConfig = {
@@ -26,7 +28,11 @@ const authCodeFlowConfig: AuthConfig = {
   providedIn: 'root',
 })
 export class XeroService {
-  constructor(private http: HttpClient, public oauthService: OAuthService) {
+  constructor(
+    private http: HttpClient,
+    public oauthService: OAuthService,
+    private editService: EditService
+  ) {
     this.oauthService.configure(authCodeFlowConfig);
   }
 
@@ -49,9 +55,25 @@ export class XeroService {
     return this.oauthService.hasValidAccessToken();
   }
 
-  getConnections(accessToken: string) {
+  getConnections(company: Company) {
+    this.refreshAccessToken(company.tokens.refreshToken).subscribe(
+      async (data: any) => {
+        if (data) {
+          company.tokens = {
+            ...company.tokens,
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token,
+            lastUpdated: new Date(),
+          };
+          await this.editService.updateDoc('company', company.id, company);
+        }
+      }
+    );
     return this.http
-      .get('https://api.xero.com/connections', this.authHeader(accessToken))
+      .get(
+        'https://api.xero.com/connections',
+        this.authHeader(company.tokens.accessToken)
+      )
       .pipe(catchError(XeroService.handleError));
   }
 

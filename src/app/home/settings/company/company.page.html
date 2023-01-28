@@ -353,17 +353,41 @@
               <ion-label>
                 Last Updated: <br />
                 <p class="bg-light rounded-lg p-3">
-                  {{company.tokens.lastUpdated}}
+                  {{company.tokens.lastUpdated.toDate?
+                  company.tokens.lastUpdated.toDate() :
+                  company.tokens.lastUpdated}}
                 </p>
-                <ion-button
-                  (click)="refresh()"
-                  expand="block"
-                  fill="clear"
-                  shape="round"
-                >
-                  Refresh Token
-                </ion-button>
               </ion-label>
+              <ion-button
+                (click)="refresh()"
+                expand="block"
+                fill="clear"
+                shape="round"
+              >
+                Refresh Token
+              </ion-button>
+            </ion-col>
+            <ion-col size="12" *ngIf="company.tokens">
+              <ion-label>
+                Tenant Name: <br />
+                <p class="bg-light rounded-lg p-3">
+                  {{company.tokens.tenantName}}
+                </p>
+              </ion-label>
+              <ion-label>
+                Tenant ID: <br />
+                <p class="bg-light rounded-lg p-3">
+                  {{company.tokens.tenantID}}
+                </p>
+              </ion-label>
+              <ion-button
+                (click)="connectTenant()"
+                expand="block"
+                fill="clear"
+                shape="round"
+              >
+                Connect Tenant
+              </ion-button>
             </ion-col>
           </ion-row>
         </ion-col>

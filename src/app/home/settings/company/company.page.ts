@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -8,7 +15,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Currencies } from 'src/app/models/currencies.model';
@@ -21,7 +28,7 @@ import { MasterService } from '../../../services/master.service';
   selector: 'app-company',
   templateUrl: './company.page.html',
 })
-export class CompanyPage {
+export class CompanyPage implements OnDestroy {
   @Input() title = 'Business Settings';
   @Input() showBack = true;
   @Output() updated = new EventEmitter<boolean>();
@@ -66,7 +73,7 @@ export class CompanyPage {
   form: FormGroup;
   loading = false;
   isLoading = true;
-
+  private subs = new Subscription();
   constructor(
     private fb: FormBuilder,
     private masterSvc: MasterService,
@@ -74,6 +81,9 @@ export class CompanyPage {
     private xeroService: XeroService
   ) {
     this.init();
+  }
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   field(field: string) {
@@ -137,25 +147,54 @@ export class CompanyPage {
     this.loading = false;
   }
 
+  connectTenant() {
+    try {
+      this.subs.add(
+        this.xeroService
+          .getConnections(this.company)
+          .subscribe(async (data) => {
+            if (data) {
+              this.company.tokens = {
+                ...this.company.tokens,
+                tenantID: data[0].tenantId,
+                tenantName: data[0].tenantName,
+              };
+              await this.masterSvc
+                .edit()
+                .updateDoc('company', this.company.id, this.company);
+              this.masterSvc
+                .notification()
+                .toast('Tenant connected successfully', 'success');
+            }
+          })
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   refresh() {
     try {
-      this.xeroService
-        .refreshAccessToken(this.company.tokens.refreshToken)
-        .subscribe(async (data: any) => {
-          if (data) {
-            this.company.tokens = {
-              accessToken: data.access_token,
-              refreshToken: data.refresh_token,
-              lastUpdated: new Date(),
-            };
-            await this.masterSvc
-              .edit()
-              .updateDoc('company', this.company.id, this.company);
-            this.masterSvc
-              .notification()
-              .toast('Tokens refreshed successfully', 'success');
-          }
-        });
+      this.subs.add(
+        this.xeroService
+          .refreshAccessToken(this.company.tokens.refreshToken)
+          .subscribe(async (data: any) => {
+            if (data) {
+              this.company.tokens = {
+                ...this.company.tokens,
+                accessToken: data.access_token,
+                refreshToken: data.refresh_token,
+                lastUpdated: new Date(),
+              };
+              await this.masterSvc
+                .edit()
+                .updateDoc('company', this.company.id, this.company);
+              this.masterSvc
+                .notification()
+                .toast('Tokens refreshed successfully', 'success');
+            }
+          })
+      );
     } catch (error) {
       console.error(error);
     }
