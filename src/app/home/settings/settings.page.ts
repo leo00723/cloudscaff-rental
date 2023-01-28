@@ -33,6 +33,7 @@ export class SettingsPage {
     },
     {
       title: 'Terms & Conditions',
+      // eslint-disable-next-line @typescript-eslint/quotes
       description: "Here you add T's & C's for your documents.",
       path: '/dashboard/settings/terms',
     },

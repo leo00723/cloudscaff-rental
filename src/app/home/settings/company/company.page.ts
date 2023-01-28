@@ -14,6 +14,7 @@ import { Company } from 'src/app/models/company.model';
 import { Currencies } from 'src/app/models/currencies.model';
 import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { environment } from 'src/environments/environment';
 import { MasterService } from '../../../services/master.service';
 
 @Component({
@@ -69,16 +70,9 @@ export class CompanyPage {
   constructor(
     private fb: FormBuilder,
     private masterSvc: MasterService,
-    private oauthService: OAuthService,
     private activatedRoute: ActivatedRoute,
     private xeroService: XeroService
   ) {
-    const code = this.activatedRoute.snapshot.queryParamMap.get('code');
-    if (code) {
-      this.xeroService.getAccessToken(code).subscribe((res) => {
-        console.log(res);
-      });
-    }
     this.init();
   }
 
@@ -134,34 +128,59 @@ export class CompanyPage {
         );
     }
   }
-  connect() {
-    const authCodeFlowConfig: AuthConfig = {
-      issuer: 'https://identity.xero.com',
-      loginUrl: 'https://login.xero.com/identity/connect/authorize',
-      redirectUri: 'http://localhost:8100/dashboard/settings/company',
-      tokenEndpoint: 'https://identity.xero.com/connect/token',
-      clientId: '5C93C5512BE849F0BFAB488727B9F29F',
-      responseType: 'code',
-      scope:
-        'offline_access accounting.transactions openid profile email accounting.contacts accounting.settings',
-      showDebugInformation: true,
-      strictDiscoveryDocumentValidation: false,
-      clearHashAfterLogin: true,
-      requestAccessToken: true,
-    };
-    this.oauthService.configure(authCodeFlowConfig);
-    this.oauthService.setStorage(sessionStorage);
-    console.log(this.oauthService);
-    this.oauthService.initCodeFlow();
+  async connect() {
+    this.loading = true;
+    const tokens = await this.xeroService.connect();
+    if (tokens) {
+      console.log(tokens);
+    }
+    this.loading = false;
+  }
+
+  refresh() {
+    try {
+      this.xeroService
+        .refreshAccessToken(this.company.tokens.refreshToken)
+        .subscribe(async (data: any) => {
+          if (data) {
+            this.company.tokens = {
+              accessToken: data.access_token,
+              refreshToken: data.refresh_token,
+              lastUpdated: new Date(),
+            };
+            await this.masterSvc
+              .edit()
+              .updateDoc('company', this.company.id, this.company);
+            this.masterSvc
+              .notification()
+              .toast('Tokens refreshed successfully', 'success');
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
   }
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
-    setTimeout(() => {
+    setTimeout(async () => {
       if (id) {
         Object.assign(
           this.company,
           this.masterSvc.store().selectSnapshot(CompanyState.company)
         );
+        const code = this.activatedRoute.snapshot.queryParamMap.get('code');
+        if (code) {
+          const tokens = await this.xeroService.connect();
+          if (tokens) {
+            this.company.tokens = tokens;
+            await this.masterSvc
+              .edit()
+              .updateDoc('company', this.company.id, this.company);
+            this.masterSvc
+              .notification()
+              .toast('Xero connected successfully', 'success');
+          }
+        }
         this.form = this.fb.group({
           name: [this.company.name, Validators.required],
           email: [this.company.email, [Validators.required, Validators.email]],
