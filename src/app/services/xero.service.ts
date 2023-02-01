@@ -66,15 +66,31 @@ export class XeroService {
             lastUpdated: new Date(),
           };
           await this.editService.updateDoc('company', company.id, company);
+          console.log('tokens updated');
+          this.http
+            .get(
+              'https://api.xero.com/connections',
+              this.authHeader(company.tokens.accessToken)
+            )
+            .pipe(catchError(XeroService.handleError))
+            .subscribe(async (tenants) => {
+              if (tenants) {
+                company.tokens = {
+                  ...company.tokens,
+                  tenantID: tenants[0].tenantId,
+                  tenantName: tenants[0].tenantName,
+                };
+                await this.editService.updateDoc(
+                  'company',
+                  company.id,
+                  company
+                );
+                console.log('tentant updated');
+              }
+            });
         }
       }
     );
-    return this.http
-      .get(
-        'https://api.xero.com/connections',
-        this.authHeader(company.tokens.accessToken)
-      )
-      .pipe(catchError(XeroService.handleError));
   }
 
   refreshAccessToken(refreshToken: string) {

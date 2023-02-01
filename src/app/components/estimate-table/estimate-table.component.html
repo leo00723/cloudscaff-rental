@@ -5,6 +5,17 @@
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
+<ion-item lines="none" mode="ios">
+  <ion-button
+    slot="end"
+    (click)="export()"
+    fill="outline"
+    shape="round"
+    color="success"
+  >
+    Export CSV
+  </ion-button>
+</ion-item>
 
 <ngx-datatable
   class="bootstrap striped rounded-lg"
@@ -64,7 +75,7 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date: "dd MMM yyyy" }}
+      {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -74,7 +85,7 @@
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row.company.currency }} {{ value | number: "0.2-2" }}
+      {{ row.company.currency }} {{ value | number : "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -84,7 +95,7 @@
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row.company.currency }} {{ value | number: "0.2-2" }}
+      {{ row.company.currency }} {{ value | number : "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -94,7 +105,7 @@
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row.company.currency }} {{ value | number: "0.2-2" }}
+      {{ row.company.currency }} {{ value | number : "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column

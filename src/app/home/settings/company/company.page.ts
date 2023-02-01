@@ -149,25 +149,7 @@ export class CompanyPage implements OnDestroy {
 
   connectTenant() {
     try {
-      this.subs.add(
-        this.xeroService
-          .getConnections(this.company)
-          .subscribe(async (data) => {
-            if (data) {
-              this.company.tokens = {
-                ...this.company.tokens,
-                tenantID: data[0].tenantId,
-                tenantName: data[0].tenantName,
-              };
-              await this.masterSvc
-                .edit()
-                .updateDoc('company', this.company.id, this.company);
-              this.masterSvc
-                .notification()
-                .toast('Tenant connected successfully', 'success');
-            }
-          })
-      );
+      this.xeroService.getConnections(this.company);
     } catch (error) {
       console.error(error);
     }

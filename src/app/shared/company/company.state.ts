@@ -3,6 +3,7 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { catchError, tap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { EditService } from 'src/app/services/edit.service';
+import { XeroService } from 'src/app/services/xero.service';
 import { Navigate } from '../router.state';
 import { GetCompany, SetCompany } from './company.actions';
 
@@ -12,7 +13,8 @@ import { GetCompany, SetCompany } from './company.actions';
 })
 @Injectable()
 export class CompanyState {
-  constructor(private editSvc: EditService) {}
+  tokenUpdated = false;
+  constructor(private editSvc: EditService, private xeroService: XeroService) {}
   @Action(SetCompany)
   setCompany({ setState }: StateContext<Company>, { payload }: SetCompany) {
     setState(payload);
@@ -25,6 +27,41 @@ export class CompanyState {
         dispatch(new SetCompany(company));
         if (company.needsSetup) {
           dispatch(new Navigate('/dashboard/onboarding'));
+        }
+        if (company.tokens && !this.tokenUpdated) {
+          // this.xeroService
+          //   .refreshAccessToken(company.tokens.refreshToken)
+          //   .subscribe(async (data: any) => {
+          //     if (data) {
+          //       console.log(data);
+          //       // const nc = {
+          //       //   ...company.tokens,
+          //       //   accessToken: data.access_token,
+          //       //   refreshToken: data.refresh_token,
+          //       //   lastUpdated: new Date(),
+          //       // };
+          //       // await this.editSvc.updateDoc('company', company.id, nc);
+          //       // this.tokenUpdated = true;
+          //       console.log('tokens updated');
+          //     }
+          //   });
+          // setInterval(() => {
+          //   this.xeroService
+          //     .refreshAccessToken(company.tokens.refreshToken)
+          //     .subscribe(async (data: any) => {
+          //       if (data) {
+          //         const nc = {
+          //           ...company.tokens,
+          //           accessToken: data.access_token,
+          //           refreshToken: data.refresh_token,
+          //           lastUpdated: new Date(),
+          //         };
+          //         await this.editSvc.updateDoc('company', company.id, nc);
+          //         this.tokenUpdated = true;
+          //         console.log('tokens updated automatically');
+          //       }
+          //     });
+          // }, 1800000);
         }
       }),
       catchError((error) => dispatch(new SetCompany(null)))
