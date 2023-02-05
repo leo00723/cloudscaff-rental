@@ -180,6 +180,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
           this.masterSvc
             .notification()
             .toast('Site deleted successfully!', 'success');
+          this.masterSvc.modal().dismiss();
         })
         .catch((err) => {
           this.loading = false;

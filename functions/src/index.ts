@@ -1,4 +1,3 @@
-/* eslint-disable prefer-arrow/prefer-arrow-functions */
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as logger from 'firebase-functions/logger';
@@ -538,6 +537,7 @@ exports.manageReturn = functions.firestore
 //     }
 //   });
 
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 async function shipItems(
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
   context: functions.EventContext
