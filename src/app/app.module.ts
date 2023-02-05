@@ -56,6 +56,8 @@ import { CompanyState } from './shared/company/company.state';
 import { RouterState } from './shared/router.state';
 import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
+import { OAuthModule } from 'angular-oauth2-oidc';
+import { HttpClientModule } from '@angular/common/http';
 
 let resolvePersistenceEnabled: (enabled: boolean) => void;
 export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -76,15 +78,17 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
         });
       } else {
         const auth = getAuth();
-        if (environment.useEmulators)
+        if (environment.useEmulators) {
           connectAuthEmulator(auth, 'http://localhost:9099');
+        }
         return auth;
       }
     }),
     provideFirestore(() => {
       const firestore = getFirestore();
-      if (environment.useEmulators)
+      if (environment.useEmulators) {
         connectFirestoreEmulator(firestore, 'localhost', 8081);
+      }
       enableMultiTabIndexedDbPersistence(firestore).then(
         () => resolvePersistenceEnabled(true),
         () => enableIndexedDbPersistence(firestore)
@@ -93,14 +97,16 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     }),
     provideFunctions(() => {
       const functions = getFunctions();
-      if (environment.useEmulators)
+      if (environment.useEmulators) {
         connectFunctionsEmulator(functions, 'localhost', 5001);
+      }
       return functions;
     }),
     provideStorage(() => {
       const storage = getStorage();
-      if (environment.useEmulators)
+      if (environment.useEmulators) {
         connectStorageEmulator(storage, 'localhost', 9199);
+      }
       return storage;
     }),
     providePerformance(() => getPerformance()),
@@ -115,10 +121,12 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
     NgxsModule.forRoot([AppState, RouterState, UserState, CompanyState], {
       developmentMode: !environment.production,
     }),
-    NgxsLoggerPluginModule.forRoot({ disabled: environment.production }),
+    NgxsLoggerPluginModule.forRoot({ disabled: !environment.production }),
     NgxsReduxDevtoolsPluginModule.forRoot({
-      disabled: environment.production,
+      disabled: !environment.production,
     }),
+    HttpClientModule,
+    OAuthModule.forRoot(),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

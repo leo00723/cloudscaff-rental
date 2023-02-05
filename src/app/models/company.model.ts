@@ -45,4 +45,11 @@ export interface Company {
   measurement?: UnitData;
   mass?: UnitData;
   needsSetup?: boolean;
+  tokens?: {
+    accessToken?: string;
+    refreshToken?: string;
+    lastUpdated?: any;
+    tenantID?: string;
+    tenantName?: string;
+  };
 }

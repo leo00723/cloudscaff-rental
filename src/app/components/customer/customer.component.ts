@@ -67,6 +67,7 @@ export class CustomerComponent {
       this.loading = true;
       this.customerData.company = this.companyId;
       Object.assign(this.customerData, this.form.value);
+      this.customerData.selected = false;
       this.masterSvc
         .edit()
         .addDocument(
@@ -99,6 +100,8 @@ export class CustomerComponent {
       this.loading = true;
 
       Object.assign(this.customerData, this.form.value);
+      this.customerData.selected = false;
+
       this.masterSvc
         .edit()
         .updateDoc(
