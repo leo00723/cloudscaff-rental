@@ -8,6 +8,7 @@
     <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
     <ion-buttons slot="end">
       <ion-button
+        *ngIf="estimate.status === 'pending'"
         slot="end"
         fill="solid"
         shape="round"
@@ -16,6 +17,20 @@
         color="primary"
       >
         Save
+      </ion-button>
+      <ion-button
+        *ngIf="
+          estimate.status === 'rejected' &&
+          (user.role === 'Owner' || user.role === 'Super-Admin')
+        "
+        slot="end"
+        fill="solid"
+        shape="round"
+        class="text-capitalize"
+        (click)="isEdit ? updateEstimate('pending') : createEstimate()"
+        color="success"
+      >
+        Activate Estimate
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

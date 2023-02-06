@@ -36,7 +36,11 @@ export class EstimatesPage implements OnInit {
   }
 
   async editEstimate(estimate: Estimate) {
-    if (estimate.status === 'pending' || estimate.status === 'revised') {
+    if (
+      estimate.status === 'pending' ||
+      estimate.status === 'revised' ||
+      estimate.status === 'rejected'
+    ) {
       const modal = await this.masterSvc.modal().create({
         component: AddEstimatePage,
         componentProps: {
@@ -150,7 +154,7 @@ export class EstimatesPage implements OnInit {
   }
 
   init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.estimates$ = this.masterSvc
