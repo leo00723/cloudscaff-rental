@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
@@ -78,6 +78,7 @@ export class AddEstimatePage implements OnInit {
   isLoading = true;
   active = 'overview';
   show = '';
+  private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -105,6 +106,11 @@ export class AddEstimatePage implements OnInit {
       this.initFrom();
       this.isLoading = false;
     }
+    this.subs.add(
+      this.form.valueChanges.subscribe(() => {
+        this.findInvalidControls();
+      })
+    );
   }
 
   ionViewDidEnter() {
@@ -890,6 +896,7 @@ export class AddEstimatePage implements OnInit {
       });
       this.additionalForms.push(additional);
     });
+    this.findInvalidControls();
     this.isLoading = false;
   }
 
@@ -949,6 +956,7 @@ export class AddEstimatePage implements OnInit {
     for (const name in controls) {
       if (controls[name].invalid) {
         invalid.push(`${name} is invalid`);
+        controls[name].markAllAsTouched();
       }
     }
     return invalid;
