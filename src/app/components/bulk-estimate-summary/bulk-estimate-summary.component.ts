@@ -14,7 +14,7 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BulkEstimateSummaryComponent {
-  @Input() enquiryId: string = '';
+  @Input() enquiryId = '';
   @Input() bulkEstimate: BulkEstimate;
   @Input() canDownload = false;
   terms$: Observable<Term>;
@@ -29,7 +29,7 @@ export class BulkEstimateSummaryComponent {
     const sharedEstimate = {
       bulkEstimate: this.bulkEstimate,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -51,7 +51,7 @@ export class BulkEstimateSummaryComponent {
     const sharedEstimate = {
       bulkEstimate: this.bulkEstimate,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

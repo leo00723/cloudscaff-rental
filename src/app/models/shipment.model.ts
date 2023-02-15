@@ -14,4 +14,5 @@ export interface Shipment {
   startDate?: any;
   status?: string;
   updatedBy?: string;
+  date?: any;
 }

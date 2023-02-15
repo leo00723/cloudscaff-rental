@@ -27,12 +27,14 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     }
   }
   items: InventoryItem[];
+  itemBackup: InventoryItem[];
   request: Request = { status: 'pending' };
   form: FormGroup;
   user: User;
   company: Company;
   loading = false;
   viewAll = true;
+  searching = false;
   error = false;
   private inventoryItems$: Observable<InventoryItem[]>;
   private subs = new Subscription();
@@ -88,7 +90,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        let request: Request = { ...this.form.value };
+        const request: Request = { ...this.form.value };
         request.items = this.items.filter((item) => item.shipmentQty > 0);
         this.company = this.masterSvc
           .store()
@@ -160,7 +162,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        let shipment: Shipment = { ...this.request };
+        const shipment: Shipment = { ...this.request };
         this.company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
@@ -203,11 +205,44 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     });
   }
 
+  autoSave() {
+    if (this.isEdit) {
+      if (this.request.status === 'pending') {
+        this.autoUpdate();
+      }
+    } else {
+      this.autoCreate();
+    }
+  }
+
+  search(event) {
+    this.searching = true;
+    const val = event.detail.value.toLowerCase() as string;
+    this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+    this.items = this.itemBackup.filter(
+      (item) =>
+        item.code.toLowerCase().includes(val) ||
+        item.name.toLowerCase().includes(val) ||
+        item.category.toLowerCase().includes(val) ||
+        !val
+    );
+    if (!val) {
+      this.searching = false;
+    }
+  }
+
   close() {
     this.masterSvc.modal().dismiss();
   }
   field(field: string) {
     return this.form.get(field) as FormControl;
+  }
+
+  async delete() {
+    await this.masterSvc
+      .edit()
+      .deleteDocById(`company/${this.company.id}/shipments`, this.request.id);
+    this.close();
   }
 
   private initEditForm() {
@@ -222,6 +257,9 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     if (this.request.status === 'pending') {
       this.subs.add(
         this.inventoryItems$.subscribe((items) => {
+          items.forEach((dbItem) => {
+            dbItem.shipmentQty = null;
+          });
           this.request.items.forEach((item) => {
             const inventoryItem = items.find((i) => i.id === item.id);
             if (inventoryItem) {
@@ -245,5 +283,74 @@ export class AddRequestComponent implements OnInit, OnDestroy {
       status: ['pending', Validators.required],
       createdBy: [this.user.id, Validators.required],
     });
+  }
+
+  private async autoUpdate() {
+    this.loading = true;
+    try {
+      this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+      Object.assign(this.request, this.form.value);
+      this.request.items = this.itemBackup.filter(
+        (item) => item.shipmentQty > 0
+      );
+      this.request.status = 'pending';
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/requests`,
+          this.request.id,
+          this.request
+        );
+
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating the request. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
+  }
+
+  private async autoCreate() {
+    this.loading = true;
+    try {
+      this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+      const request: Request = { ...this.form.value };
+      request.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
+      this.company = this.masterSvc
+        .store()
+        .selectSnapshot(CompanyState.company);
+
+      request.code = `REQ${new Date().toLocaleDateString('en', {
+        year: '2-digit',
+      })}${(this.company.totalRequests ? this.company.totalRequests + 1 : 1)
+        .toString()
+        .padStart(6, '0')}`;
+
+      const doc = await this.masterSvc
+        .edit()
+        .addDocument(`company/${this.company.id}/requests`, request);
+
+      this.request.id = doc.id;
+      this.isEdit = true;
+      await this.masterSvc.edit().updateDoc('company', this.company.id, {
+        totalRequests: increment(1),
+      });
+
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong creating request. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
   }
 }

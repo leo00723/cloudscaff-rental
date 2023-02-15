@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Shipment } from 'src/app/models/shipment.model';
@@ -33,9 +33,10 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   company: Company;
   loading = false;
   viewAll = true;
+  searching = false;
   error = false;
-  private subs = new Subscription();
   sites$: Observable<Site[]>;
+  private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -99,6 +100,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
           .toString()
           .padStart(6, '0')}`;
+        shipment.date = new Date();
 
         await this.masterSvc
           .edit()
@@ -135,6 +137,8 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           (item) => item.shipmentQty > 0
         );
         this.shipment.status = status;
+        this.shipment.date = new Date();
+
         await this.masterSvc
           .edit()
           .updateDoc(
@@ -159,20 +163,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  // async delete() {
-  //   await this.masterSvc
-  //     .edit()
-  //     .deleteDocById(`company/${this.company.id}/shipments`, this.shipment.id);
-  //   this.close();
-  // }
-
-  close() {
-    this.masterSvc.modal().dismiss();
-  }
-  field(field: string) {
-    return this.form.get(field) as FormControl;
-  }
-
   changeSite(event) {
     this.field('site').setValue(event[0]);
   }
@@ -187,6 +177,46 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
 
+  search(event) {
+    this.searching = true;
+    const val = event.detail.value.toLowerCase() as string;
+    this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+    this.items = this.itemBackup.filter(
+      (item) =>
+        item.code.toLowerCase().includes(val) ||
+        item.name.toLowerCase().includes(val) ||
+        item.category.toLowerCase().includes(val) ||
+        !val
+    );
+    if (!val) {
+      this.searching = false;
+    }
+  }
+
+  close() {
+    this.masterSvc.modal().dismiss();
+  }
+  field(field: string) {
+    return this.form.get(field) as FormControl;
+  }
+
+  async delete() {
+    await this.masterSvc
+      .edit()
+      .deleteDocById(`company/${this.company.id}/shipments`, this.shipment.id);
+    this.close();
+  }
+
+  async downloadPdf() {
+    if (!this.shipment.date) {
+      this.shipment.date = new Date();
+    }
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateShipment(this.shipment, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
+  }
+
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.shipment.site, Validators.required],
@@ -199,6 +229,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     if (this.shipment.status === 'pending') {
       this.subs.add(
         this.inventoryItems$.subscribe((items) => {
+          items.forEach((dbItem) => {
+            dbItem.shipmentQty = null;
+          });
           this.shipment.items.forEach((item) => {
             const inventoryItem = items.find((i) => i.id === item.id);
             if (inventoryItem) {
@@ -211,18 +244,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     } else {
       this.items = this.shipment.items;
     }
-  }
-
-  search(event) {
-    const val = event.detail.value.toLowerCase() as string;
-    this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
-    this.items = this.itemBackup.filter(
-      (item) =>
-        item.code.toLowerCase().includes(val) ||
-        item.name.toLowerCase().includes(val) ||
-        item.category.toLowerCase().includes(val) ||
-        !val
-    );
   }
 
   private initForm() {
