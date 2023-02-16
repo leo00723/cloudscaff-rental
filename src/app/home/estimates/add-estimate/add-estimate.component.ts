@@ -5,7 +5,7 @@ import { IonTextarea } from '@ionic/angular';
 import { Observable, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
-import { Estimate } from 'src/app/models/estimate.model';
+import { Comment, Estimate } from 'src/app/models/estimate.model';
 import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -76,8 +76,10 @@ export class AddEstimatePage implements OnInit {
   form: FormGroup;
   loading = false;
   isLoading = true;
+  addingComment = false;
   active = 'overview';
   show = '';
+  newComment = '';
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
@@ -621,6 +623,44 @@ export class AddEstimatePage implements OnInit {
         'This cannot be undone!'
       );
     });
+  }
+
+  async addComment() {
+    this.addingComment = true;
+    const comment: Comment = {
+      image: this.user.image,
+      message: this.newComment,
+      date: new Date(),
+      name: this.user.name,
+    };
+    const comments = this.estimate.comments ? this.estimate.comments : [];
+    comments.push(comment);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.estimate.company.id}/estimates`,
+          this.estimate.id,
+          {
+            comments,
+          }
+        );
+      this.masterSvc
+        .notification()
+        .toast('Comment added successfully!', 'success');
+      this.newComment = '';
+      this.addingComment = false;
+    } catch (error) {
+      console.error(error);
+      this.addingComment = false;
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong adding comment, try again!',
+          'danger',
+          2000
+        );
+    }
   }
 
   //start the acceptance process

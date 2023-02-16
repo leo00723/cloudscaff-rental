@@ -34,7 +34,7 @@ export class InputTextComponent implements OnInit {
 
   @Input() set value(val: number | string) {
     this.value1 = val;
-    if (this.form && val) {
+    if (this.form) {
       this.form.get('field').setValue(val);
     }
   }

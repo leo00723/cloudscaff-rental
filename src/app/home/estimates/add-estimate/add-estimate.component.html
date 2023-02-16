@@ -63,9 +63,9 @@
       <ion-segment-button value="summary">
         <ion-label>Summary</ion-label>
       </ion-segment-button>
-      <!-- <ion-segment-button value="comments" *ngIf="isEdit">
+      <ion-segment-button value="comments" *ngIf="isEdit">
         <ion-label>Comments</ion-label>
-      </ion-segment-button> -->
+      </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 </ion-header>
@@ -1588,20 +1588,26 @@
         </ion-row>
       </ion-grid>
 
-      <!-- <ion-grid *ngSwitchCase="'comments'" fixed="true">
-        <ion-row>
-          <ion-progress-bar
-            type="indeterminate"
-            *ngIf="loading"
-          ></ion-progress-bar>
-          <ion-col size="12" *ngIf="isEdit">
-            <app-input-text title="Comment" [textarea]="true"></app-input-text>
+      <ion-grid *ngSwitchCase="'comments'">
+        <ion-row *ngIf="isEdit">
+          <ion-col size="12">
+            <ion-progress-bar
+              type="indeterminate"
+              *ngIf="addingComment"
+            ></ion-progress-bar>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              [value]="newComment"
+              [textarea]="true"
+              (fieldChange)="newComment = $event"
+            ></app-input-text>
             <ion-button
               size="block"
               shape="round"
-              color="danger"
-              [disabled]="form.invalid"
-              (click)="updateEstimate('rejected')"
+              color="success"
+              (click)="addComment()"
+              *ngIf="!addingComment"
               >Add Comment</ion-button
             >
           </ion-col>
@@ -1609,20 +1615,43 @@
           <ion-col size="12">
             <ion-list>
               <ion-list-header>
-                <ion-text><h3>Comments</h3></ion-text>
+                <ion-text
+                  ><h3>
+                    {{ estimate.comments ? estimate.comments.length : 0 }}
+                    Comments
+                  </h3></ion-text
+                >
               </ion-list-header>
-              <ion-row *ngFor="let item of [].constructor(100)">
-                <ion-col size="2"> @ </ion-col>
-                <ion-col size="8">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Blanditiis officia doloribus sapiente incidunt porro ipsa,
-                  necessitatibus inventore pariatur vero nobis.
+              <ion-row *ngIf="estimate.comments">
+                <ion-col
+                  size="12"
+                  *ngFor="let item of estimate.comments.reverse()"
+                >
+                  <div class="card p-3 gap">
+                    <div class="d-flex mb-2">
+                      <ion-avatar> <img [src]="item.image" /> </ion-avatar>
+                      <div class="my-auto ps-2">
+                        <ion-text class="h6">{{ item.name }} </ion-text><br />
+                        <ion-text color="medium">
+                          {{
+                            (item.date.toDate ? item.date.toDate() : item.date)
+                              | date : "dd MMM yyyy HH:mm"
+                          }}
+                        </ion-text>
+                      </div>
+                    </div>
+                    <div>
+                      <ion-text color="medium">
+                        {{ item.message }}
+                      </ion-text>
+                    </div>
+                  </div>
                 </ion-col>
               </ion-row>
             </ion-list>
           </ion-col>
         </ion-row>
-      </ion-grid> -->
+      </ion-grid>
     </form>
   </div>
 </ion-content>

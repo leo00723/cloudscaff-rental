@@ -8,6 +8,12 @@ import { LabourBroker } from './labour-broker.model';
 import { LabourItem } from './labourItem.model';
 import { Transport, TransportItem } from './transport.model';
 
+export interface Comment {
+  name: string;
+  date: any;
+  message: string;
+  image: string;
+}
 export interface Estimate {
   additionals: AdditionalItem[];
   attachments: Item[];
@@ -50,4 +56,5 @@ export interface Estimate {
   revision?: number;
   type?: string;
   addedToPA?: boolean;
+  comments?: Comment[];
 }

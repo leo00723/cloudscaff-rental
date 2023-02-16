@@ -21,7 +21,7 @@
   class="bootstrap striped rounded-lg"
   [limit]="7"
   [rows]="temp$ | async"
-  [rowHeight]="50"
+  [rowHeight]="'auto'"
   [columnMode]="'force'"
   [sortType]="sortType.multi"
   [headerHeight]="50"
@@ -32,18 +32,19 @@
   (select)="onSelect($event)"
   [selected]="selected"
 >
-  <ngx-datatable-column
-    name="Code"
-    [checkboxable]="false"
-  ></ngx-datatable-column>
+  <ngx-datatable-column name="Code" cellClass="my-auto"></ngx-datatable-column>
   <ngx-datatable-column
     name="Customer"
     prop="customer.name"
+    cellClass="my-auto"
   ></ngx-datatable-column>
-  <ngx-datatable-column name="Site Name"></ngx-datatable-column>
+  <ngx-datatable-column
+    name="Site Name"
+    cellClass="my-auto"
+  ></ngx-datatable-column>
   <ngx-datatable-column
     name="Scaffold Code"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
@@ -71,7 +72,7 @@
   <ngx-datatable-column
     name="Date Created"
     prop="date"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
@@ -81,7 +82,7 @@
   <ngx-datatable-column
     name="Total Amount"
     prop="total"
-    cellClass="text-end"
+    cellClass="text-end my-auto"
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
@@ -91,7 +92,7 @@
   <ngx-datatable-column
     name="Total Spend"
     prop="budget.cost"
-    cellClass="text-end"
+    cellClass="text-end my-auto"
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
@@ -101,7 +102,7 @@
   <ngx-datatable-column
     name="Total Profit"
     prop="budget.profit"
-    cellClass="text-end"
+    cellClass="text-end my-auto"
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
@@ -110,11 +111,25 @@
   </ngx-datatable-column>
   <ngx-datatable-column
     name="Status"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-badge [color]="getStatus(value)" mode="ios">{{ value }}</ion-badge>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column name="Comment" cellClass="my-auto">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.comments ? row.comments[row.comments.length - 1].message : "" }}
+      <ng-container *ngIf="row.comments">
+        <br />
+        <br />
+      </ng-container>
+      {{
+        row.comments
+          ? (row.comments[row.comments.length - 1].date.toDate() | date)
+          : ""
+      }}
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>
