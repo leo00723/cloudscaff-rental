@@ -38,6 +38,8 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   loading = false;
   viewAll = true;
   items: InventoryItem[];
+  itemBackup: InventoryItem[];
+  searching = false;
   error = false;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
@@ -75,7 +77,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        let returnItems: Return = { ...this.form.value };
+        const returnItems: Return = { ...this.form.value };
         returnItems.items = this.items.filter((item) => item.shipmentQty > 0);
         this.company = this.masterSvc
           .store()
@@ -165,6 +167,22 @@ export class AddReturnComponent implements OnInit, OnDestroy {
         break;
     }
     this.checkError(item);
+  }
+
+  search(event) {
+    this.searching = true;
+    const val = event.detail.value.toLowerCase() as string;
+    this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+    this.items = this.itemBackup.filter(
+      (item) =>
+        item.code.toLowerCase().includes(val) ||
+        item.name.toLowerCase().includes(val) ||
+        item.category.toLowerCase().includes(val) ||
+        !val
+    );
+    if (!val) {
+      this.searching = false;
+    }
   }
 
   checkError(item: InventoryItem) {

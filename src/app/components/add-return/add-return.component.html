@@ -48,10 +48,19 @@
       >
         <ion-text color="medium"> <h6>Show all Items</h6> </ion-text>
         <ion-toggle
-          [checked]="viewAll"
+          [checked]="viewAll === true || searching === true ? true : false"
           (ionChange)="viewAll = !viewAll"
         ></ion-toggle>
       </ion-col>
+      <ion-col size="12">
+        <ion-searchbar
+          debounce="250"
+          mode="ios"
+          placeholder="Search by code, category or name"
+          (ionChange)="search($event)"
+        >
+        </ion-searchbar
+      ></ion-col>
       <ion-col size="12">
         <table class="table table-sm table-bordered">
           <thead>
@@ -154,7 +163,10 @@
                 </td>
               </tr>
               <ng-template #viewShipment>
-                <tr class="align-middle" *ngIf="item.shipmentQty > 0">
+                <tr
+                  class="align-middle"
+                  *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
+                >
                   <th scope="row">{{ item.code }}</th>
                   <td>{{ item.category }}</td>
                   <td>{{ item.name }}</td>

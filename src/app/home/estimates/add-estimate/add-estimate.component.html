@@ -63,6 +63,9 @@
       <ion-segment-button value="summary">
         <ion-label>Summary</ion-label>
       </ion-segment-button>
+      <!-- <ion-segment-button value="comments" *ngIf="isEdit">
+        <ion-label>Comments</ion-label>
+      </ion-segment-button> -->
     </ion-segment>
   </ion-toolbar>
 </ion-header>
@@ -1584,6 +1587,42 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+
+      <!-- <ion-grid *ngSwitchCase="'comments'" fixed="true">
+        <ion-row>
+          <ion-progress-bar
+            type="indeterminate"
+            *ngIf="loading"
+          ></ion-progress-bar>
+          <ion-col size="12" *ngIf="isEdit">
+            <app-input-text title="Comment" [textarea]="true"></app-input-text>
+            <ion-button
+              size="block"
+              shape="round"
+              color="danger"
+              [disabled]="form.invalid"
+              (click)="updateEstimate('rejected')"
+              >Add Comment</ion-button
+            >
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-list>
+              <ion-list-header>
+                <ion-text><h3>Comments</h3></ion-text>
+              </ion-list-header>
+              <ion-row *ngFor="let item of [].constructor(100)">
+                <ion-col size="2"> @ </ion-col>
+                <ion-col size="8">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Blanditiis officia doloribus sapiente incidunt porro ipsa,
+                  necessitatibus inventore pariatur vero nobis.
+                </ion-col>
+              </ion-row>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid> -->
     </form>
   </div>
 </ion-content>
