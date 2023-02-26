@@ -83,6 +83,7 @@
       <div *ngSwitchCase="'inventory'">
         <app-site-inventory-table
           [value]="items.items"
+          (download)="downloadPDF($event, site)"
           *ngIf="inventoryItems$ | async as items else empty"
         ></app-site-inventory-table>
         <ng-template #empty>

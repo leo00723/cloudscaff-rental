@@ -11,6 +11,7 @@ import { ShipmentInvoiceSummaryComponent } from 'src/app/components/shipment-inv
 import { ViewShipmentInvoiceComponent } from 'src/app/components/view-shipment-invoice/view-shipment-invoice.component';
 import { Estimate } from 'src/app/models/estimate.model';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
+import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
@@ -18,6 +19,7 @@ import { Scaffold } from 'src/app/models/scaffold.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
@@ -282,5 +284,15 @@ export class ViewSitePage implements OnInit {
 
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
+  }
+
+  async downloadPDF(items: InventoryItem[], site: Site) {
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateInventoryList(site, items, company);
+    this.masterSvc
+      .pdf()
+      .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
   }
 }

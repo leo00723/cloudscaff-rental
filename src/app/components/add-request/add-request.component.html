@@ -103,7 +103,7 @@
             <thead>
               <tr>
                 <th scope="col">Code</th>
-                <th scope="col">Category</th>
+                <!-- <th scope="col">Category</th> -->
                 <th scope="col">Name</th>
                 <th scope="col" class="text-center">Available Qty</th>
                 <th scope="col" class="text-center">Request Qty</th>
@@ -113,7 +113,7 @@
               <ng-container *ngFor="let item of items; let i = index">
                 <tr class="align-middle" *ngIf="viewAll; else viewShipment">
                   <th scope="row">{{ item.code }}</th>
-                  <td>{{ item.category }}</td>
+                  <!-- <td>{{ item.category }}</td> -->
                   <td>{{ item.name }}</td>
                   <td class="text-center">
                     {{ item | calculate }}

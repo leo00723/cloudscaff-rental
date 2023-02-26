@@ -1,7 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
+  Output,
   ViewChild,
 } from '@angular/core';
 import { DatatableComponent, SortType } from '@swimlane/ngx-datatable';
@@ -13,6 +15,7 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SiteInventoryTableComponent {
+  @Output() download = new EventEmitter<InventoryItem[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;
   inventoryItems: InventoryItem[] = [];
   temp: InventoryItem[] = [];
@@ -26,15 +29,18 @@ export class SiteInventoryTableComponent {
   }
 
   updateFilter(event) {
-    const val = event.detail.value.toLowerCase() as string;
-    this.temp = this.inventoryItems.filter(
-      (d) =>
-        d.code.toLowerCase().indexOf(val) !== -1 ||
-        d.category.toLowerCase().indexOf(val) !== -1 ||
-        d.name.toLowerCase().indexOf(val) !== -1 ||
-        d.availableQty.toString().toLowerCase().indexOf(val) !== -1 ||
-        !val
-    );
+    const searchTerm = event.detail.value.toLowerCase();
+
+    if (!searchTerm) {
+      this.temp = this.inventoryItems;
+    } else {
+      this.temp = this.inventoryItems.filter(
+        (item) =>
+          ['code', 'category', 'name'].some((field) =>
+            item[field].toLowerCase().includes(searchTerm)
+          ) || item.availableQty.toString().toLowerCase().includes(searchTerm)
+      );
+    }
 
     this.table.offset = 0;
   }

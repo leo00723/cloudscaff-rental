@@ -1,3 +1,12 @@
+<div class="text-end">
+  <ion-button (click)="download.emit(inventoryItems)" mode="ios" shape="round" fill="outline" size="small" class="">
+    <ion-icon
+      slot="icon-only"
+      name="cloud-download-outline"
+      color="primary"
+    ></ion-icon> &nbsp; Download PDF
+  </ion-button>
+</div>
 <ion-searchbar
   debounce="250"
   mode="ios"
@@ -5,7 +14,6 @@
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
-
 <ngx-datatable
   class="bootstrap striped rounded-lg"
   [limit]="15"
