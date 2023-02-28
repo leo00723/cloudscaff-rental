@@ -2,7 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Company } from 'src/app/models/company.model';
 import { LabourBroker } from 'src/app/models/labour-broker.model';
 import { Labour } from 'src/app/models/labour.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-broker',
@@ -16,8 +18,11 @@ export class BrokerComponent implements OnInit {
   @Input() company: Company;
   @Output() completed = new EventEmitter<boolean>();
   loading = false;
+  user: User;
 
-  constructor(private masterSvc: MasterService) {}
+  constructor(private masterSvc: MasterService) {
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+  }
 
   ngOnInit(): void {
     if (!this.isEdit) {

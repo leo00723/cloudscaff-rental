@@ -2,7 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Address } from 'src/app/models/address.model';
 import { Customer } from 'src/app/models/customer.model';
+import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-customer',
@@ -39,6 +41,7 @@ export class CustomerComponent {
   }
   form: FormGroup;
   loading = false;
+  user: User;
   constructor(private masterSvc: MasterService) {
     this.form = this.masterSvc.fb().group({
       name: ['', Validators.required],
@@ -53,6 +56,7 @@ export class CustomerComponent {
       vatNum: [''],
       country: ['', Validators.required],
     });
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
   }
 
   field(field: string) {

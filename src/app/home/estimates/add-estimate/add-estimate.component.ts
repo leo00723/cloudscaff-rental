@@ -19,6 +19,8 @@ import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.compo
 })
 export class AddEstimatePage implements OnInit {
   @Input() enquiryId = '';
+  @Input() siteName: string;
+  @Input() customer: Customer;
   @Input() set value(val: Estimate) {
     if (val) {
       Object.assign(this.estimate, val);
@@ -456,7 +458,7 @@ export class AddEstimatePage implements OnInit {
         this.loading = true;
         this.updateEstimateTotal();
         this.estimate.enquiryId = this.enquiryId;
-        await this.masterSvc
+        const estimate = await this.masterSvc
           .edit()
           .addDocument(
             `company/${this.estimate.company.id}/estimates`,
@@ -465,13 +467,18 @@ export class AddEstimatePage implements OnInit {
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalEstimates: increment(1),
         });
+        this.estimate.id = estimate.id;
         if (this.estimate.enquiryId.length > 0) {
           await this.masterSvc
             .edit()
             .updateDoc(
               `company/${this.estimate.company.id}/enquiries`,
               this.estimate.enquiryId,
-              { status: 'estimate created' }
+              {
+                status: 'estimate created',
+                estimate: this.estimate,
+                type: 'standard',
+              }
             );
         }
         this.masterSvc
@@ -509,13 +516,18 @@ export class AddEstimatePage implements OnInit {
             this.estimate
           )
           .then(async () => {
-            if (status === 'rejected' && this.estimate.enquiryId.length > 0) {
+            if (this.estimate.enquiryId.length > 0) {
               await this.masterSvc
                 .edit()
                 .updateDoc(
                   `company/${this.estimate.company.id}/enquiries`,
                   this.estimate.enquiryId,
-                  { status: 'rejected' }
+                  {
+                    status:
+                      status === 'rejected' ? 'rejected' : 'estimate created',
+                    estimate: this.estimate,
+                    type: 'standard',
+                  }
                 );
             }
             this.masterSvc
@@ -561,13 +573,26 @@ export class AddEstimatePage implements OnInit {
           this.estimate.revision = 1;
         }
         this.estimate.id = '';
-        await this.masterSvc
+        const revision = await this.masterSvc
           .edit()
           .addDocument(
             `company/${this.estimate.company.id}/estimates`,
             this.estimate
           );
-
+        this.estimate.id = revision.id;
+        if (this.estimate.enquiryId.length > 0) {
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.estimate.company.id}/enquiries`,
+              this.estimate.enquiryId,
+              {
+                status: 'revision created',
+                estimate: this.estimate,
+                type: 'standard',
+              }
+            );
+        }
         this.masterSvc
           .notification()
           .toast('Revision created successfully!', 'success');
@@ -628,7 +653,7 @@ export class AddEstimatePage implements OnInit {
   async addComment() {
     this.addingComment = true;
     const comment: Comment = {
-      image: this.user.image,
+      image: this.user.image ? this.user.image : 'assets/icons/user.svg',
       message: this.newComment,
       date: new Date(),
       name: this.user.name,
@@ -645,6 +670,20 @@ export class AddEstimatePage implements OnInit {
             comments,
           }
         );
+      this.estimate.comments = comments;
+      if (this.estimate.enquiryId.length > 0) {
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.estimate.company.id}/enquiries`,
+            this.estimate.enquiryId,
+            {
+              status: 'estimate created',
+              estimate: this.estimate,
+              type: 'standard',
+            }
+          );
+      }
       this.masterSvc
         .notification()
         .toast('Comment added successfully!', 'success');
@@ -765,6 +804,58 @@ export class AddEstimatePage implements OnInit {
   }
   // START: Functions to initialise the form
   private initEditForm() {
+    const scaffoldFormGroup = this.masterSvc.fb().group({
+      type: [this.estimate.scaffold.type || '', Validators.nullValidator],
+      description: [
+        this.estimate.scaffold.description,
+        Validators.nullValidator,
+      ],
+      rate: [this.estimate.scaffold.rate, Validators.required],
+      length: [
+        this.estimate.scaffold.length,
+        [Validators.required, Validators.min(1)],
+      ],
+      width: [
+        this.estimate.scaffold.width,
+        [Validators.required, Validators.min(1)],
+      ],
+      height: [
+        this.estimate.scaffold.height,
+        [Validators.required, Validators.min(1)],
+      ],
+      lifts: [this.estimate.scaffold.lifts, Validators.nullValidator],
+      boardedLifts: [
+        this.estimate.scaffold.boardedLifts,
+        Validators.nullValidator,
+      ],
+      extraHirePercentage: [
+        this.estimate.scaffold.extraHirePercentage,
+        Validators.nullValidator,
+      ],
+      extraHire: [this.estimate.scaffold.extraHire, Validators.nullValidator],
+      level: [0],
+      total: [this.estimate.scaffold.total],
+      hireRate: [this.estimate.scaffold.hireRate || ''],
+      daysStanding: [this.estimate.scaffold.daysStanding || ''],
+      hireTotal: [this.estimate.scaffold.hireTotal || 0],
+      isWeeks: [this.estimate.scaffold.isWeeks || '', Validators.nullValidator],
+    });
+
+    const hireFormGroup = this.masterSvc.fb().group({
+      rate: [this.estimate.hire.rate],
+      daysStanding: [this.estimate.hire.daysStanding],
+      total: [this.estimate.hire.total],
+      isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
+    });
+
+    const formArray = {
+      boards: this.masterSvc.fb().array([]),
+      additionals: this.masterSvc.fb().array([]),
+      attachments: this.masterSvc.fb().array([]),
+      labour: this.masterSvc.fb().array([]),
+      transport: this.masterSvc.fb().array([]),
+    };
+
     this.form = this.masterSvc.fb().group({
       customer: [this.estimate.customer, Validators.required],
       message: [this.estimate.message],
@@ -775,83 +866,19 @@ export class AddEstimatePage implements OnInit {
         this.estimate.discountPercentage,
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
-      scaffold: this.masterSvc.fb().group({
-        type: [
-          this.estimate.scaffold.type ? this.estimate.scaffold.type : '',
-          Validators.nullValidator,
-        ],
-        description: [
-          this.estimate.scaffold.description,
-          Validators.nullValidator,
-        ],
-        rate: [this.estimate.scaffold.rate, Validators.required],
-        length: [
-          this.estimate.scaffold.length,
-          [Validators.required, Validators.min(1)],
-        ],
-        width: [
-          this.estimate.scaffold.width,
-          [Validators.required, Validators.min(1)],
-        ],
-        height: [
-          this.estimate.scaffold.height,
-          [Validators.required, Validators.min(1)],
-        ],
-        lifts: [this.estimate.scaffold.lifts, [Validators.nullValidator]],
-        boardedLifts: [
-          this.estimate.scaffold.boardedLifts,
-          [Validators.nullValidator],
-        ],
-        extraHirePercentage: [
-          this.estimate.scaffold.extraHirePercentage,
-          [Validators.nullValidator],
-        ],
-        extraHire: [
-          this.estimate.scaffold.extraHire,
-          [Validators.nullValidator],
-        ],
-        level: [0],
-        total: [this.estimate.scaffold.total],
-        hireRate: [
-          this.estimate.scaffold.hireRate
-            ? this.estimate.scaffold.hireRate
-            : '',
-        ],
-        daysStanding: [
-          this.estimate.scaffold.daysStanding
-            ? this.estimate.scaffold.daysStanding
-            : '',
-        ],
-        hireTotal: [
-          this.estimate.scaffold.hireTotal
-            ? this.estimate.scaffold.hireTotal
-            : 0,
-        ],
-        isWeeks: [
-          this.estimate.scaffold.isWeeks ? this.estimate.scaffold.isWeeks : '',
-          Validators.nullValidator,
-        ],
-      }),
-      boards: this.masterSvc.fb().array([]),
-      hire: this.masterSvc.fb().group({
-        rate: [this.estimate.hire.rate],
-        daysStanding: [this.estimate.hire.daysStanding],
-        total: [this.estimate.hire.total],
-        isWeeks: [this.estimate.hire.isWeeks, Validators.nullValidator],
-      }),
-      additionals: this.masterSvc.fb().array([]),
-      attachments: this.masterSvc.fb().array([]),
+      scaffold: scaffoldFormGroup,
+      hire: hireFormGroup,
       broker: [this.estimate.broker],
       transportProfile: [
-        this.estimate.transportProfile ? this.estimate.transportProfile : '',
+        this.estimate.transportProfile || '',
         Validators.nullValidator,
       ],
-      labour: this.masterSvc.fb().array([]),
-      transport: this.masterSvc.fb().array([]),
       poNumber: [this.estimate.poNumber],
       woNumber: [this.estimate.woNumber],
       code: [this.estimate.code],
+      ...formArray,
     });
+
     this.estimate.attachments.forEach((a) => {
       const attachment = this.masterSvc.fb().group({
         type: [a.type ? a.type : '', Validators.nullValidator],
@@ -941,14 +968,17 @@ export class AddEstimatePage implements OnInit {
   }
 
   private initFrom() {
+    if (this.customer) {
+      this.show = 'editCustomer';
+    }
     this.form = this.masterSvc.fb().group({
-      customer: ['', Validators.required],
+      customer: [this.customer || '', Validators.required],
       message: [
         // eslint-disable-next-line max-len
         'We thank you for your scaffolding enquiry as per the Scope of Work detailed below. We attach herewith our estimate for your perusal.',
         Validators.required,
       ],
-      siteName: ['', Validators.required],
+      siteName: [this.siteName || '', Validators.required],
       startDate: ['', Validators.nullValidator],
       endDate: ['', Validators.nullValidator],
       discountPercentage: [

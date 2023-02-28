@@ -83,7 +83,7 @@
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
     <ion-col size="12" class="text-end">
       <ion-button
-        *ngIf="!loading && isDelete"
+        *ngIf="!loading && (user.role === 'Owner' || user.role === 'Super-Admin') && isDelete"
         shape="round"
         color="danger"
         type="submit"

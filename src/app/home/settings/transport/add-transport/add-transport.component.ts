@@ -63,7 +63,7 @@ export class AddTransportComponent implements OnInit {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        let transport: Transport = { ...this.form.value };
+        const transport: Transport = { ...this.form.value };
 
         await this.masterSvc
           .edit()
@@ -146,13 +146,13 @@ export class AddTransportComponent implements OnInit {
     this.form = this.masterSvc.fb().group({
       name: [this.transport.name, Validators.required],
       types: this.masterSvc.fb().array(
-        this.transport.types.map((type) => {
-          return this.masterSvc.fb().group({
+        this.transport.types.map((type) =>
+          this.masterSvc.fb().group({
             name: [type.name, Validators.required],
             rate: [type.rate, [Validators.required, Validators.min(1)]],
             maxLoad: [type.maxLoad, [Validators.required, Validators.min(1)]],
-          });
-        })
+          })
+        )
       ),
     });
   }

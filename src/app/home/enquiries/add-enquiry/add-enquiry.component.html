@@ -210,6 +210,9 @@
             <ion-button shape="round" *ngIf="isEdit" (click)="updateEnquiry()"
               >Update Enquiry</ion-button
             >
+            <ion-button color="success" shape="round" *ngIf="isEdit && enquiry.estimate" (click)="viewEstimate()"
+              >View Estimate</ion-button
+            >
             <ion-button
               color="success"
               shape="round"
@@ -244,6 +247,7 @@
         </ion-row>
       </ion-grid>
     </form>
+
   </div>
   <div class="container" *ngIf="importing">
     <div class="row vh-75">

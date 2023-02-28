@@ -1,5 +1,6 @@
 import { Company } from './company.model';
 import { Customer } from './customer.model';
+import { Estimate } from './estimate.model';
 import { UploadedFile } from './uploadedFile.model';
 
 export interface Enquiry {
@@ -14,8 +15,7 @@ export interface Enquiry {
   siteName: string;
   recievedDate: string;
   status: string;
-  estimateId: string;
-  estimateCode: string;
+  estimate?: Estimate;
   address: string;
   city: string;
   suburb: string;
@@ -27,4 +27,5 @@ export interface Enquiry {
   rejectedBy: string;
   upload?: UploadedFile;
   probability?: string;
+  type?: string;
 }

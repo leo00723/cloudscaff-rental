@@ -156,7 +156,7 @@
     <ion-col size="12" class="text-end">
       <ion-button
         *ngIf="
-          !loading && (user.role === 'Owner' || user.role === 'Super-Admin')
+          !loading && (user.role === 'Owner' || user.role === 'Super-Admin') && isUpdate
         "
         shape="round"
         color="danger"

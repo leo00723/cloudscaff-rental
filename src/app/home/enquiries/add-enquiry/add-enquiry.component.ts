@@ -46,8 +46,6 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     siteName: '',
     recievedDate: undefined,
     status: 'pending',
-    estimateId: '',
-    estimateCode: '',
     address: '',
     city: '',
     suburb: '',
@@ -59,6 +57,7 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
     rejectedBy: '',
     upload: null,
     probability: '',
+    type: '',
   };
   isLoading = true;
   importing = false;
@@ -310,6 +309,8 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
       component: AddEstimatePage,
       componentProps: {
         enquiryId: this.enquiry.id,
+        siteName: this.enquiry.siteName,
+        customer: this.enquiry.customer,
       },
       cssClass: 'fullscreen',
       showBackdrop: false,
@@ -341,6 +342,20 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'addInventoryEstimate',
+    });
+    return await modal.present();
+  }
+
+  async viewEstimate() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddEstimatePage,
+      componentProps: {
+        value: this.enquiry.estimate,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'editEstimate',
+      cssClass: 'fullscreen',
     });
     return await modal.present();
   }

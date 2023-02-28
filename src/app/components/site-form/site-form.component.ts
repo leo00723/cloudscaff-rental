@@ -46,6 +46,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
   };
   @Output() newSite = new EventEmitter<Site>();
   @Output() oldSite = new EventEmitter<Site>();
+  @Output() closeModal = new EventEmitter<any>();
   @Input() isUpdate = false;
   @Input() isDelete = false;
   @Input() isCreate = true;
@@ -126,6 +127,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
             .notification()
             .toast('Site added successfully!', 'success');
           this.newSite.emit({ ...this.site, id: data.id });
+          this.closeModal.emit();
         })
         .catch(() => {
           this.loading = false;

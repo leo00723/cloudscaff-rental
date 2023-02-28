@@ -10,7 +10,7 @@
   class="bootstrap striped rounded-lg"
   [limit]="9"
   [rows]="temp$ | async"
-  [rowHeight]="50"
+  [rowHeight]="'auto'"
   [columnMode]="'force'"
   [sortType]="sortType.multi"
   [headerHeight]="50"
@@ -67,6 +67,18 @@
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-badge [color]="getStatus(value)" mode="ios">{{ value }}</ion-badge>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column name="Comment" cellClass="my-auto">
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ng-container *ngIf="row.estimate && row.estimate.comments">
+      {{ row.estimate.comments[row.estimate.comments.length - 1].message }}
+        <br />
+        <br />
+        {{
+          (row.estimate.comments[row.estimate.comments.length - 1].date.toDate() | date)
+        }}
+      </ng-container>
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>

@@ -12,7 +12,7 @@ import { AddBrokerComponent } from './add-broker/add-broker.component';
   selector: 'app-labour',
   templateUrl: './labour.page.html',
 })
-export class LabourPage {
+export class LabourPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   brokers$: Observable<LabourBroker[] | any>;
