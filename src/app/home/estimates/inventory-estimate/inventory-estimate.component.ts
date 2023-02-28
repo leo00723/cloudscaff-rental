@@ -58,6 +58,7 @@ export class InventoryEstimateComponent implements OnInit {
     rejectedBy: '',
     budget: {},
     enquiryId: '',
+    type: '',
   };
   user: User;
   company: Company;
@@ -207,6 +208,7 @@ export class InventoryEstimateComponent implements OnInit {
         this.loading = true;
         this.updateEstimateTotal();
         this.inventoryEstimate.enquiryId = this.enquiryId;
+        this.inventoryEstimate.type = 'inventory-measured';
         await this.masterSvc
           .edit()
           .addDocument(
@@ -244,6 +246,7 @@ export class InventoryEstimateComponent implements OnInit {
 
   //update the estimate
   updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
+    this.inventoryEstimate.type = 'inventory-measured';
     if (status === 'accepted') {
       this.startAcceptance();
     } else {

@@ -32,4 +32,5 @@ export interface BulkInventoryEstimate {
   budget?: Budget;
   acceptedTerms?: boolean;
   enquiryId: string;
+  type?: string;
 }

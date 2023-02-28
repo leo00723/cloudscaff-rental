@@ -61,8 +61,22 @@ export class SitesPage implements OnInit {
     //   .edit()
     //   .getCollectionGroup('estimates')
     //   .subscribe(async (es: Estimate[]) => {
+    //     let counter = 0;
     //     for (const e of es) {
-    //       console.log(e.company.name, e.type);
+    //       console.log(counter, e.id, e.type);
+    //       if (!e.type) {
+    //         counter++;
+    //         try {
+    //           await this.masterSvc
+    //             .edit()
+    //             .updateDoc(`company/${e.company.id}/estimates`, e.id, {
+    //               type: 'measured',
+    //             });
+    //           console.log(counter, e.id, 'updated');
+    //         } catch (error) {
+    //           console.error(error);
+    //         }
+    //       }
     //     }
     //   });
   }

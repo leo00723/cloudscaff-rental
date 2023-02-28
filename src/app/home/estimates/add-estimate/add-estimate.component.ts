@@ -458,6 +458,7 @@ export class AddEstimatePage implements OnInit {
         this.loading = true;
         this.updateEstimateTotal();
         this.estimate.enquiryId = this.enquiryId;
+        this.estimate.type = 'measured';
         const estimate = await this.masterSvc
           .edit()
           .addDocument(
@@ -501,6 +502,7 @@ export class AddEstimatePage implements OnInit {
 
   //update the estimate
   updateEstimate(status: 'pending' | 'accepted' | 'rejected' | 'revised') {
+    this.estimate.type = 'measured';
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
@@ -573,6 +575,7 @@ export class AddEstimatePage implements OnInit {
           this.estimate.revision = 1;
         }
         this.estimate.id = '';
+        this.estimate.type = 'measured';
         const revision = await this.masterSvc
           .edit()
           .addDocument(

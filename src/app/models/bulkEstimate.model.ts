@@ -33,4 +33,5 @@ export interface BulkEstimate {
   acceptedTerms?: boolean;
   enquiryId: string;
   revision?: number;
+  type?: string;
 }

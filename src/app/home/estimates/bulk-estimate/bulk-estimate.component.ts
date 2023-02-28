@@ -56,6 +56,7 @@ export class BulkEstimateComponent implements OnInit {
     rejectedBy: '',
     budget: {},
     enquiryId: '',
+    type: '',
   };
   user: User;
   company: Company;
@@ -231,6 +232,7 @@ export class BulkEstimateComponent implements OnInit {
         this.loading = true;
         this.updateEstimateTotal();
         this.bulkEstimate.enquiryId = this.enquiryId;
+        this.bulkEstimate.type = 'bulk-measured';
         await this.masterSvc
           .edit()
           .addDocument(
@@ -268,6 +270,7 @@ export class BulkEstimateComponent implements OnInit {
 
   //update the estimate
   updateEstimate(status: 'pending' | 'accepted' | 'rejected' | 'revised') {
+    this.bulkEstimate.type = 'bulk-measured';
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
@@ -340,6 +343,7 @@ export class BulkEstimateComponent implements OnInit {
           this.bulkEstimate.revision = 1;
         }
         this.bulkEstimate.id = '';
+        this.bulkEstimate.type = 'bulk-measured';
         await this.masterSvc
           .edit()
           .addDocument(
