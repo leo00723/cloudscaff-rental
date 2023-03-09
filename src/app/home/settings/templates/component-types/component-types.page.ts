@@ -82,43 +82,37 @@ export class ComponentTypesPage implements OnInit, OnDestroy {
     );
   }
 
-  update() {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        const company = this.masterSvc
-          .store()
-          .selectSnapshot(CompanyState.company);
-        const user = this.masterSvc.store().selectSnapshot(UserState.user);
-        const template = {
-          ...this.form.value,
-          date: new Date(),
-          updatedBy: user.id,
-          company: company.id,
-        };
-        await this.masterSvc
-          .edit()
-          .setDoc(
-            `company/${company.id}/templates`,
-            template,
-            'componentTypes'
-          );
+  async update() {
+    this.loading = true;
+    try {
+      const company = this.masterSvc
+        .store()
+        .selectSnapshot(CompanyState.company);
+      const user = this.masterSvc.store().selectSnapshot(UserState.user);
+      const template = {
+        ...this.form.value,
+        date: new Date(),
+        updatedBy: user.id,
+        company: company.id,
+      };
+      await this.masterSvc
+        .edit()
+        .setDoc(`company/${company.id}/templates`, template, 'componentTypes');
 
-        this.masterSvc
-          .notification()
-          .toast('Template updated successfully', 'success');
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating the template. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
-    });
+      this.masterSvc
+        .notification()
+        .toast('Template updated successfully', 'success');
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating the template. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
   }
 
   export() {}
@@ -200,6 +194,11 @@ export class ComponentTypesPage implements OnInit, OnDestroy {
                 this.addCategory();
                 this.addItem(0);
               }
+              this.subs.add(
+                this.form.valueChanges.subscribe(() => {
+                  this.update();
+                })
+              );
             })
         );
       } else {

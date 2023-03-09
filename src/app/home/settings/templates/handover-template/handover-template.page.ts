@@ -77,7 +77,7 @@ export class HandoverTemplatePage implements OnInit, OnDestroy {
     });
   }
   private init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.subs.add(

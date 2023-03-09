@@ -45,6 +45,8 @@ export class AddStockitemComponent implements OnInit {
   user: User;
   loading = false;
   categories$: Observable<any>;
+  removeQty = 0;
+  addQty = 0;
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -150,6 +152,38 @@ export class AddStockitemComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  addYardQty() {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      const total = +this.field('yardQty').value + this.addQty;
+      this.field('yardQty').setValue(total);
+      this.update();
+    }, `Are you sure you want to add ${this.addQty} items?`);
+  }
+
+  removeYardQty() {
+    const yardQty = this.field('yardQty').value;
+    const totalInUse =
+      this.field('inUseQty').value +
+      this.field('inMaintenanceQty').value +
+      this.field('lostQty').value +
+      this.field('damagedQty').value;
+    const availableQty = yardQty - totalInUse;
+    if (availableQty < this.removeQty) {
+      this.masterSvc
+        .notification()
+        .toast(
+          'You cannot remove more items than your Available Quantity',
+          'danger',
+          5000
+        );
+    } else {
+      this.masterSvc.notification().presentAlertConfirm(() => {
+        this.field('yardQty').setValue(yardQty - this.removeQty);
+        this.update();
+      }, `Are you sure you want to remove ${this.removeQty} items?`);
+    }
   }
 
   private initEditForm() {

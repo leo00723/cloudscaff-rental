@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { ModalController, Platform } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { environment } from 'src/environments/environment';

@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea, Platform } from '@ionic/angular';
 import { increment } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AcceptEstimateComponent } from 'src/app/home/estimates/add-estimate/accept-estimate/accept-estimate.component';
 import { Company } from 'src/app/models/company.model';
 import { Credit } from 'src/app/models/credit.model';
@@ -21,7 +21,6 @@ export class AddCreditComponent implements OnInit {
   @Input() set scaffoldValue(val: Scaffold) {
     if (val) {
       Object.assign(this.scaffold, val);
-      this.initFrom();
     }
   }
   @Input() set value(val: Credit) {
@@ -81,7 +80,19 @@ export class AddCreditComponent implements OnInit {
   ngOnInit() {
     this.customers$ = this.masterSvc
       .edit()
-      .getCollection(`company/${this.company.id}/customers`);
+      .getCollection(`company/${this.company.id}/customers`)
+      .pipe(
+        map((customers) => {
+          if (this.scaffold && !this.isEdit) {
+            const customer = customers.find(
+              (cus) => cus.id === this.scaffold.customerId
+            );
+            this.field('customer').setValue(customer);
+            this.show = 'editCustomer';
+          }
+          return customers;
+        })
+      );
 
     if (this.isEdit) {
       this.show = 'editCustomer';
@@ -381,7 +392,7 @@ export class AddCreditComponent implements OnInit {
 
   private initFrom() {
     this.form = this.masterSvc.fb().group({
-      customer: ['', Validators.required],
+      customer: [this.scaffold.customerId, Validators.required],
       message: ['', Validators.required],
       siteCode: [this.scaffold.siteCode, Validators.required],
       siteId: [this.scaffold.siteId, Validators.required],

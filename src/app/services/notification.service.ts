@@ -11,13 +11,18 @@ export class NotificationService {
     private alertController: AlertController
   ) {}
 
-  async toast(header: string, color: string, duration?: number) {
+  async toast(
+    header: string,
+    color: string,
+    duration?: number,
+    position?: 'top' | 'bottom' | 'middle'
+  ) {
     const toast = await this.toastController.create({
       header,
       icon: 'notifications-outline',
       mode: 'ios',
       color,
-      position: 'bottom',
+      position: position || 'bottom',
       duration: duration ? duration : 1000,
     });
     return await toast.present();

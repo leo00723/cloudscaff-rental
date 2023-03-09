@@ -9,7 +9,12 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ !isEdit ? "Add Return" : "Edit Return" }} </ion-title>
+    <ion-title
+      >{{ !isEdit ? "Add Return" : "Edit Return" }}
+      <ion-text *ngIf="loading">
+        <i class="text-muted fs-6">(Saving...)</i>
+      </ion-text>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -104,6 +109,7 @@
                     [value]="item.shipmentQty"
                     (ionChange)="update($event, item, 'shipment')"
                     [readonly]="return.status !== 'pending' || allowSend"
+                    (ionBlur)="autoSave()"
                   >
                   </ion-input>
                   <ion-label
@@ -184,6 +190,7 @@
                       [clearOnEdit]="true"
                       [value]="item.shipmentQty"
                       (ionChange)="update($event, item, 'shipment')"
+                      (ionBlur)="autoSave()"
                     >
                     </ion-input>
                   </td></tr
@@ -207,6 +214,14 @@
           *ngIf="!isEdit && !loading"
           (click)="createReturn()"
           >Create Return</ion-button
+        >
+        <ion-button
+          shape="round"
+          *ngIf="isEdit && !loading"
+          color="danger"
+          [disabled]="form.invalid"
+          (click)="updateReturn('void')"
+          >Void Return</ion-button
         >
         <ion-button
           shape="round"

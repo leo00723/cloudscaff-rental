@@ -27,6 +27,14 @@ import { map } from 'rxjs/operators';
 export class EditService {
   constructor(private firestore: Firestore, private functions: Functions) {}
 
+  //---- GENERATE CODE FOR ANY DOCUMENT ----
+  generateDocCode(counter: number, prefix: string) {
+    const yearCode = new Date().toLocaleDateString('en', { year: '2-digit' });
+    const total = counter ?? 0;
+    const returnNumber = (total + 1).toString().padStart(6, '0');
+
+    return `${prefix}${yearCode}${returnNumber}`;
+  }
   //----ADD FUNCTIONS----
 
   addDocument(collectionName: string, data) {

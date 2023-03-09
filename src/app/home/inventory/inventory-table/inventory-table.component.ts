@@ -120,7 +120,16 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   view() {
     this.selectedItem.emit(this.selected[0]);
   }
-  deleteItem() {
+  deleteItem(item: InventoryItem) {
+    if (item.inUseQty > 0) {
+      this.notificationService.toast(
+        'Please return all items to Yard before deleting component.',
+        'warning',
+        5000,
+        'middle'
+      );
+      return;
+    }
     this.notificationService.presentAlertConfirm(async () => {
       const company = this.store.selectSnapshot(CompanyState.company).id;
 

@@ -1,21 +1,14 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-  OnDestroy,
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
-import { Site } from 'src/app/models/site.model';
 import { Return } from 'src/app/models/return.model';
+import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
-import { UserState } from 'src/app/shared/user/user.state';
-import { increment } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-add-return',
@@ -43,8 +36,8 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   error = false;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
-    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
-    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.user = this.masterSvc.auth().getUser();
+    this.company = this.masterSvc.auth().getCompany();
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
@@ -73,77 +66,14 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       this.initForm();
     }
   }
-  createReturn() {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        const returnItems: Return = { ...this.form.value };
-        returnItems.items = this.items.filter((item) => item.shipmentQty > 0);
-        this.company = this.masterSvc
-          .store()
-          .selectSnapshot(CompanyState.company);
-
-        returnItems.code = `RET${new Date().toLocaleDateString('en', {
-          year: '2-digit',
-        })}${(this.company.totalReturns ? this.company.totalReturns + 1 : 1)
-          .toString()
-          .padStart(6, '0')}`;
-
-        await this.masterSvc
-          .edit()
-          .addDocument(`company/${this.company.id}/returns`, returnItems);
-        await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalReturns: increment(1),
-        });
-
-        this.masterSvc
-          .notification()
-          .toast('Return created successfully', 'success');
-        this.close();
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong creating return. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
+  async createReturn() {
+    await this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.createDoc(false);
     });
   }
-  updateReturn(status: string) {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        Object.assign(this.return, this.form.value);
-        this.return.items = this.items.filter((item) => item.shipmentQty > 0);
-        this.return.status = status;
-
-        await this.masterSvc
-          .edit()
-          .updateDoc(
-            `company/${this.company.id}/returns`,
-            this.return.id,
-            this.return
-          );
-
-        this.masterSvc
-          .notification()
-          .toast('Return updated successfully', 'success');
-        this.close();
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating return. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
+  async updateReturn(status: string) {
+    await this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.updateDoc(status, false);
     });
   }
   update(val, item: InventoryItem, type: string) {
@@ -167,6 +97,16 @@ export class AddReturnComponent implements OnInit, OnDestroy {
         break;
     }
     this.checkError(item);
+  }
+
+  autoSave() {
+    if (this.isEdit) {
+      if (this.return.status === 'pending') {
+        this.updateDoc('pending', true);
+      }
+    } else {
+      this.createDoc(true);
+    }
   }
 
   search(event) {
@@ -230,5 +170,86 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       company: [this.company],
       date: [new Date()],
     });
+  }
+
+  private async createDoc(isAutoUpdate?: boolean) {
+    try {
+      this.loading = true;
+      this.itemBackup ||= [...this.items];
+      this.company = this.masterSvc.auth().getCompany();
+
+      const returnItems: Return = {
+        ...this.form.value,
+        items: this.items.filter((item) => item.shipmentQty > 0),
+        code: this.masterSvc
+          .edit()
+          .generateDocCode(this.company.totalReturns, 'RET'),
+      };
+
+      const doc = await this.masterSvc
+        .edit()
+        .addDocument(`company/${this.company.id}/returns`, returnItems);
+
+      await this.masterSvc.edit().updateDoc('company', this.company.id, {
+        totalReturns: increment(1),
+      });
+
+      if (!isAutoUpdate) {
+        this.masterSvc
+          .notification()
+          .toast('Return created successfully', 'success');
+        this.close();
+      } else {
+        this.return.id = doc.id;
+        this.isEdit = true;
+      }
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong creating return. Please try again!',
+          'danger'
+        );
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private async updateDoc(status: string, isAutoUpdate?: boolean) {
+    try {
+      this.loading = true;
+      this.itemBackup ||= [...this.items];
+      Object.assign(this.return, {
+        ...this.form.value,
+        items: this.itemBackup.filter((item) => item.shipmentQty > 0),
+        status,
+      });
+
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/returns`,
+          this.return.id,
+          this.return
+        );
+
+      if (!isAutoUpdate) {
+        this.masterSvc
+          .notification()
+          .toast('Return updated successfully', 'success');
+        this.close();
+      }
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating return. Please try again!',
+          'danger'
+        );
+    } finally {
+      this.loading = false;
+    }
   }
 }

@@ -11,7 +11,9 @@ import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { GetUser } from 'src/app/shared/user/user.actions';
 import { GetCompany } from '../shared/company/company.actions';
+import { CompanyState } from '../shared/company/company.state';
 import { Navigate } from '../shared/router.state';
+import { UserState } from '../shared/user/user.state';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +33,12 @@ export class AuthService {
     });
   }
 
-  test() {}
+  getUser() {
+    return this.store.selectSnapshot(UserState.user);
+  }
+  getCompany() {
+    return this.store.selectSnapshot(CompanyState.company);
+  }
 
   async login({ email, password }) {
     return await signInWithEmailAndPassword(this.auth, email, password);

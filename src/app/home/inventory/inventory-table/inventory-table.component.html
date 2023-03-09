@@ -65,11 +65,11 @@
     cellClass="text-center"
     headerClass="text-center"
   ></ngx-datatable-column>
-  <ngx-datatable-column
+  <!-- <ngx-datatable-column
     name="Cross Hire Qty"
     cellClass="text-center"
     headerClass="text-center"
-  ></ngx-datatable-column>
+  ></ngx-datatable-column> -->
   <ngx-datatable-column
     name="Total Qty"
     prop="availableQty"
@@ -152,7 +152,7 @@
               <ion-item
                 [button]="true"
                 [detail]="false"
-                (click)="deleteItem()"
+                (click)="deleteItem(row)"
                 *ngIf="user.role === 'Owner' || user.role === 'Super-Admin'"
               >
                 <ion-label>Delete</ion-label>
