@@ -27,11 +27,13 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   form: FormGroup;
   user: User;
   company: Company;
+  items: InventoryItem[];
+  itemBackup: InventoryItem[];
+  sites$: Observable<Site[]>;
   loading = false;
   viewAll = true;
-  items: InventoryItem[];
+  searching = false;
   error = false;
-  sites$: Observable<Site[]>;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
@@ -51,8 +53,9 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        let transfer: Transfer = { ...this.form.value };
-        transfer.items = this.items.filter((item) => item.shipmentQty > 0);
+        const transfer: Transfer = { ...this.form.value };
+        this.itemBackup ||= [...this.items];
+        transfer.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
         this.company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
@@ -93,7 +96,10 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       this.loading = true;
       try {
         Object.assign(this.transfer, this.form.value);
-        this.transfer.items = this.items.filter((item) => item.shipmentQty > 0);
+        this.itemBackup ||= [...this.items];
+        this.transfer.items = this.itemBackup.filter(
+          (item) => item.shipmentQty > 0
+        );
         this.transfer.status = status;
 
         await this.masterSvc
@@ -137,6 +143,24 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     item.shipmentQty = +val.detail.value;
     this.checkError(item);
   }
+
+  search(event) {
+    console.log('searching');
+    this.searching = true;
+    const val = event.detail.value.toLowerCase() as string;
+    this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+    this.items = this.itemBackup.filter(
+      (item) =>
+        item.code.toLowerCase().includes(val) ||
+        item.name.toLowerCase().includes(val) ||
+        item.category.toLowerCase().includes(val) ||
+        !val
+    );
+    if (!val) {
+      this.searching = false;
+    }
+  }
+
   checkError(item: InventoryItem) {
     const totalQty = item.availableQty ? item.availableQty : 0;
     const inUseQty = item.inUseQty ? item.inUseQty : 0;
@@ -205,7 +229,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   }
 
   init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 
     setTimeout(() => {
       if (id) {

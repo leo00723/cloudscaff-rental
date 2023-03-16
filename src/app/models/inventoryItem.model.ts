@@ -30,4 +30,5 @@ export interface InventoryItem {
   crossHire?: CrossHire[];
   error?: boolean;
   totalCost?: number;
+  log?: any[];
 }

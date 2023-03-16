@@ -28,25 +28,13 @@ export class AddStockitemComponent implements OnInit {
   }
   inventoryItem: InventoryItem = {};
   form: FormGroup;
-  categories = [
-    'Base Plates',
-    'Braces',
-    'Couplers',
-    'Decks',
-    'Ladders',
-    'Ledgers',
-    'Standards',
-    'Ties',
-    'Toe Boards',
-    'Transoms',
-    'Tubes',
-  ];
   company: Company;
   user: User;
   loading = false;
   categories$: Observable<any>;
   removeQty = 0;
   addQty = 0;
+  moveQty = 0;
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -99,19 +87,35 @@ export class AddStockitemComponent implements OnInit {
   }
 
   changeCategory(event) {
-    this.field('categoryType').setValue(event[0]);
-    this.field('size').setValue('');
+    if (event[0] === 'add') {
+      window.open(
+        'http://localhost:8100/dashboard/settings/templates/component',
+        '_blank'
+      );
+    } else {
+      this.field('categoryType').setValue(event[0]);
+      this.field('size').setValue('');
+    }
   }
 
   createItem() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
+        const log = {
+          message: `${this.user.name} added ${
+            this.field('yardQty').value
+          } items to the yard.`,
+          user: this.user,
+          date: new Date(),
+          status: 'add',
+        };
         await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/stockItems`, {
             ...this.form.value,
             category: this.form.value.categoryType.name,
+            log: [log],
           });
         this.masterSvc.notification().toast('Stock Item Added', 'success');
         this.close();
@@ -137,7 +141,11 @@ export class AddStockitemComponent implements OnInit {
           .updateDoc(
             `company/${this.company.id}/stockItems`,
             this.inventoryItem.id,
-            { ...this.form.value, category: this.form.value.categoryType.name }
+            {
+              ...this.form.value,
+              category: this.form.value.categoryType.name,
+              log: this.inventoryItem.log,
+            }
           );
         this.masterSvc.notification().toast('Stock Item Updated', 'success');
         this.loading = false;
@@ -159,7 +167,50 @@ export class AddStockitemComponent implements OnInit {
       const total = +this.field('yardQty').value + this.addQty;
       this.field('yardQty').setValue(total);
       this.update();
+      const log = {
+        message: `${this.user.name} added ${this.addQty} items to the yard.`,
+        user: this.user,
+        date: new Date(),
+        status: 'add',
+      };
+      if (this.inventoryItem.log) {
+        this.inventoryItem.log.push(log);
+      } else {
+        this.inventoryItem.log = [log];
+      }
     }, `Are you sure you want to add ${this.addQty} items?`);
+  }
+
+  moveToYard() {
+    const yardQty = +this.field('yardQty').value;
+    const inMaintenanceQty = +this.field('inMaintenanceQty').value;
+    if (inMaintenanceQty < this.moveQty) {
+      this.masterSvc
+        .notification()
+        .toast(
+          'You cannot move more items than your In Maintenance Quantity',
+          'danger',
+          5000
+        );
+    } else {
+      this.masterSvc.notification().presentAlertConfirm(() => {
+        this.field('inMaintenanceQty').setValue(
+          inMaintenanceQty - this.moveQty
+        );
+        this.update();
+        const log = {
+          message: `${this.user.name} moved ${this.moveQty} items to the yard.`,
+          user: this.user,
+          date: new Date(),
+          status: 'move',
+        };
+        if (this.inventoryItem.log) {
+          this.inventoryItem.log.push(log);
+        } else {
+          this.inventoryItem.log = [log];
+        }
+      }, `Are you sure you want to move ${this.moveQty} items?`);
+    }
   }
 
   removeYardQty() {
@@ -182,6 +233,17 @@ export class AddStockitemComponent implements OnInit {
       this.masterSvc.notification().presentAlertConfirm(() => {
         this.field('yardQty').setValue(yardQty - this.removeQty);
         this.update();
+        const log = {
+          message: `${this.user.name} removed ${this.removeQty} items from the yard.`,
+          user: this.user,
+          date: new Date(),
+          status: 'remove',
+        };
+        if (this.inventoryItem.log) {
+          this.inventoryItem.log.push(log);
+        } else {
+          this.inventoryItem.log = [log];
+        }
       }, `Are you sure you want to remove ${this.removeQty} items?`);
     }
   }

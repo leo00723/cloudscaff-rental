@@ -4,6 +4,7 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
@@ -15,9 +16,16 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
 })
 export class ViewStockLocationsComponent {
   @Input() locations$: Observable<{ site: any; item: InventoryItem }[]>;
-  constructor(private modalSvc: ModalController) {}
+  constructor(private modalSvc: ModalController, private router: Router) {}
 
   close() {
     this.modalSvc.dismiss();
+  }
+
+  viewSite(location) {
+    this.close();
+    this.router.navigateByUrl(
+      `/dashboard/site/${location.site.companyId}-${location.site.id}`
+    );
   }
 }

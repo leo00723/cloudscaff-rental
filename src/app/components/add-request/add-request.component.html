@@ -197,7 +197,9 @@
           >
           <ion-button
             shape="round"
-            *ngIf="isEdit && !loading && allowSend"
+            *ngIf="
+              isEdit && request.status === 'submitted' && !loading && allowSend
+            "
             color="success"
             [disabled]="form.invalid"
             (click)="approveRequest()"
@@ -205,10 +207,22 @@
           >
           <ion-button
             shape="round"
-            *ngIf="isEdit && !loading && request.status === 'pending'"
+            *ngIf="
+              isEdit && !loading && request.status === 'pending' && !allowSend
+            "
             [disabled]="form.invalid"
             (click)="updateRequest('pending')"
             >Update Request</ion-button
+          >
+          <ion-button
+            shape="round"
+            color="success"
+            *ngIf="
+              isEdit && !loading && request.status === 'pending' && !allowSend
+            "
+            [disabled]="form.invalid"
+            (click)="updateRequest('submitted')"
+            >Submit Request</ion-button
           >
         </ion-col>
       </ion-row>

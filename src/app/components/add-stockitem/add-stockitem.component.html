@@ -23,7 +23,7 @@
               title="Select Category"
               [data]="categories.categories"
               itemTextField="name"
-              [add]="false"
+              [add]="true"
               (selectedChanged)="changeCategory($event)"
               #select
             ></app-searchable-select>
@@ -56,9 +56,8 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col size="2">
+        <ion-col size="12" *ngIf="!isEdit">
           <app-input-reactive
-            *ngIf="!isEdit"
             title="Yard Qty"
             type="number"
             controlName="yardQty"
@@ -66,73 +65,74 @@
             (fieldChange)="update()"
           >
           </app-input-reactive>
-          <app-input-reactive
-            *ngIf="isEdit"
-            title="Yard Qty"
-            type="number"
-            controlName="yardQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col size="2">
-          <app-input-reactive
-            title="In Maintenance Qty"
-            type="number"
-            controlName="inMaintenanceQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col size="2">
-          <app-input-reactive
-            title="Damaged Qty"
-            type="number"
-            controlName="damagedQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col size="2">
-          <app-input-reactive
-            title="Lost Qty"
-            type="number"
-            controlName="lostQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col size="2">
-          <app-input-reactive
-            title="In Use Qty"
-            type="number"
-            controlName="inUseQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col size="2">
-          <app-input-text
-            title="Available Qty"
-            type="number"
-            [value]="
-              field('yardQty').value -
-              field('inUseQty').value -
-              field('inMaintenanceQty').value -
-              field('lostQty').value -
-              field('damagedQty').value
-            "
-            [readonly]="true"
-          >
-          </app-input-text>
         </ion-col>
         <ng-container *ngIf="isEdit">
-          <ion-col size="6">
+          <ion-col sizeMd="2" size="6">
+            <app-input-reactive
+              title="Yard Qty"
+              type="number"
+              controlName="yardQty"
+              [form]="form"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col sizeMd="2" size="6">
+            <app-input-reactive
+              title="Maintenance Qty"
+              type="number"
+              controlName="inMaintenanceQty"
+              [form]="form"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col sizeMd="2" size="6">
+            <app-input-reactive
+              title="Damaged Qty"
+              type="number"
+              controlName="damagedQty"
+              [form]="form"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col sizeMd="2" size="6">
+            <app-input-reactive
+              title="Lost Qty"
+              type="number"
+              controlName="lostQty"
+              [form]="form"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col sizeMd="2" size="6">
+            <app-input-reactive
+              title="In Use Qty"
+              type="number"
+              controlName="inUseQty"
+              [form]="form"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col sizeMd="2" size="6">
+            <app-input-text
+              title="Available Qty"
+              type="number"
+              [value]="
+                field('yardQty').value -
+                field('inUseQty').value -
+                field('inMaintenanceQty').value -
+                field('lostQty').value -
+                field('damagedQty').value
+              "
+              [readonly]="true"
+            >
+            </app-input-text>
+          </ion-col>
+          <ion-col size="4">
             <app-input-text
               title="Remove Yard Qty"
               [optional]="true"
@@ -150,7 +150,7 @@
               Remove
             </ion-button>
           </ion-col>
-          <ion-col size="6">
+          <ion-col size="4">
             <app-input-text
               title="Add Yard Qty"
               [optional]="true"
@@ -166,6 +166,24 @@
               (click)="addYardQty()"
             >
               Add
+            </ion-button>
+          </ion-col>
+          <ion-col size="4">
+            <app-input-text
+              title="Move Maintenance to Available"
+              [optional]="true"
+              type="number"
+              (fieldChange)="moveQty = $event"
+            ></app-input-text>
+            <ion-button
+              id="add"
+              class="float-end"
+              size="small"
+              color="warning"
+              shape="round"
+              (click)="moveToYard()"
+            >
+              Move
             </ion-button>
           </ion-col>
         </ng-container>
@@ -309,6 +327,51 @@
             (click)="updateItem()"
             >Update Item</ion-button
           >
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="isEdit">
+        <ion-col size="12">
+          <app-title-block>Log history</app-title-block>
+          <div class="mt-3 table-responsive">
+            <table class="table table-sm table-bordered">
+              <thead>
+                <tr class="table-light align-middle text-center">
+                  <th>#</th>
+                  <th class="text-start">Message</th>
+                  <th>User</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="let log of inventoryItem.log; let i = index"
+                >
+                  <tr class="small text-center align-middle">
+                    <td>{{ i + 1 }}</td>
+                    <td
+                      class="text-start"
+                      [ngClass]="
+                        log.status === 'add'
+                          ? 'text-success'
+                          : log.status === 'remove'
+                          ? 'text-danger'
+                          : 'text-warning'
+                      "
+                    >
+                      {{ log.message }}
+                    </td>
+                    <td>{{ log.user.name }}</td>
+                    <td>
+                      {{
+                        (log.date.toDate ? log.date.toDate() : log.date)
+                          | date : "dd/MM/yy HH:mm"
+                      }}
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
         </ion-col>
       </ion-row>
     </ion-grid>

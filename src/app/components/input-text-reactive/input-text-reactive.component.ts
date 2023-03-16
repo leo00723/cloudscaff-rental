@@ -25,6 +25,7 @@ export class InputTextReactiveComponent {
   @Input() textarea = false;
   @Input() form;
   @Output() fieldChange = new EventEmitter<any>();
+  @Output() fieldBlur = new EventEmitter<any>();
 
   update(args) {
     if (this.type === 'number') {

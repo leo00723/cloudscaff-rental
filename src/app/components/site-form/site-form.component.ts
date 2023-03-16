@@ -142,12 +142,13 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  update() {
+  update(status: string) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         this.loading = true;
         this.site.updatedBy = this.user.name;
         Object.assign(this.site, this.form.value);
+        this.site.status = status;
         await this.masterSvc
           .edit()
           .updateDoc(

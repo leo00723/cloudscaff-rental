@@ -22,6 +22,7 @@ export class HeaderComponent {
   @Input() btnName = '';
   @Input() iconColor = '';
   @Output() updated = new EventEmitter<boolean>();
+  @Output() backClicked = new EventEmitter<boolean>();
 
   constructor(private masterSvc: MasterService) {}
 

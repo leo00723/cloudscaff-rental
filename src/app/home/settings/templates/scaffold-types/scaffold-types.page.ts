@@ -27,37 +27,40 @@ export class ScaffoldTypesPage implements OnDestroy {
   }
   update() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        const company = this.masterSvc
-          .store()
-          .selectSnapshot(CompanyState.company);
-        const user = this.masterSvc.store().selectSnapshot(UserState.user);
-        const template = {
-          types: this.types,
-          date: new Date(),
-          updatedBy: user.id,
-          company: company.id,
-        };
-        await this.masterSvc
-          .edit()
-          .setDoc(`company/${company.id}/templates`, template, 'scaffoldTypes');
-
-        this.masterSvc
-          .notification()
-          .toast('Template updated successfully', 'success');
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating the template. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
+      this.autoUpdate();
     });
+  }
+  async autoUpdate() {
+    this.loading = true;
+    try {
+      const company = this.masterSvc
+        .store()
+        .selectSnapshot(CompanyState.company);
+      const user = this.masterSvc.store().selectSnapshot(UserState.user);
+      const template = {
+        types: this.types,
+        date: new Date(),
+        updatedBy: user.id,
+        company: company.id,
+      };
+      await this.masterSvc
+        .edit()
+        .setDoc(`company/${company.id}/templates`, template, 'scaffoldTypes');
+
+      this.masterSvc
+        .notification()
+        .toast('Template updated successfully', 'success');
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating the template. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
   }
   add() {
     this.types.push('');
@@ -68,7 +71,7 @@ export class ScaffoldTypesPage implements OnDestroy {
     });
   }
   private init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.subs.add(

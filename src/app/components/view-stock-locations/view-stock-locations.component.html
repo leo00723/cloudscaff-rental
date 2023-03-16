@@ -28,7 +28,12 @@
       <tbody>
         <ng-container *ngIf="locations$ | async as locations">
           <tr class="align-middle" *ngFor="let location of locations">
-            <td>{{ location.site.code }}</td>
+            <td
+              (click)="viewSite(location)"
+              class="text-primary cursor-pointer"
+            >
+              {{ location.site.code }}
+            </td>
             <td>{{ location.site.name }}</td>
             <td>{{ location.site.customer.name }}</td>
             <td>{{ location.item.code }}</td>

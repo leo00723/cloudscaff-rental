@@ -19,6 +19,7 @@
     formControlName="{{ controlName }}"
     (ionChange)="update($event)"
     [readonly]="readonly"
+    (ionBlur)="fieldBlur.emit()"
   >
   </ion-input>
   <ion-textarea

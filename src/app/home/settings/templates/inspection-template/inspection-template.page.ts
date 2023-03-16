@@ -80,41 +80,45 @@ export class InspectionTemplatePage implements OnInit, OnDestroy {
 
   update() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        const company = this.masterSvc
-          .store()
-          .selectSnapshot(CompanyState.company);
-        const user = this.masterSvc.store().selectSnapshot(UserState.user);
-        const template = {
-          ...this.form.value,
-          date: new Date(),
-          updatedBy: user.id,
-          company: company.id,
-        };
-        await this.masterSvc
-          .edit()
-          .setDoc(`company/${company.id}/templates`, template, 'inspection');
-
-        this.masterSvc
-          .notification()
-          .toast('Template updated successfully', 'success');
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating the template. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
+      this.autoUpdate();
     });
   }
 
+  async autoUpdate() {
+    this.loading = true;
+    try {
+      const company = this.masterSvc
+        .store()
+        .selectSnapshot(CompanyState.company);
+      const user = this.masterSvc.store().selectSnapshot(UserState.user);
+      const template = {
+        ...this.form.value,
+        date: new Date(),
+        updatedBy: user.id,
+        company: company.id,
+      };
+      await this.masterSvc
+        .edit()
+        .setDoc(`company/${company.id}/templates`, template, 'inspection');
+
+      this.masterSvc
+        .notification()
+        .toast('Template updated successfully', 'success');
+      this.loading = false;
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating the template. Please try again!',
+          'danger'
+        );
+      this.loading = false;
+    }
+  }
+
   private init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.subs.add(
@@ -125,18 +129,18 @@ export class InspectionTemplatePage implements OnInit, OnDestroy {
               if (inspection) {
                 this.form = this.masterSvc.fb().group({
                   categories: this.masterSvc.fb().array(
-                    inspection.categories.map((c) => {
-                      return this.masterSvc.fb().group({
+                    inspection.categories.map((c) =>
+                      this.masterSvc.fb().group({
                         name: [c.name, Validators.required],
                         items: this.masterSvc.fb().array(
-                          c.items.map((i) => {
-                            return this.masterSvc.fb().group({
+                          c.items.map((i) =>
+                            this.masterSvc.fb().group({
                               question: [i.question, Validators.required],
-                            });
-                          })
+                            })
+                          )
                         ),
-                      });
-                    })
+                      })
+                    )
                   ),
                 });
               } else {

@@ -225,11 +225,21 @@
         >
         <ion-button
           shape="round"
-          *ngIf="isEdit && !loading && allowSend"
+          *ngIf="
+            isEdit && return.status === 'submitted' && !loading && allowSend
+          "
           color="success"
           [disabled]="form.invalid || error"
           (click)="updateReturn('sent')"
           >Accept Return</ion-button
+        >
+        <ion-button
+          shape="round"
+          color="tertiary"
+          *ngIf="!loading && return.status === 'pending' && !allowSend"
+          [disabled]="form.invalid"
+          (click)="returnAll()"
+          >Return all items</ion-button
         >
         <ion-button
           shape="round"
@@ -239,6 +249,16 @@
           [disabled]="form.invalid"
           (click)="updateReturn('pending')"
           >Update Return</ion-button
+        >
+        <ion-button
+          shape="round"
+          color="success"
+          *ngIf="
+            isEdit && !loading && return.status === 'pending' && !allowSend
+          "
+          [disabled]="form.invalid"
+          (click)="updateReturn('submitted')"
+          >Submit Return</ion-button
         >
       </ion-col>
     </ion-row>

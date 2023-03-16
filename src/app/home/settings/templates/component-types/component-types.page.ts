@@ -83,6 +83,7 @@ export class ComponentTypesPage implements OnInit, OnDestroy {
   }
 
   async update() {
+    console.log('update');
     this.loading = true;
     try {
       const company = this.masterSvc
@@ -194,11 +195,6 @@ export class ComponentTypesPage implements OnInit, OnDestroy {
                 this.addCategory();
                 this.addItem(0);
               }
-              this.subs.add(
-                this.form.valueChanges.subscribe(() => {
-                  this.update();
-                })
-              );
             })
         );
       } else {

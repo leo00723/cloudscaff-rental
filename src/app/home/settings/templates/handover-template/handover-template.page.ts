@@ -48,33 +48,36 @@ export class HandoverTemplatePage implements OnInit, OnDestroy {
     this.template.maxLoads.push('');
   }
   update() {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.autoUpdate();
+    });
+  }
+  autoUpdate() {
     const user = this.masterSvc.store().selectSnapshot(UserState.user);
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.template.company = company.id;
     this.template.updatedBy = user.id;
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.masterSvc
-        .edit()
-        .setDoc(`company/${company.id}/templates`, this.template, 'handover')
-        .then(() => {
-          this.masterSvc
-            .notification()
-            .toast('Template updated successfully', 'success')
-            .then(() => {
-              this.loading = false;
-            });
-        })
-        .catch((error) => {
-          console.error(error);
-          this.masterSvc
-            .notification()
-            .toast('Something went wrong! Try again later.', 'danger')
-            .then(() => {
-              this.loading = false;
-            });
-        });
-    });
+    this.loading = true;
+    this.masterSvc
+      .edit()
+      .setDoc(`company/${company.id}/templates`, this.template, 'handover')
+      .then(() => {
+        this.masterSvc
+          .notification()
+          .toast('Template updated successfully', 'success')
+          .then(() => {
+            this.loading = false;
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+        this.masterSvc
+          .notification()
+          .toast('Something went wrong! Try again later.', 'danger')
+          .then(() => {
+            this.loading = false;
+          });
+      });
   }
   private init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;

@@ -156,7 +156,38 @@
     <ion-col size="12" class="text-end">
       <ion-button
         *ngIf="
-          !loading && (user.role === 'Owner' || user.role === 'Super-Admin') && isUpdate
+          !loading &&
+          (user.role === 'Owner' || user.role === 'Super-Admin') &&
+          isUpdate &&
+          site.status !== 'closed'
+        "
+        shape="round"
+        color="warning"
+        type="submit"
+        (click)="update('closed')"
+      >
+        Close Site
+      </ion-button>
+      <ion-button
+        *ngIf="
+          !loading &&
+          (user.role === 'Owner' || user.role === 'Super-Admin') &&
+          isUpdate &&
+          site.status === 'closed'
+        "
+        shape="round"
+        color="success"
+        type="submit"
+        (click)="update('active')"
+      >
+        Open Site
+      </ion-button>
+      <ion-button
+        *ngIf="
+          !loading &&
+            (user.role === 'Owner' || user.role === 'Super-Admin') &&
+            site.status !== 'closed';
+          isUpdate
         "
         shape="round"
         color="danger"
@@ -166,12 +197,12 @@
         Delete Site
       </ion-button>
       <ion-button
-        *ngIf="!loading && isUpdate"
+        *ngIf="!loading && isUpdate && site.status !== 'closed'"
         shape="round"
         color="success"
         type="submit"
         [disabled]="form.invalid"
-        (click)="update()"
+        (click)="update('active')"
       >
         Update Site
       </ion-button>

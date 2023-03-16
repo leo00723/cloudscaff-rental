@@ -98,6 +98,13 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     }
     this.checkError(item);
   }
+  returnAll() {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      for (const item of this.items) {
+        item.shipmentQty = item.availableQty;
+      }
+    }, 'Are you sure you want to return all items?');
+  }
 
   autoSave() {
     if (this.isEdit) {
