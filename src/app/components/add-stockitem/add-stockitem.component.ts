@@ -258,9 +258,11 @@ export class AddStockitemComponent implements OnInit {
   }
 
   undo() {
-    this.inventoryItem = { ...this.inventoryItemBackup };
-    this.initEditForm();
-    this.showUndo = false;
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.inventoryItem = { ...this.inventoryItemBackup };
+      this.initEditForm();
+      this.showUndo = false;
+    });
   }
 
   private initEditForm() {
