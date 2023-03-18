@@ -89,7 +89,7 @@ export class AddStockitemComponent implements OnInit {
   changeCategory(event) {
     if (event[0] === 'add') {
       window.open(
-        'http://localhost:8100/dashboard/settings/templates/component',
+        'https://app.cloudscaff.com/dashboard/settings/templates/component',
         '_blank'
       );
     } else {
@@ -178,6 +178,7 @@ export class AddStockitemComponent implements OnInit {
       } else {
         this.inventoryItem.log = [log];
       }
+      this.addQty = 0;
     }, `Are you sure you want to add ${this.addQty} items?`);
   }
 
@@ -209,6 +210,7 @@ export class AddStockitemComponent implements OnInit {
         } else {
           this.inventoryItem.log = [log];
         }
+        this.moveQty = 0;
       }, `Are you sure you want to move ${this.moveQty} items?`);
     }
   }
@@ -244,6 +246,7 @@ export class AddStockitemComponent implements OnInit {
         } else {
           this.inventoryItem.log = [log];
         }
+        this.removeQty = 0;
       }, `Are you sure you want to remove ${this.removeQty} items?`);
     }
   }
