@@ -23,10 +23,12 @@ export class AddStockitemComponent implements OnInit {
   @Input() set value(val: InventoryItem) {
     if (val) {
       Object.assign(this.inventoryItem, val);
+      Object.assign(this.inventoryItemBackup, val);
       this.initEditForm();
     }
   }
   inventoryItem: InventoryItem = {};
+  inventoryItemBackup: InventoryItem = {};
   form: FormGroup;
   company: Company;
   user: User;
@@ -35,6 +37,7 @@ export class AddStockitemComponent implements OnInit {
   removeQty = 0;
   addQty = 0;
   moveQty = 0;
+  showUndo = false;
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -179,6 +182,7 @@ export class AddStockitemComponent implements OnInit {
         this.inventoryItem.log = [log];
       }
       this.addQty = 0;
+      this.showUndo = true;
     }, `Are you sure you want to add ${this.addQty} items?`);
   }
 
@@ -211,6 +215,7 @@ export class AddStockitemComponent implements OnInit {
           this.inventoryItem.log = [log];
         }
         this.moveQty = 0;
+        this.showUndo = true;
       }, `Are you sure you want to move ${this.moveQty} items?`);
     }
   }
@@ -247,8 +252,15 @@ export class AddStockitemComponent implements OnInit {
           this.inventoryItem.log = [log];
         }
         this.removeQty = 0;
+        this.showUndo = true;
       }, `Are you sure you want to remove ${this.removeQty} items?`);
     }
+  }
+
+  undo() {
+    this.inventoryItem = { ...this.inventoryItemBackup };
+    this.initEditForm();
+    this.showUndo = false;
   }
 
   private initEditForm() {

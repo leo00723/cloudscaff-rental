@@ -10,6 +10,19 @@
       </ion-button>
     </ion-buttons>
     <ion-title>{{ !isEdit ? "Add Item" : "Edit Item" }} </ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        *ngIf="showUndo"
+        slot="end"
+        fill="solid"
+        shape="round"
+        class="text-capitalize"
+        color="danger"
+        (click)="undo()"
+      >
+        Undo
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -137,6 +150,7 @@
               title="Remove Yard Qty"
               [optional]="true"
               type="number"
+              [value]="removeQty"
               (fieldChange)="removeQty = $event"
             ></app-input-text>
             <ion-button
@@ -154,6 +168,7 @@
             <app-input-text
               title="Add Yard Qty"
               [optional]="true"
+              [value]="addQty"
               type="number"
               (fieldChange)="addQty = $event"
             ></app-input-text>
@@ -173,6 +188,7 @@
               title="Move Maintenance to Available"
               [optional]="true"
               type="number"
+              [value]="moveQty"
               (fieldChange)="moveQty = $event"
             ></app-input-text>
             <ion-button
