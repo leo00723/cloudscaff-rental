@@ -18,9 +18,11 @@
         [form]="form"
         controlName="startDate"
         title="Start Date"
+        (fieldChange)="update('days')"
+        (ionBlur)="update('date')"
       ></app-input-date>
     </ion-col>
-    <ion-col size="6" *ngIf="field('startDate').value">
+    <ion-col size="6">
       <app-input-date
         [form]="form"
         controlName="endDate"
@@ -29,7 +31,7 @@
         (fieldChange)="update('date')"
       ></app-input-date>
     </ion-col>
-    <ion-col size="12">
+    <ion-col size="6">
       <app-input-reactive
         title="Minimum days on hire"
         type="number"
@@ -37,6 +39,16 @@
         [form]="form"
         placeholder="Enter minimum hire"
         (fieldChange)="update('date')"
+      >
+      </app-input-reactive>
+    </ion-col>
+    <ion-col size="6">
+      <app-input-reactive
+        title="Days on hire"
+        type="number"
+        controlName="daysOnHire"
+        [form]="form"
+        (ionBlur)="update('days')"
       >
       </app-input-reactive>
     </ion-col>
@@ -103,7 +115,7 @@
               </td>
               <td class="text-end">
                 {{ company.currency.symbol
-                }}{{ item.totalCost | number: "1.2-2" }}
+                }}{{ item.totalCost | number : "1.2-2" }}
               </td>
             </tr>
             <ng-template #viewShipment>
@@ -149,7 +161,7 @@
                 </td>
                 <td class="text-end">
                   {{ company.currency.symbol
-                  }}{{ item.totalCost | number: "1.2-2" }}
+                  }}{{ item.totalCost | number : "1.2-2" }}
                 </td>
               </tr>
             </ng-template>
@@ -160,7 +172,7 @@
             <th class="text-end" colspan="7" scope="col">Subtotal</th>
             <th class="text-end" colspan="2" scope="col">
               {{ company.currency.symbol }}
-              {{ estimate.itemHire | number: "0.2-2" }}
+              {{ estimate.itemHire | number : "0.2-2" }}
             </th>
           </tr>
         </tfoot>

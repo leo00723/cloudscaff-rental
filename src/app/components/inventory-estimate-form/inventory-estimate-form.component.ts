@@ -272,13 +272,26 @@ export class InventoryEstimateFormComponent implements OnInit, OnDestroy {
           this.updateEstimateTotal();
         }
         break;
+      case 'days':
+        {
+          const start = new Date(this.field('startDate').value);
+          const daysOnHire = +this.field('daysOnHire').value;
+          const end = new Date(
+            start.getTime() + daysOnHire * 24 * 60 * 60 * 1000
+          );
+          this.field('endDate').setValue(end.toISOString().split('T')[0]);
+        }
+        break;
     }
   }
 
   getDayDiff(startDate: Date, endDate: Date): number {
-    const msInDay = 24 * 60 * 60 * 1000;
-
-    return Math.round(Math.abs(Number(endDate) - Number(startDate)) / msInDay);
+    const MS_IN_DAY = 24 * 60 * 60 * 1000;
+    const startMs = startDate.getTime();
+    const endMs = endDate.getTime();
+    const diffMs = Math.abs(endMs - startMs);
+    const diffDays = Math.round(diffMs / MS_IN_DAY);
+    return diffDays;
   }
   //Calculate total for a category base on rates
   updateRate(type: string, args?: any, i?: number) {
