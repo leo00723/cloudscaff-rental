@@ -12,6 +12,11 @@ import { environment } from 'src/environments/environment';
 import { Company } from '../models/company.model';
 import { EditService } from './edit.service';
 
+const INVOICES = 'https://api.xero.com/api.xro/2.0/Invoices';
+const TRACKING_CATEGORIES =
+  'https://api.xero.com/api.xro/2.0/TrackingCategories';
+const TAX_RATES = 'https://api.xero.com/api.xro/2.0/TaxRates';
+
 const API_URL = 'https://identity.xero.com/connect/token';
 const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://identity.xero.com',
@@ -113,9 +118,20 @@ export class XeroService {
       .pipe(catchError(XeroService.handleError));
   }
 
+  getTrackingCategories(company: Company) {
+    return this.http
+      .get(TRACKING_CATEGORIES, {
+        headers: {
+          Authorization: `Bearer ${company.tokens.accessToken}`,
+          'Xero-tenant-id': company.tokens.tenantID,
+        },
+      })
+      .pipe(catchError(XeroService.handleError));
+  }
+
   getInvoices(company: Company) {
     return this.http
-      .get('https://api.xero.com/api.xro/2.0/Invoices', {
+      .get(INVOICES, {
         headers: {
           Authorization: `Bearer ${company.tokens.accessToken}`,
           'Xero-tenant-id': company.tokens.tenantID,

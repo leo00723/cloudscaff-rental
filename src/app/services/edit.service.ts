@@ -160,7 +160,7 @@ export class EditService {
     ).pipe(
       map((data: any) =>
         data.map((d: any) => {
-          if (d.date) {
+          if (d.date && d.date.toDate) {
             return { ...d, date: d.date.toDate() };
           }
           return d;

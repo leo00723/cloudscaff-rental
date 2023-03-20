@@ -19,6 +19,19 @@
         }}
       </ion-title>
     </ng-template>
+    <ion-buttons slot="end">
+      <ion-button
+        *ngIf="isEdit && !loading && isPA"
+        slot="end"
+        fill="solid"
+        shape="round"
+        class="text-capitalize"
+        (click)="isEdit ? updatePA() : createPA()"
+        color="primary"
+      >
+        Save
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -261,6 +274,13 @@
                           debounce="200"
                           type="text"
                           [clearOnEdit]="true"
+                          (ionChange)="
+                            paymentApplication.change(
+                              $event,
+                              estimate.scaffold,
+                              'HAN'
+                            )
+                          "
                           [value]="estimate.scaffold.handover"
                         >
                         </ion-input>
@@ -991,8 +1011,16 @@
               ? "Update Payment Application"
               : "Update Operation
           Application"
-          }}</ion-button
+          }}
+        </ion-button>
+        <ion-button
+          shape="round"
+          color="success"
+          *ngIf="isEdit && !loading"
+          (click)="createInvoice()"
         >
+          Create Invoice
+        </ion-button>
         <ion-button
           shape="round"
           *ngIf="!isEdit && !loading"

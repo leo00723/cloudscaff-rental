@@ -121,12 +121,10 @@
   <ngx-datatable-column name="Comment" cellClass="my-auto">
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ng-container *ngIf="row.comments">
-      {{ row.comments[row.comments.length - 1].message  }}
+        {{ row.comments[row.comments.length - 1].message }}
         <br />
         <br />
-        {{
-           (row.comments[row.comments.length - 1].date.toDate() | date)
-        }}
+        {{ row.comments[row.comments.length - 1].date.toDate() | date }}
       </ng-container>
     </ng-template>
   </ngx-datatable-column>

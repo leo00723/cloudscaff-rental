@@ -16,7 +16,8 @@
           "options": {
             "allowedCommonJsDependencies": [
               "pdfmake/build/pdfmake",
-              "pdfmake/build/vfs_fonts"
+              "pdfmake/build/vfs_fonts",
+              "file-saver"
             ],
             "outputPath": "www",
             "index": "src/index.html",

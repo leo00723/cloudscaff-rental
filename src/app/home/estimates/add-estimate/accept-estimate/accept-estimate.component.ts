@@ -85,7 +85,7 @@ export class AcceptEstimateComponent implements OnInit {
         const company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
-        let invoice: Invoice = {};
+        const invoice: Invoice = {};
         const code = `INV${new Date().toLocaleDateString('en', {
           year: '2-digit',
         })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
@@ -93,7 +93,7 @@ export class AcceptEstimateComponent implements OnInit {
           .padStart(6, '0')}`;
         Object.assign(invoice, {
           ...this.estimate,
-          code: code,
+          code,
           id: '',
           estimateCode: this.estimate.code,
           estimateId: this.estimate.id,
@@ -161,8 +161,9 @@ export class AcceptEstimateComponent implements OnInit {
   }
 
   close() {
-    if (this.page === 0)
+    if (this.page === 0) {
       this.masterSvc.modal().dismiss(undefined, 'close', 'acceptEstimate');
+    }
     this.page--;
   }
 
@@ -178,6 +179,7 @@ export class AcceptEstimateComponent implements OnInit {
       })}${(site.totalScaffolds ? site.totalScaffolds + 1 : 1)
         .toString()
         .padStart(6, '0')}`;
+      this.site.name = site.name;
       this.field('scaffold', this.form2).setValue({
         code,
         companyId: this.company.id,

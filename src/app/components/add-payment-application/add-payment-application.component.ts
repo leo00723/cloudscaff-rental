@@ -8,6 +8,7 @@ import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Site } from 'src/app/models/site.model';
 import { Term } from 'src/app/models/term.model';
 import { MasterService } from 'src/app/services/master.service';
+import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { ShareDocumentComponent } from '../share-document/share-document.component';
 
@@ -56,7 +57,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     // },
   ];
   private subs = new Subscription();
-  constructor(private masterSvc: MasterService) {
+  constructor(private masterSvc: MasterService, private xero: XeroService) {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.terms$ = this.masterSvc
       .edit()
@@ -145,11 +146,12 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
         this.loading = true;
         this.paymentApplication.setCompany(this.company, true, canMakePA);
         if (canMakePA) {
+          const test = JSON.parse(JSON.stringify(this.paymentApplication));
           await this.masterSvc
             .edit()
             .addDocument(
               `company/${this.paymentApplication.company.id}/paymentApplications`,
-              { ...this.paymentApplication, status: 'pending' }
+              { ...test, status: 'pending' }
             );
 
           await this.masterSvc.edit().updateDoc('company', this.company.id, {
@@ -246,6 +248,12 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
             2000
           );
       }
+    });
+  }
+
+  createInvoice() {
+    this.xero.getTrackingCategories(this.company).subscribe((tc) => {
+      console.log(tc);
     });
   }
 

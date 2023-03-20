@@ -209,6 +209,11 @@ export class PaymentApplication {
           scaffold.hireEndDate = hireEndDate.toDateString();
         }
         break;
+      case 'HAN':
+        {
+          scaffold.handover = value;
+        }
+        break;
       case 'DD':
         {
           scaffold.dismantleDate = value;
