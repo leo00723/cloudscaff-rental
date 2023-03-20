@@ -139,6 +139,36 @@ export class XeroService {
       })
       .pipe(catchError(XeroService.handleError));
   }
+
+  updateInvoice(company: Company, invoice) {
+    // this.refreshAccessToken(company.tokens.refreshToken).subscribe(
+    //   async (data: any) => {
+    //     if (data) {
+    //       company.tokens = {
+    //         ...company.tokens,
+    //         accessToken: data.access_token,
+    //         refreshToken: data.refresh_token,
+    //         lastUpdated: new Date(),
+    //       };
+    //       await this.editService.updateDoc('company', company.id, company);
+    //       console.log('tokens updated');
+    return this.http
+      .post(
+        INVOICES,
+        { ...invoice },
+        {
+          headers: {
+            Authorization: `Bearer ${company.tokens.accessToken}`,
+            'Xero-tenant-id': company.tokens.tenantID,
+          },
+        }
+      )
+      .pipe(catchError(XeroService.handleError));
+    //     }
+    //   }
+    // );
+  }
+
   private authHeader(accessToken: string) {
     return {
       headers: {

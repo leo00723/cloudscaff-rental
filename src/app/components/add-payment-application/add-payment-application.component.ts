@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { map, Observable, Subscription, take, takeLast } from 'rxjs';
@@ -7,6 +8,7 @@ import { Estimate } from 'src/app/models/estimate.model';
 import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Site } from 'src/app/models/site.model';
 import { Term } from 'src/app/models/term.model';
+import { XeroInvoice } from 'src/app/models/xero-invoice.model';
 import { MasterService } from 'src/app/services/master.service';
 import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -252,9 +254,48 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   }
 
   createInvoice() {
-    this.xero.getTrackingCategories(this.company).subscribe((tc) => {
-      console.log(tc);
-    });
+    // this.xero.getInvoices(this.company).subscribe((tc) => {
+    //   // const inv = tc.Invoices[0];
+    //   // inv.LineItems.push({
+    //   //   Description: 'Services as agreed',
+    //   //   Quantity: '4',
+    //   //   UnitAmount: '100.00',
+    //   //   AccountCode: '200',
+    //   // });
+    //   console.log(tc);
+    this.xero
+      .updateInvoice(this.company, {
+        Type: 'ACCREC',
+        Contact: {
+          ContactID: '3f072352-97ab-4bf0-9609-f10c522866f7',
+        },
+        DateString: new Date(this.paymentApplication.date).toISOString(),
+        DueDateString: this.paymentApplication.dueDate,
+        LineAmountTypes: 'Exclusive',
+        Reference: this.paymentApplication.code,
+        LineItems: [
+          {
+            Description: 'Payment application',
+            Quantity: '1',
+            UnitAmount: this.paymentApplication.total,
+            AccountCode: '200',
+            Tracking: [
+              {
+                Name: 'Site',
+                Option: 'SITE22000002',
+              },
+              {
+                Name: 'Branch',
+                Option: 'ACE',
+              },
+            ],
+          },
+        ],
+      })
+      .subscribe((data) => {
+        console.log(data);
+      });
+    // });
   }
 
   close() {
