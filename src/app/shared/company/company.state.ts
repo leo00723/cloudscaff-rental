@@ -28,41 +28,6 @@ export class CompanyState {
         if (company.needsSetup) {
           dispatch(new Navigate('/dashboard/onboarding'));
         }
-        if (company.tokens && !this.tokenUpdated) {
-          // this.xeroService
-          //   .refreshAccessToken(company.tokens.refreshToken)
-          //   .subscribe(async (data: any) => {
-          //     if (data) {
-          //       console.log(data);
-          //       // const nc = {
-          //       //   ...company.tokens,
-          //       //   accessToken: data.access_token,
-          //       //   refreshToken: data.refresh_token,
-          //       //   lastUpdated: new Date(),
-          //       // };
-          //       // await this.editSvc.updateDoc('company', company.id, nc);
-          //       // this.tokenUpdated = true;
-          //       console.log('tokens updated');
-          //     }
-          //   });
-          // setInterval(() => {
-          //   this.xeroService
-          //     .refreshAccessToken(company.tokens.refreshToken)
-          //     .subscribe(async (data: any) => {
-          //       if (data) {
-          //         const nc = {
-          //           ...company.tokens,
-          //           accessToken: data.access_token,
-          //           refreshToken: data.refresh_token,
-          //           lastUpdated: new Date(),
-          //         };
-          //         await this.editSvc.updateDoc('company', company.id, nc);
-          //         this.tokenUpdated = true;
-          //         console.log('tokens updated automatically');
-          //       }
-          //     });
-          // }, 1800000);
-        }
       }),
       catchError((error) => dispatch(new SetCompany(null)))
     );

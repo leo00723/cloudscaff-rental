@@ -180,11 +180,35 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
       try {
         const selectedFile = event.target.files[0];
         const fileReader = new FileReader();
-        fileReader.readAsText(selectedFile, 'UTF-8');
+        fileReader.readAsText(selectedFile, 'csv');
         fileReader.onload = async () => {
-          const data: InventoryItem[] = JSON.parse(
-            fileReader.result.toString()
-          );
+          const dataArray = fileReader.result
+            .toString()
+            .replace(/"/g, '')
+            .split('\r\n');
+          const items: InventoryItem[] = [];
+          for (const line of dataArray) {
+            const row = line.split(';');
+            items.push({
+              code: row[0],
+              name: row[1],
+              yardQty: +row[2],
+              availableQty: +row[2],
+              weight: +row[3].replace(',', '.'),
+              inMaintenanceQty: 0,
+              inUseQty: 0,
+              damagedQty: 0,
+              lostQty: 0,
+              hireCost: 0,
+              replacementCost: 0,
+              sellingCost: 0,
+              crossHire: [],
+            });
+          }
+
+          // const data: InventoryItem[] = JSON.parse(
+          //   fileReader.result.toString()
+          // );
           const company = this.store.selectSnapshot(CompanyState.company).id;
           // let counter = 0;
           // for (const i of this.itemsBackup) {
@@ -211,11 +235,11 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
           //   //   );
           //   // }
           // }
-          for (const item of data) {
-            await this.editService.setDoc(
+
+          for (const item of items) {
+            await this.editService.addDocument(
               `company/${company}/stockItems`,
-              item,
-              item.id
+              item
             );
           }
           this.notificationService.toast('Import Successful', 'success');

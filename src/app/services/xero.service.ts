@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { catchError, of, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Company } from '../models/company.model';
 import { EditService } from './edit.service';

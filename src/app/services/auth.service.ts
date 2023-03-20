@@ -24,9 +24,10 @@ export class AuthService {
     onAuthStateChanged(this.auth, async (user) => {
       if (user) {
         this.loggedIn = true;
-        const company = (await user.getIdTokenResult()).claims
-          .company as string;
-        this.store.dispatch([new GetUser(user.uid), new GetCompany(company)]);
+        // const company = (await user.getIdTokenResult()).claims
+        //   .company as string;
+        // this.store.dispatch([new GetUser(user.uid), new GetCompany(company)]);
+        this.store.dispatch([new GetUser(user.uid)]);
       } else if (this.loggedIn) {
         this.store.dispatch(new Navigate('/login'));
       }

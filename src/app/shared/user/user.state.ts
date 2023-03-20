@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
 import { catchError, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
@@ -14,7 +14,7 @@ import { GetUser, SetUser } from './user.actions';
 })
 @Injectable()
 export class UserState {
-  constructor(private editSvc: EditService) {}
+  constructor(private editSvc: EditService, private store: Store) {}
   @Action(SetUser)
   setUser({ setState }: StateContext<User>, { payload }: SetUser) {
     setState(payload);
@@ -24,6 +24,7 @@ export class UserState {
   getUser({ dispatch }: StateContext<string>, { payload }: GetUser) {
     return this.editSvc.getDocById('users', payload).pipe(
       tap(async (user: User) => {
+        this.store.dispatch(new GetCompany(user.company));
         dispatch(new SetUser(user));
         if (user.needsSetup) {
           dispatch(new Navigate('/dashboard/onboarding'));
