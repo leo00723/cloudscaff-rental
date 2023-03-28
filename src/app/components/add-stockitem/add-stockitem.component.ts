@@ -22,8 +22,8 @@ export class AddStockitemComponent implements OnInit {
   @Input() isEdit = false;
   @Input() set value(val: InventoryItem) {
     if (val) {
-      Object.assign(this.inventoryItem, val);
-      Object.assign(this.inventoryItemBackup, val);
+      this.inventoryItem = { ...val };
+      this.inventoryItemBackup = { ...val };
       this.initEditForm();
     }
   }
@@ -37,7 +37,6 @@ export class AddStockitemComponent implements OnInit {
   removeQty = 0;
   addQty = 0;
   moveQty = 0;
-  showUndo = false;
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -137,31 +136,7 @@ export class AddStockitemComponent implements OnInit {
   }
   updateItem() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        await this.masterSvc
-          .edit()
-          .updateDoc(
-            `company/${this.company.id}/stockItems`,
-            this.inventoryItem.id,
-            {
-              ...this.form.value,
-              category: this.form.value.categoryType.name,
-              log: this.inventoryItem.log,
-            }
-          );
-        this.masterSvc.notification().toast('Stock Item Updated', 'success');
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating stock item. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
+      this.autoUpdate();
     });
   }
 
@@ -182,12 +157,11 @@ export class AddStockitemComponent implements OnInit {
         this.inventoryItem.log = [log];
       }
       this.addQty = 0;
-      this.showUndo = true;
+      this.autoUpdate();
     }, `Are you sure you want to add ${this.addQty} items?`);
   }
 
   moveToYard() {
-    const yardQty = +this.field('yardQty').value;
     const inMaintenanceQty = +this.field('inMaintenanceQty').value;
     if (inMaintenanceQty < this.moveQty) {
       this.masterSvc
@@ -215,7 +189,7 @@ export class AddStockitemComponent implements OnInit {
           this.inventoryItem.log = [log];
         }
         this.moveQty = 0;
-        this.showUndo = true;
+        this.autoUpdate();
       }, `Are you sure you want to move ${this.moveQty} items?`);
     }
   }
@@ -252,17 +226,37 @@ export class AddStockitemComponent implements OnInit {
           this.inventoryItem.log = [log];
         }
         this.removeQty = 0;
-        this.showUndo = true;
+        this.autoUpdate();
       }, `Are you sure you want to remove ${this.removeQty} items?`);
     }
   }
 
-  undo() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.inventoryItem = { ...this.inventoryItemBackup };
-      this.initEditForm();
-      this.showUndo = false;
-    });
+  private async autoUpdate() {
+    this.loading = true;
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/stockItems`,
+          this.inventoryItem.id,
+          {
+            ...this.form.value,
+            category: this.form.value.categoryType.name,
+            log: this.inventoryItem.log,
+          }
+        );
+      this.masterSvc.notification().toast('Stock Item Updated', 'success');
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating stock item. Please try again!',
+          'danger'
+        );
+    } finally {
+      this.loading = false;
+    }
   }
 
   private initEditForm() {
