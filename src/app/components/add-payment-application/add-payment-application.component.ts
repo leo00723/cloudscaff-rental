@@ -254,48 +254,43 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   }
 
   createInvoice() {
-    // this.xero.getInvoices(this.company).subscribe((tc) => {
-    //   // const inv = tc.Invoices[0];
-    //   // inv.LineItems.push({
-    //   //   Description: 'Services as agreed',
-    //   //   Quantity: '4',
-    //   //   UnitAmount: '100.00',
-    //   //   AccountCode: '200',
-    //   // });
-    //   console.log(tc);
-    this.xero
-      .updateInvoice(this.company, {
-        Type: 'ACCREC',
-        Contact: {
-          ContactID: '3f072352-97ab-4bf0-9609-f10c522866f7',
-        },
-        DateString: new Date(this.paymentApplication.date).toISOString(),
-        DueDateString: this.paymentApplication.dueDate,
-        LineAmountTypes: 'Exclusive',
-        Reference: this.paymentApplication.code,
-        LineItems: [
-          {
-            Description: 'Payment application',
-            Quantity: '1',
-            UnitAmount: this.paymentApplication.total,
-            AccountCode: '200',
-            Tracking: [
-              {
-                Name: 'Site',
-                Option: 'SITE22000002',
-              },
-              {
-                Name: 'Branch',
-                Option: 'ACE',
-              },
-            ],
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.xero
+        .updateInvoice(this.company, {
+          Type: 'ACCREC',
+          Contact: {
+            ContactID: '3f072352-97ab-4bf0-9609-f10c522866f7',
           },
-        ],
-      })
-      .subscribe((data) => {
-        console.log(data);
-      });
-    // });
+          DateString: new Date(this.paymentApplication.date).toISOString(),
+          DueDateString: this.paymentApplication.dueDate,
+          LineAmountTypes: 'Inclusive',
+          Reference: this.paymentApplication.code,
+          LineItems: [
+            {
+              Description: 'Payment application',
+              Quantity: '1',
+              UnitAmount: this.paymentApplication.total,
+              AccountCode: '200',
+              Tracking: [
+                {
+                  Name: 'Site',
+                  Option: 'SITE22000002',
+                },
+                {
+                  Name: 'Branch',
+                  Option: 'ACE',
+                },
+              ],
+            },
+          ],
+        })
+        .subscribe((data) => {
+          this.masterSvc
+            .notification()
+            .toast('Invoice created Successfully', 'success');
+          console.log(data);
+        });
+    });
   }
 
   close() {

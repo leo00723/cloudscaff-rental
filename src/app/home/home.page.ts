@@ -130,6 +130,20 @@ export class HomePage implements OnDestroy {
     this.masterSvc.auth().logout();
   }
 
+  switch(userId: string, company: string) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        await this.masterSvc.edit().updateDoc('users', userId, { company });
+        window.location.reload();
+      } catch (error) {
+        console.error(error);
+        this.masterSvc
+          .notification()
+          .toast('Something went wrong, please try again!', 'danger');
+      }
+    });
+  }
+
   call() {
     window.open('https://calendly.com/cloudscaff/onboarding', '_blank');
   }

@@ -1,5 +1,6 @@
 export interface User {
   id?: string;
+  branches?: { name: string; id: string }[];
   email?: string;
   company?: string;
   name?: string;
