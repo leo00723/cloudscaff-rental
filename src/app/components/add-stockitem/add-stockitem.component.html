@@ -133,7 +133,7 @@
             >
             </app-input-text>
           </ion-col>
-          <ion-col size="4">
+          <ion-col sizeMd="4" size="12">
             <app-input-text
               title="Remove Yard Qty"
               [optional]="true"
@@ -141,7 +141,11 @@
               [value]="removeQty"
               (fieldChange)="removeQty = $event"
             ></app-input-text>
-            <app-input-text title="Comment" [optional]="true"></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
+            ></app-input-text>
             <ion-button
               id="add"
               class="float-end"
@@ -153,7 +157,7 @@
               Remove
             </ion-button>
           </ion-col>
-          <ion-col size="4">
+          <ion-col sizeMd="4" size="12">
             <app-input-text
               title="Add Yard Qty"
               [optional]="true"
@@ -161,6 +165,12 @@
               type="number"
               (fieldChange)="addQty = $event"
             ></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
+            ></app-input-text>
+
             <ion-button
               id="add"
               class="float-end"
@@ -172,13 +182,18 @@
               Add
             </ion-button>
           </ion-col>
-          <ion-col size="4">
+          <ion-col sizeMd="4" size="12">
             <app-input-text
               title="Move Maintenance to Available"
               [optional]="true"
               type="number"
               [value]="moveQty"
               (fieldChange)="moveQty = $event"
+            ></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
             ></app-input-text>
             <ion-button
               id="add"
@@ -343,6 +358,7 @@
                 <tr class="table-light align-middle text-center">
                   <th>#</th>
                   <th class="text-start">Message</th>
+                  <th class="text-start">Comment</th>
                   <th>User</th>
                   <th>Date</th>
                 </tr>
@@ -364,6 +380,9 @@
                       "
                     >
                       {{ log.message }}
+                    </td>
+                    <td class="text-start">
+                      {{ log.comment }}
                     </td>
                     <td>{{ log.user.name }}</td>
                     <td>

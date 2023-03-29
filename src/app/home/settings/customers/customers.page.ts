@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable, timer } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
@@ -6,24 +6,34 @@ import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { XeroService } from 'src/app/services/xero.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 import { AddCustomerComponent } from './add-customer/add-customer.component';
 
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.page.html',
 })
-export class CustomersPage {
+export class CustomersPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   customers$: Observable<Customer[] | any>;
   isLoading = true;
   constructor(
     private masterSvc: MasterService,
+    private xero: XeroService,
     private change: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.init();
+  }
+
+  getCustomers() {
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.xero.getCustomers(company).subscribe((data) => {
+      console.log(data);
+    });
   }
 
   async editCustomer(customer: Customer, companyId: string) {

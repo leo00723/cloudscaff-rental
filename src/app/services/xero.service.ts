@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 import { Company } from '../models/company.model';
 import { EditService } from './edit.service';
 
+const CUSTOMERS = 'https://api.xero.com/api.xro/2.0/Contacts';
 const INVOICES = 'https://api.xero.com/api.xro/2.0/Invoices';
 const TRACKING_CATEGORIES =
   'https://api.xero.com/api.xro/2.0/TrackingCategories';
@@ -132,6 +133,17 @@ export class XeroService {
   getInvoices(company: Company) {
     return this.http
       .get(INVOICES, {
+        headers: {
+          Authorization: `Bearer ${company.tokens.accessToken}`,
+          'Xero-tenant-id': company.tokens.tenantID,
+        },
+      })
+      .pipe(catchError(XeroService.handleError));
+  }
+
+  getCustomers(company: Company) {
+    return this.http
+      .get(CUSTOMERS, {
         headers: {
           Authorization: `Bearer ${company.tokens.accessToken}`,
           'Xero-tenant-id': company.tokens.tenantID,

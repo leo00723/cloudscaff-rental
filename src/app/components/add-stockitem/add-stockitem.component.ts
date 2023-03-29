@@ -37,6 +37,7 @@ export class AddStockitemComponent implements OnInit {
   removeQty = 0;
   addQty = 0;
   moveQty = 0;
+  comment = '';
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -150,6 +151,7 @@ export class AddStockitemComponent implements OnInit {
         user: this.user,
         date: new Date(),
         status: 'add',
+        comment: this.comment,
       };
       if (this.inventoryItem.log) {
         this.inventoryItem.log.push(log);
@@ -182,6 +184,7 @@ export class AddStockitemComponent implements OnInit {
           user: this.user,
           date: new Date(),
           status: 'move',
+          comment: this.comment,
         };
         if (this.inventoryItem.log) {
           this.inventoryItem.log.push(log);
@@ -219,6 +222,7 @@ export class AddStockitemComponent implements OnInit {
           user: this.user,
           date: new Date(),
           status: 'remove',
+          comment: this.comment,
         };
         if (this.inventoryItem.log) {
           this.inventoryItem.log.push(log);
