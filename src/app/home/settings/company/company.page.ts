@@ -147,11 +147,30 @@ export class CompanyPage implements OnDestroy {
     this.loading = false;
   }
 
-  connectTenant() {
+  async connectTenant() {
+    this.loading = true;
     try {
-      this.xeroService.getConnections(this.company);
+      const { data } = await this.masterSvc
+        .edit()
+        .callFunction('getXeroTenants', {
+          companyID: this.company.id,
+          url: 'https://api.xero.com/connections',
+          accessToken: this.company.tokens.accessToken,
+        });
+      if (data[0]) {
+        this.company.tokens = {
+          ...this.company.tokens,
+          tenantID: data[0].tenantId,
+          tenantName: data[0].tenantName,
+        };
+        await this.masterSvc
+          .edit()
+          .updateDoc('company', this.company.id, this.company);
+      }
     } catch (error) {
       console.error(error);
+    } finally {
+      this.loading = false;
     }
   }
 

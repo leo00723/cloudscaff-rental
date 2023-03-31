@@ -66,6 +66,24 @@ exports.deleteUser = functions.https.onCall(async (data) => {
   }
 });
 
+exports.getXeroTenants = functions.https.onCall(async (data) => {
+  try {
+    const response = await axios.default.get(data.url, {
+      headers: {
+        Authorization: `Bearer ${data.accessToken}`,
+      },
+    });
+    logger.log(response.data);
+    return response.data;
+  } catch (error) {
+    logger.error(`Error getting Xero tenants: ${error}`);
+    throw new functions.https.HttpsError(
+      'internal',
+      'Error getting Xero tenants'
+    );
+  }
+});
+
 exports.manageShipment = functions.firestore
   .document('company/{companyId}/shipments/{shipmentId}')
   .onUpdate(async (change, context) => {
