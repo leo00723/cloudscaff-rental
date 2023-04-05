@@ -150,18 +150,12 @@ export class CompanyPage implements OnDestroy {
   async connectTenant() {
     this.loading = true;
     try {
-      const { data } = await this.masterSvc
-        .edit()
-        .callFunction('getXeroTenants', {
-          companyID: this.company.id,
-          url: 'https://api.xero.com/connections',
-          accessToken: this.company.tokens.accessToken,
-        });
-      if (data[0]) {
+      const connections = await this.xeroService.getConnections(this.company);
+      if (connections[0]) {
         this.company.tokens = {
           ...this.company.tokens,
-          tenantID: data[0].tenantId,
-          tenantName: data[0].tenantName,
+          tenantID: connections[0].tenantId,
+          tenantName: connections[0].tenantName,
         };
         await this.masterSvc
           .edit()
@@ -174,38 +168,6 @@ export class CompanyPage implements OnDestroy {
     }
   }
 
-  getInvoices() {
-    this.xeroService.getInvoices(this.company).subscribe((data) => {
-      console.log(data);
-    });
-  }
-
-  refresh() {
-    try {
-      this.subs.add(
-        this.xeroService
-          .refreshAccessToken(this.company.tokens.refreshToken)
-          .subscribe(async (data: any) => {
-            if (data) {
-              this.company.tokens = {
-                ...this.company.tokens,
-                accessToken: data.access_token,
-                refreshToken: data.refresh_token,
-                lastUpdated: new Date(),
-              };
-              await this.masterSvc
-                .edit()
-                .updateDoc('company', this.company.id, this.company);
-              this.masterSvc
-                .notification()
-                .toast('Tokens refreshed successfully', 'success');
-            }
-          })
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  }
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(async () => {

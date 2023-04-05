@@ -11,6 +11,8 @@ import { catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Company } from '../models/company.model';
 import { EditService } from './edit.service';
+import { Customer } from '../models/customer.model';
+import { XeroContact } from '../models/xero-contact.model';
 
 const CUSTOMERS = 'https://api.xero.com/api.xro/2.0/Contacts';
 const INVOICES = 'https://api.xero.com/api.xro/2.0/Invoices';
@@ -61,132 +63,68 @@ export class XeroService {
     return this.oauthService.hasValidAccessToken();
   }
 
-  getConnections(company: Company) {
-    this.refreshAccessToken(company.tokens.refreshToken).subscribe(
-      async (data: any) => {
-        if (data) {
-          company.tokens = {
-            ...company.tokens,
-            accessToken: data.access_token,
-            refreshToken: data.refresh_token,
-            lastUpdated: new Date(),
-          };
-          await this.editService.updateDoc('company', company.id, company);
-          console.log('tokens updated');
-          this.http
-            .get(
-              'https://api.xero.com/connections',
-              this.authHeader(company.tokens.accessToken)
-            )
-            .pipe(catchError(XeroService.handleError))
-            .subscribe(async (tenants) => {
-              if (tenants) {
-                company.tokens = {
-                  ...company.tokens,
-                  tenantID: tenants[0].tenantId,
-                  tenantName: tenants[0].tenantName,
-                };
-                await this.editService.updateDoc(
-                  'company',
-                  company.id,
-                  company
-                );
-                console.log('tentant updated');
-              }
-            });
-        }
-      }
-    );
+  async getConnections(company: Company) {
+    const { data } = await this.editService.callFunction('getXeroTenants', {
+      companyID: company.id,
+      url: 'https://api.xero.com/connections',
+      accessToken: company.tokens.accessToken,
+    });
+    return data;
   }
 
-  refreshAccessToken(refreshToken: string) {
-    const HTTP_OPTIONS = {
-      headers: new HttpHeaders({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'Content-Type': 'application/x-www-form-urlencoded',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        Authorization:
-          'Basic ' +
-          btoa(environment.clientID + ':' + environment.clientSecret),
-      }),
-    };
-    const BODY = new HttpParams()
-      .set('grant_type', 'refresh_token')
-      .set('refresh_token', refreshToken);
-
-    return this.http
-      .post(API_URL, BODY, HTTP_OPTIONS)
-      .pipe(catchError(XeroService.handleError));
+  async getTrackingCategories(company: Company) {
+    const { data }: any = await this.editService.callFunction('getXeroAPI', {
+      companyID: company.id,
+      url: TRACKING_CATEGORIES,
+      accessToken: company.tokens.accessToken,
+      tenantID: company.tokens.tenantID,
+    });
+    return data.TrackingCategories;
   }
 
-  getTrackingCategories(company: Company) {
-    return this.http
-      .get(TRACKING_CATEGORIES, {
-        headers: {
-          Authorization: `Bearer ${company.tokens.accessToken}`,
-          'Xero-tenant-id': company.tokens.tenantID,
-        },
-      })
-      .pipe(catchError(XeroService.handleError));
+  async getInvoices(company: Company) {
+    const { data }: any = await this.editService.callFunction('getXeroAPI', {
+      companyID: company.id,
+      url: INVOICES,
+      accessToken: company.tokens.accessToken,
+      tenantID: company.tokens.tenantID,
+    });
+    return data?.Invoices;
   }
 
-  getInvoices(company: Company) {
-    return this.http
-      .get(INVOICES, {
-        headers: {
-          Authorization: `Bearer ${company.tokens.accessToken}`,
-          'Xero-tenant-id': company.tokens.tenantID,
-        },
-      })
-      .pipe(catchError(XeroService.handleError));
+  async getCustomers(company: Company) {
+    const { data }: any = await this.editService.callFunction('getXeroAPI', {
+      companyID: company.id,
+      url: CUSTOMERS,
+      accessToken: company.tokens.accessToken,
+      tenantID: company.tokens.tenantID,
+    });
+    return data?.Contacts;
   }
 
-  getCustomers(company: Company) {
-    return this.http
-      .get(CUSTOMERS, {
-        headers: {
-          Authorization: `Bearer ${company.tokens.accessToken}`,
-          'Xero-tenant-id': company.tokens.tenantID,
-        },
-      })
-      .pipe(catchError(XeroService.handleError));
+  async syncCustomers(
+    company: Company,
+    customers: XeroContact[]
+  ): Promise<XeroContact[]> {
+    const { data }: any = await this.editService.callFunction('putXeroAPI', {
+      companyID: company.id,
+      url: CUSTOMERS,
+      accessToken: company.tokens.accessToken,
+      tenantID: company.tokens.tenantID,
+      body: { Contacts: customers },
+    });
+    return data?.Contacts;
   }
 
-  updateInvoice(company: Company, invoice) {
-    // this.refreshAccessToken(company.tokens.refreshToken).subscribe(
-    //   async (data: any) => {
-    //     if (data) {
-    //       company.tokens = {
-    //         ...company.tokens,
-    //         accessToken: data.access_token,
-    //         refreshToken: data.refresh_token,
-    //         lastUpdated: new Date(),
-    //       };
-    //       await this.editService.updateDoc('company', company.id, company);
-    //       console.log('tokens updated');
-    return this.http
-      .post(
-        INVOICES,
-        { ...invoice },
-        {
-          headers: {
-            Authorization: `Bearer ${company.tokens.accessToken}`,
-            'Xero-tenant-id': company.tokens.tenantID,
-          },
-        }
-      )
-      .pipe(catchError(XeroService.handleError));
-    //     }
-    //   }
-    // );
-  }
-
-  private authHeader(accessToken: string) {
-    return {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
+  async updateInvoice(company: Company, invoice) {
+    const { data }: any = await this.editService.callFunction('putXeroAPI', {
+      companyID: company.id,
+      url: INVOICES,
+      accessToken: company.tokens.accessToken,
+      tenantID: company.tokens.tenantID,
+      body: invoice,
+    });
+    return data?.Invoices;
   }
 
   private static handleError(error: HttpErrorResponse): any {

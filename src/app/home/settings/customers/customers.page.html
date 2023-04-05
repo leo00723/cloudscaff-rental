@@ -3,8 +3,6 @@
   [showMenu]="false"
   [showBack]="true"
   path="/dashboard/settings"
-  btnName="refresh"
-  (updated)="init()"
 ></app-header>
 
 <ion-content fullscreen="true">
@@ -17,14 +15,6 @@
       (selectedItem)="editCustomer($event,data.company.id)"
     ></app-customer-table>
 
-    <ion-button
-      (click)="getCustomers()"
-      expand="block"
-      fill="clear"
-      shape="round"
-    >
-      get customers
-    </ion-button>
     <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button (click)="addCustomer(data.company.id)">
         <ion-icon name="add"></ion-icon>

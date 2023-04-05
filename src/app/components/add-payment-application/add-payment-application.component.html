@@ -1013,14 +1013,16 @@
           Application"
           }}
         </ion-button>
-        <ion-button
-          shape="round"
-          color="success"
-          *ngIf="isEdit && !loading"
-          (click)="createInvoice()"
+        <ng-container *ngIf="site$ | async as site">
+          <ion-button
+            shape="round"
+            color="success"
+            *ngIf="isEdit && !loading"
+            (click)="createInvoice(site)"
+          >
+            Create Invoice
+          </ion-button></ng-container
         >
-          Create Invoice
-        </ion-button>
         <ion-button
           shape="round"
           *ngIf="!isEdit && !loading"

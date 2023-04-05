@@ -253,43 +253,36 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
     });
   }
 
-  createInvoice() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.xero
-        .updateInvoice(this.company, {
-          Type: 'ACCREC',
-          Contact: {
-            ContactID: '3f072352-97ab-4bf0-9609-f10c522866f7',
+  createInvoice(site: Site) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      const response = await this.xero.updateInvoice(this.company, {
+        Type: 'ACCREC',
+        Contact: {
+          ContactID: site.customer.xeroID,
+        },
+        DateString: new Date().toISOString(),
+        DueDateString: this.paymentApplication.dueDate,
+        LineAmountTypes: 'Inclusive',
+        Reference: this.paymentApplication.code,
+        LineItems: [
+          {
+            Description: 'Payment application',
+            Quantity: '1',
+            UnitAmount: this.paymentApplication.total,
+            AccountCode: '200',
+            Tracking: [
+              {
+                Name: 'Site',
+                Option: site.code,
+              },
+            ],
           },
-          DateString: new Date(this.paymentApplication.date).toISOString(),
-          DueDateString: this.paymentApplication.dueDate,
-          LineAmountTypes: 'Inclusive',
-          Reference: this.paymentApplication.code,
-          LineItems: [
-            {
-              Description: 'Payment application',
-              Quantity: '1',
-              UnitAmount: this.paymentApplication.total,
-              AccountCode: '200',
-              Tracking: [
-                {
-                  Name: 'Site',
-                  Option: 'SITE22000002',
-                },
-                {
-                  Name: 'Branch',
-                  Option: 'ACE',
-                },
-              ],
-            },
-          ],
-        })
-        .subscribe((data) => {
-          this.masterSvc
-            .notification()
-            .toast('Invoice created Successfully', 'success');
-          console.log(data);
-        });
+        ],
+      });
+      this.masterSvc
+        .notification()
+        .toast('Invoice created Successfully', 'success');
+      console.log(response);
     });
   }
 

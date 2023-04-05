@@ -1,115 +1,156 @@
 <form [formGroup]="form" class="card-outline m-auto">
-  <ion-row>
-    <ion-col size="12" sizeXl="6">
-      <app-input-reactive
-        title="Customer name"
-        [form]="form"
-        controlName="name"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-      <app-input-reactive
-        title="Email address"
-        [form]="form"
-        controlName="email"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-      <app-input-reactive
-        title="Representative"
-        [form]="form"
-        controlName="rep"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-      <app-input-reactive
-        title="Contact Number"
-        [form]="form"
-        controlName="phone"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-      <app-input-reactive
-        title="Registration Number"
-        [optional]="true"
-        [form]="form"
-        controlName="regNumber"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-      <app-input-reactive
-        title="VAT Number"
-        [optional]="true"
-        [form]="form"
-        controlName="vatNum"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-    </ion-col>
-    <ion-col size="12" sizeXl="6">
-      <app-address-search
-        *ngIf="isCreate || isUpdate"
-        (addressData)="updateAddress($event)"
-      ></app-address-search>
-      <app-input-reactive
-        title="Address"
-        [form]="form"
-        controlName="address"
-        [readonly]="readOnly"
-      >
-      </app-input-reactive>
-      <app-input-reactive
-        title="suburb"
-        [form]="form"
-        controlName="suburb"
-        [optional]="true"
-        [readonly]="readOnly"
-      >
-      </app-input-reactive>
-      <app-input-reactive
-        title="State/City"
-        [form]="form"
-        controlName="city"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-      <app-input-reactive
-        title="Zip"
-        [form]="form"
-        controlName="zip"
-        [optional]="true"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-      <app-input-reactive
-        title="Country"
-        [form]="form"
-        controlName="country"
-        [readonly]="readOnly"
-      ></app-input-reactive>
-    </ion-col>
-    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
-    <ion-col size="12" class="text-end">
-      <ion-button
-        *ngIf="!loading && (user.role === 'Owner' || user.role === 'Super-Admin') && isDelete"
-        shape="round"
-        color="danger"
-        type="submit"
-        [disabled]="form.invalid"
-        (click)="delete()"
-      >
-        Delete Customer
-      </ion-button>
-      <ion-button
-        *ngIf="!loading && isUpdate"
-        shape="round"
-        color="success"
-        type="submit"
-        [disabled]="form.invalid"
-        (click)="update()"
-      >
-        Update Customer
-      </ion-button>
-      <ion-button
-        *ngIf="!loading && isCreate"
-        shape="round"
-        type="submit"
-        [disabled]="form.invalid"
-        (click)="create()"
-        >Create Customer
-      </ion-button>
-    </ion-col>
-  </ion-row>
+  <ng-container *ngIf="company$ | async as company">
+    <ion-row>
+      <ion-col size="12" sizeXl="6">
+        <app-input-reactive
+          title="Customer name"
+          [form]="form"
+          controlName="name"
+          [readonly]="readOnly || isUpdate"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Email address"
+          [form]="form"
+          controlName="email"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Representative"
+          [form]="form"
+          controlName="rep"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Contact Number"
+          [form]="form"
+          controlName="phone"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Registration Number"
+          [optional]="true"
+          [form]="form"
+          controlName="regNumber"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="VAT Number"
+          [optional]="true"
+          [form]="form"
+          controlName="vatNum"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+      </ion-col>
+      <ion-col size="12" sizeXl="6">
+        <app-address-search
+          *ngIf="isCreate || isUpdate"
+          (addressData)="updateAddress($event)"
+        ></app-address-search>
+        <app-input-reactive
+          title="Address"
+          [form]="form"
+          controlName="address"
+          [readonly]="readOnly"
+        >
+        </app-input-reactive>
+        <app-input-reactive
+          title="suburb"
+          [form]="form"
+          controlName="suburb"
+          [optional]="true"
+          [readonly]="readOnly"
+        >
+        </app-input-reactive>
+        <app-input-reactive
+          title="State/City"
+          [form]="form"
+          controlName="city"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Zip"
+          [form]="form"
+          controlName="zip"
+          [optional]="true"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Country"
+          [form]="form"
+          controlName="country"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+      </ion-col>
+      <ng-container *ngIf="company.tokens">
+        <ion-col
+          size="12"
+          *ngIf="xeroCustomers.length > 0 && !field('xeroID').value"
+        >
+          <app-searchable-select
+            (click)="select.open()"
+            title="Select Customer"
+            [data]="xeroCustomers"
+            itemTextField="Name"
+            (selectedChanged)="changeCustomer($event)"
+            #select
+          ></app-searchable-select>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Xero ID"
+            [form]="form"
+            controlName="xeroID"
+            [readonly]="true"
+          ></app-input-reactive>
+        </ion-col>
+      </ng-container>
+      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+      <ion-col size="12" class="text-end">
+        <ion-button
+          *ngIf="
+            !loading &&
+            (user.role === 'Owner' || user.role === 'Super-Admin') &&
+            isDelete
+          "
+          shape="round"
+          color="danger"
+          type="submit"
+          [disabled]="form.invalid"
+          (click)="delete()"
+        >
+          Delete Customer
+        </ion-button>
+        <ion-button
+          *ngIf="!loading && isUpdate"
+          shape="round"
+          color="success"
+          type="submit"
+          [disabled]="form.invalid"
+          (click)="update()"
+        >
+          Update Customer
+        </ion-button>
+        <ion-button
+          *ngIf="
+            !loading && isUpdate && company.tokens && !field('xeroID').value
+          "
+          shape="round"
+          color="tertiary"
+          type="submit"
+          [disabled]="form.invalid"
+          (click)="xero(company)"
+        >
+          Sync with Xero
+        </ion-button>
+        <ion-button
+          *ngIf="!loading && isCreate"
+          shape="round"
+          type="submit"
+          [disabled]="form.invalid"
+          (click)="create()"
+          >Create Customer
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ng-container>
 </form>

@@ -73,7 +73,6 @@ exports.getXeroTenants = functions.https.onCall(async (data) => {
         Authorization: `Bearer ${data.accessToken}`,
       },
     });
-    logger.log(response.data);
     return response.data;
   } catch (error) {
     logger.error(`Error getting Xero tenants: ${error}`);
@@ -81,6 +80,39 @@ exports.getXeroTenants = functions.https.onCall(async (data) => {
       'internal',
       'Error getting Xero tenants'
     );
+  }
+});
+
+exports.getXeroAPI = functions.https.onCall(async (data) => {
+  try {
+    const response = await axios.default.get(data.url, {
+      headers: {
+        Authorization: `Bearer ${data.accessToken}`,
+        'Xero-tenant-id': data.tenantID,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    logger.error(`Error getting Xero Data: ${data}`);
+    throw new functions.https.HttpsError('internal', 'Error getting Xero data');
+  }
+});
+exports.putXeroAPI = functions.https.onCall(async (data) => {
+  try {
+    const response = await axios.default.put(
+      data.url,
+      { ...data.body },
+      {
+        headers: {
+          Authorization: `Bearer ${data.accessToken}`,
+          'Xero-tenant-id': data.tenantID,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    logger.error(`Error putting Xero Data: ${data}`);
+    throw new functions.https.HttpsError('internal', 'Error putting Xero data');
   }
 });
 

@@ -29,13 +29,6 @@ export class CustomersPage implements OnInit {
     this.init();
   }
 
-  getCustomers() {
-    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
-    this.xero.getCustomers(company).subscribe((data) => {
-      console.log(data);
-    });
-  }
-
   async editCustomer(customer: Customer, companyId: string) {
     const modal = await this.masterSvc.modal().create({
       component: AddCustomerComponent,
