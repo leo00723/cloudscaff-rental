@@ -82,10 +82,7 @@
         ></app-input-reactive>
       </ion-col>
       <ng-container *ngIf="company.tokens">
-        <ion-col
-          size="12"
-          *ngIf="xeroCustomers.length > 0 && !field('xeroID').value"
-        >
+        <ion-col size="12" *ngIf="xeroCustomers.length > 0">
           <app-searchable-select
             (click)="select.open()"
             title="Select Customer"
