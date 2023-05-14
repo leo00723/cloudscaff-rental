@@ -29,6 +29,8 @@ export class AddHandoverComponent implements OnInit {
     maxLoad: '',
     status: 'pending-Needs Signature',
     date: new Date(),
+    erectPercentage: 0,
+    dismantlePercentage: 0,
   };
 
   loading = false;
@@ -112,5 +114,8 @@ export class AddHandoverComponent implements OnInit {
   }
   close() {
     this.masterSvc.modal().dismiss(null, 'close', 'addHandover');
+  }
+  pinFormatter(value: number) {
+    return `${value}%`;
   }
 }

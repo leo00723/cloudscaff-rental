@@ -132,8 +132,9 @@ export class AcceptInventoryEstimateComponent implements OnInit {
   }
 
   close() {
-    if (this.page === 0)
+    if (this.page === 0) {
       this.masterSvc.modal().dismiss(undefined, 'close', 'acceptEstimate');
+    }
     this.page--;
   }
 

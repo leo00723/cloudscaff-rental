@@ -20,6 +20,7 @@ import { Transfer } from 'src/app/models/transfer.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { Navigate } from 'src/app/shared/router.state';
 
 @Component({
   selector: 'app-inventory',
@@ -186,7 +187,11 @@ export class InventoryPage implements OnInit {
     });
     await modal.present();
     const { role } = await modal.onDidDismiss();
-    role === 'approved' ? (this.active = 2) : null;
+    role === 'approved'
+      ? this.masterSvc
+          .store()
+          .dispatch(new Navigate('/dashboard/inventory?page=2'))
+      : null;
     return true;
   }
 

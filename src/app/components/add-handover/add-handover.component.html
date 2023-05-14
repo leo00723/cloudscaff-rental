@@ -90,6 +90,40 @@
                 </ion-radio-group>
               </td>
             </tr>
+            <tr class="align-middle">
+              <td>Erect Percentage</td>
+              <td class="text-center">
+                <ion-range
+                  #ep
+                  max="100"
+                  min="0"
+                  aria-label="Erect Percentage"
+                  [pin]="true"
+                  [pinFormatter]="pinFormatter"
+                  [value]="handover.erectPercentage"
+                  (ionChange)="handover.erectPercentage = +ep.value"
+                >
+                </ion-range>
+                <ion-label> {{ handover.erectPercentage }}%</ion-label>
+              </td>
+            </tr>
+            <tr class="align-middle">
+              <td>Dismantle Percentage</td>
+              <td class="text-center">
+                <ion-range
+                  #dp
+                  max="100"
+                  min="0"
+                  aria-label="Dismantle Percentage"
+                  [pin]="true"
+                  [pinFormatter]="pinFormatter"
+                  [value]="handover.dismantlePercentage"
+                  (ionChange)="handover.dismantlePercentage = +dp.value"
+                >
+                </ion-range>
+                <ion-label> {{ handover.dismantlePercentage }}%</ion-label>
+              </td>
+            </tr>
           </tbody>
         </table>
         <app-input-text

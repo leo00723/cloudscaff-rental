@@ -77,6 +77,15 @@
             title="End Date"
           ></app-input-date>
         </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Notes"
+            controlName="notes"
+            [form]="form"
+            [textarea]="true"
+          >
+          </app-input-reactive>
+        </ion-col>
         <ion-col size="6">
           <ion-text color="medium">
             <h4>Inventory Information</h4>

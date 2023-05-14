@@ -20,4 +20,6 @@ export interface Handover {
   signatureRef?: string;
   signedBy?: string;
   type?: string;
+  erectPercentage?: number;
+  dismantlePercentage?: number;
 }

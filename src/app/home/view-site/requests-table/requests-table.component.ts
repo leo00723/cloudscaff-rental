@@ -46,6 +46,8 @@ export class RequestsTableComponent {
         return 'success';
       case 'pending':
         return 'primary';
+      case 'partial shipment':
+        return 'tertiary';
       case 'void':
         return 'danger';
       case 'reserved':

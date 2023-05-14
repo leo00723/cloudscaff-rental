@@ -11,6 +11,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   selector: 'app-add-request',
@@ -161,22 +162,21 @@ export class AddRequestComponent implements OnInit, OnDestroy {
         let hasDeficit = false;
         const shipment: Shipment = {
           ...this.request,
-          items: [...this.request.items],
+          items: cloneDeep(this.request.items),
           status: 'pending',
         };
         const newRequest: Request = {
           ...this.request,
-          items: [...this.request.items],
+          items: cloneDeep(this.request.items),
         };
-        for await (const sItem of shipment.items) {
+        for (const sItem of shipment.items) {
           this.checkError(sItem);
           if (sItem.deficit) {
             sItem.shipmentQty = sItem.shipmentQty - sItem.deficit;
           }
           delete sItem.log;
-          console.log(sItem.shipmentQty);
         }
-        for await (const rItem of newRequest.items) {
+        for (const rItem of newRequest.items) {
           this.checkError(rItem);
           if (rItem.deficit) {
             rItem.shipmentQty = rItem.deficit;
@@ -184,7 +184,6 @@ export class AddRequestComponent implements OnInit, OnDestroy {
             hasDeficit = true;
           }
           delete rItem.log;
-          console.log(rItem.shipmentQty);
         }
 
         this.company = this.masterSvc
@@ -195,26 +194,25 @@ export class AddRequestComponent implements OnInit, OnDestroy {
           .edit()
           .generateDocCode(this.company.totalShipments, 'SHI');
         newRequest.status = hasDeficit ? 'partial shipment' : 'approved';
-        console.log(shipment);
-        console.log(newRequest);
-        // await this.masterSvc
-        //   .edit()
-        //   .updateDoc(
-        //     `company/${this.company.id}/requests`,
-        //     this.request.id,
-        //     this.request
-        //   );
-        // await this.masterSvc
-        //   .edit()
-        //   .addDocument(`company/${this.company.id}/shipments`, shipment);
-        // await this.masterSvc.edit().updateDoc('company', this.company.id, {
-        //   totalShipments: increment(1),
-        // });
 
-        // this.masterSvc
-        //   .notification()
-        //   .toast('Shipment created successfully', 'success');
-        // this.masterSvc.modal().dismiss(true, 'approved');
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/requests`,
+            this.request.id,
+            newRequest
+          );
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/shipments`, shipment);
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalShipments: increment(1),
+        });
+
+        this.masterSvc
+          .notification()
+          .toast('Shipment created successfully', 'success');
+        this.masterSvc.modal().dismiss(true, 'approved');
         this.loading = false;
       } catch (e) {
         console.error(e);
@@ -281,6 +279,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
       company: [this.company, Validators.required],
       status: [this.request.status, Validators.required],
       updatedBy: [this.user.id, Validators.required],
+      notes: [this.request.notes || ''],
     });
     if (this.request.status === 'pending') {
       this.subs.add(
@@ -310,6 +309,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
       company: [this.company, Validators.required],
       status: ['pending', Validators.required],
       createdBy: [this.user.id, Validators.required],
+      notes: [''],
     });
   }
 

@@ -13,4 +13,5 @@ export interface Request {
   startDate?: any;
   status?: string;
   updatedBy?: string;
+  notes?: string;
 }

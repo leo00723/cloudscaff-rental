@@ -51,12 +51,13 @@ export class ViewScaffoldPage implements OnInit {
       .getDocById(`company/${this.ids[0]}/scaffolds`, this.ids[2])
       .pipe(
         tap((site: Scaffold) => {
-          if (!site)
+          if (!site) {
             this.masterSvc
               .store()
               .dispatch(
                 new Navigate(`/dashboard/site/${this.ids[0]}-${this.ids[1]}`)
               );
+          }
           // this.masterSvc.store().dispatch(new SetSite(site));
         })
       ) as Observable<Scaffold>;
@@ -258,7 +259,7 @@ export class ViewScaffoldPage implements OnInit {
       const modal = await this.masterSvc.modal().create({
         component: ViewInvoiceComponent,
         componentProps: {
-          invoice: invoice,
+          invoice,
         },
         showBackdrop: false,
         id: 'viewInvoice',
