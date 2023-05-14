@@ -238,11 +238,13 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     return this.form.get(field) as FormControl;
   }
 
-  async delete() {
-    await this.masterSvc
-      .edit()
-      .deleteDocById(`company/${this.company.id}/shipments`, this.request.id);
-    this.close();
+  delete() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      await this.masterSvc
+        .edit()
+        .deleteDocById(`company/${this.company.id}/shipments`, this.request.id);
+      this.close();
+    });
   }
 
   private initEditForm() {

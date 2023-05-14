@@ -103,6 +103,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       for (const item of this.items) {
         item.shipmentQty = item.availableQty;
       }
+      this.autoSave();
     }, 'Are you sure you want to return all items?');
   }
 

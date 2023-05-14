@@ -128,6 +128,18 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     });
   }
 
+  delete() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      await this.masterSvc
+        .edit()
+        .deleteDocById(
+          `company/${this.company.id}/transfers`,
+          this.transfer.id
+        );
+      this.close();
+    });
+  }
+
   updateItems() {
     const fromSite = this.field('fromSite').value.id;
     this.subs.add(

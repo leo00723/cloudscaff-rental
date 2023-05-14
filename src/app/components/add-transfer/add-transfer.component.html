@@ -231,15 +231,14 @@
         </ion-col>
       </ion-row>
       <ion-row>
+        <ion-col size="12" class="text-end" *ngIf="loading">
+          <ion-progress-bar type="indeterminate"></ion-progress-bar>
+        </ion-col>
         <ion-col
           size="12"
           class="text-end"
           *ngIf="transfer.status !== 'void' && transfer.status !== 'sent'"
         >
-          <ion-progress-bar
-            type="indeterminate"
-            *ngIf="loading"
-          ></ion-progress-bar>
           <ion-button
             shape="round"
             [disabled]="form.invalid || error"
@@ -247,22 +246,14 @@
             (click)="createTransfer()"
             >Create Transfer</ion-button
           >
-          <!-- <ion-button
+          <ion-button
             shape="round"
-            *ngIf="isEdit && !loading"
             color="danger"
-            [disabled]="form.invalid"
-            (click)="updateShipment('void')"
-            >Void Shipment</ion-button
-          > -->
-          <!-- <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading && shipment.status !== 'reserved'"
-            color="warning"
-            [disabled]="form.invalid"
-            (click)="updateShipment('reserved')"
-            >Reserve Shipment</ion-button
-          > -->
+            *ngIf="isEdit && !loading"
+            [disabled]="form.invalid || error"
+            (click)="updateTransfer('void')"
+            >Void Transfer</ion-button
+          >
           <ion-button
             shape="round"
             *ngIf="isEdit && !loading"
@@ -277,6 +268,16 @@
             [disabled]="form.invalid || error"
             (click)="updateTransfer('pending')"
             >Update Transfer</ion-button
+          >
+        </ion-col>
+        <ion-col size="12" class="text-end" *ngIf="transfer.status === 'void'">
+          <ion-button
+            shape="round"
+            color="danger"
+            *ngIf="isEdit && !loading"
+            [disabled]="form.invalid || error"
+            (click)="delete()"
+            >Delete Transfer</ion-button
           >
         </ion-col>
       </ion-row>
