@@ -130,6 +130,7 @@
                 <th scope="col">Name</th>
                 <th scope="col" class="text-center">Available Qty</th>
                 <th scope="col" class="text-center">Shipment Qty</th>
+                <th scope="col" class="text-center">Item Checked</th>
               </tr>
             </thead>
             <tbody>
@@ -158,6 +159,14 @@
                     <ion-label color="danger" *ngIf="item.error">
                       you cannot exceed the available qty
                     </ion-label>
+                  </td>
+                  <td class="text-center">
+                    <ion-checkbox
+                      mode="ios"
+                      [checked]="item.checked"
+                      (ionChange)="checkItem($event, item)"
+                      [disabled]="shipment.status === 'sent'"
+                    ></ion-checkbox>
                   </td>
                 </tr>
                 <ng-template #viewShipment>
@@ -188,8 +197,15 @@
                         you cannot exceed the available qty
                       </ion-label>
                     </td>
-                  </tr></ng-template
-                >
+                    <td class="text-center">
+                      <ion-checkbox
+                        mode="ios"
+                        [checked]="item.checked"
+                        (ionChange)="checkItem($event, item)"
+                        [disabled]="shipment.status === 'sent'"
+                      ></ion-checkbox>
+                    </td></tr
+                ></ng-template>
               </ng-container>
             </tbody>
           </table>

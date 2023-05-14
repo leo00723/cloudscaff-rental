@@ -107,6 +107,17 @@
                 <th scope="col">Name</th>
                 <th scope="col" class="text-center">Available Qty</th>
                 <th scope="col" class="text-center">Request Qty</th>
+                <th
+                  scope="col"
+                  class="text-center"
+                  *ngIf="
+                    isEdit &&
+                    (request.status === 'submitted' ||
+                      request.status === 'partial shipment')
+                  "
+                >
+                  Deficit
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -123,17 +134,26 @@
                       #qty
                       debounce="200"
                       type="number"
-                      [color]="item.error ? 'danger' : 'success'"
+                      [color]="item.error ? 'warning' : 'success'"
                       [clearOnEdit]="true"
                       [value]="item.shipmentQty"
-                      (ionChange)="update($event, item)"
-                      (ionBlur)="autoSave()"
+                      (ionBlur)="autoSave(qty.value, item)"
                       [readonly]="request.status !== 'pending'"
                     >
                     </ion-input>
-                    <ion-label color="danger" *ngIf="item.error">
-                      you cannot exceed the available qty
+                    <ion-label color="warning" *ngIf="item.error">
+                      you have exceed the available qty
                     </ion-label>
+                  </td>
+                  <td
+                    class="text-center"
+                    *ngIf="
+                      isEdit &&
+                      (request.status === 'submitted' ||
+                        request.status === 'partial shipment')
+                    "
+                  >
+                    {{ item | calculate : true }}
                   </td>
                 </tr>
                 <ng-template #viewShipment>
@@ -151,16 +171,25 @@
                         #qty
                         debounce="200"
                         type="number"
-                        [color]="item.error ? 'danger' : 'success'"
+                        [color]="item.error ? 'warning' : 'success'"
                         [clearOnEdit]="true"
                         [value]="item.shipmentQty"
-                        (ionBlur)="autoSave()"
-                        (ionChange)="update($event, item)"
+                        (ionBlur)="autoSave(qty.value, item)"
                       >
                       </ion-input>
-                      <ion-label color="danger" *ngIf="item.error">
-                        you cannot exceed the available qty
+                      <ion-label color="warning" *ngIf="item.error">
+                        you have exceed the available qty
                       </ion-label>
+                    </td>
+                    <td
+                      class="text-center"
+                      *ngIf="
+                        isEdit &&
+                        (request.status === 'submitted' ||
+                          request.status === 'partial shipment')
+                      "
+                    >
+                      {{ item | calculate : true }}
                     </td>
                   </tr></ng-template
                 >
@@ -181,7 +210,7 @@
           ></ion-progress-bar>
           <ion-button
             shape="round"
-            [disabled]="form.invalid || error"
+            [disabled]="form.invalid"
             *ngIf="!isEdit && !loading"
             (click)="createRequest()"
             >Create Request</ion-button
@@ -197,7 +226,11 @@
           <ion-button
             shape="round"
             *ngIf="
-              isEdit && request.status === 'submitted' && !loading && allowSend
+              isEdit &&
+              (request.status === 'submitted' ||
+                request.status === 'partial shipment') &&
+              !loading &&
+              allowSend
             "
             color="success"
             [disabled]="form.invalid"

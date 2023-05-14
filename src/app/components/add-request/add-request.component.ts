@@ -65,11 +65,6 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     }
   }
 
-  update(val, item: InventoryItem) {
-    item.shipmentQty = +val.detail.value;
-    this.checkError(item);
-  }
-
   checkError(item: InventoryItem) {
     const totalQty = item.availableQty ? item.availableQty : 0;
     const inUseQty = item.inUseQty ? item.inUseQty : 0;
@@ -77,7 +72,8 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
     const lost = item.lostQty ? item.lostQty : 0;
     const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
-    if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
+    if (item.shipmentQty > availableQty) {
+      item.deficit = item.shipmentQty - availableQty;
       item.error = true;
       this.error = true;
     } else {
@@ -162,35 +158,63 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        const shipment: Shipment = { ...this.request };
+        let hasDeficit = false;
+        const shipment: Shipment = {
+          ...this.request,
+          items: [...this.request.items],
+          status: 'pending',
+        };
+        const newRequest: Request = {
+          ...this.request,
+          items: [...this.request.items],
+        };
+        for await (const sItem of shipment.items) {
+          this.checkError(sItem);
+          if (sItem.deficit) {
+            sItem.shipmentQty = sItem.shipmentQty - sItem.deficit;
+          }
+          delete sItem.log;
+          console.log(sItem.shipmentQty);
+        }
+        for await (const rItem of newRequest.items) {
+          this.checkError(rItem);
+          if (rItem.deficit) {
+            rItem.shipmentQty = rItem.deficit;
+            rItem.deficit = 0;
+            hasDeficit = true;
+          }
+          delete rItem.log;
+          console.log(rItem.shipmentQty);
+        }
+
         this.company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
 
-        shipment.code = `SHI${new Date().toLocaleDateString('en', {
-          year: '2-digit',
-        })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
-          .toString()
-          .padStart(6, '0')}`;
-        this.request.status = 'approved';
-        await this.masterSvc
+        shipment.code = this.masterSvc
           .edit()
-          .updateDoc(
-            `company/${this.company.id}/requests`,
-            this.request.id,
-            this.request
-          );
-        await this.masterSvc
-          .edit()
-          .addDocument(`company/${this.company.id}/shipments`, shipment);
-        await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalShipments: increment(1),
-        });
+          .generateDocCode(this.company.totalShipments, 'SHI');
+        newRequest.status = hasDeficit ? 'partial shipment' : 'approved';
+        console.log(shipment);
+        console.log(newRequest);
+        // await this.masterSvc
+        //   .edit()
+        //   .updateDoc(
+        //     `company/${this.company.id}/requests`,
+        //     this.request.id,
+        //     this.request
+        //   );
+        // await this.masterSvc
+        //   .edit()
+        //   .addDocument(`company/${this.company.id}/shipments`, shipment);
+        // await this.masterSvc.edit().updateDoc('company', this.company.id, {
+        //   totalShipments: increment(1),
+        // });
 
-        this.masterSvc
-          .notification()
-          .toast('Shipment created successfully', 'success');
-        this.masterSvc.modal().dismiss(true, 'approved');
+        // this.masterSvc
+        //   .notification()
+        //   .toast('Shipment created successfully', 'success');
+        // this.masterSvc.modal().dismiss(true, 'approved');
         this.loading = false;
       } catch (e) {
         console.error(e);
@@ -205,7 +229,9 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     });
   }
 
-  autoSave() {
+  autoSave(val, item) {
+    item.shipmentQty = Math.abs(+val);
+    this.checkError(item);
     if (this.isEdit) {
       if (this.request.status === 'pending') {
         this.autoUpdate();

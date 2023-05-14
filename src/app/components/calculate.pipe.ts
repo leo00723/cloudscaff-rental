@@ -6,13 +6,21 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
   pure: true,
 })
 export class CalculatePipe implements PipeTransform {
-  transform(item: InventoryItem) {
+  transform(item: InventoryItem, isD?: boolean) {
     const totalQty = item.availableQty || 0;
     const inUseQty = item.inUseQty || 0;
     const damaged = item.damagedQty || 0;
     const maintenance = item.inMaintenanceQty || 0;
     const lost = item.lostQty || 0;
     const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
-    return availableQty;
+    let deficit = 0;
+    if (isD) {
+      if (item.shipmentQty > availableQty) {
+        deficit = item.shipmentQty - availableQty;
+      }
+      return deficit;
+    } else {
+      return availableQty;
+    }
   }
 }

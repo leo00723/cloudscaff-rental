@@ -68,6 +68,10 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
 
+  checkItem(args, item: InventoryItem) {
+    item.checked = args.detail.checked;
+  }
+
   checkError(item: InventoryItem) {
     // const totalQty = item.availableQty ? item.availableQty : 0;
     // const inUseQty = item.inUseQty ? item.inUseQty : 0;
@@ -236,6 +240,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
             const inventoryItem = items.find((i) => i.id === item.id);
             if (inventoryItem) {
               inventoryItem.shipmentQty = +item.shipmentQty;
+              inventoryItem.checked = item.checked || false;
             }
           });
           this.items = items;

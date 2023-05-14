@@ -31,4 +31,6 @@ export interface InventoryItem {
   error?: boolean;
   totalCost?: number;
   log?: any[];
+  checked?: boolean;
+  deficit?: number;
 }
