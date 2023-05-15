@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { MasterService } from 'src/app/services/master.service';
 import { Navigate } from '../shared/router.state';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,10 +18,19 @@ export class LoginPage implements OnInit {
   loading = false;
   errorMessage = 'Something went wrong.Please try again later.';
   form: FormGroup;
-  constructor(private masterSvc: MasterService, private fb: FormBuilder) {
+  constructor(
+    private masterSvc: MasterService,
+    private fb: FormBuilder,
+    private activatedRoute: ActivatedRoute
+  ) {
+    const email = this.activatedRoute.snapshot.queryParamMap.get('email');
+    const password = this.activatedRoute.snapshot.queryParamMap.get('password');
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      email: [email || '', [Validators.required, Validators.email]],
+      password: [
+        password || '',
+        [Validators.required, Validators.minLength(6)],
+      ],
     });
   }
 

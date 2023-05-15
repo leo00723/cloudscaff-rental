@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Repurpose Inventory </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen="true" forceOverscroll="true" class="ion-padding">
+  <ng-container *ngIf="inventoryItems$ | async as items">
+    <ion-row>
+      <ion-col size="12">
+        <app-title-block> Transfer from: </app-title-block>
+        <ion-label class="px-2">
+          {{ donarItem.category }} {{ donarItem.size }} {{ donarItem.name }} ({{
+            donarItem.damagedQty
+          }}
+          items)
+        </ion-label>
+        <app-input-text
+          title="Transfer Qty"
+          type="number"
+          placeholder="Enter amount to transfer"
+          (fieldChange)="qty = $event"
+        >
+        </app-input-text>
+        <app-title-block> Transfer to: </app-title-block>
+        <div class="mb-3">
+          <app-searchable-select
+            (click)="select.open()"
+            title="Select Component"
+            [data]="items"
+            itemTextField="search"
+            (selectedChanged)="selectComponent($event)"
+            #select
+          ></app-searchable-select>
+        </div>
+        <app-input-text
+          *ngIf="recipientItem"
+          title="Yard Qty"
+          [value]="recipientItem.yardQty"
+          [readonly]="true"
+        >
+        </app-input-text>
+      </ion-col>
+      <ion-col size="12">
+        <ion-progress-bar type="indeterminate" *ngIf="loading">
+        </ion-progress-bar>
+        <ion-button
+          class="float-end"
+          shape="round"
+          [disabled]="qty <= 0 || !recipientItem"
+          *ngIf="!loading"
+          (click)="transfer()"
+          >Transfer Inventory</ion-button
+        >
+      </ion-col>
+    </ion-row>
+  </ng-container>
+</ion-content>

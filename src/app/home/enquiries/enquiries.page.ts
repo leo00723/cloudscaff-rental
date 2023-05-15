@@ -48,7 +48,7 @@ export class EnquiriesPage implements OnInit {
   }
 
   init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.enquiries$ = this.masterSvc

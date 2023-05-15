@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
@@ -12,6 +7,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { RepurposeInventoryComponent } from '../repurpose-inventory/repurpose-inventory.component';
 
 @Component({
   selector: 'app-add-stockitem',
@@ -37,6 +33,8 @@ export class AddStockitemComponent implements OnInit {
   removeQty = 0;
   addQty = 0;
   moveQty = 0;
+  maintenanceQty = 0;
+  damagedQty = 0;
   comment = '';
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
@@ -197,6 +195,47 @@ export class AddStockitemComponent implements OnInit {
     }
   }
 
+  moveTo(category: string, field: string, moveQty: number) {
+    const currentQty = +this.field(field).value;
+    const yardQty = this.field('yardQty').value;
+    const totalInUse =
+      this.field('inUseQty').value +
+      this.field('inMaintenanceQty').value +
+      this.field('lostQty').value +
+      this.field('damagedQty').value;
+    const availableQty = yardQty - totalInUse;
+    if (availableQty < moveQty) {
+      this.masterSvc
+        .notification()
+        .toast(
+          'You cannot move more items than your In Available Quantity',
+          'danger',
+          5000
+        );
+    } else {
+      this.masterSvc.notification().presentAlertConfirm(() => {
+        this.field(field).setValue(currentQty + moveQty);
+        this.update();
+        const log = {
+          message: `${this.user.name} moved ${moveQty} items to the ${category}.`,
+          user: this.user,
+          date: new Date(),
+          status: 'move',
+          comment: this.comment,
+        };
+        if (this.inventoryItem.log) {
+          this.inventoryItem.log.push(log);
+        } else {
+          this.inventoryItem.log = [log];
+        }
+        this.maintenanceQty = 0;
+        this.damagedQty = 0;
+        this.autoUpdate();
+        this.comment = '';
+      }, `Are you sure you want to move ${moveQty} items?`);
+    }
+  }
+
   removeYardQty() {
     const yardQty = this.field('yardQty').value;
     const totalInUse =
@@ -233,6 +272,19 @@ export class AddStockitemComponent implements OnInit {
         this.autoUpdate();
       }, `Are you sure you want to remove ${this.removeQty} items?`);
     }
+  }
+
+  async repurpose() {
+    const modal = await this.masterSvc.modal().create({
+      component: RepurposeInventoryComponent,
+      componentProps: {
+        donarItem: this.inventoryItem,
+      },
+      cssClass: 'accept',
+      showBackdrop: true,
+      id: 'repurpose',
+    });
+    return await modal.present();
   }
 
   private async autoUpdate() {

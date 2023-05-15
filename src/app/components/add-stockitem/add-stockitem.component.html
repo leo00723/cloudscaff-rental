@@ -16,7 +16,8 @@
 <ion-content class="ion-padding">
   <form [formGroup]="form">
     <ion-grid>
-      <ion-row>
+      <app-title-block>Component Details</app-title-block>
+      <ion-row class="card-outline mb-3">
         <ion-col sizeMd="6" size="12">
           <ng-container *ngIf="categories$ | async as categories">
             <app-searchable-select
@@ -133,79 +134,6 @@
             >
             </app-input-text>
           </ion-col>
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Remove Yard Qty"
-              [optional]="true"
-              type="number"
-              [value]="removeQty"
-              (fieldChange)="removeQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
-            <ion-button
-              id="add"
-              class="float-end"
-              size="small"
-              color="danger"
-              shape="round"
-              (click)="removeYardQty()"
-            >
-              Remove
-            </ion-button>
-          </ion-col>
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Add Yard Qty"
-              [optional]="true"
-              [value]="addQty"
-              type="number"
-              (fieldChange)="addQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
-
-            <ion-button
-              id="add"
-              class="float-end"
-              size="small"
-              color="success"
-              shape="round"
-              (click)="addYardQty()"
-            >
-              Add
-            </ion-button>
-          </ion-col>
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Move Maintenance to Available"
-              [optional]="true"
-              type="number"
-              [value]="moveQty"
-              (fieldChange)="moveQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
-            <ion-button
-              id="add"
-              class="float-end"
-              size="small"
-              color="warning"
-              shape="round"
-              (click)="moveToYard()"
-            >
-              Move
-            </ion-button>
-          </ion-col>
         </ng-container>
         <!-- <ion-col sizeMd="4">
           <app-input-reactive
@@ -227,7 +155,7 @@
           >
           </app-input-reactive>
         </ion-col> -->
-        <ion-col size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Weight  ({{ company.mass.symbol }})"
             type="number"
@@ -236,7 +164,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="4" size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Hire/Rent Cost ({{ company.currency.symbol }})"
             type="number"
@@ -245,7 +173,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="4" size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Replacement Cost ({{ company.currency.symbol }})"
             type="number"
@@ -254,7 +182,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="4" size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Selling Cost ({{ company.currency.symbol }})"
             type="number"
@@ -263,7 +191,28 @@
           >
           </app-input-reactive>
         </ion-col>
+        <ion-col size="12" class="text-end">
+          <ion-progress-bar
+            type="indeterminate"
+            *ngIf="loading"
+          ></ion-progress-bar>
+          <ion-button
+            shape="round"
+            [disabled]="form.invalid"
+            *ngIf="!isEdit && !loading"
+            (click)="createItem()"
+            >Add Item</ion-button
+          >
+          <ion-button
+            shape="round"
+            [disabled]="form.invalid"
+            *ngIf="isEdit && !loading"
+            (click)="updateItem()"
+            >Update Item</ion-button
+          >
+        </ion-col>
       </ion-row>
+
       <!-- <ion-row
         formArrayName="crossHire"
         class="mb-3"
@@ -316,9 +265,9 @@
           >
           </app-input-reactive>
         </ion-col>
-      </ion-row> -->
+      </ion-row>
       <ion-row>
-        <!-- <ion-col sizeMd="12" class="text-center">
+        <ion-col sizeMd="12" class="text-center">
           <ion-button
             shape="round"
             color="success"
@@ -327,32 +276,144 @@
           >
             Add Cross Hire
           </ion-button>
-        </ion-col> -->
-        <ion-col size="12" class="text-end">
-          <ion-progress-bar
-            type="indeterminate"
-            *ngIf="loading"
-          ></ion-progress-bar>
+        </ion-col>
+      </ion-row> -->
+      <app-title-block>Manage Qty</app-title-block>
+      <ion-row class="card-outline mb-3">
+        <ion-col sizeMd="4" size="12">
+          <app-input-text
+            title="Remove Yard Qty"
+            [optional]="true"
+            type="number"
+            [value]="removeQty"
+            (fieldChange)="removeQty = $event"
+          ></app-input-text>
+          <app-input-text
+            title="Comment"
+            [optional]="true"
+            (fieldChange)="comment = $event"
+          ></app-input-text>
           <ion-button
+            class="float-end"
+            size="small"
+            color="danger"
             shape="round"
-            [disabled]="form.invalid"
-            *ngIf="!isEdit && !loading"
-            (click)="createItem()"
-            >Add Item</ion-button
+            (click)="removeYardQty()"
           >
+            Remove
+          </ion-button>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-text
+            title="Add Yard Qty"
+            [optional]="true"
+            [value]="addQty"
+            type="number"
+            (fieldChange)="addQty = $event"
+          ></app-input-text>
+          <app-input-text
+            title="Comment"
+            [optional]="true"
+            (fieldChange)="comment = $event"
+          ></app-input-text>
+
           <ion-button
+            class="float-end"
+            size="small"
+            color="success"
             shape="round"
-            [disabled]="form.invalid"
-            *ngIf="isEdit && !loading"
-            (click)="updateItem()"
-            >Update Item</ion-button
+            (click)="addYardQty()"
           >
+            Add
+          </ion-button>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-text
+            title="Move Maintenance to Available"
+            [optional]="true"
+            type="number"
+            [value]="moveQty"
+            (fieldChange)="moveQty = $event"
+          ></app-input-text>
+          <app-input-text
+            title="Comment"
+            [optional]="true"
+            (fieldChange)="comment = $event"
+          ></app-input-text>
+          <ion-button
+            class="float-end"
+            size="small"
+            color="warning"
+            shape="round"
+            (click)="moveToYard()"
+          >
+            Move
+          </ion-button>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-text
+            title="Move Available to Maintenance"
+            [optional]="true"
+            type="number"
+            [value]="maintenanceQty"
+            (fieldChange)="maintenanceQty = $event"
+          ></app-input-text>
+          <app-input-text
+            title="Comment"
+            [optional]="true"
+            (fieldChange)="comment = $event"
+          ></app-input-text>
+          <ion-button
+            class="float-end"
+            size="small"
+            color="warning"
+            shape="round"
+            (click)="moveTo('maintenance', 'inMaintenanceQty', maintenanceQty)"
+          >
+            Move
+          </ion-button>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-text
+            title="Move Available to Damaged"
+            [optional]="true"
+            type="number"
+            [value]="damagedQty"
+            (fieldChange)="damagedQty = $event"
+          ></app-input-text>
+          <app-input-text
+            title="Comment"
+            [optional]="true"
+            (fieldChange)="comment = $event"
+          ></app-input-text>
+          <ion-button
+            class="float-end"
+            size="small"
+            color="warning"
+            shape="round"
+            (click)="moveTo('damaged', 'damagedQty', damagedQty)"
+          >
+            Move
+          </ion-button>
+        </ion-col>
+        <ion-col sizeMd="4" size="12" *ngIf="inventoryItem.damagedQty > 0">
+          <div class="h-100 d-flex justify-content-center align-items-center">
+            <ion-button
+              class="my-auto w-100 h-100"
+              mode="ios"
+              fill="outline"
+              (click)="repurpose()"
+            >
+              Repurpose Damaged Items
+            </ion-button>
+          </div>
         </ion-col>
       </ion-row>
+
       <ion-row *ngIf="isEdit">
         <ion-col size="12">
           <app-title-block>Log history</app-title-block>
-          <div class="mt-3 table-responsive">
+          <div class="mt-3 table-responsive card-outline">
             <table class="table table-sm table-bordered">
               <thead>
                 <tr class="table-light align-middle text-center">

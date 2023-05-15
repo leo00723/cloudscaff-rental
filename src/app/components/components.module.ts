@@ -85,6 +85,7 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { DuplicateStockItemComponent } from './duplicate-stock-item/duplicate-stock-item.component';
 import { SearchableSelectComponent } from './searchable-select/searchable-select.component';
 import { CallbackPipe } from './callback.pipe';
+import { RepurposeInventoryComponent } from './repurpose-inventory/repurpose-inventory.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -97,6 +98,7 @@ const COMPONENTS = [
   AddInspectionComponent,
   AddInvoiceComponent,
   AddModificationComponent,
+  AddPaymentApplicationComponent,
   AddPaymentComponent,
   AddRequestComponent,
   AddReturnComponent,
@@ -105,6 +107,7 @@ const COMPONENTS = [
   AddStockitemComponent,
   AddTransferComponent,
   AddressSearchComponent,
+  BillableShipmentsTableComponent,
   BudgetBreakdownComponent,
   BulkEstimateComponent,
   BulkEstimateFormComponent,
@@ -116,7 +119,9 @@ const COMPONENTS = [
   CompanyPage,
   CreditSummaryComponent,
   CustomerComponent,
+  DashboardCardMiniComponent,
   DatepickerComponent,
+  DuplicateStockItemComponent,
   EditprofileComponent,
   EstimateSummaryComponent,
   EstimateTableComponent,
@@ -138,11 +143,14 @@ const COMPONENTS = [
   InventoryEstimateTableComponent,
   InvoiceSummaryComponent,
   ModificationSummaryComponent,
+  NotificationsComponent,
+  RepurposeInventoryComponent,
   RequestsTableComponent,
   ReturnsTableComponent,
   ScaffoldEditformComponent,
   ScaffoldOverviewTableComponent,
   ShareDocumentComponent,
+  ShipmentInvoiceSummaryComponent,
   ShowHidePasswordComponent,
   SignaturePadComponent,
   SiteFormComponent,
@@ -155,15 +163,9 @@ const COMPONENTS = [
   ViewInventoryEstimateComponent,
   ViewInvoiceComponent,
   ViewModificationComponent,
+  ViewShipmentInvoiceComponent,
   ViewStockLocationsComponent,
   ViewTermsComponent,
-  BillableShipmentsTableComponent,
-  ShipmentInvoiceSummaryComponent,
-  ViewShipmentInvoiceComponent,
-  AddPaymentApplicationComponent,
-  DashboardCardMiniComponent,
-  NotificationsComponent,
-  DuplicateStockItemComponent,
 ];
 const IMPORTS = [
   CommonModule,

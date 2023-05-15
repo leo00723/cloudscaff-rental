@@ -281,7 +281,10 @@ export class AddRequestComponent implements OnInit, OnDestroy {
       updatedBy: [this.user.id, Validators.required],
       notes: [this.request.notes || ''],
     });
-    if (this.request.status === 'pending') {
+    if (
+      this.request.status === 'pending' ||
+      this.request.status === 'partial shipment'
+    ) {
       this.subs.add(
         this.inventoryItems$.subscribe((items) => {
           items.forEach((dbItem) => {
