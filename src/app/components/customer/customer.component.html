@@ -40,6 +40,15 @@
           controlName="vatNum"
           [readonly]="readOnly"
         ></app-input-reactive>
+        <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
+          <ion-label>Exclude VAT on Estimates and Invoices</ion-label>
+          <ion-checkbox
+            mode="ios"
+            slot="end"
+            [checked]="field('excludeVAT').value"
+            (ionChange)="excludeVAT($event)"
+          ></ion-checkbox>
+        </ion-item>
       </ion-col>
       <ion-col size="12" sizeXl="6">
         <app-address-search

@@ -57,4 +57,5 @@ export interface Estimate {
   type?: string;
   addedToPA?: boolean;
   comments?: Comment[];
+  excludeVAT?: boolean;
 }

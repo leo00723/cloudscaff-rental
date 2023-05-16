@@ -7,15 +7,19 @@ import { Term } from 'src/app/models/term.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { ShareDocumentComponent } from '../share-document/share-document.component';
-
 @Component({
   selector: 'app-estimate-summary',
   templateUrl: './estimate-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstimateSummaryComponent {
-  @Input() estimate: Estimate;
+  @Input() set value(val: Estimate) {
+    if (val) {
+      this.estimate = val;
+    }
+  }
   @Input() canDownload = false;
+  estimate: Estimate;
   terms$: Observable<Term>;
   company: Company;
   constructor(private masterSvc: MasterService) {

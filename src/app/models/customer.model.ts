@@ -14,4 +14,5 @@ export interface Customer {
   vatNum?: string;
   selected?: boolean;
   xeroID?: string;
+  excludeVAT?: boolean;
 }

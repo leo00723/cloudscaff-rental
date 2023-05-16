@@ -44,6 +44,7 @@ export class CustomerComponent implements OnInit {
         vatNum: [this.customerData.vatNum],
         country: [this.customerData.country, Validators.required],
         xeroID: [this.customerData.xeroID],
+        excludeVAT: [this.customerData.excludeVAT],
       });
     }
   }
@@ -66,6 +67,7 @@ export class CustomerComponent implements OnInit {
       regNumber: [''],
       vatNum: [''],
       xeroID: [''],
+      excludeVAT: [''],
     });
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
   }
@@ -230,6 +232,9 @@ export class CustomerComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+  excludeVAT(args) {
+    this.field('excludeVAT').setValue(args.detail.checked);
   }
 
   updateAddress(address: Address) {

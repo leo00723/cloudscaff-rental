@@ -12,6 +12,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MasterService } from '../../../services/master.service';
 import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
+import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   selector: 'app-add-estimate',
@@ -67,6 +68,7 @@ export class AddEstimatePage implements OnInit {
     rejectedBy: '',
     budget: {},
     enquiryId: '',
+    excludeVAT: false,
   };
   user: User;
   company: Company;
@@ -705,6 +707,11 @@ export class AddEstimatePage implements OnInit {
     }
   }
 
+  excludeVAT(args) {
+    this.field('excludeVAT').setValue(args.detail.checked);
+    this.updateEstimateTotal();
+  }
+
   //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
@@ -764,9 +771,20 @@ export class AddEstimatePage implements OnInit {
       scaffold + attachments + boards + hire + labour + transport + additionals;
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
-    const tax = totalAfterDiscount * (this.company.salesTax / 100);
-    const vat = totalAfterDiscount * (this.company.vat / 100);
-    const total = totalAfterDiscount + tax + vat;
+    let tax = 0;
+    let vat = 0;
+    let total = 0;
+    if (
+      this.field('excludeVAT').value ||
+      this.field('customer').value.excludeVAT
+    ) {
+      total = totalAfterDiscount + tax + vat;
+    } else {
+      tax = totalAfterDiscount * (this.company.salesTax / 100);
+      vat = totalAfterDiscount * (this.company.vat / 100);
+      total = totalAfterDiscount + tax + vat;
+    }
+
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
     const code = `EST${new Date().toLocaleDateString('en', {
@@ -774,8 +792,8 @@ export class AddEstimatePage implements OnInit {
     })}${(this.company.totalEstimates ? this.company.totalEstimates + 1 : 1)
       .toString()
       .padStart(6, '0')}`;
-
-    Object.assign(this.estimate, {
+    let estimateCopy = cloneDeep(this.estimate);
+    estimateCopy = Object.assign(estimateCopy, {
       ...this.form.value,
       date: this.isEdit ? this.estimate.date : new Date(),
       company: {
@@ -804,6 +822,7 @@ export class AddEstimatePage implements OnInit {
       createdBy: this.isEdit ? this.estimate.createdBy : this.user.id,
       updatedBy: this.user.id,
     });
+    this.estimate = cloneDeep(estimateCopy);
   }
   // START: Functions to initialise the form
   private initEditForm() {
@@ -878,6 +897,7 @@ export class AddEstimatePage implements OnInit {
       ],
       poNumber: [this.estimate.poNumber],
       woNumber: [this.estimate.woNumber],
+      excludeVAT: [this.estimate.excludeVAT],
       code: [this.estimate.code],
       ...formArray,
     });
@@ -969,7 +989,6 @@ export class AddEstimatePage implements OnInit {
     this.findInvalidControls();
     this.isLoading = false;
   }
-
   private initFrom() {
     if (this.customer) {
       this.show = 'editCustomer';
@@ -1019,6 +1038,7 @@ export class AddEstimatePage implements OnInit {
       transportProfile: [''],
       poNumber: [''],
       woNumber: [''],
+      excludeVAT: [false],
       labour: this.masterSvc.fb().array([]),
       transport: this.masterSvc.fb().array([]),
     });
