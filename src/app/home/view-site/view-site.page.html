@@ -96,7 +96,13 @@
           *ngIf="requests$ | async else loading"
           (selectedItem)="viewRequest($event,site)"
         ></app-requests-table>
-        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab
+          class="m-2"
+          vertical="bottom"
+          horizontal="end"
+          slot="fixed"
+          *ngIf="site.status !== 'closed'"
+        >
           <ion-fab-button (click)="addRequest(site)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
@@ -108,7 +114,13 @@
           *ngIf="returns$ | async else loading"
           (selectedItem)="viewReturn($event,site)"
         ></app-returns-table>
-        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab
+          class="m-2"
+          vertical="bottom"
+          horizontal="end"
+          slot="fixed"
+          *ngIf="site.status !== 'closed'"
+        >
           <ion-fab-button (click)="addReturn(site)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
@@ -148,7 +160,7 @@
             vertical="bottom"
             horizontal="end"
             slot="fixed"
-            *ngIf="operationApplications.length <= 0"
+            *ngIf="site.status !== 'closed'"
           >
             <ion-fab-button (click)="addPaymentApplication(false)">
               <ion-icon name="add"></ion-icon>
@@ -170,7 +182,10 @@
             slot="fixed"
             *ngIf="paymentApplications.length <= 0"
           >
-            <ion-fab-button (click)="addPaymentApplication(true)">
+            <ion-fab-button
+              (click)="addPaymentApplication(true)"
+              *ngIf="site.status !== 'closed'"
+            >
               <ion-icon name="add"></ion-icon>
             </ion-fab-button> </ion-fab
         ></ng-container>

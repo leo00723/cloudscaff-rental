@@ -19,6 +19,7 @@ export class SitesPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   sites$: Observable<Site[]>;
+  closedSites$: Observable<Site[]>;
   customers$: Observable<Customer[]>;
   isLoading = true;
   constructor(private masterSvc: MasterService) {}
@@ -88,7 +89,24 @@ export class SitesPage implements OnInit {
       if (id) {
         this.sites$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/sites`, 'code', 'desc');
+          .getCollectionWhereAndOrder(
+            `company/${id}/sites`,
+            'status',
+            '==',
+            'active',
+            'code',
+            'desc'
+          );
+        this.closedSites$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/sites`,
+            'status',
+            '==',
+            'closed',
+            'code',
+            'desc'
+          );
         this.customers$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/customers`, 'name', 'desc');
