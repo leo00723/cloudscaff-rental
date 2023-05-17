@@ -283,6 +283,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     });
     if (
       this.request.status === 'pending' ||
+      this.request.status === 'submitted' ||
       this.request.status === 'partial shipment'
     ) {
       this.subs.add(
