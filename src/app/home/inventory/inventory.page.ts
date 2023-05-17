@@ -34,6 +34,8 @@ export class InventoryPage implements OnInit {
   billableShipments$: Observable<InventoryEstimate[]>;
   transfers$: Observable<Transfer[]>;
   requests$: Observable<Request[]>;
+  submittedRequests$: Observable<Request[]>;
+  partialRequests$: Observable<Request[]>;
   returns$: Observable<Return[]>;
   active = 1;
   constructor(
@@ -235,7 +237,34 @@ export class InventoryPage implements OnInit {
           .getCollectionOrdered(`company/${id}/transfers`, 'code', 'desc');
         this.requests$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/requests`, 'code', 'desc');
+          .getCollectionWhereAndOrder(
+            `company/${id}/requests`,
+            'status',
+            '==',
+            'approved',
+            'code',
+            'asc'
+          );
+        this.submittedRequests$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/requests`,
+            'status',
+            '==',
+            'submitted',
+            'code',
+            'asc'
+          );
+        this.partialRequests$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/requests`,
+            'status',
+            '==',
+            'partial shipment',
+            'code',
+            'asc'
+          );
         this.returns$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/returns`, 'code', 'desc');

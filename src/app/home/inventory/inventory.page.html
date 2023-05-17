@@ -65,11 +65,49 @@
       ></app-billable-shipments-table>
     </div>
     <div *ngSwitchCase="4">
-      <app-requests-table
-        [value]="requests$"
-        *ngIf="requests$ | async else loading"
-        (selectedItem)="viewRequest($event)"
-      ></app-requests-table>
+      <ion-accordion-group
+        mode="ios"
+        class="rounded-lg overflow-hidden"
+        [multiple]="true"
+        [value]="['pending']"
+      >
+        <ion-accordion value="pending">
+          <ion-item slot="header" color="light">
+            <ion-label color="primary">Pending Requests</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-requests-table
+              [value]="submittedRequests$"
+              *ngIf="submittedRequests$ | async else loading"
+              (selectedItem)="viewRequest($event)"
+            ></app-requests-table>
+          </div>
+        </ion-accordion>
+        <ion-accordion value="partial">
+          <ion-item slot="header" color="light">
+            <ion-label color="tertiary">Partially Shipped Requests</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-requests-table
+              [value]="partialRequests$"
+              *ngIf="partialRequests$ | async else loading"
+              (selectedItem)="viewRequest($event)"
+            ></app-requests-table>
+          </div>
+        </ion-accordion>
+        <ion-accordion value="approved">
+          <ion-item slot="header" color="light">
+            <ion-label color="success">Approved Requests</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-requests-table
+              [value]="requests$"
+              *ngIf="requests$ | async else loading"
+              (selectedItem)="viewRequest($event)"
+            ></app-requests-table>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
     </div>
     <div *ngSwitchCase="5">
       <app-returns-table
