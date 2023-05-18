@@ -12,6 +12,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { AcceptBulkEstimateComponent } from './accept-bulk-estimate/accept-bulk-estimate.component';
+import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   selector: 'app-bulk-estimate',
@@ -57,6 +58,7 @@ export class BulkEstimateComponent implements OnInit {
     budget: {},
     enquiryId: '',
     type: '',
+    excludeVAT: false,
   };
   user: User;
   company: Company;
@@ -369,6 +371,11 @@ export class BulkEstimateComponent implements OnInit {
     });
   }
 
+  excludeVAT(args) {
+    this.field('excludeVAT').setValue(args.detail.checked);
+    this.updateEstimateTotal();
+  }
+
   //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
@@ -402,21 +409,27 @@ export class BulkEstimateComponent implements OnInit {
 
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
-    const tax = totalAfterDiscount * (this.company.salesTax / 100);
-    const vat = totalAfterDiscount * (this.company.vat / 100);
-    const total = totalAfterDiscount + tax + vat;
+    let tax = 0;
+    let vat = 0;
+    let total = 0;
+    if (
+      this.field('excludeVAT').value ||
+      this.field('customer').value.excludeVAT
+    ) {
+      total = totalAfterDiscount + tax + vat;
+    } else {
+      tax = totalAfterDiscount * (this.company.salesTax / 100);
+      vat = totalAfterDiscount * (this.company.vat / 100);
+      total = totalAfterDiscount + tax + vat;
+    }
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    const code = `BEST${new Date().toLocaleDateString('en', {
-      year: '2-digit',
-    })}${(this.company.totalBulkEstimates
-      ? this.company.totalBulkEstimates + 1
-      : 1
-    )
-      .toString()
-      .padStart(6, '0')}`;
+    const code = this.masterSvc
+      .edit()
+      .generateDocCode(this.company.totalBulkEstimates, 'BEST');
 
-    Object.assign(this.bulkEstimate, {
+    let estimateCopy = cloneDeep(this.bulkEstimate);
+    estimateCopy = Object.assign(estimateCopy, {
       ...this.form.value,
       date: this.isEdit ? this.bulkEstimate.date : new Date(),
       company: this.company,
@@ -431,13 +444,14 @@ export class BulkEstimateComponent implements OnInit {
       createdBy: this.isEdit ? this.bulkEstimate.createdBy : this.user.id,
       updatedBy: this.user.id,
     });
-    this.bulkEstimate.estimates.forEach((e) => {
+    estimateCopy.estimates.forEach((e) => {
       e.customer = this.bulkEstimate.customer;
       e.startDate = this.bulkEstimate.startDate;
       e.endDate = this.bulkEstimate.endDate;
       e.discountPercentage = this.bulkEstimate.discountPercentage;
       e.message = this.bulkEstimate.message;
     });
+    this.bulkEstimate = cloneDeep(estimateCopy);
   }
 
   // END: Calculations
@@ -457,6 +471,7 @@ export class BulkEstimateComponent implements OnInit {
       poNumber: [this.bulkEstimate.poNumber],
       woNumber: [this.bulkEstimate.woNumber],
       code: [this.bulkEstimate.code],
+      excludeVAT: [this.bulkEstimate.excludeVAT],
     });
 
     this.isLoading = false;
@@ -479,6 +494,7 @@ export class BulkEstimateComponent implements OnInit {
       ],
       poNumber: [''],
       woNumber: [''],
+      excludeVAT: [false],
     });
     this.addScaffold();
   }

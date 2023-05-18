@@ -2,13 +2,12 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { increment } from 'firebase/firestore';
+import cloneDeep from 'lodash/cloneDeep';
 import { Observable } from 'rxjs';
 import { BulkInventoryEstimate } from 'src/app/models/bulkInventoryEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
-import { Estimate } from 'src/app/models/estimate.model';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
-import { Transport } from 'src/app/models/transport.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -22,7 +21,7 @@ import { AcceptInventoryEstimateComponent } from './accept-inventory-estimate/ac
 })
 export class InventoryEstimateComponent implements OnInit {
   @Input() enquiryId = '';
-  @Input() set value(val: InventoryEstimate) {
+  @Input() set value(val: BulkInventoryEstimate) {
     if (val) {
       Object.assign(this.inventoryEstimate, val);
       this.initEditForm();
@@ -59,6 +58,7 @@ export class InventoryEstimateComponent implements OnInit {
     budget: {},
     enquiryId: '',
     type: '',
+    excludeVAT: false,
   };
   user: User;
   company: Company;
@@ -293,6 +293,11 @@ export class InventoryEstimateComponent implements OnInit {
     }
   }
 
+  excludeVAT(args) {
+    this.field('excludeVAT').setValue(args.detail.checked);
+    this.updateEstimateTotal();
+  }
+
   //start the acceptance process
   private async startAcceptance() {
     const modal = await this.masterSvc.modal().create({
@@ -323,21 +328,27 @@ export class InventoryEstimateComponent implements OnInit {
 
     const discount = subtotal * (+this.field('discountPercentage').value / 100);
     const totalAfterDiscount = subtotal - discount;
-    const tax = totalAfterDiscount * (this.company.salesTax / 100);
-    const vat = totalAfterDiscount * (this.company.vat / 100);
-    const total = totalAfterDiscount + tax + vat;
+    let tax = 0;
+    let vat = 0;
+    let total = 0;
+    if (
+      this.field('excludeVAT').value ||
+      this.field('customer').value.excludeVAT
+    ) {
+      total = totalAfterDiscount + tax + vat;
+    } else {
+      tax = totalAfterDiscount * (this.company.salesTax / 100);
+      vat = totalAfterDiscount * (this.company.vat / 100);
+      total = totalAfterDiscount + tax + vat;
+    }
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    const code = `IEST${new Date().toLocaleDateString('en', {
-      year: '2-digit',
-    })}${(this.company.totalInventoryEstimates
-      ? this.company.totalInventoryEstimates + 1
-      : 1
-    )
-      .toString()
-      .padStart(6, '0')}`;
+    const code = this.masterSvc
+      .edit()
+      .generateDocCode(this.company.totalInventoryEstimates, 'IEST');
 
-    Object.assign(this.inventoryEstimate, {
+    let estimateCopy = cloneDeep(this.inventoryEstimate);
+    estimateCopy = Object.assign(estimateCopy, {
       ...this.form.value,
       date: this.isEdit ? this.inventoryEstimate.date : new Date(),
       company: this.company,
@@ -352,11 +363,12 @@ export class InventoryEstimateComponent implements OnInit {
       createdBy: this.isEdit ? this.inventoryEstimate.createdBy : this.user.id,
       updatedBy: this.user.id,
     });
-    this.inventoryEstimate.estimates.forEach((e) => {
+    estimateCopy.estimates.forEach((e) => {
       e.customer = this.inventoryEstimate.customer;
       e.discountPercentage = this.inventoryEstimate.discountPercentage;
       e.message = this.inventoryEstimate.message;
     });
+    this.inventoryEstimate = cloneDeep(estimateCopy);
   }
 
   // END: Calculations
@@ -376,6 +388,7 @@ export class InventoryEstimateComponent implements OnInit {
       poNumber: [this.inventoryEstimate.poNumber],
       woNumber: [this.inventoryEstimate.woNumber],
       code: [this.inventoryEstimate.code],
+      excludeVAT: [this.inventoryEstimate.excludeVAT],
     });
 
     this.isLoading = false;
@@ -398,6 +411,7 @@ export class InventoryEstimateComponent implements OnInit {
       ],
       poNumber: [''],
       woNumber: [''],
+      excludeVAT: [false],
     });
     this.addShipment();
   }

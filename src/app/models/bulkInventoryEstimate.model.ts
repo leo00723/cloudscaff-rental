@@ -33,4 +33,5 @@ export interface BulkInventoryEstimate {
   acceptedTerms?: boolean;
   enquiryId: string;
   type?: string;
+  excludeVAT?: boolean;
 }

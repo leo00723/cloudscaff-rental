@@ -34,4 +34,5 @@ export interface BulkEstimate {
   enquiryId: string;
   revision?: number;
   type?: string;
+  excludeVAT?: boolean;
 }

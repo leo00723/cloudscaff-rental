@@ -787,11 +787,10 @@ export class AddEstimatePage implements OnInit {
 
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    const code = `EST${new Date().toLocaleDateString('en', {
-      year: '2-digit',
-    })}${(this.company.totalEstimates ? this.company.totalEstimates + 1 : 1)
-      .toString()
-      .padStart(6, '0')}`;
+    const code = this.masterSvc
+      .edit()
+      .generateDocCode(this.company.totalEstimates, 'EST');
+
     let estimateCopy = cloneDeep(this.estimate);
     estimateCopy = Object.assign(estimateCopy, {
       ...this.form.value,
