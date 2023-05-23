@@ -13,14 +13,14 @@
           <h4>Business Info</h4>
           <ion-text color="medium">
             <p>
-              Your business name is displayed across many areas including on
-              your all generated documents and messages to clients
+              Add your business info that will be displayed on all your
+              documents
             </p>
           </ion-text>
         </ion-col>
         <ion-col sizeLg="6" size="12">
           <ion-row>
-            <ion-col size="12">
+            <ion-col size="12" *ngIf="showAll">
               <ion-text>
                 <h6>Upload Business Logo</h6>
               </ion-text>
@@ -41,7 +41,7 @@
               >
               </app-input-reactive>
             </ion-col>
-            <ion-col size="12">
+            <ion-col size="12" *ngIf="showAll">
               <app-input-reactive
                 title="Registration Number"
                 placeholder="Enter business registration number"
@@ -51,7 +51,7 @@
               >
               </app-input-reactive>
             </ion-col>
-            <ion-col size="12">
+            <ion-col size="12" *ngIf="showAll">
               <app-input-reactive
                 title="VAT Number"
                 placeholder="Enter business VAT number"
@@ -69,8 +69,7 @@
           <h4>Contact Info</h4>
           <ion-text color="medium">
             <p>
-              Add your contact info that you want to display on all your
-              documents
+              Add your contact info that will be displayed on all your documents
             </p>
           </ion-text>
         </ion-col>
@@ -104,7 +103,7 @@
           <h4>Business Address</h4>
           <ion-text color="medium">
             <p>
-              Add your business address that you want to display on all your
+              Add your business address that will be displayed on all your
               documents
             </p>
           </ion-text>
@@ -160,12 +159,12 @@
           </ion-row>
         </ion-col>
       </ion-row>
-      <ion-row class="card-outline mb-3">
+      <ion-row class="card-outline mb-3" *ngIf="showAll">
         <ion-col sizeLg="6" size="12">
           <h4>Banking Details</h4>
           <ion-text color="medium">
             <p>
-              Add your banking details that you want to display on all your
+              Add your banking details that will be displayed on all your
               documents
             </p>
           </ion-text>
@@ -265,7 +264,7 @@
                 </ion-select-option>
               </app-input-select-reactive>
             </ion-col>
-            <ion-col size="12">
+            <ion-col size="12" *ngIf="showAll">
               <app-input-reactive
                 title="Sales Tax %"
                 controlName="salesTax"
@@ -274,7 +273,7 @@
               >
               </app-input-reactive>
             </ion-col>
-            <ion-col size="12">
+            <ion-col size="12" *ngIf="showAll">
               <app-input-reactive
                 title="VAT %"
                 controlName="vat"
@@ -286,7 +285,7 @@
           </ion-row>
         </ion-col>
       </ion-row>
-      <ion-row class="card-outline mb-3">
+      <ion-row class="card-outline mb-3" *ngIf="showAll">
         <ion-col sizeLg="6" size="12">
           <h4>Terminology</h4>
           <ion-text color="medium">
@@ -325,7 +324,7 @@
           </ion-row>
         </ion-col>
       </ion-row>
-      <ion-row class="card-outline mb-3">
+      <ion-row class="card-outline mb-3" *ngIf="showAll">
         <ion-col sizeLg="6" size="12">
           <h4>Intergrations</h4>
           <ion-text color="medium">
@@ -432,8 +431,7 @@
           <h4>Contact Info</h4>
           <ion-text color="medium">
             <p>
-              Add your contact info that you want to display on all your
-              documents
+              Add your contact info that will be displayed on all your documents
             </p>
           </ion-text>
         </ion-col>
@@ -447,7 +445,7 @@
           <h4>Business Address</h4>
           <ion-text color="medium">
             <p>
-              Add your business address that you want to display on all your
+              Add your business address that will be displayed on all your
               documents
             </p>
           </ion-text>
@@ -465,7 +463,7 @@
           <h4>Banking Details</h4>
           <ion-text color="medium">
             <p>
-              Add your banking details that you want to display on all your
+              Add your banking details that will be displayed on all your
               documents
             </p>
           </ion-text>

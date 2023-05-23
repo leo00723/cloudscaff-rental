@@ -1,0 +1,36 @@
+<app-header
+  title="Tutorials"
+  [showMenu]="false"
+  [showBack]="true"
+  path="/dashboard/sites"
+></app-header>
+
+<ion-content fullscreen="true">
+  <ion-grid class="ion-padding container">
+    <ion-row>
+      <ion-col size="12">
+        <div
+          class="rounded-lg"
+          style="
+            position: relative;
+            padding-bottom: 100%;
+            width: 100%;
+            height: 0;
+          "
+        >
+          <iframe
+            style="
+              position: absolute;
+              left: 0;
+              top: 0;
+              height: 100%;
+              width: 100%;
+            "
+            src="https://cloudscaff.com/demo-app"
+            frameborder="0"
+          ></iframe>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

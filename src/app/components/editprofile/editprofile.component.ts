@@ -25,7 +25,7 @@ export class EditprofileComponent implements OnInit {
     this.form = this.masterSvc.fb().group({
       name: [this.user.name, Validators.required],
       email: [this.user.email, [Validators.required, Validators.email]],
-      phone: [this.user.phone, Validators.required],
+      phone: [this.user.phone],
     });
   }
 

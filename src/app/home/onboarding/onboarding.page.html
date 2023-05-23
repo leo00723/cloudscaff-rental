@@ -1,28 +1,69 @@
-<ion-content
-  *ngIf="{user: user$ | async , company: company$ | async} as data"
-  [ngClass]="data?.user?.needsSetup ? '':'padding'"
->
-  <ng-container
-    *ngIf="data.user !== null && data.company !== null else loading"
+<ng-container *ngIf="page === 0">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title> Tutorial </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content fullscreen="true" class="ion-padding">
+    <ion-row>
+      <ion-col size="12" class="text-end">
+        <ion-button (click)="page = 1" shape="round"> Next </ion-button>
+      </ion-col>
+      <ion-col size="12">
+        <div
+          class="rounded-lg"
+          style="
+            position: relative;
+            padding-bottom: 100%;
+            width: 100%;
+            height: 0;
+          "
+        >
+          <iframe
+            style="
+              position: absolute;
+              left: 0;
+              top: 0;
+              height: 100%;
+              width: 100%;
+            "
+            src="https://cloudscaff.com/demo-app"
+            frameborder="0"
+          ></iframe>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-content>
+</ng-container>
+<ng-container *ngIf="page === 1">
+  <ion-content
+    *ngIf="{user: user$ | async , company: company$ | async} as data"
+    [ngClass]="data?.user?.needsSetup ? '':'padding'"
   >
-    <app-editprofile
-      *ngIf="data.user?.needsSetup else company"
-      title="Complete Profile"
-    ></app-editprofile>
-    <ng-template #company>
-      {{next(data,false)}}
-      <app-company
-        [showBack]="false"
-        title="Complete Business Settings"
-        (updated)="next(data,true)"
-      ></app-company>
+    <ng-container
+      *ngIf="(data.user !== null && data.company !== null) else loading"
+    >
+      <app-editprofile
+        *ngIf="data.user?.needsSetup else company"
+        title="Complete Onboarding - Profile"
+      ></app-editprofile>
+      <ng-template #company>
+        {{next(data,false)}}
+        <app-company
+          [showBack]="false"
+          [showAll]="false"
+          title="Complete Onboarding - Business Info"
+          (updated)="next(data,true)"
+        ></app-company>
+      </ng-template>
+    </ng-container>
+    <ng-template #loading>
+      <div class="container ion-padding">
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+        <app-skeleton-text></app-skeleton-text>
+      </div>
     </ng-template>
-  </ng-container>
-  <ng-template #loading>
-    <div class="container ion-padding">
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-      <app-skeleton-text></app-skeleton-text>
-    </div>
-  </ng-template>
-</ion-content>
+  </ion-content>
+</ng-container>

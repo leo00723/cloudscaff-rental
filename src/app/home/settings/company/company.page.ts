@@ -3,7 +3,6 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
   Output,
 } from '@angular/core';
 import {
@@ -14,14 +13,12 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { Observable, Subscription } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Currencies } from 'src/app/models/currencies.model';
 import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
-import { environment } from 'src/environments/environment';
 import { MasterService } from '../../../services/master.service';
 
 @Component({
@@ -30,6 +27,7 @@ import { MasterService } from '../../../services/master.service';
 })
 export class CompanyPage implements OnDestroy {
   @Input() title = 'Business Settings';
+  @Input() showAll = true;
   @Input() showBack = true;
   @Output() updated = new EventEmitter<boolean>();
   @Select() company$: Observable<Company>;
@@ -48,9 +46,9 @@ export class CompanyPage implements OnDestroy {
     branchCode: '',
     swiftCode: '',
     currency: { name: '', symbol: '' },
-    measurement: { name: '', symbol: '' },
-    mass: { name: '', symbol: '' },
-    terminology: { boards: '', hire: '', scaffold: '' },
+    measurement: { name: 'Meters', symbol: 'm' },
+    mass: { name: 'Kilograms', symbol: 'kg' },
+    terminology: { boards: 'Boards', hire: 'Hire', scaffold: 'Scaffold' },
     totalEstimates: 0,
     vat: 0,
     salesTax: 0,

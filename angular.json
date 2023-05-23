@@ -17,7 +17,8 @@
             "allowedCommonJsDependencies": [
               "pdfmake/build/pdfmake",
               "pdfmake/build/vfs_fonts",
-              "file-saver"
+              "file-saver",
+              "lodash/cloneDeep"
             ],
             "outputPath": "www",
             "index": "src/index.html",

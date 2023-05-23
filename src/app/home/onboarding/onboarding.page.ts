@@ -12,14 +12,18 @@ import { Navigate } from 'src/app/shared/router.state';
 export class OnboardingPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
+  page = 0;
   constructor(private store: Store) {}
 
   ngOnInit() {}
 
   next({ user, company }, settings: boolean) {
     if (!user?.needsSetup && !company?.needsSetup) {
-      if (settings) this.store.dispatch(new Navigate('/dashboard/settings'));
-      else this.store.dispatch(new Navigate('/dashboard/sites'));
+      if (settings) {
+        this.store.dispatch(new Navigate('/dashboard/settings'));
+      } else {
+        this.store.dispatch(new Navigate('/dashboard/sites'));
+      }
     }
   }
 }
