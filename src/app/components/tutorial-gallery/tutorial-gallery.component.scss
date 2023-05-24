@@ -1,0 +1,14 @@
+.shadow-top {
+	position: relative;
+	z-index: 4;
+	box-shadow: 0px 10px 10px -10px #000 inset;
+	height: 20px;
+	margin-bottom: -20px;
+}
+.shadow-bottom {
+	position: relative;
+	z-index: 4;
+	box-shadow: 0px -10px 10px -10px #000 inset;
+	height: 20px;
+	margin-top: -20px;
+}

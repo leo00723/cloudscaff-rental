@@ -1,0 +1,73 @@
+<ion-row *ngIf="!isLoading">
+  <ion-col sizeLg="8" size="12">
+    <div class="shadow-xs" style="border-radius: 12px">
+      <app-video-player
+        *ngIf="selectedItem"
+        [id]="selectedItem.id"
+      ></app-video-player>
+    </div>
+    <h5 class="m-2 text-capitalize">{{ selectedItem.title }}</h5>
+  </ion-col>
+  <ion-col sizeLg="4" size="12">
+    <div id="top" class="rounded-lg"></div>
+    <ion-accordion-group
+      (scroll)="onScroll($event)"
+      class="rounded-lg accordian-scroll"
+      mode="ios"
+    >
+      <ion-accordion
+        [value]="j"
+        *ngFor="let chapter of chapters; let j = index"
+      >
+        <ion-item slot="header" color="light">
+          <ion-label
+            >{{ chapter.chapter }}
+            <span
+              class="small text-primary text-lowercase fst-italic"
+              *ngIf="chapterIndex === j"
+            >
+              - now playing
+            </span>
+            <br />
+            <span class="small text-dark text-capitalize"
+              >{{
+                chapter.videos.length > 1
+                  ? chapter.videos.length + " videos"
+                  : chapter.videos.length + " video"
+              }}
+              | {{ chapter.time }}
+            </span></ion-label
+          >
+        </ion-item>
+        <div slot="content">
+          <ion-list color="primary">
+            <ion-item
+              *ngFor="
+                let video of chapter.videos;
+                let i = index;
+                let last = last
+              "
+              (click)="viewVideo(video, i, j)"
+              [color]="selectedItem.id === video.id ? 'primary' : 'white'"
+              [lines]="last ? 'none' : 'full'"
+            >
+              <ion-icon
+                name="play-circle-outline"
+                slot="start"
+                *ngIf="selectedItem.id !== video.id"
+              ></ion-icon>
+              <ion-icon
+                name="pause-circle-outline"
+                slot="start"
+                *ngIf="selectedItem.id === video.id"
+              ></ion-icon>
+              <ion-label>{{ video.title }}</ion-label>
+              <ion-label slot="end">{{ video.time }}</ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+    <div id="bottom" class="shadow-bottom rounded-lg"></div>
+  </ion-col>
+</ion-row>
