@@ -5,6 +5,7 @@ import {
   redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
 import { RouterModule, Routes } from '@angular/router';
+import { TrialEndedPage } from './trial-ended/trial-ended.page';
 const redirectUnauthorized = () => redirectUnauthorizedTo(['/login']);
 const redirectAuthorized = () => redirectLoggedInTo(['/dashboard/sites']);
 
@@ -13,6 +14,10 @@ const routes: Routes = [
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',
+  },
+  {
+    path: 'trial-ended',
+    component: TrialEndedPage,
   },
   {
     path: 'login',

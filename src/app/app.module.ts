@@ -58,13 +58,14 @@ import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { HttpClientModule } from '@angular/common/http';
+import { TrialEndedPage } from './trial-ended/trial-ended.page';
 
 let resolvePersistenceEnabled: (enabled: boolean) => void;
 export const persistenceEnabled = new Promise<boolean>((resolve) => {
   resolvePersistenceEnabled = resolve;
 });
 @NgModule({
-  declarations: [AppComponent, SplashPage],
+  declarations: [AppComponent, SplashPage, TrialEndedPage],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

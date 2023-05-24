@@ -52,4 +52,5 @@ export interface Company {
     tenantID?: string;
     tenantName?: string;
   };
+  trialEnded?: boolean;
 }

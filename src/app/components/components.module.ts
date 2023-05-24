@@ -77,6 +77,8 @@ import { SiteFormComponent } from './site-form/site-form.component';
 import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 import { StatementSummaryComponent } from './statement-summary/statement-summary.component';
 import { TitleBlockComponent } from './title-block/title-block.component';
+import { TutorialGalleryComponent } from './tutorial-gallery/tutorial-gallery.component';
+import { VideoPlayerComponent } from './tutorial-gallery/video-player/video-player.component';
 import { UserPickerComponent } from './user-picker/user-picker.component';
 import { ViewBulkEstimateComponent } from './view-bulk-estimate/view-bulk-estimate.component';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
@@ -86,8 +88,6 @@ import { ViewModificationComponent } from './view-modification/view-modification
 import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipment-invoice.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
-import { TutorialGalleryComponent } from './tutorial-gallery/tutorial-gallery.component';
-import { VideoPlayerComponent } from './tutorial-gallery/video-player/video-player.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
