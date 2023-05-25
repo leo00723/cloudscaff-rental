@@ -27,9 +27,12 @@ export class CompanyState {
         dispatch(new SetCompany(company));
         if (company.needsSetup) {
           dispatch(new Navigate('/dashboard/onboarding'));
-        }
-        if (company.trialEnded) {
-          dispatch(new Navigate('/trial-ended'));
+        } else {
+          if (company.trialEnded) {
+            dispatch(new Navigate('/trial-ended'));
+          } else {
+            dispatch(new Navigate('/dashboard/sites'));
+          }
         }
       }),
       catchError((error) => dispatch(new SetCompany(null)))
