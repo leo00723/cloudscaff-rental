@@ -481,6 +481,32 @@ exports.checkTrials = functions.pubsub
     }
   });
 
+exports.checkUsers = functions.pubsub
+  .schedule('00 03 * * *')
+  .timeZone('America/Los_Angeles') // Users can choose timezone - default is America/Los_Angeles
+  .onRun(async () => {
+    try {
+      const data = await admin.firestore().collection('company').get();
+      for await (const companyDoc of data.docs) {
+        const users = await admin
+          .firestore()
+          .collection('users')
+          .where('company', '==', companyDoc.id)
+          .get();
+        //check if company trial ended
+        if (users.size > 0) {
+          await companyDoc.ref.update({
+            totalUsers: users.size,
+          });
+        }
+      }
+      return true;
+    } catch (err) {
+      logger.error('something went wrong somewhere', err);
+      return false;
+    }
+  });
+
 // exports.generateInvoices = functions.pubsub
 //   .schedule('00 03 * * *')
 //   .timeZone('America/Los_Angeles') // Users can choose timezone - default is America/Los_Angeles
