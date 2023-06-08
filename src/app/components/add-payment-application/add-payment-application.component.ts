@@ -44,6 +44,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       title: 'Measured Work',
       type1: 'measured',
       type2: 'measured-custom',
+      type3: 'bulk-measured',
     },
     {
       title: 'Variation Orders',
@@ -113,6 +114,25 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
           totalPaymentApplications: increment(1),
         });
 
+        const batch = this.masterSvc.edit().batch();
+        for (const e of this.paymentApplication.estimates) {
+          if (e.id && e.code) {
+            if (e.type === 'measured') {
+              const doc = this.masterSvc
+                .edit()
+                .docRef(`company/${this.company.id}/estimates`, e.id);
+              batch.update(doc, { addedToPA: true });
+            } else if (e.type === 'bulk-measured') {
+              const id = e.id.split('-')[0];
+              const doc = this.masterSvc
+                .edit()
+                .docRef(`company/${this.company.id}/bulkEstimates`, id);
+              batch.update(doc, { addedToPA: true });
+            }
+          }
+        }
+        await batch.commit();
+
         this.masterSvc
           .notification()
           .toast('Payment application created successfully!', 'success');
@@ -144,18 +164,26 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
             this.paymentApplication.id,
             this.paymentApplication
           );
-        const est = this.paymentApplication.updatePreviousGross();
+        // const est = this.paymentApplication.updatePreviousGross();
         const batch = this.masterSvc.edit().batch();
-        for (const e of est) {
-          if (e.id && e.code) {
-            const doc = this.masterSvc
-              .edit()
-              .docRef(`company/${this.company.id}/estimates`, e.id);
-            batch.set(doc, { ...e, addedToPA: true }, { merge: true });
+        for (const e of this.paymentApplication.estimates) {
+          if (e.id && e.code && !e.addedToPA) {
+            if (e.type === 'measured') {
+              const doc = this.masterSvc
+                .edit()
+                .docRef(`company/${this.company.id}/estimates`, e.id);
+              batch.update(doc, { addedToPA: true });
+            } else if (e.type === 'bulk-measured') {
+              const id = e.id.split('-')[0];
+              const doc = this.masterSvc
+                .edit()
+                .docRef(`company/${this.company.id}/bulkEstimates`, id);
+              batch.update(doc, { addedToPA: true });
+            }
           }
         }
-
         await batch.commit();
+
         this.loading = false;
         this.masterSvc
           .notification()
@@ -367,7 +395,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
                   ...a,
                   total: a.total,
                 })),
-                type: 'measured',
+                type: be.type,
                 addedToPA: be.addedToPA,
               } as Estimate;
               est.push(obj);

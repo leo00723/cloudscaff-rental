@@ -164,6 +164,7 @@
                   <ng-container
                     *ngIf="
                       estimate.type === type.type1 ||
+                      estimate.type === type.type3 ||
                       estimate.type === type.type2
                     "
                   >
@@ -1012,15 +1013,9 @@
           </ion-button></ng-container
         >
         <ion-button
-          shape="round"
-          *ngIf="!isEdit && !loading"
-          (click)="createPA()"
-          >Save Payment Application
-        </ion-button>
-        <ion-button
           color="success"
           shape="round"
-          *ngIf="isEdit && !loading"
+          *ngIf="!isEdit && !loading"
           (click)="createPA()"
           >Create Payment Application
         </ion-button>
