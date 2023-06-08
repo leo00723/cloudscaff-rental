@@ -9,19 +9,12 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title *ngIf="isPA; else OA"
+    <ion-title
       >{{ !isEdit ? "Add Payment Application" : "Edit Payment Application" }}
     </ion-title>
-    <ng-template #OA>
-      <ion-title
-        >{{
-          !isEdit ? "Add Operation Application" : "Edit Operation Application"
-        }}
-      </ion-title>
-    </ng-template>
     <ion-buttons slot="end">
       <ion-button
-        *ngIf="isEdit && !loading && isPA"
+        *ngIf="isEdit && !loading"
         slot="end"
         fill="solid"
         shape="round"
@@ -39,7 +32,7 @@
     <ion-row class="py-2">
       <ion-col sizeMd="6" size="4">
         <ion-text>
-          <h4>{{ isPA ? "Payment Application" : "Operation Application" }}</h4>
+          <h4>Payment Application</h4>
         </ion-text>
       </ion-col>
       <ion-col sizeMd="6" size="8" class="text-end">
@@ -1006,12 +999,7 @@
           shape="round"
           *ngIf="isEdit && !loading"
           (click)="updatePA()"
-          >{{
-            isPA
-              ? "Update Payment Application"
-              : "Update Operation
-          Application"
-          }}
+          >Update Payment Application
         </ion-button>
         <ng-container *ngIf="site$ | async as site">
           <ion-button
@@ -1027,15 +1015,13 @@
           shape="round"
           *ngIf="!isEdit && !loading"
           (click)="createPA()"
-          >{{
-            isPA ? "Save Payment Application" : "Save Operation Application"
-          }}
+          >Save Payment Application
         </ion-button>
         <ion-button
           color="success"
           shape="round"
-          *ngIf="isEdit && !loading && !isPA"
-          (click)="createPA(true)"
+          *ngIf="isEdit && !loading"
+          (click)="createPA()"
           >Create Payment Application
         </ion-button>
       </ion-col>

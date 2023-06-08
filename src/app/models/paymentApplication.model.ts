@@ -33,22 +33,13 @@ export class PaymentApplication {
     this.estimates = [];
   }
 
-  setCompany(company: Company, updateCode?: boolean, isPA?: boolean) {
+  setCompany(company: Company, updateCode?: boolean) {
     this.company = company;
-    if (updateCode && isPA) {
+    if (updateCode) {
       this.code = `PAY${new Date().toLocaleDateString('en', {
         year: '2-digit',
       })}${(this.company.totalPaymentApplications
         ? this.company.totalPaymentApplications + 1
-        : 1
-      )
-        .toString()
-        .padStart(6, '0')}`;
-    } else if (updateCode) {
-      this.code = `OPA${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${(this.company.totalOperationApplications
-        ? this.company.totalOperationApplications + 1
         : 1
       )
         .toString()

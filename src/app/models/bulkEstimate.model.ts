@@ -35,4 +35,5 @@ export interface BulkEstimate {
   revision?: number;
   type?: string;
   excludeVAT?: boolean;
+  addedToPA?: boolean;
 }

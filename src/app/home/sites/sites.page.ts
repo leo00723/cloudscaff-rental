@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { Observable, first } from 'rxjs';
+import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
-import { Estimate } from 'src/app/models/estimate.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -60,24 +60,25 @@ export class SitesPage implements OnInit {
   update() {
     // this.masterSvc
     //   .edit()
-    //   .getCollectionGroup('estimates')
-    //   .subscribe(async (es: Estimate[]) => {
+    //   .getCollectionGroup('paymentApplications')
+    //   // .pipe(first())
+    //   .subscribe(async (data) => {
     //     let counter = 0;
-    //     for (const e of es) {
-    //       console.log(counter, e.id, e.type);
-    //       if (!e.type) {
-    //         counter++;
-    //         try {
-    //           await this.masterSvc
-    //             .edit()
-    //             .updateDoc(`company/${e.company.id}/estimates`, e.id, {
-    //               type: 'measured',
-    //             });
-    //           console.log(counter, e.id, 'updated');
-    //         } catch (error) {
-    //           console.error(error);
-    //         }
-    //       }
+    //     for (const i of data) {
+    //       counter++;
+    //       console.log(counter, i.company.id, i.company.name, i.code);
+    //       // counter++;
+    //       // try {
+    //       //   await this.masterSvc
+    //       //     .edit()
+    //       //     .updateDoc(`company/${e.company.id}/bulkEstimates`, e.id, {
+    //       //       addedToPA: false,
+    //       //       type: 'bulk-measured',
+    //       //     });
+    //       //   console.log(counter, e.id, 'updated');
+    //       // } catch (error) {
+    //       //   console.error(error);
+    //       // }
     //     }
     //   });
   }

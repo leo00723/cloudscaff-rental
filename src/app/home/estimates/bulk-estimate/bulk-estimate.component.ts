@@ -235,6 +235,8 @@ export class BulkEstimateComponent implements OnInit {
         this.updateEstimateTotal();
         this.bulkEstimate.enquiryId = this.enquiryId;
         this.bulkEstimate.type = 'bulk-measured';
+        this.bulkEstimate.addedToPA = false;
+
         await this.masterSvc
           .edit()
           .addDocument(
@@ -346,6 +348,7 @@ export class BulkEstimateComponent implements OnInit {
         }
         this.bulkEstimate.id = '';
         this.bulkEstimate.type = 'bulk-measured';
+        this.bulkEstimate.addedToPA = false;
         await this.masterSvc
           .edit()
           .addDocument(

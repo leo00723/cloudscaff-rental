@@ -125,8 +125,9 @@ export class AcceptBulkEstimateComponent implements OnInit {
   }
 
   close() {
-    if (this.page === 0)
+    if (this.page === 0) {
       this.masterSvc.modal().dismiss(undefined, 'close', 'acceptEstimate');
+    }
     this.page--;
   }
 
@@ -203,13 +204,13 @@ export class AcceptBulkEstimateComponent implements OnInit {
   }
   private createInvoice(estimate: Estimate, invoiceNumber: number) {
     // create invoice for each scaffold
-    let invoice: Invoice = {};
+    const invoice: Invoice = {};
     const code = `INV${new Date().toLocaleDateString('en', {
       year: '2-digit',
     })}${invoiceNumber.toString().padStart(6, '0')}`;
     Object.assign(invoice, {
       ...estimate,
-      code: code,
+      code,
       id: '',
       estimateCode: this.bulkEstimate.code,
       estimateId: this.bulkEstimate.id,

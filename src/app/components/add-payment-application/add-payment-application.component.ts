@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
-import { map, Observable, Subscription, take, takeLast } from 'rxjs';
+import { Observable, Subscription, map, zip } from 'rxjs';
 import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
 import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Site } from 'src/app/models/site.model';
 import { Term } from 'src/app/models/term.model';
-import { XeroInvoice } from 'src/app/models/xero-invoice.model';
 import { MasterService } from 'src/app/services/master.service';
 import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -27,7 +26,6 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
 })
 export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   @Input() isEdit = false;
-  @Input() isPA = false;
   @Input() siteId = '';
   @Input() site$: Observable<Site>;
   @Input() set value(val: PaymentApplication) {
@@ -35,7 +33,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       Object.assign(this.paymentApplication, val);
     }
   }
-  bulkEstimates: BulkEstimate[];
+  bulkEstimates$: Observable<Estimate[]>;
   estimates$: Observable<Estimate[]>;
   terms$: Observable<Term>;
   paymentApplication = new PaymentApplication();
@@ -52,11 +50,6 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       type1: 'variation',
       type2: 'variation-custom',
     },
-    // {
-    //   title: 'Daily Works',
-    //   type1: 'daily-works',
-    //   type2: 'daily-works-custom',
-    // },
   ];
   private subs = new Subscription();
   constructor(private masterSvc: MasterService, private xero: XeroService) {
@@ -70,124 +63,59 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     if (!this.isEdit) {
-      this.paymentApplication.setCompany(this.company, true, this.isPA);
+      this.paymentApplication.setCompany(this.company, true);
       this.subs.add(
         this.site$.subscribe((site) => {
           this.paymentApplication.setSite(site);
         })
       );
     }
-    this.estimates$ = this.masterSvc
-      .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.company.id}/estimates`,
-        'siteId',
-        '==',
-        this.siteId,
-        'date',
-        'desc'
-      )
-      .pipe(
-        map((data) =>
-          data.map((e) => {
-            const obj = {
-              id: e.id,
-              code: e.code,
-              scaffold: {
-                ...e.scaffold,
-                total:
-                  e.scaffold.total +
-                  (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
-                erectionValue: e.scaffold.total * 0.7,
-                dismantleValue: e.scaffold.total * 0.3,
-              },
-              attachments: e.attachments.map((a) => ({
-                ...a,
-                total: a.total + (a.hireTotal ? a.hireTotal : 0),
-                erectionValue: a.total * 0.7,
-                dismantleValue: a.total * 0.3,
-              })),
-              additionals: e.additionals.map((a) => ({
-                ...a,
-                total: a.total,
-                erectionValue: a.total * 0.7,
-                dismantleValue: a.total * 0.3,
-              })),
-              labour: e.labour.map((a) => ({
-                ...a,
-                total: a.total,
-              })),
-              transport: e.transport.map((a) => ({
-                ...a,
-                total: a.total,
-              })),
-              boards: e.boards.map((a) => ({
-                ...a,
-                total: a.total,
-              })),
-              type: e.type,
-              addedToPA: e.addedToPA,
-            } as Estimate;
-            return obj;
-          })
-        )
-      ) as Observable<Estimate[]>;
-    this.subs.add(
-      this.estimates$.subscribe((estimates) => {
+    this.init();
+    // this.subs.add(
+    //   this.estimates$.subscribe((estimates) => {
+    //     if (estimates.length > 0) {
+    //       this.paymentApplication.setEstimates(estimates);
+    //     }
+    //   })
+    // );
+    // this.subs.add(
+    //   this.bulkEstimates$.subscribe((estimates) => {
+    //     if (estimates.length > 0) {
+    //       console.log(estimates);
+    //       this.paymentApplication.setEstimates(estimates);
+    //     }
+    //   })
+    // );
+    zip(this.estimates$, this.bulkEstimates$)
+      .pipe(map(([es, bes]) => [...es, ...bes]))
+      .subscribe((estimates) => {
         if (estimates.length > 0) {
+          console.log(estimates);
           this.paymentApplication.setEstimates(estimates);
         }
-      })
-    );
+      });
   }
 
-  createPA(create?: boolean) {
-    const canMakePA = create ? create : this.isPA;
+  createPA() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         this.loading = true;
-        this.paymentApplication.setCompany(this.company, true, canMakePA);
-        if (canMakePA) {
-          const test = JSON.parse(JSON.stringify(this.paymentApplication));
-          await this.masterSvc
-            .edit()
-            .addDocument(
-              `company/${this.paymentApplication.company.id}/paymentApplications`,
-              { ...test, status: 'pending' }
-            );
+        this.paymentApplication.setCompany(this.company, true);
+        const data = JSON.parse(JSON.stringify(this.paymentApplication));
+        await this.masterSvc
+          .edit()
+          .addDocument(
+            `company/${this.paymentApplication.company.id}/paymentApplications`,
+            { ...data, status: 'pending' }
+          );
 
-          await this.masterSvc.edit().updateDoc('company', this.company.id, {
-            totalPaymentApplications: increment(1),
-          });
-          if (create) {
-            await this.masterSvc
-              .edit()
-              .updateDoc(
-                `company/${this.paymentApplication.company.id}/operationApplications`,
-                this.paymentApplication.id,
-                { status: 'P.A Created' }
-              );
-          }
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalPaymentApplications: increment(1),
+        });
 
-          this.masterSvc
-            .notification()
-            .toast('Payment application created successfully!', 'success');
-        } else {
-          await this.masterSvc
-            .edit()
-            .addDocument(
-              `company/${this.paymentApplication.company.id}/operationApplications`,
-              this.paymentApplication
-            );
-
-          await this.masterSvc.edit().updateDoc('company', this.company.id, {
-            totalOperationApplications: increment(1),
-          });
-
-          this.masterSvc
-            .notification()
-            .toast('Operation application created successfully!', 'success');
-        }
+        this.masterSvc
+          .notification()
+          .toast('Payment application created successfully!', 'success');
 
         this.close();
       } catch (error) {
@@ -212,9 +140,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
         await this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.paymentApplication.company.id}/${
-              this.isPA ? 'paymentApplications' : 'operationApplications'
-            }`,
+            `company/${this.paymentApplication.company.id}/paymentApplications`,
             this.paymentApplication.id,
             this.paymentApplication
           );
@@ -233,12 +159,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.masterSvc
           .notification()
-          .toast(
-            `${
-              this.isPA ? 'Payment' : 'Operation'
-            } application updated successfully!`,
-            'success'
-          );
+          .toast('Payment application updated successfully!', 'success');
       } catch (error) {
         console.error(error);
         this.loading = false;
@@ -331,5 +252,129 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       cssClass: 'accept',
     });
     return await modal.present();
+  }
+
+  private init() {
+    this.estimates$ = this.masterSvc
+      .edit()
+      .getCollectionWhereWhereAndOrder(
+        `company/${this.company.id}/estimates`,
+        'siteId',
+        '==',
+        this.siteId,
+        'addedToPA',
+        '==',
+        false,
+        'date',
+        'desc'
+      )
+      .pipe(
+        map((data) =>
+          data.map((e) => {
+            const obj = {
+              id: e.id,
+              code: e.code,
+              scaffold: {
+                ...e.scaffold,
+                total:
+                  e.scaffold.total +
+                  (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
+                erectionValue: e.scaffold.total * 0.7,
+                dismantleValue: e.scaffold.total * 0.3,
+              },
+              attachments: e.attachments.map((a) => ({
+                ...a,
+                total: a.total + (a.hireTotal ? a.hireTotal : 0),
+                erectionValue: a.total * 0.7,
+                dismantleValue: a.total * 0.3,
+              })),
+              additionals: e.additionals.map((a) => ({
+                ...a,
+                total: a.total,
+                erectionValue: a.total * 0.7,
+                dismantleValue: a.total * 0.3,
+              })),
+              labour: e.labour.map((a) => ({
+                ...a,
+                total: a.total,
+              })),
+              transport: e.transport.map((a) => ({
+                ...a,
+                total: a.total,
+              })),
+              boards: e.boards.map((a) => ({
+                ...a,
+                total: a.total,
+              })),
+              type: e.type,
+              addedToPA: e.addedToPA,
+            } as Estimate;
+            return obj;
+          })
+        )
+      ) as Observable<Estimate[]>;
+
+    this.bulkEstimates$ = this.masterSvc
+      .edit()
+      .getCollectionWhereWhereAndOrder(
+        `company/${this.company.id}/bulkEstimates`,
+        'siteId',
+        '==',
+        this.siteId,
+        'addedToPA',
+        '==',
+        false,
+        'date',
+        'desc'
+      )
+      .pipe(
+        map((data) => {
+          const est: Estimate[] = [];
+          data.map((be: BulkEstimate) => {
+            be.estimates.map((e, i) => {
+              const obj = {
+                id: `${be.id}-${i}`,
+                code: be.code,
+                scaffold: {
+                  ...e.scaffold,
+                  total:
+                    e.scaffold.total +
+                    (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
+                  erectionValue: e.scaffold.total * 0.7,
+                  dismantleValue: e.scaffold.total * 0.3,
+                },
+                attachments: e.attachments.map((a) => ({
+                  ...a,
+                  total: a.total + (a.hireTotal ? a.hireTotal : 0),
+                  erectionValue: a.total * 0.7,
+                  dismantleValue: a.total * 0.3,
+                })),
+                additionals: e.additionals.map((a) => ({
+                  ...a,
+                  total: a.total,
+                  erectionValue: a.total * 0.7,
+                  dismantleValue: a.total * 0.3,
+                })),
+                labour: e.labour.map((a) => ({
+                  ...a,
+                  total: a.total,
+                })),
+                transport: e.transport.map((a) => ({
+                  ...a,
+                  total: a.total,
+                })),
+                boards: e.boards.map((a) => ({
+                  ...a,
+                  total: a.total,
+                })),
+                type: 'measured',
+                addedToPA: be.addedToPA,
+              } as Estimate;
+              est.push(obj);
+            });
+          });
+          return est;
+        })
+      ) as Observable<Estimate[]>;
   }
 }

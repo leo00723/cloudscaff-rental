@@ -461,6 +461,7 @@ export class AddEstimatePage implements OnInit {
         this.updateEstimateTotal();
         this.estimate.enquiryId = this.enquiryId;
         this.estimate.type = 'measured';
+        this.estimate.addedToPA = false;
         const estimate = await this.masterSvc
           .edit()
           .addDocument(
@@ -578,6 +579,7 @@ export class AddEstimatePage implements OnInit {
         }
         this.estimate.id = '';
         this.estimate.type = 'measured';
+        this.estimate.addedToPA = false;
         const revision = await this.masterSvc
           .edit()
           .addDocument(

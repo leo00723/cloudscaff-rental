@@ -46,12 +46,12 @@
         <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Shipment Invoices</ion-label>
         </ion-segment-button>
-        <ion-segment-button
+        <!-- <ion-segment-button
           value="operationApplication"
           *ngIf="user.role !== 'Supervisor'"
         >
           <ion-label>Operation Application</ion-label>
-        </ion-segment-button>
+        </ion-segment-button> -->
         <ion-segment-button
           value="paymentApplication"
           *ngIf="user.role !== 'Supervisor'"
@@ -147,7 +147,7 @@
           (selectedItem)="viewShipmentInvoices($event)"
         ></app-shipment-invoices-table>
       </div>
-      <div *ngSwitchCase="'operationApplication'">
+      <!-- <div *ngSwitchCase="'operationApplication'">
         <ng-container
           *ngIf="operationApplications$ | async as operationApplications else loading"
         >
@@ -166,7 +166,7 @@
               <ion-icon name="add"></ion-icon>
             </ion-fab-button> </ion-fab
         ></ng-container>
-      </div>
+      </div> -->
       <div *ngSwitchCase="'paymentApplication'">
         <ng-container
           *ngIf="paymentApplications$ | async as paymentApplications  else loading"
