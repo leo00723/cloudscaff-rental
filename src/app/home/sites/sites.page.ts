@@ -60,13 +60,20 @@ export class SitesPage implements OnInit {
   update() {
     // this.masterSvc
     //   .edit()
-    //   .getCollectionGroup('paymentApplications')
+    //   .getCollectionGroup('bulkEstimates')
     //   // .pipe(first())
     //   .subscribe(async (data) => {
     //     let counter = 0;
     //     for (const i of data) {
     //       counter++;
-    //       console.log(counter, i.company.id, i.company.name, i.code);
+    //       console.log(
+    //         counter,
+    //         i.company.id,
+    //         i.company.name,
+    //         i.code,
+    //         i.addedToPA,
+    //         i.type
+    //       );
     //       // counter++;
     //       // try {
     //       //   await this.masterSvc
