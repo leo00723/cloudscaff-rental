@@ -20,7 +20,7 @@ export class HeaderComponent {
   @Input() showBack = false;
   @Input() path = '';
   @Input() btnName = '';
-  @Input() iconColor = '';
+  @Input() iconColor = 'primary';
   @Output() updated = new EventEmitter<boolean>();
   @Output() backClicked = new EventEmitter<boolean>();
 

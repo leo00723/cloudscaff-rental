@@ -90,6 +90,12 @@ export class SitesPage implements OnInit {
     //   });
   }
 
+  help() {
+    this.masterSvc
+      .router()
+      .navigateByUrl('/dashboard/settings/tutorial?ch=7&vid=0');
+  }
+
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 

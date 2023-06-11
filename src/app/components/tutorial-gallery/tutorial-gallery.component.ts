@@ -1,4 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Chapter, Video } from 'src/app/models/tutorial.model';
 
 @Component({
@@ -215,10 +216,18 @@ export class TutorialGalleryComponent implements OnInit {
   ];
   isLoading = false;
 
-  selectedItem: Video = this.chapters[0].videos[0];
-  selectedChapter: Chapter = this.chapters[0];
+  selectedItem: Video;
+  selectedChapter: Chapter;
 
-  constructor() {}
+  constructor(private activatedRoute: ActivatedRoute) {
+    this.chapterIndex =
+      +this.activatedRoute.snapshot.queryParamMap.get('ch') || 0;
+    this.itemIndex =
+      +this.activatedRoute.snapshot.queryParamMap.get('vid') || 0;
+
+    this.selectedItem = this.chapters[this.chapterIndex].videos[this.itemIndex];
+    this.selectedChapter = this.chapters[this.chapterIndex];
+  }
 
   ngOnInit(): void {}
 

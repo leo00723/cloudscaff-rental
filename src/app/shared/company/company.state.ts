@@ -30,8 +30,6 @@ export class CompanyState {
         } else {
           if (company.trialEnded) {
             dispatch(new Navigate('/trial-ended'));
-          } else {
-            dispatch(new Navigate('/dashboard/sites'));
           }
         }
       }),

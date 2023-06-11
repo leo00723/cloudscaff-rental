@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Select, Store } from '@ngxs/store';
+import { Router } from '@angular/router';
+import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { User } from 'src/app/models/user.model';
-import { Navigate } from 'src/app/shared/router.state';
 
 @Component({
   selector: 'app-onboarding',
@@ -13,16 +13,17 @@ export class OnboardingPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   page = 0;
-  constructor(private store: Store) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {}
 
   next({ user, company }, settings: boolean) {
+    console.log('emmited');
     if (!user?.needsSetup && !company?.needsSetup) {
       if (settings) {
-        this.store.dispatch(new Navigate('/dashboard/settings'));
+        this.router.navigateByUrl('/dashboard/settings');
       } else {
-        this.store.dispatch(new Navigate('/dashboard/sites'));
+        this.router.navigateByUrl('/dashboard/sites');
       }
     }
   }

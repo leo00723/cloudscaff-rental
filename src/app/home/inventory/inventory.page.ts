@@ -214,6 +214,12 @@ export class InventoryPage implements OnInit {
       : console.log('same');
   }
 
+  help() {
+    this.masterSvc
+      .router()
+      .navigateByUrl('/dashboard/settings/tutorial?ch=8&vid=0');
+  }
+
   private init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 

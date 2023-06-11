@@ -1,4 +1,29 @@
 <ng-container *ngIf="page === 0">
+  <ion-content class="ion-padding text-center">
+    <ion-row style="height: 100%">
+      <ion-col class="m-auto">
+        <ion-thumbnail class="mx-auto">
+          <ion-img
+            class="img-fluid"
+            width="100px"
+            src="assets/icons/icon-512x512.png"
+            alt="logo"
+          ></ion-img>
+        </ion-thumbnail>
+        <div class="mb-5">
+          <ion-text color="primary">
+            <h1 class="display-1 fw-bold">Welcome to Cloudscaff</h1>
+          </ion-text>
+          <p class="lead">Lets get started setting up your account.</p>
+        </div>
+        <ion-button mode="ios" (click)="page = 1" shape="round">
+          Next
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-content>
+</ng-container>
+<ng-container *ngIf="page === 1">
   <ion-header>
     <ion-toolbar>
       <ion-title>Tutorial </ion-title>
@@ -6,7 +31,7 @@
         slot="end"
         size="small"
         shape="round"
-        (click)="page = 1"
+        (click)="page = 2"
         shape="round"
         class="me-4"
         mode="ios"
@@ -22,12 +47,12 @@
         <app-tutorial-gallery></app-tutorial-gallery>
       </ion-col>
       <ion-col size="12" class="text-end">
-        <ion-button (click)="page = 1" shape="round"> Next </ion-button>
+        <ion-button (click)="page = 2" shape="round"> Next </ion-button>
       </ion-col>
     </ion-row>
   </ion-content>
 </ng-container>
-<ng-container *ngIf="page === 1">
+<ng-container *ngIf="page === 2">
   <ion-content
     *ngIf="{user: user$ | async , company: company$ | async} as data"
     [ngClass]="data?.user?.needsSetup ? '':'padding'"
@@ -37,15 +62,15 @@
     >
       <app-editprofile
         *ngIf="data.user?.needsSetup else company"
-        title="Complete Onboarding - Profile"
+        title="Complete Profile"
       ></app-editprofile>
       <ng-template #company>
-        {{next(data,false)}}
         <app-company
           [showBack]="false"
           [showAll]="false"
-          title="Complete Onboarding - Business Info"
-          (updated)="next(data,true)"
+          [onboarding]="true"
+          title="Complete Business Info"
+          (updated)="next(data,false)"
         ></app-company>
       </ng-template>
     </ng-container>

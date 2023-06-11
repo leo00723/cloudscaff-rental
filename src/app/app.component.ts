@@ -7,6 +7,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { GetVersion } from './shared/app/app.actions';
 import { AppState } from './shared/app/app.state';
 import { SplashPage } from './splash/splash.page';
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -15,7 +16,9 @@ export class AppComponent implements OnInit, OnDestroy {
   @Select() user$: Observable<User>;
   private subs = new Subscription();
   constructor(private updates: SwUpdate, private masterSvc: MasterService) {
-    this.splash();
+    if (environment.production) {
+      this.splash();
+    }
     this.masterSvc.store().dispatch(new GetVersion('version'));
   }
 

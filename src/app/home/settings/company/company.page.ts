@@ -28,6 +28,7 @@ import { MasterService } from '../../../services/master.service';
 export class CompanyPage implements OnDestroy {
   @Input() title = 'Business Settings';
   @Input() showAll = true;
+  @Input() onboarding = false;
   @Input() showBack = true;
   @Output() updated = new EventEmitter<boolean>();
   @Select() company$: Observable<Company>;
@@ -71,6 +72,7 @@ export class CompanyPage implements OnDestroy {
   form: FormGroup;
   loading = false;
   isLoading = true;
+  page = 0;
   private subs = new Subscription();
   constructor(
     private fb: FormBuilder,
@@ -114,6 +116,9 @@ export class CompanyPage implements OnDestroy {
     });
   }
 
+  next(i: number) {
+    this.page += i;
+  }
   async uploadImage(data: any) {
     try {
       this.company.logoUrl = data.url2;
@@ -144,7 +149,6 @@ export class CompanyPage implements OnDestroy {
     }
     this.loading = false;
   }
-
   async connectTenant() {
     this.loading = true;
     try {
@@ -165,7 +169,6 @@ export class CompanyPage implements OnDestroy {
       this.loading = false;
     }
   }
-
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(async () => {

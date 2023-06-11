@@ -153,6 +153,11 @@ export class EstimatesPage implements OnInit {
     return await modal.present();
   }
 
+  help() {
+    this.masterSvc
+      .router()
+      .navigateByUrl('/dashboard/settings/tutorial?ch=2&vid=0');
+  }
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
