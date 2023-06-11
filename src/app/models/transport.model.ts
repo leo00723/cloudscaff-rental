@@ -16,4 +16,8 @@ export interface TransportItem {
   extraHire?: number;
   total?: number;
   type?: TransportType;
+  grossTotal?: number;
+  previousGross?: number;
+  currentTotal?: number;
+  totalPaid?: number;
 }

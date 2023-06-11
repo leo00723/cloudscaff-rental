@@ -31,6 +31,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
   @Input() set value(val: PaymentApplication) {
     if (val) {
       Object.assign(this.paymentApplication, val);
+      this.paymentApplication.updateTotals();
     }
   }
   bulkEstimates$: Observable<Estimate[]>;
@@ -72,29 +73,16 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
       );
     }
     this.init();
-    // this.subs.add(
-    //   this.estimates$.subscribe((estimates) => {
-    //     if (estimates.length > 0) {
-    //       this.paymentApplication.setEstimates(estimates);
-    //     }
-    //   })
-    // );
-    // this.subs.add(
-    //   this.bulkEstimates$.subscribe((estimates) => {
-    //     if (estimates.length > 0) {
-    //       console.log(estimates);
-    //       this.paymentApplication.setEstimates(estimates);
-    //     }
-    //   })
-    // );
-    zip(this.estimates$, this.bulkEstimates$)
-      .pipe(map(([es, bes]) => [...es, ...bes]))
-      .subscribe((estimates) => {
-        if (estimates.length > 0) {
-          console.log(estimates);
-          this.paymentApplication.setEstimates(estimates);
-        }
-      });
+    this.subs.add(
+      zip(this.estimates$, this.bulkEstimates$)
+        .pipe(map(([es, bes]) => [...es, ...bes]))
+        .subscribe((estimates) => {
+          if (estimates.length > 0) {
+            console.log(estimates);
+            this.paymentApplication.setEstimates(estimates);
+          }
+        })
+    );
   }
 
   createPA() {
@@ -307,14 +295,18 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
                 total:
                   e.scaffold.total +
                   (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
-                erectionValue: e.scaffold.total * 0.7,
-                dismantleValue: e.scaffold.total * 0.3,
+                erectionValue:
+                  e.scaffold.total +
+                  (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0) * 0.7,
+                dismantleValue:
+                  e.scaffold.total +
+                  (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0) * 0.3,
               },
               attachments: e.attachments.map((a) => ({
                 ...a,
                 total: a.total + (a.hireTotal ? a.hireTotal : 0),
-                erectionValue: a.total * 0.7,
-                dismantleValue: a.total * 0.3,
+                erectionValue: a.total + (a.hireTotal ? a.hireTotal : 0) * 0.7,
+                dismantleValue: a.total + (a.hireTotal ? a.hireTotal : 0) * 0.3,
               })),
               additionals: e.additionals.map((a) => ({
                 ...a,

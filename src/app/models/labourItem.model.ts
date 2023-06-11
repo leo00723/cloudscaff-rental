@@ -7,6 +7,10 @@ export interface LabourItem {
   total?: number;
   type?: Labour;
   rate?: LabourRate;
+  grossTotal?: number;
+  previousGross?: number;
+  currentTotal?: number;
+  totalPaid?: number;
 }
 
 export interface LabourRate {

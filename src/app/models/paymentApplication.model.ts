@@ -1,7 +1,10 @@
+import { AdditionalItem } from './additionalItem.model';
 import { Company } from './company.model';
 import { Estimate } from './estimate.model';
 import { Item } from './item.model';
+import { LabourItem } from './labourItem.model';
 import { Site } from './site.model';
+import { TransportItem } from './transport.model';
 
 export class PaymentApplication {
   id: string;
@@ -78,9 +81,7 @@ export class PaymentApplication {
   updateTotals() {
     this.resetTotals();
     this.estimates.forEach((e) => {
-      const st = e.scaffold.total ? +e.scaffold.total : 0;
-      const ht = e.scaffold.hireTotal ? +e.scaffold.hireTotal : 0;
-      const t = st + ht;
+      const t = e.scaffold.total ? +e.scaffold.total : 0;
       this.value += t;
       this.erectionValue += t * 0.7;
       this.appliedErectionValue += e.scaffold.appliedErectionValue
@@ -100,25 +101,57 @@ export class PaymentApplication {
       this.currentTotal +=
         (e.scaffold.grossTotal ? +e.scaffold.grossTotal : 0) -
         (e.scaffold.previousGross ? +e.scaffold.previousGross : 0);
-      e.attachments.forEach((a) => {
-        const ast = a.total ? +a.total : 0;
-        const aht = a.hireTotal ? +a.hireTotal : 0;
-        const at = ast + aht;
-        this.value += at;
+      e.attachments.forEach((item) => {
+        const at = item.total ? +item.total : 0;
+        this.value += item.total ? +item.total : 0;
         this.erectionValue += at * 0.7;
-        this.appliedErectionValue += a.appliedErectionValue
-          ? +a.appliedErectionValue
+        this.appliedErectionValue += item.appliedErectionValue
+          ? +item.appliedErectionValue
           : 0;
         this.dismantleValue += at * 0.3;
-        this.appliedDismantleValue += a.appliedDismantleValue
-          ? +a.appliedDismantleValue
+        this.appliedDismantleValue += item.appliedDismantleValue
+          ? +item.appliedDismantleValue
           : 0;
-        this.extraHireCharge += a.extraHireCharge ? +a.extraHireCharge : 0;
-        this.previousGross += a.previousGross ? +a.previousGross : 0;
-        this.grossTotal += a.grossTotal ? +a.grossTotal : 0;
+        this.extraHireCharge += item.extraHireCharge
+          ? +item.extraHireCharge
+          : 0;
+        this.previousGross += item.previousGross ? +item.previousGross : 0;
+        this.grossTotal += item.grossTotal ? +item.grossTotal : 0;
         this.currentTotal +=
-          (a.grossTotal ? +a.grossTotal : 0) -
-          (a.previousGross ? +a.previousGross : 0);
+          (item.grossTotal ? +item.grossTotal : 0) -
+          (item.previousGross ? +item.previousGross : 0);
+      });
+      e.labour.forEach((item) => {
+        this.value += item.total ? +item.total : 0;
+        this.previousGross += item.previousGross ? +item.previousGross : 0;
+        this.grossTotal += item.grossTotal ? +item.grossTotal : 0;
+        this.currentTotal +=
+          (item.grossTotal ? +item.grossTotal : 0) -
+          (item.previousGross ? +item.previousGross : 0);
+      });
+      e.transport.forEach((item) => {
+        this.value += item.total ? +item.total : 0;
+        this.previousGross += item.previousGross ? +item.previousGross : 0;
+        this.grossTotal += item.grossTotal ? +item.grossTotal : 0;
+        this.currentTotal +=
+          (item.grossTotal ? +item.grossTotal : 0) -
+          (item.previousGross ? +item.previousGross : 0);
+      });
+      e.additionals.forEach((item) => {
+        this.value += item.total ? +item.total : 0;
+        this.previousGross += item.previousGross ? +item.previousGross : 0;
+        this.grossTotal += item.grossTotal ? +item.grossTotal : 0;
+        this.currentTotal +=
+          (item.grossTotal ? +item.grossTotal : 0) -
+          (item.previousGross ? +item.previousGross : 0);
+      });
+      e.boards.forEach((item) => {
+        this.value += item.total ? +item.total : 0;
+        this.previousGross += item.previousGross ? +item.previousGross : 0;
+        this.grossTotal += item.grossTotal ? +item.grossTotal : 0;
+        this.currentTotal +=
+          (item.grossTotal ? +item.grossTotal : 0) -
+          (item.previousGross ? +item.previousGross : 0);
       });
     });
     this.vat =
@@ -303,6 +336,24 @@ export class PaymentApplication {
     scaffold.currentTotal =
       scaffold.grossTotal -
       (scaffold.previousGross ? +scaffold.previousGross : 0);
+    this.updateTotals();
+  }
+
+  changeTotal(
+    args,
+    item: Item | AdditionalItem | TransportItem | LabourItem,
+    category: string
+  ) {
+    const value = args.detail.value;
+    switch (category) {
+      case 'GT':
+        {
+          item.grossTotal = +value;
+          item.currentTotal =
+            item.grossTotal - (item.previousGross ? +item.previousGross : 0);
+        }
+        break;
+    }
     this.updateTotals();
   }
 
