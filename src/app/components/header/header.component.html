@@ -11,14 +11,15 @@
       ></ion-back-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
-    <ion-buttons slot="end" *ngIf="btnName">
-      <ion-button (click)="update()">
-        <ion-icon
-          slot="icon-only"
-          size="medium"
-          [name]="btnName"
-          [color]="iconColor"
-        ></ion-icon>
+    <ion-buttons mode="ios" slot="end" *ngIf="btnName">
+      <ion-button
+        fill="solid"
+        shape="round"
+        color="primary"
+        id="hover-trigger"
+        (click)="update()"
+      >
+        Need Help?
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

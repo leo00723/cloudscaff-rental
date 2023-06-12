@@ -525,6 +525,7 @@
             <ion-row>
               <ion-col size="12">
                 <app-address-search
+                  placeholder="Enter your address"
                   (addressData)="updateAddress($event)"
                 ></app-address-search>
               </ion-col>
@@ -662,7 +663,7 @@
               [disabled]="form.invalid"
               *ngIf="page === 3"
             >
-              Save Settings
+              Done
             </ion-button>
             <ion-button
               class="float-end"
@@ -673,6 +674,17 @@
             >
               Next
             </ion-button>
+            <ion-button
+              class="float-end"
+              fill="outline"
+              shape="round"
+              [disabled]="form.invalid"
+              *ngIf="page !== 3"
+              (click)="next(1)"
+            >
+              Skip
+            </ion-button>
+
             <ion-button
               class="float-start"
               shape="round"
