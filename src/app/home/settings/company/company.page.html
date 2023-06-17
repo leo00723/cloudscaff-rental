@@ -660,7 +660,6 @@
               shape="round"
               color="success"
               type="submit"
-              [disabled]="form.invalid"
               *ngIf="page === 3"
             >
               Done
@@ -668,7 +667,6 @@
             <ion-button
               class="float-end"
               shape="round"
-              [disabled]="form.invalid"
               *ngIf="page !== 3"
               (click)="next(1)"
             >
@@ -678,7 +676,6 @@
               class="float-end"
               fill="outline"
               shape="round"
-              [disabled]="form.invalid"
               *ngIf="page !== 3"
               (click)="next(1)"
             >
@@ -688,7 +685,6 @@
             <ion-button
               class="float-start"
               shape="round"
-              [disabled]="form.invalid"
               *ngIf="page !== 0"
               (click)="next(-1)"
             >
