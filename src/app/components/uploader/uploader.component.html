@@ -1,0 +1,68 @@
+<div>
+  <ion-row>
+    <ng-container *ngIf="selectedImages && uploaded.length <= 0">
+      <ion-col
+        sizeMd="4"
+        size="6"
+        *ngFor="let image of selectedImages.photos; let i = index"
+      >
+        <div class="border rounded-lg">
+          <div class="img-fluid rounded-lg p-1">
+            <ion-img
+              style="aspect-ratio: 1/1; object-fit: cover"
+              [src]="image.webPath"
+            ></ion-img>
+          </div>
+          <ion-button
+            (click)="remove(i)"
+            expand="block"
+            color="danger"
+            fill="clear"
+            shape="round"
+          >
+            remove
+          </ion-button>
+        </div>
+      </ion-col>
+    </ng-container>
+    <ng-container *ngIf="uploaded.length > 0">
+      <ion-col
+        sizeMd="4"
+        size="6"
+        *ngFor="let image of uploaded; let i = index"
+      >
+        <div class="border rounded-lg">
+          <div class="img-fluid rounded-lg p-1">
+            <ion-img
+              style="aspect-ratio: 1/1; object-fit: cover"
+              [src]="image.url"
+            ></ion-img>
+          </div>
+          <ion-button
+            (click)="delete(image.ref, i)"
+            expand="block"
+            color="danger"
+            fill="clear"
+            shape="round"
+          >
+            Delete
+          </ion-button>
+        </div>
+      </ion-col>
+    </ng-container>
+  </ion-row>
+  <div class="text-end mt-3">
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+    <ion-button (click)="pickImages()" shape="round" *ngIf="!loading">
+      Choose Photos
+    </ion-button>
+    <ion-button
+      (click)="upload()"
+      color="success"
+      shape="round"
+      *ngIf="selectedImages && !loading"
+    >
+      Upload
+    </ion-button>
+  </div>
+</div>

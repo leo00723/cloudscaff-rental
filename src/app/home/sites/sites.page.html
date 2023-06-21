@@ -7,8 +7,8 @@
     mode="ios"
     class="rounded-lg overflow-hidden"
     [multiple]="true"
-    [value]="['open']"
   >
+    <!-- [value]="['open']" -->
     <ion-accordion value="open">
       <ion-item slot="header" color="light">
         <ion-label color="success">Active Sites</ion-label>
@@ -35,6 +35,9 @@
     </ion-accordion>
   </ion-accordion-group>
 
+  <div class="mt-3 card-outline">
+    <!-- <app-uploader (res)="uploadComplete($event)"></app-uploader> -->
+  </div>
   <!-- <ion-row class="text-center" style="height: 100%">
     <ion-col class="m-auto">
       <ion-thumbnail class="mx-auto">

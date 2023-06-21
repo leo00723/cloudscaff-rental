@@ -88,6 +88,7 @@ import { ViewModificationComponent } from './view-modification/view-modification
 import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipment-invoice.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
+import { UploaderComponent } from './uploader/uploader.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -170,6 +171,7 @@ const COMPONENTS = [
   ViewTermsComponent,
   TutorialGalleryComponent,
   VideoPlayerComponent,
+  UploaderComponent,
 ];
 const IMPORTS = [
   CommonModule,

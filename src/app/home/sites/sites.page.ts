@@ -96,6 +96,10 @@ export class SitesPage implements OnInit {
       .navigateByUrl('/dashboard/settings/tutorial?ch=7&vid=0');
   }
 
+  uploadComplete(data: any[]) {
+    console.log(data);
+  }
+
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 
