@@ -188,6 +188,7 @@
             </app-input-select-reactive>
           </ion-col>
         </ion-row>
+        <!-- <app-uploader (res)="uploadComplete($event)"></app-uploader> -->
         <app-file-upload
           *ngIf="enquiry.status === 'pending' || enquiry.status === 'overdue'"
           [value]="enquiry.upload"
@@ -210,7 +211,11 @@
             <ion-button shape="round" *ngIf="isEdit" (click)="updateEnquiry()"
               >Update Enquiry</ion-button
             >
-            <ion-button color="success" shape="round" *ngIf="isEdit && enquiry.estimate" (click)="viewEstimate()"
+            <ion-button
+              color="success"
+              shape="round"
+              *ngIf="isEdit && enquiry.estimate"
+              (click)="viewEstimate()"
               >View Estimate</ion-button
             >
             <ion-button
@@ -247,7 +252,6 @@
         </ion-row>
       </ion-grid>
     </form>
-
   </div>
   <div class="container" *ngIf="importing">
     <div class="row vh-75">

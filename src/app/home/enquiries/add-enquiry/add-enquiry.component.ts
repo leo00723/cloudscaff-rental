@@ -75,7 +75,9 @@ export class AddEnquiryComponent implements OnInit, OnDestroy {
       await this.masterSvc.img().deleteFile(this.enquiry.upload.ref);
     }
   }
-
+  uploadComplete(data: any[]) {
+    console.log(data);
+  }
   import(args: any) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       const files = args.target.files;

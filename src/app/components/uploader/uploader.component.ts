@@ -1,5 +1,12 @@
 /* eslint-disable max-len */
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   Camera,
   CameraResultType,
@@ -15,13 +22,18 @@ import { CompanyState } from 'src/app/shared/company/company.state';
   selector: 'app-uploader',
   templateUrl: './uploader.component.html',
   styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploaderComponent implements OnInit {
   @Output() res = new EventEmitter<{ url: string; ref: string }[]>();
   selectedImages: GalleryPhotos;
   uploaded: { url: string; ref: string }[] = [];
   loading = false;
-  constructor(private imgSvc: ImgService, private store: Store) {}
+  constructor(
+    private imgSvc: ImgService,
+    private store: Store,
+    private change: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {}
 
@@ -31,6 +43,7 @@ export class UploaderComponent implements OnInit {
         await Camera.requestPermissions();
       }
       this.selectedImages = await Camera.pickImages({});
+      this.change.detectChanges();
     } catch (error) {
       console.error(error);
     }

@@ -1,8 +1,10 @@
-<div>
+<div class="card-outline mt-3">
   <ion-row>
     <ng-container *ngIf="selectedImages && uploaded.length <= 0">
       <ion-col
-        sizeMd="4"
+        sizeXl="1"
+        sizeLg="2"
+        sizeMd="3"
         size="6"
         *ngFor="let image of selectedImages.photos; let i = index"
       >
@@ -27,8 +29,9 @@
     </ng-container>
     <ng-container *ngIf="uploaded.length > 0">
       <ion-col
-        sizeMd="4"
-        size="6"
+        sizeXl="1"
+        sizeLg="2"
+        sizeMd="3"
         *ngFor="let image of uploaded; let i = index"
       >
         <div class="border rounded-lg">
@@ -54,7 +57,7 @@
   <div class="text-end mt-3">
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
     <ion-button (click)="pickImages()" shape="round" *ngIf="!loading">
-      Choose Photos
+      Add Photos
     </ion-button>
     <ion-button
       (click)="upload()"
