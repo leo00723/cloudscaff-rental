@@ -7,8 +7,8 @@
     mode="ios"
     class="rounded-lg overflow-hidden"
     [multiple]="true"
+    [value]="['open']"
   >
-    <!-- [value]="['open']" -->
     <ion-accordion value="open">
       <ion-item slot="header" color="light">
         <ion-label color="success">Active Sites</ion-label>
@@ -35,7 +35,7 @@
     </ion-accordion>
   </ion-accordion-group>
 
-  <app-multiuploader (data)="uploadComplete($event)"></app-multiuploader>
+  <!-- <app-multiuploader (data)="uploadComplete($event)"></app-multiuploader> -->
 
   <!-- <ion-row class="text-center" style="height: 100%">
     <ion-col class="m-auto">
