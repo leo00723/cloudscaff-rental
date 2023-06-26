@@ -39,6 +39,9 @@
       <ion-segment-button value="summary">
         <ion-label>Summary</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="comments" *ngIf="isEdit">
+        <ion-label>Comments</ion-label>
+      </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 </ion-header>
@@ -231,10 +234,7 @@
                 slot="end"
                 [checked]="field('excludeVAT').value"
                 (ionChange)="excludeVAT($event)"
-                [disabled]="
-                  bulkEstimate.status !== 'pending' &&
-                  bulkEstimate.status !== 'revised'
-                "
+                [disabled]="bulkEstimate.status !== 'pending'"
               ></ion-checkbox>
             </ion-item>
           </ion-col>
@@ -258,13 +258,7 @@
               >Rejected</ion-button
             >
           </ion-col>
-          <ion-col
-            *ngIf="
-              isEdit &&
-              (bulkEstimate.status === 'pending' ||
-                bulkEstimate.status === 'revised')
-            "
-          >
+          <ion-col *ngIf="isEdit && bulkEstimate.status === 'pending'">
             <ion-button
               size="block"
               shape="round"
@@ -280,11 +274,7 @@
               size="block"
               shape="round"
               [disabled]="form.invalid"
-              *ngIf="
-                isEdit &&
-                (bulkEstimate.status === 'pending' ||
-                  bulkEstimate.status === 'revised')
-              "
+              *ngIf="isEdit && bulkEstimate.status === 'pending'"
               (click)="updateEstimate(bulkEstimate.status)"
               >Update Estimate</ion-button
             >
@@ -308,6 +298,73 @@
               (click)="createRevision()"
               >Create Revision</ion-button
             >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid *ngSwitchCase="'comments'">
+        <ion-row *ngIf="isEdit">
+          <ion-col size="12">
+            <ion-progress-bar
+              type="indeterminate"
+              *ngIf="addingComment"
+            ></ion-progress-bar>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              [value]="newComment"
+              [textarea]="true"
+              (fieldChange)="newComment = $event"
+            ></app-input-text>
+            <ion-button
+              size="block"
+              shape="round"
+              color="success"
+              (click)="addComment()"
+              *ngIf="!addingComment"
+              >Add Comment</ion-button
+            >
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-list>
+              <ion-list-header>
+                <ion-text
+                  ><h3>
+                    {{
+                      bulkEstimate.comments ? bulkEstimate.comments.length : 0
+                    }}
+                    Comments
+                  </h3></ion-text
+                >
+              </ion-list-header>
+              <ion-row *ngIf="bulkEstimate.comments">
+                <ion-col
+                  size="12"
+                  *ngFor="let item of bulkEstimate.comments.reverse()"
+                >
+                  <div class="card p-3 gap">
+                    <div class="d-flex mb-2">
+                      <ion-avatar> <img [src]="item.image" /> </ion-avatar>
+                      <div class="my-auto ps-2">
+                        <ion-text class="h6">{{ item.name }} </ion-text><br />
+                        <ion-text color="medium">
+                          {{
+                            (item.date.toDate ? item.date.toDate() : item.date)
+                              | date : "dd MMM yyyy HH:mm"
+                          }}
+                        </ion-text>
+                      </div>
+                    </div>
+                    <div>
+                      <ion-text color="medium">
+                        {{ item.message }}
+                      </ion-text>
+                    </div>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-list>
           </ion-col>
         </ion-row>
       </ion-grid>
