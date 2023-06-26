@@ -1,0 +1,43 @@
+<ion-item>
+  <ion-label>
+    {{ file.name }} <span *ngIf="uploading">({{ percentage * 100 }}%)</span>
+  </ion-label>
+  <ion-button
+    slot="end"
+    *ngIf="downloadUrl"
+    (click)="deleteFile(path)"
+    fill="clear"
+    shape="round"
+    color="danger"
+  >
+    Delete
+  </ion-button>
+  <!-- <ion-button
+    slot="end"
+    *ngIf="!downloadUrl"
+    (click)="startUpload()"
+    fill="clear"
+    shape="round"
+    color="success"
+  >
+    Upload
+  </ion-button> -->
+  <ion-button
+    slot="end"
+    *ngIf="downloadUrl"
+    [href]="downloadUrl"
+    target="_blank"
+    fill="clear"
+    shape="round"
+    color="success"
+  >
+    Download
+  </ion-button>
+</ion-item>
+<ion-progress-bar
+  *ngIf="uploading"
+  type="determinate"
+  [value]="percentage"
+  buffer="0.2"
+  color="success"
+></ion-progress-bar>

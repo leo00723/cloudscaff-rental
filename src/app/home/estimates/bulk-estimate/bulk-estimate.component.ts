@@ -12,6 +12,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { AcceptBulkEstimateComponent } from './accept-bulk-estimate/accept-bulk-estimate.component';
+import { Comment } from 'src/app/models/estimate.model';
 import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
@@ -69,9 +70,11 @@ export class BulkEstimateComponent implements OnInit {
   form: FormGroup;
   loading = false;
   isLoading = true;
+  addingComment = false;
   active = 'overview';
   activeScaffold = 1;
   show = '';
+  newComment = '';
 
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
@@ -377,6 +380,60 @@ export class BulkEstimateComponent implements OnInit {
   excludeVAT(args) {
     this.field('excludeVAT').setValue(args.detail.checked);
     this.updateEstimateTotal();
+  }
+
+  async addComment() {
+    this.addingComment = true;
+    const comment: Comment = {
+      image: this.user.image ? this.user.image : 'assets/icons/user.svg',
+      message: this.newComment,
+      date: new Date(),
+      name: this.user.name,
+    };
+    const comments = this.bulkEstimate.comments
+      ? this.bulkEstimate.comments
+      : [];
+    comments.push(comment);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.bulkEstimate.company.id}/bulkEstimates`,
+          this.bulkEstimate.id,
+          {
+            comments,
+          }
+        );
+      this.bulkEstimate.comments = comments;
+      if (this.bulkEstimate.enquiryId.length > 0) {
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.bulkEstimate.company.id}/enquiries`,
+            this.bulkEstimate.enquiryId,
+            {
+              status: 'estimate created',
+              estimate: this.bulkEstimate,
+              type: 'bulk',
+            }
+          );
+      }
+      this.masterSvc
+        .notification()
+        .toast('Comment added successfully!', 'success');
+      this.newComment = '';
+      this.addingComment = false;
+    } catch (error) {
+      console.error(error);
+      this.addingComment = false;
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong adding comment, try again!',
+          'danger',
+          2000
+        );
+    }
   }
 
   //start the acceptance process

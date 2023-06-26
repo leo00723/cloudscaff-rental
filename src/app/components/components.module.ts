@@ -43,6 +43,7 @@ import { CreditSummaryComponent } from './credit-summary/credit-summary.componen
 import { CustomerComponent } from './customer/customer.component';
 import { DashboardCardMiniComponent } from './dashboard-card-mini/dashboard-card-mini.component';
 import { DatepickerComponent } from './datepicker/datepicker.component';
+import { DropzoneDirective } from './dropzone.directive';
 import { DuplicateStockItemComponent } from './duplicate-stock-item/duplicate-stock-item.component';
 import { EditprofileComponent } from './editprofile/editprofile.component';
 import { EstimateSummaryComponent } from './estimate-summary/estimate-summary.component';
@@ -64,6 +65,7 @@ import { InventoryEstimateSummaryComponent } from './inventory-estimate-summary/
 import { InventoryEstimateTableComponent } from './inventory-estimate-table/inventory-estimate-table.component';
 import { InvoiceSummaryComponent } from './invoice-summary/invoice-summary.component';
 import { ModificationSummaryComponent } from './modification-summary/modification-summary.component';
+import { MultiuploaderComponent } from './multiuploader/multiuploader.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { RepurposeInventoryComponent } from './repurpose-inventory/repurpose-inventory.component';
 import { ScaffoldEditformComponent } from './scaffold-editform/scaffold-editform.component';
@@ -79,6 +81,8 @@ import { StatementSummaryComponent } from './statement-summary/statement-summary
 import { TitleBlockComponent } from './title-block/title-block.component';
 import { TutorialGalleryComponent } from './tutorial-gallery/tutorial-gallery.component';
 import { VideoPlayerComponent } from './tutorial-gallery/video-player/video-player.component';
+import { UploadTaskComponent } from './multiuploader/upload-task/upload-task.component';
+import { UploaderComponent } from './uploader/uploader.component';
 import { UserPickerComponent } from './user-picker/user-picker.component';
 import { ViewBulkEstimateComponent } from './view-bulk-estimate/view-bulk-estimate.component';
 import { ViewEstimateComponent } from './view-estimate/view-estimate.component';
@@ -170,6 +174,10 @@ const COMPONENTS = [
   ViewTermsComponent,
   TutorialGalleryComponent,
   VideoPlayerComponent,
+  UploaderComponent,
+  MultiuploaderComponent,
+  DropzoneDirective,
+  UploadTaskComponent,
 ];
 const IMPORTS = [
   CommonModule,

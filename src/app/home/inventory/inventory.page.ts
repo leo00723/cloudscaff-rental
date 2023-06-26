@@ -30,13 +30,21 @@ export class InventoryPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   inventoryItems$: Observable<InventoryItem[]>;
+
   shipments$: Observable<Shipment[]>;
+  pendingShipments$: Observable<Shipment[]>;
+
   billableShipments$: Observable<InventoryEstimate[]>;
+
   transfers$: Observable<Transfer[]>;
+  pendingTransfers$: Observable<Transfer[]>;
+
   requests$: Observable<Request[]>;
   submittedRequests$: Observable<Request[]>;
   partialRequests$: Observable<Request[]>;
+
   returns$: Observable<Return[]>;
+  submittedReturns$: Observable<Return[]>;
   active = 1;
   constructor(
     private masterSvc: MasterService,
@@ -228,9 +236,28 @@ export class InventoryPage implements OnInit {
         this.inventoryItems$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/stockItems`, 'code', 'asc');
+
+        // shipments
         this.shipments$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/shipments`, 'code', 'desc');
+          .getCollectionWhereAndOrder(
+            `company/${id}/shipments`,
+            'status',
+            '==',
+            'sent',
+            'code',
+            'asc'
+          );
+        this.pendingShipments$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/shipments`,
+            'status',
+            '==',
+            'pending',
+            'code',
+            'asc'
+          );
         this.billableShipments$ = this.masterSvc
           .edit()
           .getCollectionOrdered(
@@ -238,9 +265,29 @@ export class InventoryPage implements OnInit {
             'code',
             'desc'
           );
+
+        // transfers
         this.transfers$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/transfers`, 'code', 'desc');
+          .getCollectionWhereAndOrder(
+            `company/${id}/transfers`,
+            'status',
+            '==',
+            'sent',
+            'code',
+            'asc'
+          );
+        this.pendingTransfers$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/transfers`,
+            'status',
+            '==',
+            'pending',
+            'code',
+            'asc'
+          );
+        // requests
         this.requests$ = this.masterSvc
           .edit()
           .getCollectionWhereAndOrder(
@@ -271,9 +318,27 @@ export class InventoryPage implements OnInit {
             'code',
             'asc'
           );
+        // returns
         this.returns$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/returns`, 'code', 'desc');
+          .getCollectionWhereAndOrder(
+            `company/${id}/returns`,
+            'status',
+            '==',
+            'sent',
+            'code',
+            'asc'
+          );
+        this.submittedReturns$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/returns`,
+            'status',
+            '==',
+            'submitted',
+            'code',
+            'asc'
+          );
       } else {
         this.masterSvc.log(
           '-----------------------try inventory----------------------'
