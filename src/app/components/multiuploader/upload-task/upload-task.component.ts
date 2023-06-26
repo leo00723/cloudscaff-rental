@@ -43,7 +43,9 @@ export class UploadTaskComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.startUpload();
+  }
 
   startUpload() {
     this.uploading = true;

@@ -24,5 +24,9 @@
 <h3>Uploads</h3>
 
 <div *ngFor="let file of files; let i = index">
-  <app-upload-task [file]="file" (deleted)="deleteFile(i)"></app-upload-task>
+  <app-upload-task
+    [file]="file.file"
+    (deleted)="deleteFile(i)"
+    (data)="setData($event, i)"
+  ></app-upload-task>
 </div>
