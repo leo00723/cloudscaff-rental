@@ -95,6 +95,7 @@ export class AddStockitemComponent implements OnInit {
       );
     } else {
       this.field('categoryType').setValue(event[0]);
+      this.field('category').setValue(event[0].name);
       this.field('size').setValue('');
     }
   }
@@ -320,8 +321,8 @@ export class AddStockitemComponent implements OnInit {
       code: [this.inventoryItem.code, Validators.required],
       categoryType: [
         this.inventoryItem.categoryType ? this.inventoryItem.categoryType : '',
-        Validators.required,
       ],
+      category: [this.inventoryItem.category || ''],
       size: [this.inventoryItem.size ? this.inventoryItem.size : ''],
       name: [this.inventoryItem.name, Validators.required],
       hireCost: [
@@ -348,27 +349,14 @@ export class AddStockitemComponent implements OnInit {
         this.inventoryItem.yardQty,
         [Validators.required, Validators.min(0)],
       ],
-      crossHireQty: [
-        this.inventoryItem.crossHireQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      inUseQty: [
-        this.inventoryItem.inUseQty,
-        [Validators.required, Validators.min(0)],
-      ],
+      crossHireQty: [this.inventoryItem.crossHireQty, [Validators.min(0)]],
+      inUseQty: [this.inventoryItem.inUseQty, [Validators.min(0)]],
       inMaintenanceQty: [
         this.inventoryItem.inMaintenanceQty,
-        [Validators.required, Validators.min(0)],
+        [Validators.min(0)],
       ],
-      damagedQty: [
-        this.inventoryItem.damagedQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      lostQty: [
-        this.inventoryItem.lostQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      inService: [this.inventoryItem.inService, [Validators.required]],
+      damagedQty: [this.inventoryItem.damagedQty, [Validators.min(0)]],
+      lostQty: [this.inventoryItem.lostQty, [Validators.min(0)]],
       crossHire: this.masterSvc.fb().array([]),
     });
     if (this.inventoryItem.crossHire) {
@@ -387,7 +375,8 @@ export class AddStockitemComponent implements OnInit {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       code: ['', Validators.required],
-      categoryType: ['', Validators.required],
+      categoryType: [''],
+      category: [''],
       size: [''],
       name: ['', Validators.required],
       hireCost: [0, [Validators.required, Validators.min(0)]],
@@ -396,13 +385,12 @@ export class AddStockitemComponent implements OnInit {
       weight: [0, [Validators.required, Validators.min(0)]],
       availableQty: [0, [Validators.required, Validators.min(0)]],
       yardQty: [0, [Validators.required, Validators.min(0)]],
-      crossHireQty: [0, [Validators.required, Validators.min(0)]],
-      inUseQty: [0, [Validators.required, Validators.min(0)]],
-      reservedQty: [0, [Validators.required, Validators.min(0)]],
-      inMaintenanceQty: [0, [Validators.required, Validators.min(0)]],
-      damagedQty: [0, [Validators.required, Validators.min(0)]],
-      lostQty: [0, [Validators.required, Validators.min(0)]],
-      inService: [true, [Validators.required]],
+      crossHireQty: [0, [Validators.min(0)]],
+      inUseQty: [0, [Validators.min(0)]],
+      reservedQty: [0, [Validators.min(0)]],
+      inMaintenanceQty: [0, [Validators.min(0)]],
+      damagedQty: [0, [Validators.min(0)]],
+      lostQty: [0, [Validators.min(0)]],
       crossHire: this.masterSvc.fb().array([]),
     });
   }

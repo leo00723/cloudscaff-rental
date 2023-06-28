@@ -1,219 +1,308 @@
 <app-header title="Inventory" btnName="help" (updated)="help()">
-  <ion-toolbar>
-    <ion-segment
-      scrollable
-      (ionChange)="segmentChanged($event)"
-      selectOnFocus="true"
-      [value]="active"
-      mode="md"
-    >
-      <ion-segment-button value="1">
-        <ion-label>Overview</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="2">
-        <ion-label>Shipments</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="3">
-        <ion-label>Billable Shipments</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="4">
-        <ion-label>Requests</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="5">
-        <ion-label>Returns</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="6">
-        <ion-label>Transfers</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
+  <ng-container *ngIf="inventoryItems$ | async as items">
+    <ion-toolbar *ngIf="items.length > 0">
+      <ion-segment
+        scrollable
+        (ionChange)="segmentChanged($event)"
+        selectOnFocus="true"
+        [value]="active"
+        mode="md"
+      >
+        <ion-segment-button value="1">
+          <ion-label>Overview</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="2">
+          <ion-label>Shipments</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="3">
+          <ion-label>Billable Shipments</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="4">
+          <ion-label>Requests</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="5">
+          <ion-label>Returns</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="6">
+          <ion-label>Transfers</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ng-container>
 </app-header>
 
-<ion-content class="ion-padding">
-  <ng-container [ngSwitch]="active">
-    <ng-container *ngSwitchDefault>
+<ion-content class="ion-padding" [ngSwitch]="active">
+  <ng-container *ngSwitchDefault>
+    <ng-container *ngIf="inventoryItems$ | async as items; else loading">
+      <div class="text-end" *ngIf="!importing">
+        <a
+          type="button"
+          class="btn btn-success btn-sm rounded-pill me-2"
+          (click)="importing = true"
+          >Import Inventory</a
+        >
+      </div>
+      <div class="text-end" *ngIf="importing">
+        <a
+          type="button"
+          class="btn btn-danger btn-sm rounded-pill me-2"
+          (click)="importing = false"
+          >Close</a
+        >
+      </div>
       <app-inventory-table
         [value]="inventoryItems$"
-        *ngIf="inventoryItems$ | async else loading"
+        *ngIf="items.length > 0 && !importing"
         (selectedItem)="viewItem($event)"
         (editItem)="editItem($event)"
         (duplicateItem)="duplicateItem($event)"
-      ></app-inventory-table>
-      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addItem()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ng-container>
-    <ng-container *ngSwitchCase="2">
-      <ion-accordion-group
-        mode="ios"
-        class="rounded-lg overflow-hidden mb-5"
-        [multiple]="true"
-        [value]="['pending']"
       >
-        <ion-accordion value="pending">
-          <ion-item slot="header" color="light">
-            <ion-label color="primary">Pending Shipments</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-shipment-table
-              [value]="pendingShipments$"
-              *ngIf="pendingShipments$ | async else loading"
-              (selectedItem)="viewShipment($event)"
-            ></app-shipment-table>
-          </div>
-        </ion-accordion>
-        <ion-accordion value="sent">
-          <ion-item slot="header" color="light">
-            <ion-label color="success">Approved Shipments</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-shipment-table
-              [value]="shipments$"
-              *ngIf="shipments$ | async else loading"
-              (selectedItem)="viewShipment($event)"
-            ></app-shipment-table>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
-
-      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addShipment()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ng-container>
-    <div *ngSwitchCase="3">
-      <app-billable-shipments-table
-        [value]="billableShipments$"
-        *ngIf="billableShipments$ | async else loading"
-        (selectedItem)="viewBillableShipment($event)"
-      ></app-billable-shipments-table>
-    </div>
-    <div *ngSwitchCase="4">
-      <ion-accordion-group
-        mode="ios"
-        class="rounded-lg overflow-hidden"
-        [multiple]="true"
-        [value]="['pending']"
+      </app-inventory-table>
+      <ion-row
+        class="text-center"
+        *ngIf="items.length === 0 || importing"
+        style="height: 100%"
       >
-        <ion-accordion value="pending">
-          <ion-item slot="header" color="light">
-            <ion-label color="primary">Pending Requests</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-requests-table
-              [value]="submittedRequests$"
-              *ngIf="submittedRequests$ | async else loading"
-              (selectedItem)="viewRequest($event)"
-            ></app-requests-table>
+        <!-- <ion-col class="m-auto" *ngSwitchCase="0">
+            <ion-thumbnail class="mx-auto">
+              <ion-img
+                class="img-fluid"
+                width="100px"
+                src="assets/icons/icon-512x512.png"
+                alt="logo"
+              ></ion-img>
+            </ion-thumbnail>
+            <div class="mb-5">
+              <ion-text color="primary">
+                <h1 class="display-1 fw-bold">No Inventory?</h1>
+              </ion-text>
+              <p class="lead">Lets get started importing your inventory.</p>
+            </div>
+            <ion-button mode="ios" shape="round" (click)="page = 1">
+              Click Here to Import Inventory
+            </ion-button>
+          </ion-col> -->
+        <ion-col class="m-auto">
+          <div>
+            <ion-text color="primary">
+              <h2 class="display-6 fw-bold">Step 1</h2>
+            </ion-text>
+            <p>
+              Download the inventory spreadsheet template.
+              <a
+                href="https://firebasestorage.googleapis.com/v0/b/cloudscaff-178c8.appspot.com/o/company%2F9eaXpBDG4FVfJHkAHK5d%2FCloudscaff_Inventory_Template_V2.xlsx?alt=media&token=809d33f3-ab41-4562-ab4c-628c45ed42b0"
+                download
+                target="_blank"
+                >Click Here</a
+              >
+            </p>
           </div>
-        </ion-accordion>
-        <ion-accordion value="partial">
-          <ion-item slot="header" color="light">
-            <ion-label color="tertiary">Partially Shipped Requests</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-requests-table
-              [value]="partialRequests$"
-              *ngIf="partialRequests$ | async else loading"
-              (selectedItem)="viewRequest($event)"
-            ></app-requests-table>
+          <div class="my-5">
+            <ion-text color="primary">
+              <h2 class="display-6 fw-bold">Step 2</h2>
+            </ion-text>
+            <p>Poplate the template and export to CSV.</p>
           </div>
-        </ion-accordion>
-        <ion-accordion value="approved">
-          <ion-item slot="header" color="light">
-            <ion-label color="success">Approved Requests</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-requests-table
-              [value]="requests$"
-              *ngIf="requests$ | async else loading"
-              (selectedItem)="viewRequest($event)"
-            ></app-requests-table>
+          <div>
+            <ion-text color="primary">
+              <h2 class="display-6 fw-bold">Step 3</h2>
+            </ion-text>
+            <p>Upload the CSV here to import inventory.</p>
+            <ng-container *ngIf="!uploading">
+              <ion-button mode="ios" (click)="fileInput.click()" shape="round">
+                Upload CSV
+              </ion-button>
+              <input
+                style="display: none"
+                type="file"
+                accept=".csv"
+                (change)="onFileChanged($event)"
+                #fileInput
+              />
+            </ng-container>
+            <ion-progress-bar
+              type="indeterminate"
+              *ngIf="uploading"
+              color="primary"
+            ></ion-progress-bar>
           </div>
-        </ion-accordion>
-      </ion-accordion-group>
-    </div>
-    <ng-container *ngSwitchCase="5">
-      <ion-accordion-group
-        mode="ios"
-        class="rounded-lg overflow-hidden"
-        [multiple]="true"
-        [value]="['pending']"
-      >
-        <ion-accordion value="pending">
-          <ion-item slot="header" color="light">
-            <ion-label color="primary">Pending Returns</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-returns-table
-              [value]="submittedReturns$"
-              *ngIf="submittedReturns$ | async else loading"
-              (selectedItem)="viewReturn($event)"
-            ></app-returns-table>
-          </div>
-        </ion-accordion>
-        <ion-accordion value="approved">
-          <ion-item slot="header" color="light">
-            <ion-label color="success">Approved Returns</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-returns-table
-              [value]="returns$"
-              *ngIf="returns$ | async else loading"
-              (selectedItem)="viewReturn($event)"
-            ></app-returns-table>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
+        </ion-col>
+      </ion-row>
     </ng-container>
-    <ng-container *ngSwitchCase="6">
-      <ion-accordion-group
-        mode="ios"
-        class="rounded-lg overflow-hidden mb-5"
-        [multiple]="true"
-        [value]="['pending']"
-      >
-        <ion-accordion value="pending">
-          <ion-item slot="header" color="light">
-            <ion-label color="primary">Pending Transfers</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-transfer-table
-              [value]="pendingTransfers$"
-              *ngIf="pendingTransfers$ | async else loading"
-              (selectedItem)="viewTransfer($event)"
-            ></app-transfer-table>
-          </div>
-        </ion-accordion>
-        <ion-accordion value="sent">
-          <ion-item slot="header" color="light">
-            <ion-label color="success">Approved Transfers</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-transfer-table
-              [value]="transfers$"
-              *ngIf="transfers$ | async else loading"
-              (selectedItem)="viewTransfer($event)"
-            ></app-transfer-table>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
-      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addTransfer()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ng-container>
-    <ng-template #loading>
-      <div class="ion-padding">
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
-      </div>
-    </ng-template>
+    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addItem()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
   </ng-container>
+  <ng-container *ngSwitchCase="2">
+    <ion-accordion-group
+      mode="ios"
+      class="rounded-lg overflow-hidden mb-5"
+      [multiple]="true"
+      [value]="['pending']"
+    >
+      <ion-accordion value="pending">
+        <ion-item slot="header" color="light">
+          <ion-label color="primary">Pending Shipments</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-shipment-table
+            [value]="pendingShipments$"
+            *ngIf="pendingShipments$ | async else loading"
+            (selectedItem)="viewShipment($event)"
+          ></app-shipment-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="sent">
+        <ion-item slot="header" color="light">
+          <ion-label color="success">Approved Shipments</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-shipment-table
+            [value]="shipments$"
+            *ngIf="shipments$ | async else loading"
+            (selectedItem)="viewShipment($event)"
+          ></app-shipment-table>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+
+    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addShipment()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
+  <ng-container *ngSwitchCase="3">
+    <app-billable-shipments-table
+      [value]="billableShipments$"
+      *ngIf="billableShipments$ | async else loading"
+      (selectedItem)="viewBillableShipment($event)"
+    ></app-billable-shipments-table>
+  </ng-container>
+  <ng-container *ngSwitchCase="4">
+    <ion-accordion-group
+      mode="ios"
+      class="rounded-lg overflow-hidden"
+      [multiple]="true"
+      [value]="['pending']"
+    >
+      <ion-accordion value="pending">
+        <ion-item slot="header" color="light">
+          <ion-label color="primary">Pending Requests</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-requests-table
+            [value]="submittedRequests$"
+            *ngIf="submittedRequests$ | async else loading"
+            (selectedItem)="viewRequest($event)"
+          ></app-requests-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="partial">
+        <ion-item slot="header" color="light">
+          <ion-label color="tertiary">Partially Shipped Requests</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-requests-table
+            [value]="partialRequests$"
+            *ngIf="partialRequests$ | async else loading"
+            (selectedItem)="viewRequest($event)"
+          ></app-requests-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="approved">
+        <ion-item slot="header" color="light">
+          <ion-label color="success">Approved Requests</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-requests-table
+            [value]="requests$"
+            *ngIf="requests$ | async else loading"
+            (selectedItem)="viewRequest($event)"
+          ></app-requests-table>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ng-container>
+  <ng-container *ngSwitchCase="5">
+    <ion-accordion-group
+      mode="ios"
+      class="rounded-lg overflow-hidden"
+      [multiple]="true"
+      [value]="['pending']"
+    >
+      <ion-accordion value="pending">
+        <ion-item slot="header" color="light">
+          <ion-label color="primary">Pending Returns</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-returns-table
+            [value]="submittedReturns$"
+            *ngIf="submittedReturns$ | async else loading"
+            (selectedItem)="viewReturn($event)"
+          ></app-returns-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="approved">
+        <ion-item slot="header" color="light">
+          <ion-label color="success">Approved Returns</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-returns-table
+            [value]="returns$"
+            *ngIf="returns$ | async else loading"
+            (selectedItem)="viewReturn($event)"
+          ></app-returns-table>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ng-container>
+  <ng-container *ngSwitchCase="6">
+    <ion-accordion-group
+      mode="ios"
+      class="rounded-lg overflow-hidden mb-5"
+      [multiple]="true"
+      [value]="['pending']"
+    >
+      <ion-accordion value="pending">
+        <ion-item slot="header" color="light">
+          <ion-label color="primary">Pending Transfers</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-transfer-table
+            [value]="pendingTransfers$"
+            *ngIf="pendingTransfers$ | async else loading"
+            (selectedItem)="viewTransfer($event)"
+          ></app-transfer-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="sent">
+        <ion-item slot="header" color="light">
+          <ion-label color="success">Approved Transfers</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-transfer-table
+            [value]="transfers$"
+            *ngIf="transfers$ | async else loading"
+            (selectedItem)="viewTransfer($event)"
+          ></app-transfer-table>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addTransfer()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
 </ion-content>

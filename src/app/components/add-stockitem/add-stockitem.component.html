@@ -19,17 +19,37 @@
       <app-title-block>Component Details</app-title-block>
       <ion-row class="card-outline mb-3">
         <ion-col sizeMd="6" size="12">
-          <ng-container *ngIf="categories$ | async as categories">
+          <ng-container
+            *ngIf="categories$ | async as categories; else addCategory"
+          >
+            <app-input-reactive
+              (click)="CATEGORIES.open()"
+              title="Category"
+              [form]="form"
+              controlName="category"
+              [readonly]="true"
+            ></app-input-reactive>
             <app-searchable-select
-              (click)="select.open()"
+              [showInput]="false"
               title="Select Category"
               [data]="categories.categories"
               itemTextField="name"
               [add]="true"
               (selectedChanged)="changeCategory($event)"
-              #select
+              #CATEGORIES
             ></app-searchable-select>
           </ng-container>
+          <ng-template #addCategory>
+            <app-searchable-select
+              (click)="CATEGORIES2.open()"
+              title="Select Category"
+              [data]="[]"
+              itemTextField="name"
+              [add]="true"
+              (selectedChanged)="changeCategory($event)"
+              #CATEGORIES2
+            ></app-searchable-select>
+          </ng-template>
         </ion-col>
         <ion-col sizeMd="6" size="12">
           <app-input-select-reactive
@@ -213,7 +233,7 @@
         </ion-col>
       </ion-row>
 
-      <ion-row
+      <!-- <ion-row
         formArrayName="crossHire"
         class="mb-3"
         *ngFor="let hire of crossHireForms.controls; let i = index"
@@ -277,7 +297,7 @@
             Add Cross Hire
           </ion-button>
         </ion-col>
-      </ion-row>
+      </ion-row> -->
       <app-title-block>Manage Qty</app-title-block>
       <ion-row class="card-outline mb-3">
         <ion-col sizeMd="4" size="12">

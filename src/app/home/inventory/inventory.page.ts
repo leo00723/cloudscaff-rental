@@ -21,6 +21,8 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
+import * as Papa from 'papaparse';
+import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
   selector: 'app-inventory',
@@ -46,6 +48,9 @@ export class InventoryPage implements OnInit {
   returns$: Observable<Return[]>;
   submittedReturns$: Observable<Return[]>;
   active = 1;
+  importing = false;
+  uploading = false;
+
   constructor(
     private masterSvc: MasterService,
     private activatedRoute: ActivatedRoute
@@ -220,12 +225,74 @@ export class InventoryPage implements OnInit {
     this.active !== ev.detail.value
       ? (this.active = ev.detail.value)
       : console.log('same');
+    this.importing = false;
   }
 
   help() {
     this.masterSvc
       .router()
       .navigateByUrl('/dashboard/settings/tutorial?ch=8&vid=0');
+  }
+
+  onFileChanged(event) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      const file: File = event.target.files[0];
+      const user = this.masterSvc.store().selectSnapshot(UserState.user);
+
+      if (file) {
+        Papa.parse(file, {
+          header: true,
+          worker: true,
+          dynamicTyping: true,
+
+          complete: async (result) => {
+            this.uploading = true;
+            const data = result.data.map((item) => ({
+              code: item.Code,
+              category: item.Category,
+              size: item.Size,
+              name: item.Description,
+              yardQty: item.Yard_Qty,
+              availableQty: item.Yard_Qty,
+              weight: item.Weight,
+              inMaintenanceQty: 0,
+              inUseQty: 0,
+              damagedQty: 0,
+              lostQty: 0,
+              hireCost: item.Hire_Cost,
+              replacementCost: item.Replacement_Cost,
+              sellingCost: item.Selling_Cost,
+              log: [
+                {
+                  message: `${user.name} added ${item.Yard_Qty} items to the yard.`,
+                  user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    image: user.image,
+                  },
+                  date: new Date(),
+                  status: 'add',
+                  comment: 'Imported',
+                },
+              ],
+            }));
+            const company = this.masterSvc
+              .store()
+              .selectSnapshot(CompanyState.company).id;
+
+            for (const item of data) {
+              await this.masterSvc
+                .edit()
+                .addDocument(`company/${company}/stockItems`, item);
+            }
+            this.importing = false;
+            this.uploading = false;
+            this.masterSvc.notification().toast('Import Successful', 'success');
+          },
+        });
+      }
+    });
   }
 
   private init() {

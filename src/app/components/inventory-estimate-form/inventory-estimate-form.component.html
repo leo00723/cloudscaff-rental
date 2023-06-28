@@ -78,7 +78,9 @@
               <td>{{ item.category }}</td>
               <td>{{ item.name }}</td>
               <td class="text-center">
-                {{ +item.yardQty + +item.crossHireQty }}
+                {{
+                  +item.yardQty + (item.crossHireQty ? +item.crossHireQty : 0)
+                }}
               </td>
               <td class="text-center">
                 {{ item | calculate }}
@@ -124,7 +126,9 @@
                 <td>{{ item.category }}</td>
                 <td>{{ item.name }}</td>
                 <td class="text-center">
-                  {{ +item.yardQty + +item.crossHireQty }}
+                  {{
+                    +item.yardQty + (item.crossHireQty ? +item.crossHireQty : 0)
+                  }}
                 </td>
                 <td class="text-center">
                   {{ item | calculate }}

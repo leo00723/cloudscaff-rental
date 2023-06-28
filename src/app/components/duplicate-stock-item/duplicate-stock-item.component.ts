@@ -123,7 +123,6 @@ export class DuplicateStockItemComponent implements OnInit {
       code: [this.inventoryItem.code, Validators.required],
       categoryType: [
         this.inventoryItem.categoryType ? this.inventoryItem.categoryType : '',
-        Validators.required,
       ],
       size: [this.inventoryItem.size ? this.inventoryItem.size : ''],
       name: [this.inventoryItem.name, Validators.required],
@@ -143,45 +142,25 @@ export class DuplicateStockItemComponent implements OnInit {
         this.inventoryItem.weight,
         [Validators.required, Validators.min(0)],
       ],
-      availableQty: [
-        this.inventoryItem.availableQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      yardQty: [
-        this.inventoryItem.yardQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      crossHireQty: [
-        this.inventoryItem.crossHireQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      inUseQty: [
-        this.inventoryItem.inUseQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      inMaintenanceQty: [
-        this.inventoryItem.inMaintenanceQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      damagedQty: [
-        this.inventoryItem.damagedQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      lostQty: [
-        this.inventoryItem.lostQty,
-        [Validators.required, Validators.min(0)],
-      ],
-      inService: [this.inventoryItem.inService, [Validators.required]],
-      crossHire: this.masterSvc.fb().array(
-        this.inventoryItem.crossHire.map((c) =>
-          this.masterSvc.fb().group({
-            company: [c.company, Validators.required],
-            qty: [c.qty, [Validators.required, Validators.min(0)]],
-            date: [c.date, [Validators.required]],
-            notes: [c.notes],
-          })
-        )
-      ),
+      availableQty: [0, [Validators.required, Validators.min(0)]],
+      yardQty: [0, [Validators.required, Validators.min(0)]],
+      crossHireQty: [0, [Validators.min(0)]],
+      inUseQty: [0, [Validators.required, Validators.min(0)]],
+      inMaintenanceQty: [0, [Validators.min(0)]],
+      damagedQty: [0, [Validators.min(0)]],
+      lostQty: [0, [Validators.min(0)]],
+      crossHire: this.masterSvc.fb().array([]),
     });
+    if (this.inventoryItem.crossHire) {
+      this.inventoryItem.crossHire.forEach((c) => {
+        const crosshire = this.masterSvc.fb().group({
+          company: [c.company, Validators.required],
+          qty: [c.qty, [Validators.required, Validators.min(0)]],
+          date: [c.date, [Validators.required]],
+          notes: [c.notes],
+        });
+        this.crossHireForms.push(crosshire);
+      });
+    }
   }
 }

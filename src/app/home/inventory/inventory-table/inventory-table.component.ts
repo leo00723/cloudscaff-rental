@@ -97,16 +97,14 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
     const val = event.detail.value.toLowerCase() as string;
     this.temp$ = this.inventoryItems$.pipe(
       map((es) =>
-        es.filter(
-          (d) =>
-            d.code.toLowerCase().indexOf(val) !== -1 ||
-            d.category.toLowerCase().indexOf(val) !== -1 ||
-            d.name.toLowerCase().indexOf(val) !== -1 ||
-            d.yardQty.toString().toLowerCase().indexOf(val) !== -1 ||
-            d.crossHireQty.toString().toLowerCase().indexOf(val) !== -1 ||
-            d.availableQty.toString().toLowerCase().indexOf(val) !== -1 ||
-            !val
-        )
+        es.filter((d) => {
+          const code = d.code.toLowerCase().includes(val);
+          const category = d.category?.toLowerCase().includes(val);
+          const name = d.name?.toLowerCase().includes(val);
+          const size = d.size.toString().toLowerCase().includes(val);
+
+          return code || category || name || size || !val;
+        })
       )
     );
     this.table.offset = 0;
@@ -176,84 +174,6 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
     });
   }
 
-  // onFileChanged(event) {
-  //   this.notificationService.presentAlertConfirm(() => {
-  //     try {
-  //       const selectedFile = event.target.files[0];
-  //       const fileReader = new FileReader();
-  //       fileReader.readAsText(selectedFile, 'csv');
-  //       fileReader.onload = async () => {
-  //         const dataArray = fileReader.result
-  //           .toString()
-  //           .replace(/"/g, '')
-  //           .split('\r\n');
-  //         const items: InventoryItem[] = [];
-  //         for (const line of dataArray) {
-  //           const row = line.split(';');
-  //           items.push({
-  //             code: row[0],
-  //             name: row[1],
-  //             yardQty: +row[2],
-  //             availableQty: +row[2],
-  //             weight: +row[3].replace(',', '.'),
-  //             inMaintenanceQty: 0,
-  //             inUseQty: 0,
-  //             damagedQty: 0,
-  //             lostQty: 0,
-  //             hireCost: 0,
-  //             replacementCost: 0,
-  //             sellingCost: 0,
-  //             crossHire: [],
-  //           });
-  //         }
-
-  //         // const data: InventoryItem[] = JSON.parse(
-  //         //   fileReader.result.toString()
-  //         // );
-  //         const company = this.store.selectSnapshot(CompanyState.company).id;
-  //         // let counter = 0;
-  //         // for (const i of this.itemsBackup) {
-  //         //   // if (i.name.includes('TRAD')) {
-  //         //   //   counter++;
-  //         //   //   console.log(counter, i.id, i.name);
-  //         //   //   await this.editService.deleteDocById(
-  //         //   //     `company/${company}/stockItems`,
-  //         //   //     i.id
-  //         //   //   );
-  //         //   // }
-
-  //         //   // const index = data.findIndex((v) => v.id === i.id);
-  //         //   // if (index !== -1) {
-  //         //   //   counter++;
-  //         //   //   const newItem = data[index];
-  //         //   //   i.name = newItem.name;
-  //         //   //   i.yardQty = newItem.yardQty;
-  //         //   //   console.log(i.name, i.yardQty);
-  //         //   //   await this.editService.updateDoc(
-  //         //   //     `company/${company}/stockItems`,
-  //         //   //     i.id,
-  //         //   //     i
-  //         //   //   );
-  //         //   // }
-  //         // }
-
-  //         for (const item of items) {
-  //           await this.editService.addDocument(
-  //             `company/${company}/stockItems`,
-  //             item
-  //           );
-  //         }
-  //         this.notificationService.toast('Import Successful', 'success');
-  //       };
-  //       fileReader.onerror = (error) => {
-  //         console.log(error);
-  //       };
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   });
-  // }
-
   onFileChanged(event) {
     this.notificationService.presentAlertConfirm(() => {
       const file: File = event.target.files[0];
@@ -279,14 +199,23 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
               hireCost: item.Hire_Cost,
               replacementCost: item.Replacement_Cost,
               sellingCost: item.Selling_Cost,
+              log: [
+                {
+                  message: `${this.user.name} added ${item.Yard_Qty} items to the yard.`,
+                  user: this.user,
+                  date: new Date(),
+                  status: 'add',
+                  comment: 'Imported',
+                },
+              ],
             }));
             const company = this.store.selectSnapshot(CompanyState.company).id;
-            // for (const item of data) {
-            await this.editService.addDocument(
-              `company/${company}/stockItems`,
-              data[0]
-            );
-            // }
+            for (const item of data) {
+              await this.editService.addDocument(
+                `company/${company}/stockItems`,
+                item
+              );
+            }
             this.notificationService.toast('Import Successful', 'success');
           },
         });
