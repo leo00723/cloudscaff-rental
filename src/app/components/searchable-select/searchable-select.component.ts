@@ -21,6 +21,7 @@ export class SearchableSelectComponent implements OnChanges {
   @Input() data: any[];
   @Input() multiple = false;
   @Input() add = false;
+  @Input() showInput = true;
   @Input() itemTextField = 'name';
   @Output() selectedChanged: EventEmitter<any> = new EventEmitter();
 

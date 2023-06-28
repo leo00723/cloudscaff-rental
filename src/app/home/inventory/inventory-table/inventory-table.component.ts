@@ -23,6 +23,7 @@ import { NotificationService } from 'src/app/services/notification.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { environment } from 'src/environments/environment';
+import * as Papa from 'papaparse';
 
 @Component({
   selector: 'app-inventory-table',
@@ -175,80 +176,120 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
     });
   }
 
+  // onFileChanged(event) {
+  //   this.notificationService.presentAlertConfirm(() => {
+  //     try {
+  //       const selectedFile = event.target.files[0];
+  //       const fileReader = new FileReader();
+  //       fileReader.readAsText(selectedFile, 'csv');
+  //       fileReader.onload = async () => {
+  //         const dataArray = fileReader.result
+  //           .toString()
+  //           .replace(/"/g, '')
+  //           .split('\r\n');
+  //         const items: InventoryItem[] = [];
+  //         for (const line of dataArray) {
+  //           const row = line.split(';');
+  //           items.push({
+  //             code: row[0],
+  //             name: row[1],
+  //             yardQty: +row[2],
+  //             availableQty: +row[2],
+  //             weight: +row[3].replace(',', '.'),
+  //             inMaintenanceQty: 0,
+  //             inUseQty: 0,
+  //             damagedQty: 0,
+  //             lostQty: 0,
+  //             hireCost: 0,
+  //             replacementCost: 0,
+  //             sellingCost: 0,
+  //             crossHire: [],
+  //           });
+  //         }
+
+  //         // const data: InventoryItem[] = JSON.parse(
+  //         //   fileReader.result.toString()
+  //         // );
+  //         const company = this.store.selectSnapshot(CompanyState.company).id;
+  //         // let counter = 0;
+  //         // for (const i of this.itemsBackup) {
+  //         //   // if (i.name.includes('TRAD')) {
+  //         //   //   counter++;
+  //         //   //   console.log(counter, i.id, i.name);
+  //         //   //   await this.editService.deleteDocById(
+  //         //   //     `company/${company}/stockItems`,
+  //         //   //     i.id
+  //         //   //   );
+  //         //   // }
+
+  //         //   // const index = data.findIndex((v) => v.id === i.id);
+  //         //   // if (index !== -1) {
+  //         //   //   counter++;
+  //         //   //   const newItem = data[index];
+  //         //   //   i.name = newItem.name;
+  //         //   //   i.yardQty = newItem.yardQty;
+  //         //   //   console.log(i.name, i.yardQty);
+  //         //   //   await this.editService.updateDoc(
+  //         //   //     `company/${company}/stockItems`,
+  //         //   //     i.id,
+  //         //   //     i
+  //         //   //   );
+  //         //   // }
+  //         // }
+
+  //         for (const item of items) {
+  //           await this.editService.addDocument(
+  //             `company/${company}/stockItems`,
+  //             item
+  //           );
+  //         }
+  //         this.notificationService.toast('Import Successful', 'success');
+  //       };
+  //       fileReader.onerror = (error) => {
+  //         console.log(error);
+  //       };
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   });
+  // }
+
   onFileChanged(event) {
     this.notificationService.presentAlertConfirm(() => {
-      try {
-        const selectedFile = event.target.files[0];
-        const fileReader = new FileReader();
-        fileReader.readAsText(selectedFile, 'csv');
-        fileReader.onload = async () => {
-          const dataArray = fileReader.result
-            .toString()
-            .replace(/"/g, '')
-            .split('\r\n');
-          const items: InventoryItem[] = [];
-          for (const line of dataArray) {
-            const row = line.split(';');
-            items.push({
-              code: row[0],
-              name: row[1],
-              yardQty: +row[2],
-              availableQty: +row[2],
-              weight: +row[3].replace(',', '.'),
+      const file: File = event.target.files[0];
+      if (file) {
+        Papa.parse(file, {
+          header: true,
+          worker: true,
+          dynamicTyping: true,
+
+          complete: async (result) => {
+            const data = result.data.map((item) => ({
+              code: item.Code,
+              category: item.Category,
+              size: item.Size,
+              name: item.Description,
+              yardQty: item.Yard_Qty,
+              availableQty: item.Yard_Qty,
+              weight: item.Weight,
               inMaintenanceQty: 0,
               inUseQty: 0,
               damagedQty: 0,
               lostQty: 0,
-              hireCost: 0,
-              replacementCost: 0,
-              sellingCost: 0,
-              crossHire: [],
-            });
-          }
-
-          // const data: InventoryItem[] = JSON.parse(
-          //   fileReader.result.toString()
-          // );
-          const company = this.store.selectSnapshot(CompanyState.company).id;
-          // let counter = 0;
-          // for (const i of this.itemsBackup) {
-          //   // if (i.name.includes('TRAD')) {
-          //   //   counter++;
-          //   //   console.log(counter, i.id, i.name);
-          //   //   await this.editService.deleteDocById(
-          //   //     `company/${company}/stockItems`,
-          //   //     i.id
-          //   //   );
-          //   // }
-
-          //   // const index = data.findIndex((v) => v.id === i.id);
-          //   // if (index !== -1) {
-          //   //   counter++;
-          //   //   const newItem = data[index];
-          //   //   i.name = newItem.name;
-          //   //   i.yardQty = newItem.yardQty;
-          //   //   console.log(i.name, i.yardQty);
-          //   //   await this.editService.updateDoc(
-          //   //     `company/${company}/stockItems`,
-          //   //     i.id,
-          //   //     i
-          //   //   );
-          //   // }
-          // }
-
-          for (const item of items) {
+              hireCost: item.Hire_Cost,
+              replacementCost: item.Replacement_Cost,
+              sellingCost: item.Selling_Cost,
+            }));
+            const company = this.store.selectSnapshot(CompanyState.company).id;
+            // for (const item of data) {
             await this.editService.addDocument(
               `company/${company}/stockItems`,
-              item
+              data[0]
             );
-          }
-          this.notificationService.toast('Import Successful', 'success');
-        };
-        fileReader.onerror = (error) => {
-          console.log(error);
-        };
-      } catch (error) {
-        console.log(error);
+            // }
+            this.notificationService.toast('Import Successful', 'success');
+          },
+        });
       }
     });
   }

@@ -50,6 +50,7 @@
     "jetifier": "^2.0.0",
     "lodash": "^4.17.21",
     "ngx-bootstrap": "^9.0.0",
+    "papaparse": "^5.4.1",
     "pdfmake": "^0.2.6",
     "rxfire": "^6.0.3",
     "rxjs": "^7.5.7",

@@ -369,17 +369,19 @@ export class AddStockitemComponent implements OnInit {
         [Validators.required, Validators.min(0)],
       ],
       inService: [this.inventoryItem.inService, [Validators.required]],
-      crossHire: this.masterSvc.fb().array(
-        this.inventoryItem.crossHire.map((c) =>
-          this.masterSvc.fb().group({
-            company: [c.company, Validators.required],
-            qty: [c.qty, [Validators.required, Validators.min(0)]],
-            date: [c.date, [Validators.required]],
-            notes: [c.notes],
-          })
-        )
-      ),
+      crossHire: this.masterSvc.fb().array([]),
     });
+    if (this.inventoryItem.crossHire) {
+      this.inventoryItem.crossHire.forEach((c) => {
+        const crosshire = this.masterSvc.fb().group({
+          company: [c.company, Validators.required],
+          qty: [c.qty, [Validators.required, Validators.min(0)]],
+          date: [c.date, [Validators.required]],
+          notes: [c.notes],
+        });
+        this.crossHireForms.push(crosshire);
+      });
+    }
   }
 
   private initForm() {
