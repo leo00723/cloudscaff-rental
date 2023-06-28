@@ -296,17 +296,21 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
                   e.scaffold.total +
                   (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
                 erectionValue:
-                  e.scaffold.total +
-                  (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0) * 0.7,
+                  (e.scaffold.total +
+                    (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0)) *
+                  0.7,
                 dismantleValue:
-                  e.scaffold.total +
-                  (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0) * 0.3,
+                  (e.scaffold.total +
+                    (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0)) *
+                  0.3,
               },
               attachments: e.attachments.map((a) => ({
                 ...a,
                 total: a.total + (a.hireTotal ? a.hireTotal : 0),
-                erectionValue: a.total + (a.hireTotal ? a.hireTotal : 0) * 0.7,
-                dismantleValue: a.total + (a.hireTotal ? a.hireTotal : 0) * 0.3,
+                erectionValue:
+                  (a.total + (a.hireTotal ? a.hireTotal : 0)) * 0.7,
+                dismantleValue:
+                  (a.total + (a.hireTotal ? a.hireTotal : 0)) * 0.3,
               })),
               additionals: e.additionals.map((a) => ({
                 ...a,
@@ -360,14 +364,22 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
                   total:
                     e.scaffold.total +
                     (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0),
-                  erectionValue: e.scaffold.total * 0.7,
-                  dismantleValue: e.scaffold.total * 0.3,
+                  erectionValue:
+                    (e.scaffold.total +
+                      (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0)) *
+                    0.7,
+                  dismantleValue:
+                    (e.scaffold.total +
+                      (e.scaffold.hireTotal ? e.scaffold.hireTotal : 0)) *
+                    0.3,
                 },
                 attachments: e.attachments.map((a) => ({
                   ...a,
                   total: a.total + (a.hireTotal ? a.hireTotal : 0),
-                  erectionValue: a.total * 0.7,
-                  dismantleValue: a.total * 0.3,
+                  erectionValue:
+                    (a.total + (a.hireTotal ? a.hireTotal : 0)) * 0.7,
+                  dismantleValue:
+                    (a.total + (a.hireTotal ? a.hireTotal : 0)) * 0.3,
                 })),
                 additionals: e.additionals.map((a) => ({
                   ...a,
