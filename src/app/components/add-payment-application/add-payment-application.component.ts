@@ -78,7 +78,7 @@ export class AddPaymentApplicationComponent implements OnInit, OnDestroy {
         .pipe(map(([es, bes]) => [...es, ...bes]))
         .subscribe((estimates) => {
           if (estimates.length > 0) {
-            console.log(estimates);
+            // console.log(estimates);
             this.paymentApplication.setEstimates(estimates);
           }
         })

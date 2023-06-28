@@ -574,13 +574,13 @@
                         >
                         </ion-textarea>
                       </td>
-                      <td class="text-end" id="value-att-{{ i }}">
+                      <td class="text-end" id="value-att-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ attachment.total | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="value-att-{{ i }}"
+                          trigger="value-att-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -633,13 +633,13 @@
                         >
                         </ion-input>
                       </td>
-                      <td class="text-end" id="EV-att-{{ i }}">
+                      <td class="text-end" id="EV-att-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ attachment.erectionValue | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="EV-att-{{ i }}"
+                          trigger="EV-att-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -676,7 +676,7 @@
                           attachment.appliedErectionValue | number : "0.2-2"
                         }}
                       </td>
-                      <td class="text-center" id="hire-att-{{ i }}">
+                      <td class="text-center" id="hire-att-{{ j }}{{ i }}">
                         <ion-label
                           >{{
                             (attachment.isWeeks
@@ -686,7 +686,7 @@
                           }}
                         </ion-label>
                         <ion-popover
-                          trigger="hire-att-{{ i }}"
+                          trigger="hire-att-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -737,13 +737,13 @@
                           </ng-template>
                         </ion-modal>
                       </td>
-                      <td class="text-end" id="DV-att-{{ i }}">
+                      <td class="text-end" id="DV-att-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ attachment.dismantleValue | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="DV-att-{{ i }}"
+                          trigger="DV-att-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -803,13 +803,13 @@
                         {{ paymentApplication.company.currency.symbol
                         }}{{ attachment.extraHireCharge | number : "0.2-2" }}
                       </td>
-                      <td class="text-end" id="PG-att-{{ i }}">
+                      <td class="text-end" id="PG-att-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ attachment.previousGross | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="PG-att-{{ i }}"
+                          trigger="PG-att-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -848,13 +848,13 @@
                       <td>
                         <ion-text class="ps-2">{{ labour.type.name }}</ion-text>
                       </td>
-                      <td class="text-end" id="value-lab-{{ i }}">
+                      <td class="text-end" id="value-lab-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ labour.total | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                          trigger="value-lab-{{ i }}"
+                          trigger="value-lab-{{ j }}{{i}}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -874,13 +874,13 @@
                         </ion-popover> -->
                       </td>
                       <td colspan="15"></td>
-                      <td class="text-end" id="PG-lab-{{ i }}">
+                      <td class="text-end" id="PG-lab-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ labour.previousGross | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                          trigger="PG-lab-{{ i }}"
+                          trigger="PG-lab-{{ j }}{{i}}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -895,13 +895,13 @@
                           </ng-template>
                         </ion-popover> -->
                       </td>
-                      <td class="text-end" id="GT-lab-{{ i }}">
+                      <td class="text-end" id="GT-lab-{{ j }}{{ i }}">
                         <ion-label>
                           {{ paymentApplication.company.currency.symbol
                           }}{{ labour.grossTotal | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="GT-lab-{{ i }}"
+                          trigger="GT-lab-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -946,13 +946,13 @@
                           transport.type.name
                         }}</ion-text>
                       </td>
-                      <td class="text-end" id="value-tra-{{ i }}">
+                      <td class="text-end" id="value-tra-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ transport.total | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                          trigger="value-tra-{{ i }}"
+                          trigger="value-tra-{{ j }}{{i}}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -972,13 +972,13 @@
                         </ion-popover> -->
                       </td>
                       <td colspan="15"></td>
-                      <td class="text-end" id="PG-tra-{{ i }}">
+                      <td class="text-end" id="PG-tra-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ transport.previousGross | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                          trigger="PG-tra-{{ i }}"
+                          trigger="PG-tra-{{ j }}{{i}}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -997,13 +997,13 @@
                           </ng-template>
                         </ion-popover> -->
                       </td>
-                      <td class="text-end" id="GT-tra-{{ i }}">
+                      <td class="text-end" id="GT-tra-{{ j }}{{ i }}">
                         <ion-label>
                           {{ paymentApplication.company.currency.symbol
                           }}{{ transport.grossTotal | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="GT-tra-{{ i }}"
+                          trigger="GT-tra-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -1047,13 +1047,13 @@
                       <td>
                         <ion-text class="ps-2">{{ additional.name }}</ion-text>
                       </td>
-                      <td class="text-end" id="value-add-{{ i }}">
+                      <td class="text-end" id="value-add-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ additional.total | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                         trigger="value-add-{{ i }}"
+                         trigger="value-add-{{ j }}{{i}}"
                          triggerAction="click"
                        >
                          <ng-template>
@@ -1073,13 +1073,13 @@
                        </ion-popover> -->
                       </td>
                       <td colspan="15"></td>
-                      <td class="text-end" id="PG-add-{{ i }}">
+                      <td class="text-end" id="PG-add-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ additional.previousGross | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                         trigger="PG-add-{{ i }}"
+                         trigger="PG-add-{{ j }}{{i}}"
                          triggerAction="click"
                        >
                          <ng-template>
@@ -1098,13 +1098,13 @@
                          </ng-template>
                        </ion-popover> -->
                       </td>
-                      <td class="text-end" id="GT-add-{{ i }}">
+                      <td class="text-end" id="GT-add-{{ j }}{{ i }}">
                         <ion-label>
                           {{ paymentApplication.company.currency.symbol
                           }}{{ additional.grossTotal | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="GT-add-{{ i }}"
+                          trigger="GT-add-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -1155,13 +1155,13 @@
                           }}</ion-text
                         >
                       </td>
-                      <td class="text-end" id="value-board-{{ i }}">
+                      <td class="text-end" id="value-board-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ board.total | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                         trigger="value-board-{{ i }}"
+                         trigger="value-board-{{ j }}{{i}}"
                          triggerAction="click"
                        >
                          <ng-template>
@@ -1181,13 +1181,13 @@
                        </ion-popover> -->
                       </td>
                       <td colspan="15"></td>
-                      <td class="text-end" id="PG-board-{{ i }}">
+                      <td class="text-end" id="PG-board-{{ j }}{{ i }}">
                         <ion-label
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ board.previousGross | number : "0.2-2" }}
                         </ion-label>
                         <!-- <ion-popover
-                         trigger="PG-board-{{ i }}"
+                         trigger="PG-board-{{ j }}{{i}}"
                          triggerAction="click"
                        >
                          <ng-template>
@@ -1206,13 +1206,13 @@
                          </ng-template>
                        </ion-popover> -->
                       </td>
-                      <td class="text-end" id="GT-board-{{ i }}">
+                      <td class="text-end" id="GT-board-{{ j }}{{ i }}">
                         <ion-label>
                           {{ paymentApplication.company.currency.symbol
                           }}{{ board.grossTotal | number : "0.2-2" }}
                         </ion-label>
                         <ion-popover
-                          trigger="GT-board-{{ i }}"
+                          trigger="GT-board-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
