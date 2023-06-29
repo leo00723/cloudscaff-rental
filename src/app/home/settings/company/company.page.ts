@@ -46,7 +46,7 @@ export class CompanyPage implements OnDestroy {
     accountNum: '',
     branchCode: '',
     swiftCode: '',
-    currency: { name: '', symbol: '' },
+    currency: { name: 'US Dollar', symbol: '$' },
     measurement: { name: 'Meters', symbol: 'm' },
     mass: { name: 'Kilograms', symbol: 'kg' },
     terminology: { boards: 'Boards', hire: 'Hire', scaffold: 'Scaffold' },
@@ -98,9 +98,11 @@ export class CompanyPage implements OnDestroy {
         this.loading = true;
         Object.assign(this.company, this.form.value);
         this.company.needsSetup = false;
-        await this.masterSvc
-          .edit()
-          .updateDoc('company', this.company.id, this.company);
+        const id = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company)?.id;
+
+        await this.masterSvc.edit().updateDoc('company', id, this.company);
         this.masterSvc
           .notification()
           .toast('Settings saved successfully', 'success');

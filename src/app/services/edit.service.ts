@@ -78,6 +78,10 @@ export class EditService {
       })
     );
   }
+
+  // test(collectionName: string, id: string) {
+  //   return this.docRef(collectionName, id);
+  // }
   getCollection(collectionPath: string) {
     return collectionData(this.collectionRef(collectionPath), {
       idField: 'id',

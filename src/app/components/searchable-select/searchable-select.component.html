@@ -1,4 +1,10 @@
-<ion-item fill="solid" lines="none" class="rounded-3" mode="md">
+<ion-item
+  fill="solid"
+  lines="none"
+  class="rounded-3"
+  mode="md"
+  *ngIf="showInput"
+>
   <ion-label position="stacked">{{ title }}</ion-label>
   <div *ngIf="selected.length; else placeholder">
     <div class="my-2">

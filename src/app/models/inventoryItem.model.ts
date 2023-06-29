@@ -26,7 +26,6 @@ export interface InventoryItem {
   lostQty?: number;
   shipmentQty?: number;
   reservedQty?: number;
-  inService?: boolean;
   crossHire?: CrossHire[];
   error?: boolean;
   totalCost?: number;
