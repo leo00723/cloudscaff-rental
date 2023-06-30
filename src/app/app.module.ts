@@ -60,10 +60,10 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { HttpClientModule } from '@angular/common/http';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
 
-let resolvePersistenceEnabled: (enabled: boolean) => void;
-export const persistenceEnabled = new Promise<boolean>((resolve) => {
-  resolvePersistenceEnabled = resolve;
-});
+// let resolvePersistenceEnabled: (enabled: boolean) => void;
+// export const persistenceEnabled = new Promise<boolean>((resolve) => {
+//   resolvePersistenceEnabled = resolve;
+// });
 @NgModule({
   declarations: [AppComponent, SplashPage, TrialEndedPage],
   imports: [
@@ -90,10 +90,10 @@ export const persistenceEnabled = new Promise<boolean>((resolve) => {
       if (environment.useEmulators) {
         connectFirestoreEmulator(firestore, 'localhost', 8081);
       }
-      enableMultiTabIndexedDbPersistence(firestore).then(
-        () => resolvePersistenceEnabled(true),
-        () => enableIndexedDbPersistence(firestore)
-      );
+      // enableMultiTabIndexedDbPersistence(firestore).then(
+      //   () => resolvePersistenceEnabled(true),
+      //   () => enableIndexedDbPersistence(firestore)
+      // );
       return firestore;
     }),
     provideFunctions(() => {
