@@ -4,9 +4,9 @@
     [showMenu]="false"
     [showBack]="true"
     path="/dashboard/sites"
-    btnName="settings-outline"
+    iconName="settings-outline"
     iconColor="primary"
-    (updated)="editSite(site)"
+    (updatedIcon)="editSite(site)"
   >
     <ion-toolbar *ngIf="user$ |async as user">
       <ion-segment

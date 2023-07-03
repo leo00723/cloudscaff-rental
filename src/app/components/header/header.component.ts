@@ -20,8 +20,10 @@ export class HeaderComponent {
   @Input() showBack = false;
   @Input() path = '';
   @Input() btnName = '';
+  @Input() iconName = '';
   @Input() iconColor = 'primary';
   @Output() updated = new EventEmitter<boolean>();
+  @Output() updatedIcon = new EventEmitter<boolean>();
   @Output() backClicked = new EventEmitter<boolean>();
 
   constructor(private masterSvc: MasterService) {}
@@ -37,6 +39,19 @@ export class HeaderComponent {
       return await modal.present();
     } else {
       this.updated.emit(true);
+    }
+  }
+  async updateIcon() {
+    if (this.btnName === 'notifications') {
+      const modal = await this.masterSvc.modal().create({
+        component: NotificationsComponent,
+        cssClass: 'fullscreen',
+        showBackdrop: false,
+        id: 'notifications',
+      });
+      return await modal.present();
+    } else {
+      this.updatedIcon.emit(true);
     }
   }
 }

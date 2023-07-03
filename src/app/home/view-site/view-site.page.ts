@@ -295,4 +295,10 @@ export class ViewSitePage implements OnInit {
       .pdf()
       .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
   }
+
+  help() {
+    this.masterSvc
+      .router()
+      .navigateByUrl('/dashboard/settings/tutorial?ch=6&vid=0');
+  }
 }
