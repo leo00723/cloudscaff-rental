@@ -34,7 +34,7 @@
 <ion-content class="ion-padding" [ngSwitch]="active">
   <ng-container *ngSwitchDefault>
     <ng-container *ngIf="inventoryItems$ | async as items; else loading">
-      <div class="text-end" *ngIf="!importing">
+      <div class="text-end" *ngIf="!importing && items.length !== 0">
         <a
           type="button"
           class="btn btn-success btn-sm rounded-pill me-2"
@@ -42,7 +42,7 @@
           >Import Inventory</a
         >
       </div>
-      <div class="text-end" *ngIf="importing">
+      <div class="text-end" *ngIf="importing && items.length !== 0">
         <a
           type="button"
           class="btn btn-danger btn-sm rounded-pill me-2"
@@ -101,7 +101,7 @@
             <ion-text color="primary">
               <h2 class="display-6 fw-bold">Step 2</h2>
             </ion-text>
-            <p>Poplate the template and export to CSV.</p>
+            <p>Populate the template and export to CSV.</p>
           </div>
           <div>
             <ion-text color="primary">

@@ -1,15 +1,26 @@
 <app-header title="Enquiries" btnName="help" (updated)="help()"> </app-header>
 <ion-content class="ion-padding">
-  <app-enquiry-table
-    [value]="enquiries$"
-    *ngIf="enquiries$ | async else loading"
-    (selectedItem)="editEnquiry($event)"
-  ></app-enquiry-table>
-  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addEnquiry()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <ng-container *ngIf="company$ |async as company">
+    <ng-container *ngIf="company.totalEnquiries > 0">
+      <app-enquiry-table
+        [value]="enquiries$"
+        *ngIf="enquiries$ | async else loading"
+        (selectedItem)="editEnquiry($event)"
+      ></app-enquiry-table>
+      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addEnquiry()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
+    <app-page-placeholder
+      *ngIf="company.totalEnquiries === 0 || !company.totalEnquiries"
+      title="No Enquiries?"
+      subtitle="Lets get started setting up your first enquiry."
+      (clicked)="addEnquiry()"
+    ></app-page-placeholder>
+  </ng-container>
+
   <ng-template #loading>
     <div class="ion-padding">
       <app-skeleton-text></app-skeleton-text>

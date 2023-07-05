@@ -185,8 +185,8 @@
       <ion-button
         *ngIf="
           !loading &&
-            (user.role === 'Owner' || user.role === 'Super-Admin') &&
-            site.status !== 'closed';
+          (user.role === 'Owner' || user.role === 'Super-Admin') &&
+          site.status !== 'closed' &&
           isUpdate
         "
         shape="round"

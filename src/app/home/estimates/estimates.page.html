@@ -20,42 +20,68 @@
   </ion-toolbar>
 </app-header>
 <ion-content class="ion-padding">
-  <ng-container [ngSwitch]="active">
+  <ng-container [ngSwitch]="active" *ngIf="company$ | async as company">
+    <!-- STANDARD ESTIMATE -->
     <ng-container *ngSwitchCase="'standard'">
-      <app-estimate-table
-        [value]="estimates$"
-        *ngIf="estimates$ | async else loading"
-        (selectedItem)="editEstimate($event)"
-      ></app-estimate-table>
-      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addEstimate()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
+      <ng-container *ngIf="company.totalEstimates > 0">
+        <app-estimate-table
+          [value]="estimates$"
+          *ngIf="estimates$ | async else loading"
+          (selectedItem)="editEstimate($event)"
+        ></app-estimate-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addEstimate()">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ng-container>
+      <app-page-placeholder
+        *ngIf="company.totalEstimates === 0 || !company.totalEstimates"
+        title="No Standard Estimates?"
+        subtitle=" Lets get started setting up your first Standard estimate."
+        (clicked)="addEstimate()"
+      ></app-page-placeholder>
     </ng-container>
+    <!-- BULK ESTIMATE -->
     <ng-container *ngSwitchCase="'bulk'">
-      <app-bulk-estimate-table
-        [value]="bulkEstimates$"
-        *ngIf="bulkEstimates$ | async else loading"
-        (selectedItem)="editBulkEstimate($event)"
-      ></app-bulk-estimate-table>
-      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addBulkEstimate()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
+      <ng-container *ngIf="company.totalBulkEstimates > 0">
+        <app-bulk-estimate-table
+          [value]="bulkEstimates$"
+          *ngIf="bulkEstimates$ | async else loading"
+          (selectedItem)="editBulkEstimate($event)"
+        ></app-bulk-estimate-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addBulkEstimate()">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ng-container>
+      <app-page-placeholder
+        *ngIf="company.totalBulkEstimates === 0 || !company.totalBulkEstimates"
+        title="No Bulk Estimates?"
+        subtitle=" Lets get started setting up your first Bulk estimate."
+        (clicked)="addBulkEstimate()"
+      ></app-page-placeholder>
     </ng-container>
+    <!-- INVENTORY ESTIMATE -->
     <ng-container *ngSwitchCase="'inventory'">
-      <app-inventory-estimate-table
-        [value]="inventoryEstimates$"
-        *ngIf="inventoryEstimates$ | async else loading"
-        (selectedItem)="editInventoryEstimate($event)"
-      ></app-inventory-estimate-table>
-      <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addInventoryEstimate()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
+      <ng-container *ngIf="company.totalInventoryEstimates > 0">
+        <app-inventory-estimate-table
+          [value]="inventoryEstimates$"
+          *ngIf="inventoryEstimates$ | async else loading"
+          (selectedItem)="editInventoryEstimate($event)"
+        ></app-inventory-estimate-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addInventoryEstimate()">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button> </ion-fab
+      ></ng-container>
+      <app-page-placeholder
+        *ngIf="company.totalInventoryEstimates === 0 || !company.totalInventoryEstimates"
+        title="No Inventory Estimates?"
+        subtitle=" Lets get started setting up your first Inventory estimate."
+        (clicked)="addInventoryEstimate()"
+      ></app-page-placeholder>
     </ng-container>
 
     <ng-template #loading>

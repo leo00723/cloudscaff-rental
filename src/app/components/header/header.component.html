@@ -13,6 +13,7 @@
     <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end" *ngIf="btnName || iconName">
       <ion-button
+        mode="ios"
         *ngIf="btnName"
         fill="solid"
         size="small"
@@ -21,7 +22,7 @@
         id="hover-trigger"
         (click)="update()"
       >
-        Need Help?
+        View Tutorial
       </ion-button>
       <ion-button (click)="updateIcon()" *ngIf="iconName">
         <ion-icon
