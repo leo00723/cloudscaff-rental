@@ -22,6 +22,8 @@ import cloneDeep from 'lodash/cloneDeep';
 })
 export class BulkEstimateComponent implements OnInit {
   @Input() enquiryId = '';
+  @Input() siteName: string;
+  @Input() customer: Customer;
   @Input() set value(val: BulkEstimate) {
     if (val) {
       Object.assign(this.bulkEstimate, val);
@@ -538,14 +540,17 @@ export class BulkEstimateComponent implements OnInit {
   }
 
   private initFrom() {
+    if (this.customer) {
+      this.show = 'editCustomer';
+    }
     this.form = this.masterSvc.fb().group({
-      customer: ['', Validators.required],
+      customer: [this.customer || '', Validators.required],
       message: [
         // eslint-disable-next-line max-len
         'We thank you for your scaffolding enquiry as per the Scope of Work detailed below. We attach herewith our estimate for your perusal.',
         Validators.required,
       ],
-      siteName: ['', Validators.required],
+      siteName: [this.siteName || '', Validators.required],
       startDate: ['', Validators.nullValidator],
       endDate: ['', Validators.nullValidator],
       discountPercentage: [

@@ -1,6 +1,7 @@
 import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { Scaffold } from './scaffold.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface Handover {
   id?: string;
@@ -22,4 +23,5 @@ export interface Handover {
   type?: string;
   erectPercentage?: number;
   dismantlePercentage?: number;
+  uploads?: UploadedFile[];
 }

@@ -93,6 +93,7 @@ import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipm
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
+import { FileItemComponent } from './multiuploader/file-item/file-item.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -180,6 +181,7 @@ const COMPONENTS = [
   DropzoneDirective,
   UploadTaskComponent,
   PagePlaceholderComponent,
+  FileItemComponent,
 ];
 const IMPORTS = [
   CommonModule,

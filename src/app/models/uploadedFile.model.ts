@@ -1,5 +1,6 @@
 export interface UploadedFile {
-  file: string;
-  downloadUrl: string;
-  ref: string;
+  file?: string;
+  type?: string;
+  downloadUrl?: string;
+  ref?: string;
 }

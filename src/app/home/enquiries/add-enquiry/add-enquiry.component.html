@@ -10,17 +10,7 @@
 </ion-header>
 
 <ion-content fullscreen="true" class="ion-padding">
-  <div class="container" *ngIf="company && !importing">
-    <!-- <ion-item lines="none" class="rounded-lg mb-3" *ngIf="!isEdit">
-      <ion-label position="stacked"> Import Data </ion-label>
-      <ion-input
-        type="file"
-        accept="text/csv"
-        color="primary"
-        mode="ios"
-        (change)="import($event)"
-      ></ion-input>
-    </ion-item> -->
+  <ng-container *ngIf="company">
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading && form">
       <ion-grid>
         <ion-row class="card-outline mb-3">
@@ -187,14 +177,29 @@
               </ion-select-option>
             </app-input-select-reactive>
           </ion-col>
+          <ion-col size="12">
+            <app-multiuploader></app-multiuploader>
+          </ion-col>
+          <ion-col size="12">
+            <app-title-block> Uploaded Files </app-title-block>
+            <ion-row>
+              <ion-col
+                sizeXl="2"
+                sizeLg="3"
+                sizeMd="4"
+                size="6"
+                *ngFor="let file of enquiry.uploads; let i = index"
+              >
+                <app-file-item
+                  [file]="file"
+                  (deleted)="deleted(i)"
+                ></app-file-item>
+              </ion-col>
+            </ion-row>
+          </ion-col>
         </ion-row>
-        <!-- <app-uploader (res)="uploadComplete($event)"></app-uploader> -->
-        <app-file-upload
-          *ngIf="enquiry.status === 'pending' || enquiry.status === 'overdue'"
-          [value]="enquiry.upload"
-          (result)="saveUpload($event)"
-        ></app-file-upload>
-        <ion-row>
+
+        <ion-row class="mt-5 mb-3">
           <ion-progress-bar
             type="indeterminate"
             *ngIf="loading"
@@ -252,20 +257,5 @@
         </ion-row>
       </ion-grid>
     </form>
-  </div>
-  <div class="container" *ngIf="importing">
-    <div class="row vh-75">
-      <div class="col m-auto text-center">
-        <ion-text><h1>Importing Data</h1></ion-text>
-        <ion-text color="medium"
-          ><h6 class="mb-5">
-            {{ importCounter }} of {{ importSize }}
-          </h6></ion-text
-        >
-        <ion-progress-bar
-          [value]="importCounter / importSize"
-        ></ion-progress-bar>
-      </div>
-    </div>
-  </div>
+  </ng-container>
 </ion-content>

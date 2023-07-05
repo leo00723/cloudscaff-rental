@@ -92,7 +92,11 @@
           <!-- SCAFFOLD -->
           <tr class="small text-center align-middle">
             <td>{{ i + 1 }}</td>
-            <th>{{ scaffold.code }}</th>
+            <!-- (click)="viewHandover(scaffold.latestHandover)"
+            class="text-primary cursor-pointer" -->
+            <th>
+              {{ scaffold.code }}
+            </th>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.length }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.width }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.height }}</td>
