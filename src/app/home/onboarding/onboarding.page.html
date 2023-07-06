@@ -29,7 +29,7 @@
                 Which aspect of your business are you looking to optimize?
               </h1>
             </ion-text>
-            <p class="lead">Choose one option below</p>
+            <p class="lead">Choose one option below.</p>
           </ion-col>
           <ion-col
             size="12"
@@ -52,7 +52,7 @@
                 Which challenges of {{selected.name}} are you currently facing?
               </h1>
             </ion-text>
-            <p class="lead">Choose any option below</p>
+            <p class="lead">Choose at least one option below.</p>
           </ion-col>
           <ion-col
             size="12"
@@ -81,7 +81,12 @@
               >
                 Back
               </ion-button>
-              <ion-button mode="ios" (click)="page = 3" shape="round">
+              <ion-button
+                [disabled]="check(selected.challenges) === -1"
+                mode="ios"
+                (click)="page = 3"
+                shape="round"
+              >
                 Next
               </ion-button>
             </div>
@@ -92,7 +97,7 @@
             <ion-text color="primary">
               <h1>How have these challenges impacted your business?</h1>
             </ion-text>
-            <p class="lead">Choose any option below</p>
+            <p class="lead">Choose at least one option below.</p>
           </ion-col>
           <ion-col
             size="12"
@@ -121,7 +126,12 @@
               >
                 Back
               </ion-button>
-              <ion-button mode="ios" (click)="page = 4" shape="round">
+              <ion-button
+                mode="ios"
+                [disabled]="check(selected.impacts) === -1"
+                (click)="page = 4"
+                shape="round"
+              >
                 Next
               </ion-button>
             </div>

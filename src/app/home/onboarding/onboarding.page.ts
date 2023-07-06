@@ -291,4 +291,8 @@ export class OnboardingPage implements OnInit {
       this.isLoading = false;
     }
   }
+
+  check(items: any[]) {
+    return items.findIndex((item) => item.selected);
+  }
 }
