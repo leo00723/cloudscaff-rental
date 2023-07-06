@@ -229,6 +229,29 @@
             </tbody>
           </table>
         </ion-col>
+        <ion-col
+          size="12"
+          *ngIf="transfer.status !== 'sent' && transfer.status !== 'void'"
+        >
+          <app-multiuploader></app-multiuploader>
+        </ion-col>
+        <ion-col size="12">
+          <app-title-block> Uploaded Files </app-title-block>
+          <ion-row>
+            <ion-col
+              sizeXl="2"
+              sizeLg="3"
+              sizeMd="4"
+              size="6"
+              *ngFor="let file of transfer.uploads; let i = index"
+            >
+              <app-file-item
+                [file]="file"
+                [allowDelete]="false"
+              ></app-file-item>
+            </ion-col>
+          </ion-row>
+        </ion-col>
       </ion-row>
       <ion-row>
         <ion-col size="12" class="text-end" *ngIf="loading">

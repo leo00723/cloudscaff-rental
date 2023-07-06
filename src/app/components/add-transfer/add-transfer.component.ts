@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
@@ -10,12 +10,14 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-transfer',
   templateUrl: './add-transfer.component.html',
 })
 export class AddTransferComponent implements OnInit, OnDestroy {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
   @Input() set value(val: Transfer) {
     if (val) {
@@ -23,7 +25,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       this.initEditForm();
     }
   }
-  transfer: Transfer = { status: 'pending' };
+  transfer: Transfer = { status: 'pending', uploads: [] };
   form: FormGroup;
   user: User;
   company: Company;
@@ -65,7 +67,8 @@ export class AddTransferComponent implements OnInit, OnDestroy {
         })}${(this.company.totalTransfers ? this.company.totalTransfers + 1 : 1)
           .toString()
           .padStart(6, '0')}`;
-
+        await this.upload();
+        transfer.uploads = this.transfer.uploads;
         await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/transfers`, transfer);
@@ -101,6 +104,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
           (item) => item.shipmentQty > 0
         );
         this.transfer.status = status;
+        await this.upload();
 
         await this.masterSvc
           .edit()
@@ -126,6 +130,11 @@ export class AddTransferComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
+  }
+
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.transfer.uploads.push(...newFiles);
   }
 
   delete() {

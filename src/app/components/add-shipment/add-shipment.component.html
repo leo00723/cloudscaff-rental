@@ -210,7 +210,10 @@
             </tbody>
           </table>
         </ion-col>
-        <ion-col size="12" *ngIf="shipment.status !== 'sent'">
+        <ion-col
+          size="12"
+          *ngIf="shipment.status !== 'sent' && shipment.status !== 'void'"
+        >
           <app-multiuploader></app-multiuploader>
         </ion-col>
         <ion-col size="12">

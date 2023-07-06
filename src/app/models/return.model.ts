@@ -1,6 +1,7 @@
 import { Company } from './company.model';
 import { InventoryItem } from './inventoryItem.model';
 import { Site } from './site.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface Return {
   id?: string;
@@ -14,4 +15,5 @@ export interface Return {
   site?: Site;
   status?: string;
   updatedBy?: string;
+  uploads?: UploadedFile[];
 }
