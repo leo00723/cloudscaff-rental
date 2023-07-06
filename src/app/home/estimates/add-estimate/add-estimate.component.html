@@ -163,7 +163,23 @@
             ></app-input-date>
           </ion-col>
         </ion-row>
-        <ion-row class="card-outline mb-3"> </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12" *ngIf="estimate.status === 'pending'">
+            <app-multiuploader></app-multiuploader>
+          </ion-col>
+          <ion-col size="12">
+            <app-title-block> Uploaded Files </app-title-block>
+          </ion-col>
+          <ion-col
+            sizeXl="2"
+            sizeLg="3"
+            sizeMd="4"
+            size="6"
+            *ngFor="let file of estimate.uploads; let i = index"
+          >
+            <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col size="12" class="text-end">
             <ion-button shape="round" (click)="nextView('scaffolds')"

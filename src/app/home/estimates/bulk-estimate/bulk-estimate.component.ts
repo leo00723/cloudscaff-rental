@@ -14,6 +14,7 @@ import { UserState } from 'src/app/shared/user/user.state';
 import { AcceptBulkEstimateComponent } from './accept-bulk-estimate/accept-bulk-estimate.component';
 import { Comment } from 'src/app/models/estimate.model';
 import cloneDeep from 'lodash/cloneDeep';
+import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-bulk-estimate',
@@ -21,6 +22,7 @@ import cloneDeep from 'lodash/cloneDeep';
   styles: [],
 })
 export class BulkEstimateComponent implements OnInit {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() enquiryId = '';
   @Input() siteName: string;
   @Input() customer: Customer;
@@ -62,6 +64,7 @@ export class BulkEstimateComponent implements OnInit {
     enquiryId: '',
     type: '',
     excludeVAT: false,
+    uploads: [],
   };
   user: User;
   company: Company;
@@ -241,7 +244,7 @@ export class BulkEstimateComponent implements OnInit {
         this.bulkEstimate.enquiryId = this.enquiryId;
         this.bulkEstimate.type = 'bulk-measured';
         this.bulkEstimate.addedToPA = false;
-
+        await this.upload();
         await this.masterSvc
           .edit()
           .addDocument(
@@ -283,10 +286,11 @@ export class BulkEstimateComponent implements OnInit {
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
-      this.masterSvc.notification().presentAlertConfirm(() => {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
         this.loading = true;
         this.updateEstimateTotal();
         this.bulkEstimate.status = status;
+        await this.upload();
         this.masterSvc
           .edit()
           .updateDoc(
@@ -382,6 +386,11 @@ export class BulkEstimateComponent implements OnInit {
   excludeVAT(args) {
     this.field('excludeVAT').setValue(args.detail.checked);
     this.updateEstimateTotal();
+  }
+
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.bulkEstimate.uploads.push(...newFiles);
   }
 
   async addComment() {
