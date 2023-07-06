@@ -21,14 +21,44 @@ export class OnboardingPage implements OnInit {
       name: 'Enquiry / Lead Management',
       challenges: [
         {
-          problem: 'Keeping track of clients',
+          problem: 'Capture and Tracking',
+          solution: 'Cloudscaff Enquiries',
+          selected: false,
+        },
+        {
+          problem: 'Qualification and Scoring',
+          solution: 'Cloudscaff Enquiries',
+          selected: false,
+        },
+        {
+          problem: 'Follow-Up and Nurturing',
+          solution: 'Cloudscaff Enquiries',
+          selected: false,
+        },
+        {
+          problem: 'Analytics and Reporting',
           solution: 'Cloudscaff Enquiries',
           selected: false,
         },
       ],
       impacts: [
         {
-          effect: 'loss of money',
+          effect: 'Decreased Conversion Rates',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Inconsistent Customer Experience',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Loss of Revenue and Wasted Resources',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Inaccurate Data and Reporting',
           benefit: '',
           selected: false,
         },
@@ -38,14 +68,44 @@ export class OnboardingPage implements OnInit {
       name: 'Estimate / Quote Management',
       challenges: [
         {
-          problem: 'Late Estimates',
+          problem: 'Incomplete or Inaccurate Information',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Changing Project Requirements',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Complex Pricing Structures',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Communication and Collaboration',
           solution: 'Cloudscaff Estimates',
           selected: false,
         },
       ],
       impacts: [
         {
-          effect: 'loss of money',
+          effect: 'Delayed Timelines',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Time-consuming Revisions',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Longer Processing Times',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Loss of Sales',
           benefit: '',
           selected: false,
         },
@@ -55,14 +115,91 @@ export class OnboardingPage implements OnInit {
       name: 'Site / Job Management',
       challenges: [
         {
-          problem: 'Late Estimates',
+          problem: 'Compliance with Safety Regulations',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Monitoring Progress',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Resource Allocation and Scheduling',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Quality Control and Assurance',
           solution: 'Cloudscaff Estimates',
           selected: false,
         },
       ],
       impacts: [
         {
-          effect: 'loss of money',
+          effect: 'Reduced Efficiency and Productivity',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Delays in Project Completion',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Lack of Accountability',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Inefficient Utilization of Resources',
+          benefit: '',
+          selected: false,
+        },
+      ],
+    },
+    {
+      name: 'Safety Management',
+      challenges: [
+        {
+          problem: 'Manual paperwork',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Delayed Access to Information',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Issuing Handover Certificates',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Compliance Tracking',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+      ],
+      impacts: [
+        {
+          effect: 'Informed Decision Making',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Loss of Information',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Decreased Productivity',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Legal Implications',
           benefit: '',
           selected: false,
         },
@@ -72,48 +209,51 @@ export class OnboardingPage implements OnInit {
       name: 'Inventory / Stock Management',
       challenges: [
         {
-          problem: 'Lost Inventory',
+          problem: 'Resource Utilization',
           solution: 'Cloudscaff Estimates',
           selected: false,
         },
         {
-          problem: 'Missed Shipments',
+          problem: 'Managing Deliveries',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Tracking Inventory',
+          solution: 'Cloudscaff Estimates',
+          selected: false,
+        },
+        {
+          problem: 'Inaccurate Counts',
           solution: 'Cloudscaff Estimates',
           selected: false,
         },
       ],
       impacts: [
         {
-          effect: 'loss of money',
+          effect: 'Loss of Income',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Delayed Job Completion',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Planning and Forecasting',
+          benefit: '',
+          selected: false,
+        },
+        {
+          effect: 'Loss of Inventory',
           benefit: '',
           selected: false,
         },
       ],
     },
   ];
-  selected: any = {
-    name: 'Inventory / Stock Management',
-    challenges: [
-      {
-        problem: 'Lost Inventory',
-        solution: 'Cloudscaff Estimates',
-        selected: true,
-      },
-      {
-        problem: 'Missed Shipments',
-        solution: 'Cloudscaff Estimates',
-        selected: true,
-      },
-    ],
-    impacts: [
-      {
-        effect: 'loss of money',
-        benefit:
-          'Cloudscaff tracks and manages all inventory accross all sites',
-        selected: true,
-      },
-    ],
-  };
+  selected: any;
   isLoading = false;
   private masterSvc: MasterService = inject(MasterService);
   constructor(private router: Router) {}
