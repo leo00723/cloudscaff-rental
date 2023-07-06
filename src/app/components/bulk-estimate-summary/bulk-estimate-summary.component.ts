@@ -17,6 +17,8 @@ export class BulkEstimateSummaryComponent {
   @Input() enquiryId = '';
   @Input() bulkEstimate: BulkEstimate;
   @Input() canDownload = false;
+  @Input() showUploads = false;
+
   terms$: Observable<Term>;
   company: Company;
   constructor(private masterSvc: MasterService) {

@@ -14,9 +14,11 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryEstimateSummaryComponent {
-  @Input() enquiryId: string = '';
+  @Input() enquiryId = '';
   @Input() inventoryEstimate: BulkInventoryEstimate;
   @Input() canDownload = false;
+  @Input() showUploads = false;
+
   terms$: Observable<Term>;
   company: Company;
   constructor(private masterSvc: MasterService) {
@@ -29,7 +31,7 @@ export class InventoryEstimateSummaryComponent {
     const sharedEstimate = {
       inventoryEstimate: this.inventoryEstimate,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -51,7 +53,7 @@ export class InventoryEstimateSummaryComponent {
     const sharedEstimate = {
       inventoryEstimate: this.inventoryEstimate,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,
