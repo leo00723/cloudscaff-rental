@@ -58,7 +58,7 @@ export class OnboardingPage implements OnInit {
           selected: false,
         },
         {
-          effect: 'Lost Revenue',
+          effect: 'Loss of Revenue',
           benefit: 'Effectively capture, track, nurture and follow-up on leads',
           selected: false,
         },
@@ -240,7 +240,7 @@ export class OnboardingPage implements OnInit {
           selected: false,
         },
         {
-          problem: 'Managing Deliveries/Shipments',
+          problem: 'Managing Deliveries / Shipments',
           solution: 'Document, track, manage and coordinate deliveries',
           selected: false,
         },
