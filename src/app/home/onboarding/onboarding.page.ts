@@ -76,7 +76,7 @@ export class OnboardingPage implements OnInit {
         {
           problem: 'Incomplete or Inaccurate Information',
           solution:
-            'Standardized templates, automating data entry and enabling real-time collaboration.',
+            'Standardized templates, automated data entry and real-time collaboration.',
           selected: false,
         },
         {
@@ -88,7 +88,7 @@ export class OnboardingPage implements OnInit {
         {
           problem: 'Complex Pricing Structures',
           solution:
-            'Tools to adapt pricing structures based on project requirements, ensuring clarity and accuracy in pricing.',
+            'Tools to adapt to pricing structures based on project requirements, ensuring clarity and accuracy in pricing.',
           selected: false,
         },
         {
@@ -136,19 +136,18 @@ export class OnboardingPage implements OnInit {
         },
         {
           problem: 'Monitoring Progress',
-          solution: 'Track scaffolds, tasks and timelines',
+          solution: 'Track scaffolds, tasks, timelines and real-time progress',
           selected: false,
         },
         {
           problem: 'Resource Allocation and Scheduling',
           solution:
-            'Efficiently plan, assign and track tasks and team resources',
+            'Optimize resource utilization, balance workloads and scheduling to maximize productivity and meet project deadlines',
           selected: false,
         },
         {
           problem: 'Quality Control and Assurance',
-          solution:
-            'Ensure adherence to quality standards with collaborative tracking and reporting',
+          solution: 'Track, report and ensure adherence to quality standards',
           selected: false,
         },
       ],
@@ -156,7 +155,7 @@ export class OnboardingPage implements OnInit {
         {
           effect: 'Reduced Efficiency and Productivity',
           benefit:
-            'Optimize workflow and boost productivity with effective task management tools',
+            'Optimized workflows and boost productivity with effective task and resource utilization tools',
           selected: false,
         },
         {
