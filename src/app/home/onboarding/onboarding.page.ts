@@ -22,44 +22,50 @@ export class OnboardingPage implements OnInit {
       challenges: [
         {
           problem: 'Capture and Tracking',
-          solution: 'Cloudscaff Enquiries',
+          solution:
+            'Centralized lead information, automated lead capture and tracking processes',
           selected: false,
         },
         {
           problem: 'Qualification and Scoring',
-          solution: 'Cloudscaff Enquiries',
+          solution:
+            'Standardized qualification criteria and lead scoring tools',
           selected: false,
         },
         {
           problem: 'Follow-Up and Nurturing',
-          solution: 'Cloudscaff Enquiries',
+          solution:
+            'Automated follow-up processes, personalized communication and lead nurturing workflows.',
           selected: false,
         },
         {
           problem: 'Analytics and Reporting',
-          solution: 'Cloudscaff Enquiries',
+          solution:
+            'Capture and analyze data on lead performance, conversion rates and sales metrics',
           selected: false,
         },
       ],
       impacts: [
         {
-          effect: 'Decreased Conversion Rates',
-          benefit: '',
+          effect: 'Low Conversion Rates',
+          benefit: 'Integrated lead scoring, nurturing and follow-up processes',
           selected: false,
         },
         {
           effect: 'Inconsistent Customer Experience',
-          benefit: '',
+          benefit:
+            'Standardized and automated processes ensures consistency and efficiency',
           selected: false,
         },
         {
-          effect: 'Loss of Revenue and Wasted Resources',
-          benefit: '',
+          effect: 'Lost Revenue',
+          benefit: 'Effectively capture, track, nurture and follow-up on leads',
           selected: false,
         },
         {
           effect: 'Inaccurate Data and Reporting',
-          benefit: '',
+          benefit:
+            'Standardized data entry processes, validate data accuracy and generate comprehensive and reliable reports',
           selected: false,
         },
       ],
@@ -69,44 +75,52 @@ export class OnboardingPage implements OnInit {
       challenges: [
         {
           problem: 'Incomplete or Inaccurate Information',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Standardized templates, automating data entry and enabling real-time collaboration.',
           selected: false,
         },
         {
           problem: 'Changing Project Requirements',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Manage evolving needs with flexibility, consistency and enhanced revision processes.',
           selected: false,
         },
         {
           problem: 'Complex Pricing Structures',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Tools to adapt pricing structures based on project requirements, ensuring clarity and accuracy in pricing.',
           selected: false,
         },
         {
           problem: 'Communication and Collaboration',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Simultaneous document editing by multiple users for efficient collaboration',
           selected: false,
         },
       ],
       impacts: [
         {
           effect: 'Delayed Timelines',
-          benefit: '',
+          benefit:
+            'Efficient change management processes and tools for quick adjustment of project timelines',
           selected: false,
         },
         {
           effect: 'Time-consuming Revisions',
-          benefit: '',
+          benefit:
+            'Automated revision process and streamlining approval processes for faster turnaround times',
           selected: false,
         },
         {
           effect: 'Longer Processing Times',
-          benefit: '',
+          benefit:
+            'Automating estimate generation, real-time collaboration and streamlined approval process',
           selected: false,
         },
         {
           effect: 'Loss of Sales',
-          benefit: '',
+          benefit:
+            'Provide accurate and timely estimates, quick follow-ups and enabling customization and personalization to meet customer needs',
           selected: false,
         },
       ],
@@ -116,44 +130,51 @@ export class OnboardingPage implements OnInit {
       challenges: [
         {
           problem: 'Compliance with Safety Regulations',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Tools for creating and managing safety documents, prompting inspections, and incident reporting',
           selected: false,
         },
         {
           problem: 'Monitoring Progress',
-          solution: 'Cloudscaff Estimates',
+          solution: 'Track scaffolds, tasks and timelines',
           selected: false,
         },
         {
           problem: 'Resource Allocation and Scheduling',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Efficiently plan, assign and track tasks and team resources',
           selected: false,
         },
         {
           problem: 'Quality Control and Assurance',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Ensure adherence to quality standards with collaborative tracking and reporting',
           selected: false,
         },
       ],
       impacts: [
         {
           effect: 'Reduced Efficiency and Productivity',
-          benefit: '',
+          benefit:
+            'Optimize workflow and boost productivity with effective task management tools',
           selected: false,
         },
         {
           effect: 'Delays in Project Completion',
-          benefit: '',
+          benefit:
+            'Accelerate delivery by improving coordination and tracking progress effectively',
           selected: false,
         },
         {
           effect: 'Lack of Accountability',
-          benefit: '',
+          benefit:
+            'Promote responsibility and ownership with enhanced task tracking capabilities',
           selected: false,
         },
         {
           effect: 'Inefficient Utilization of Resources',
-          benefit: '',
+          benefit:
+            'Achieve greater efficiency and cost savings through resource optimization capabilities',
           selected: false,
         },
       ],
@@ -162,45 +183,50 @@ export class OnboardingPage implements OnInit {
       name: 'Safety Management',
       challenges: [
         {
-          problem: 'Manual paperwork',
-          solution: 'Cloudscaff Estimates',
+          problem: 'Manual Paperwork',
+          solution: 'Digitize and automate the document creation processes',
           selected: false,
         },
         {
           problem: 'Delayed Access to Information',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Access to real-time data for faster decision-making and improved efficiency',
           selected: false,
         },
         {
-          problem: 'Issuing Handover Certificates',
-          solution: 'Cloudscaff Estimates',
+          problem: 'Managing Handover Certificates',
+          solution: 'Effortlessly create, track, manage and organize handovers',
           selected: false,
         },
         {
           problem: 'Compliance Tracking',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Ensure adherence to regulations with alerts and notifications prompting compliance',
           selected: false,
         },
       ],
       impacts: [
         {
           effect: 'Informed Decision Making',
-          benefit: '',
+          benefit: 'Real-time insights and comprehensive data analysis',
           selected: false,
         },
         {
-          effect: 'Loss of Information',
-          benefit: '',
+          effect: 'Lost Information',
+          benefit:
+            'Centralize and safeguard information for easy access and retrieval',
           selected: false,
         },
         {
           effect: 'Decreased Productivity',
-          benefit: '',
+          benefit:
+            'Efficient task tracking and streamlined workflow management',
           selected: false,
         },
         {
           effect: 'Legal Implications',
-          benefit: '',
+          benefit:
+            'Mitigate risks and ensure compliance through comprehensive tracking and documentation',
           selected: false,
         },
       ],
@@ -210,44 +236,50 @@ export class OnboardingPage implements OnInit {
       challenges: [
         {
           problem: 'Resource Utilization',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Advanced algorithms and analytics to optimize stock levels and forecast',
           selected: false,
         },
         {
-          problem: 'Managing Deliveries',
-          solution: 'Cloudscaff Estimates',
+          problem: 'Managing Deliveries/Shipments',
+          solution: 'Document, track, manage and coordinate deliveries',
           selected: false,
         },
         {
           problem: 'Tracking Inventory',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Monitor inventory locations, utilization, and activity for comprehensive insights',
           selected: false,
         },
         {
           problem: 'Inaccurate Counts',
-          solution: 'Cloudscaff Estimates',
+          solution:
+            'Automated inventory tracking ensures accurate and reliable inventory counts',
           selected: false,
         },
       ],
       impacts: [
         {
           effect: 'Loss of Income',
-          benefit: '',
+          benefit:
+            'Reduce losses with efficient and effective inventory management',
           selected: false,
         },
         {
           effect: 'Delayed Job Completion',
-          benefit: '',
+          benefit:
+            'Ensuring accurate inventory tracking, minimizing stockouts, and improving logistics',
           selected: false,
         },
         {
           effect: 'Planning and Forecasting',
-          benefit: '',
+          benefit:
+            'Analyze inventory data, track demand patterns, identify trends and make informed decisions',
           selected: false,
         },
         {
-          effect: 'Loss of Inventory',
-          benefit: '',
+          effect: 'Lost Inventory',
+          benefit: 'Automated tracking and real-time inventory monitoring',
           selected: false,
         },
       ],
