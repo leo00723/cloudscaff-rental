@@ -242,6 +242,18 @@
           </tbody>
         </table>
       </ion-col>
+      <ion-col size="12">
+        <app-title-block> Uploaded Files </app-title-block>
+      </ion-col>
+      <ion-col
+        sizeXl="2"
+        sizeLg="3"
+        sizeMd="4"
+        size="6"
+        *ngFor="let file of handover.handover.uploads; let i = index"
+      >
+        <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
+      </ion-col>
       <ion-col size="12" *ngIf="!handover.handover.signature">
         <ion-text><h4>Signature</h4></ion-text>
         <app-signature-pad
