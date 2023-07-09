@@ -2101,6 +2101,50 @@ export class PdfService {
       },
       layout: tLayout,
     };
+    const checklist = [];
+    if (handover.questions) {
+      handover.questions.categories.forEach((c) => {
+        const items = [];
+        c.items.forEach((i, j) => {
+          items.push([
+            {
+              text: j + 1,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.question,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.value ? i.value : 'N/A',
+              style: 'h6',
+              alignment: 'center',
+            },
+          ]);
+        });
+        const questions = {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['auto', '*', 'auto'],
+            body: [
+              [
+                { text: '#', style: 'h4b', alignment: 'left' },
+                { text: 'Question', style: 'h4b', alignment: 'left' },
+                { text: 'Checklist', style: 'h4b', alignment: 'center' },
+              ],
+              ...items,
+            ],
+          },
+          layout: tLayout,
+        };
+        checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
+      });
+    }
+
     const signature = handover.signature
       ? {
           image: await this.getBase64ImageFromURL(handover.signature),
@@ -2155,6 +2199,7 @@ export class PdfService {
         { text: handover.notes },
         hr,
         summary,
+        checklist,
         hr,
         {
           table: {

@@ -38,6 +38,11 @@
     <app-scaffold-editform
       (formResult)="updateScaffold($event)"
     ></app-scaffold-editform>
+    <app-inspection-checklist
+      [questions]="questions"
+      (list)="updateList($event)"
+      *ngIf="template$ | async as questions"
+    ></app-inspection-checklist>
     <ion-row class="py-2">
       <ion-col class="p-0">
         <table class="table table-bordered mb-3">

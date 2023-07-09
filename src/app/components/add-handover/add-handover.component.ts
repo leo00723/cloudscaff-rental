@@ -63,6 +63,9 @@ export class AddHandoverComponent implements OnInit {
         })
       ) as Observable<HandoverTemplate>;
   }
+  updateList(ev: HandoverTemplate) {
+    this.handover.questions = ev;
+  }
 
   updateScaffold(ev) {
     this.scaffold.scaffold = ev.scaffold;

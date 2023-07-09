@@ -4,4 +4,8 @@ export interface HandoverTemplate {
   date?: any;
   updatedBy?: string;
   company?: string;
+  categories?: {
+    name?: string;
+    items?: { question?: string; value?: string }[];
+  }[];
 }
