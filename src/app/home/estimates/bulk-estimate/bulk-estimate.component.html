@@ -50,7 +50,7 @@
   <div class="container" *ngIf="company" [ngSwitch]="active">
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <!-- OVERVIEW TAB -->
-      <ion-grid *ngSwitchDefault>
+      <ion-grid [hidden]="active !== 'overview'">
         <app-title-block> Customer Information </app-title-block>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
