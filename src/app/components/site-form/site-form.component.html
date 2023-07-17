@@ -23,18 +23,27 @@
       ></app-input-date>
     </ion-col>
   </ion-row>
-  <app-title-block>Billing Details</app-title-block>
+  <app-title-block>Site Invoice Cycle</app-title-block>
   <ion-row class="card-outline mb-3">
+    <ion-col size="12">
+      <ion-text>
+        <p class="small">
+          This should only be activated if this site has Inventory Estimates
+          attached to it. An Inventory Estimate allows you to charge for each
+          Inventory item on hire.
+        </p>
+      </ion-text>
+    </ion-col>
     <ion-col sizeXl="4" size="12">
       <app-input-select-reactive
-        title="Is Site Billable"
+        title="Activate Invoice Cycle (optional)"
         placeholder="Select option"
         controlName="billable"
         [form]="form"
         [selectedText]="field('billable').value ? 'Yes' : 'No'"
       >
-        <ion-select-option [value]="false">No </ion-select-option>
-        <ion-select-option [value]="true">Yes </ion-select-option>
+        <ion-select-option [value]="false">No</ion-select-option>
+        <ion-select-option [value]="true">Yes</ion-select-option>
       </app-input-select-reactive>
     </ion-col>
     <ng-container *ngIf="field('billable').value">
