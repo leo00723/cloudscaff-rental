@@ -21,12 +21,11 @@
   </div>
 </div>
 
-<h3>Uploads</h3>
+<app-title-block *ngIf="files.length > 0">Files to upload</app-title-block>
 
 <div *ngFor="let file of files; let i = index">
   <app-upload-task
     [file]="file.file"
     (deleted)="deleteFile(i)"
-    (data)="setData($event, i)"
   ></app-upload-task>
 </div>

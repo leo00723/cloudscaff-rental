@@ -24,61 +24,83 @@
   <ngx-datatable-column
     name="Code"
     [checkboxable]="false"
+    cellClass="my-auto"
   ></ngx-datatable-column>
-  <ngx-datatable-column name="Customer">
+  <ngx-datatable-column name="Customer" cellClass="my-auto">
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       {{ row.customer ? row.customer.name : row.customerName }}
     </ng-template></ngx-datatable-column
   >
-  <ngx-datatable-column name="Site Name"></ngx-datatable-column>
+  <ngx-datatable-column
+    name="Site Name"
+    cellClass="my-auto"
+  ></ngx-datatable-column>
 
   <ngx-datatable-column
     name="Recieved Date"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date: "dd MMM yyyy" }}
+      {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
     name="Return Date"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date: "dd MMM yyyy" }}
+      {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
     name="Date Created"
     prop="date"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date: "dd MMM yyyy" }}
+      {{ value | date : "dd MMM yyyy" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Uploads"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <div>
+        <ion-badge color="tertiary" mode="ios" *ngIf="value">{{
+          value.length
+        }}</ion-badge>
+      </div>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Comment"
+    cellClass="text-center my-auto"
+    headerClass="text-center "
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ng-container *ngIf="row.estimate && row.estimate.comments">
+        {{ row.estimate.comments[row.estimate.comments.length - 1].message }}
+        <br />
+        <br />
+        {{
+          row.estimate.comments[row.estimate.comments.length - 1].date.toDate()
+            | date
+        }}
+      </ng-container>
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
     name="Status"
-    cellClass="text-center"
-    headerClass="text-center"
+    cellClass="text-end my-auto"
+    headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-badge [color]="getStatus(value)" mode="ios">{{ value }}</ion-badge>
-    </ng-template>
-  </ngx-datatable-column>
-  <ngx-datatable-column name="Comment" cellClass="my-auto">
-    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      <ng-container *ngIf="row.estimate && row.estimate.comments">
-      {{ row.estimate.comments[row.estimate.comments.length - 1].message }}
-        <br />
-        <br />
-        {{
-          (row.estimate.comments[row.estimate.comments.length - 1].date.toDate() | date)
-        }}
-      </ng-container>
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>

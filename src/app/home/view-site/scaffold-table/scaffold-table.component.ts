@@ -5,7 +5,10 @@ import {
   Input,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { modalController } from '@ionic/core';
 import { Select } from '@ngxs/store';
 import {
   DatatableComponent,
@@ -14,6 +17,8 @@ import {
 } from '@swimlane/ngx-datatable';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
+import { Handover } from 'src/app/models/handover.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 
 @Component({
@@ -42,6 +47,7 @@ export class ScaffoldTableComponent {
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
+  private modalController: ModalController = inject(ModalController);
   filterScaffold(scaffold: Scaffold) {
     return scaffold.latestHandover ? true : false;
   }
@@ -63,6 +69,19 @@ export class ScaffoldTableComponent {
       case 'inactive':
         return 'danger';
     }
+  }
+
+  async viewHandover(handover: Handover) {
+    const modal = await this.modalController.create({
+      component: HandoverSummaryComponent,
+      componentProps: {
+        handover,
+      },
+      showBackdrop: false,
+      id: 'viewHandover',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
   }
 
   updateFilter(event) {

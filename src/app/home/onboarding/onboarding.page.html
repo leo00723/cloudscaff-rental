@@ -1,85 +1,231 @@
-<ng-container *ngIf="page === 0">
-  <ion-content class="ion-padding text-center">
-    <ion-row style="height: 100%">
-      <ion-col class="m-auto">
-        <ion-thumbnail class="mx-auto">
-          <ion-img
-            class="img-fluid"
-            width="100px"
-            src="assets/icons/icon-512x512.png"
-            alt="logo"
-          ></ion-img>
-        </ion-thumbnail>
-        <div class="mb-5">
-          <ion-text color="primary">
-            <h1 class="display-1 fw-bold">Welcome to Cloudscaff</h1>
-          </ion-text>
-          <p class="lead">Lets get started setting up your account.</p>
-        </div>
-        <ion-button mode="ios" (click)="page = 1" shape="round">
-          Next
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-content>
-</ng-container>
-<ng-container *ngIf="page === 1">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Tutorial </ion-title>
-      <ion-button
-        slot="end"
-        size="small"
-        shape="round"
-        (click)="page = 2"
-        shape="round"
-        class="me-4"
-        mode="ios"
-      >
-        Next
-      </ion-button>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content fullscreen="true" class="ion-padding">
-    <ion-row>
-      <ion-col size="12">
-        <app-tutorial-gallery></app-tutorial-gallery>
-      </ion-col>
-      <ion-col size="12" class="text-end">
-        <ion-button (click)="page = 2" shape="round"> Next </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-content>
-</ng-container>
-<ng-container *ngIf="page === 2">
-  <ion-content
-    *ngIf="{user: user$ | async , company: company$ | async} as data"
-    [ngClass]="data?.user?.needsSetup ? '':'padding'"
+<ion-content
+  *ngIf="{user: user$ | async , company: company$ | async} as data"
+  [ngClass]="data?.user?.needsSetup ? '':'padding'"
+  [class.ion-padding]="page !==5"
+>
+  <ng-container
+    *ngIf="(data.user !== null && data.company !== null) else loading"
   >
-    <ng-container
-      *ngIf="(data.user !== null && data.company !== null) else loading"
-    >
-      <app-editprofile
-        *ngIf="data.user?.needsSetup else company"
-        title="Complete Profile"
-      ></app-editprofile>
-      <ng-template #company>
-        <app-company
-          [showBack]="false"
-          [showAll]="false"
-          [onboarding]="true"
-          title="Complete Business Info"
-          (updated)="next(data,false)"
-        ></app-company>
-      </ng-template>
-    </ng-container>
-    <ng-template #loading>
-      <div class="container ion-padding">
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
-        <app-skeleton-text></app-skeleton-text>
+    <app-editprofile
+      *ngIf="data.user?.needsSetup else company"
+      title="Complete Profile"
+    ></app-editprofile>
+    <ng-template #company>
+      <div
+        class="container d-grid justify-content-center align-items-center text-center"
+        style="height: 100%"
+        *ngIf="page !== 5"
+      >
+        <app-page-placeholder
+          *ngIf="page === 0"
+          title="Welcome to Cloudscaff"
+          subtitle="Lets get started setting up your account."
+          (clicked)="page = 1"
+        ></app-page-placeholder>
+        <ion-row class="justify-content-center" *ngIf="page === 1">
+          <ion-col size="12">
+            <ion-text color="primary">
+              <h1>
+                Which aspect of your business are you looking to optimize?
+              </h1>
+            </ion-text>
+            <p class="lead">Choose one option below.</p>
+          </ion-col>
+          <ion-col
+            size="12"
+            sizeMd="6"
+            sizeLg="3"
+            *ngFor="let category of categories"
+            (click)="selectCategory(category)"
+          >
+            <ion-card color="light">
+              <ion-text>
+                <h3>{{category.name}}</h3>
+              </ion-text>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        <ion-row class="justify-content-center" *ngIf="page === 2">
+          <ion-col size="12">
+            <ion-text color="primary">
+              <h1>
+                Which challenges of {{selected.name}} are you currently facing?
+              </h1>
+            </ion-text>
+            <p class="lead">Choose at least one option below.</p>
+          </ion-col>
+          <ion-col
+            size="12"
+            sizeMd="6"
+            sizeLg="3"
+            *ngFor="let challenge of selected.challenges"
+            (click)="challenge.selected = !challenge.selected"
+          >
+            <ion-card
+              color="light"
+              [class.border-primary]="challenge.selected"
+              [class.border-2]="challenge.selected"
+            >
+              <ion-text>
+                <h3>{{challenge.problem}}</h3>
+              </ion-text>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12">
+            <div class="mt-5">
+              <ion-button
+                mode="ios"
+                (click)="page = 1"
+                fill="outline"
+                shape="round"
+              >
+                Back
+              </ion-button>
+              <ion-button
+                [disabled]="check(selected.challenges) === -1"
+                mode="ios"
+                (click)="page = 3"
+                shape="round"
+              >
+                Next
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row class="justify-content-center" *ngIf="page === 3">
+          <ion-col size="12">
+            <ion-text color="primary">
+              <h1>How have these challenges impacted your business?</h1>
+            </ion-text>
+            <p class="lead">Choose at least one option below.</p>
+          </ion-col>
+          <ion-col
+            size="12"
+            sizeMd="6"
+            sizeLg="3"
+            *ngFor="let impact of selected.impacts"
+            (click)="impact.selected = !impact.selected"
+          >
+            <ion-card
+              color="light"
+              [class.border-primary]="impact.selected"
+              [class.border-2]="impact.selected"
+            >
+              <ion-text>
+                <h3>{{impact.effect}}</h3>
+              </ion-text>
+            </ion-card>
+          </ion-col>
+          <ion-col size="12">
+            <div class="mt-5">
+              <ion-button
+                mode="ios"
+                (click)="page = 2"
+                fill="outline"
+                shape="round"
+              >
+                Back
+              </ion-button>
+              <ion-button
+                mode="ios"
+                [disabled]="check(selected.impacts) === -1"
+                (click)="page = 4"
+                shape="round"
+              >
+                Next
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row class="justify-content-center" *ngIf="page === 4">
+          <ion-col size="12">
+            <ion-text color="primary">
+              <h1>Great news! We can Help!</h1>
+            </ion-text>
+            <p class="lead">Here is how Cloudscaff can assist your business.</p>
+          </ion-col>
+
+          <ion-col size="12" class="table-responsive text-start">
+            <table class="table table-bordered">
+              <thead>
+                <tr class="bg-primary text-dark fw-bold">
+                  <th>YOUR CHALLENGES</th>
+                  <th>CLOUDSCAFF SOLUTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let challenge of selected.challenges">
+                  <tr *ngIf="challenge.selected">
+                    <td>
+                      <ion-text> {{challenge.problem}} </ion-text>
+                    </td>
+                    <td>
+                      <ion-text> {{challenge.solution}} </ion-text>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </ion-col>
+          <ion-col size="12" class="table-responsive text-start">
+            <table class="table table-bordered">
+              <thead>
+                <tr class="bg-primary text-dark fw-bold">
+                  <th>THE IMPACTS</th>
+                  <th>CLOUDSCAFF BENEFITS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let impact of selected.impacts">
+                  <tr *ngIf="impact.selected">
+                    <td>
+                      <ion-text> {{impact.effect}} </ion-text>
+                    </td>
+                    <td>
+                      <ion-text> {{impact.benefit}} </ion-text>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </ion-col>
+          <ion-col size="12" class="my-5">
+            <ion-progress-bar
+              *ngIf="isLoading"
+              type="indeterminate"
+            ></ion-progress-bar>
+            <div *ngIf="!isLoading">
+              <p class="small">Click next to complete your business profile.</p>
+              <ion-button
+                mode="ios"
+                (click)="page = 2"
+                fill="outline"
+                shape="round"
+              >
+                Back
+              </ion-button>
+              <ion-button mode="ios" (click)="complete()" shape="round">
+                Next
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
       </div>
+      <app-company
+        *ngIf="page === 5"
+        [showBack]="false"
+        [showAll]="false"
+        [onboarding]="true"
+        title="Complete Business Info"
+        (updated)="next(data,false)"
+      ></app-company>
     </ng-template>
-  </ion-content>
-</ng-container>
+  </ng-container>
+  <ng-template #loading>
+    <div
+      class="container d-flex justify-content-center align-items-center vh-100 text-center"
+    >
+      <ion-progress-bar width="100%" type="indeterminate"></ion-progress-bar>
+    </div>
+  </ng-template>
+</ion-content>

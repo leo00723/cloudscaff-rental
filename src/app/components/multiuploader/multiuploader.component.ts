@@ -2,10 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  OnInit,
   Output,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { UploadedFile } from 'src/app/models/uploadedFile.model';
+import { UploadTaskComponent } from './upload-task/upload-task.component';
 
 @Component({
   selector: 'app-multiuploader',
@@ -14,15 +16,16 @@ import { UploadedFile } from 'src/app/models/uploadedFile.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MultiuploaderComponent {
-  @Output() data = new EventEmitter<{ file: File; data: UploadedFile }[]>();
+  @ViewChildren(UploadTaskComponent)
+  uploadTasks: QueryList<UploadTaskComponent>;
   isHovering: boolean;
   files: { file: File; data: UploadedFile }[] = [];
-
+  uploading = false;
   toggleHover(event: boolean) {
     this.isHovering = event;
   }
 
-  onDrop(files: FileList | any, manual?: boolean) {
+  onDrop(files: FileList | any, manual?: boolean, input?: any) {
     const list = manual ? files.target.files : files;
     for (let i = 0; i < list.length; i++) {
       this.files.push({ file: list.item(i), data: null });
@@ -31,11 +34,14 @@ export class MultiuploaderComponent {
 
   deleteFile(index: number) {
     this.files.splice(index, 1);
-    this.data.emit(this.files);
   }
 
-  setData(data: UploadedFile, index: number) {
-    this.files[index].data = data;
-    this.data.emit(this.files);
+  async startUpload() {
+    const urls: UploadedFile[] = [];
+    for await (const task of this.uploadTasks) {
+      const data = await task.startUpload();
+      urls.push(data);
+    }
+    return urls;
   }
 }

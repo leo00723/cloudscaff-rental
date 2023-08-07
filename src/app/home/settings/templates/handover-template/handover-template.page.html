@@ -6,8 +6,94 @@
   (backClicked)="autoUpdate()"
 ></app-header>
 
-<ion-content fullscreen="true">
-  <div class="container ion-padding">
+<ion-content fullscreen="true" class="ion-padding">
+  <ion-grid class="container" *ngIf="form">
+    <form class="mb-3" [formGroup]="form">
+      <ion-row
+        formArrayName="categories"
+        class="card-outline mb-3"
+        *ngFor="let category of categoryForms.controls; let i = index"
+      >
+        <ion-col size="12">
+          <ion-note> Category {{ i + 1 }} </ion-note>
+          <ion-chip
+            outline
+            color="danger"
+            class="ion-float-end"
+            (click)="deleteCategory(i)"
+          >
+            <ion-label>Delete</ion-label>
+          </ion-chip>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Category"
+            controlName="name"
+            placeholder="Enter category name"
+            [form]="category"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <!-- ACCESS ITEMS IN CATEGORY -->
+        <ion-col size="12">
+          <ion-reorder-group
+            (ionItemReorder)="reorderQuestions($event,i)"
+            disabled="false"
+          >
+            <ion-row
+              class="m-0 p-0"
+              *ngFor="let item of itemForms(i).controls; let j = index"
+            >
+              <ion-col sizeMd="11.5" size="11">
+                <app-input-reactive
+                  title="Question {{j + 1}}"
+                  margin="m-0"
+                  [reorder]="true"
+                  [textarea]="true"
+                  controlName="question"
+                  placeholder="Enter question"
+                  [form]="item"
+                >
+                </app-input-reactive>
+              </ion-col>
+              <ion-col sizeMd="0.5" size="1" class="m-auto">
+                <ion-fab-button
+                  size="small"
+                  class="m-auto"
+                  color="danger"
+                  (click)="deleteQuestion(i,j)"
+                >
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-fab-button>
+              </ion-col>
+            </ion-row>
+          </ion-reorder-group>
+        </ion-col>
+        <ion-col size="12" class="text-center">
+          <ion-button
+            size="small"
+            shape="round"
+            fill="outline"
+            color="success"
+            class="text-capitalize"
+            (click)="addQuestion(i)"
+            >Add Question</ion-button
+          >
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-fab-button
+            size="small"
+            class="m-auto"
+            color="success"
+            (click)="addCategory()"
+          >
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-col>
+      </ion-row>
+    </form>
     <ion-row class="card-outline mb-3">
       <ion-col size="12">
         <ion-note> Maximum Load Options </ion-note>
@@ -83,5 +169,5 @@
         </ion-button>
       </ion-col>
     </ion-row>
-  </div>
+  </ion-grid>
 </ion-content>

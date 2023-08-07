@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -10,13 +10,16 @@ import { Scaffold } from 'src/app/models/scaffold.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-inspection',
   templateUrl: './add-inspection.component.html',
 })
 export class AddInspectionComponent implements OnInit {
-  @Input() set value(val: Scaffold) {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
+  @Input()
+  set value(val: Scaffold) {
     Object.assign(this.scaffold, val);
   }
   scaffold: Scaffold = {};
@@ -27,6 +30,7 @@ export class AddInspectionComponent implements OnInit {
     date: new Date(),
     status: '',
     notes: '',
+    uploads: [],
   };
   loading = false;
 
@@ -79,6 +83,7 @@ export class AddInspectionComponent implements OnInit {
         this.inspection.company = company;
         this.inspection.customer = customer;
         this.inspection.scaffold = this.scaffold;
+        await this.upload();
         if (this.inspection.status === 'Failed') {
           await this.masterSvc
             .edit()
@@ -114,6 +119,11 @@ export class AddInspectionComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.inspection.uploads.push(...newFiles);
   }
 
   close() {

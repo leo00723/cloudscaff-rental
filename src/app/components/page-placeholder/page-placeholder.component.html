@@ -1,0 +1,22 @@
+<div
+  class="container d-grid justify-content-center align-items-center text-center"
+  style="height: 100%"
+>
+  <div>
+    <ion-thumbnail class="mx-auto">
+      <ion-img src="assets/icons/icon-128x128.png" alt="logo"></ion-img>
+    </ion-thumbnail>
+    <ion-text color="primary">
+      <h1 class="display-1 fw-bold">{{ title }}</h1>
+    </ion-text>
+    <p class="lead">{{ subtitle }}</p>
+    <ion-button
+      class="mt-5"
+      mode="ios"
+      (click)="clicked.emit(true)"
+      shape="round"
+    >
+      Next
+    </ion-button>
+  </div>
+</div>

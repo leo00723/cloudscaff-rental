@@ -39,8 +39,9 @@ exports.regiserCompany = functions.https.onCall(async (data) => {
         name: auth.displayName,
         email: auth.email,
         company: company.id,
+        phone: data.phone || '',
         role: 'Owner',
-        needsSetup: true,
+        needsSetup: false,
         startDate: admin.firestore.Timestamp.fromDate(date),
       });
     return '200';

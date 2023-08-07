@@ -5,7 +5,7 @@
   *ngIf="user$ |async as user"
 >
   <ion-content>
-    <ion-item lines="none" [ngClass]="isIphone ? 'mt-5' : ''">
+    <ion-item lines="none">
       <ion-avatar slot="start">
         <img
           [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'"
@@ -27,7 +27,7 @@
     <ion-list id="nav-list" class="text-center" *ngIf="user.branches">
       <ion-label color="dark"> <h6>Switch active company</h6> </ion-label>
       <hr />
-      <div class="overflow-scroll" style="max-height: 100px">
+      <div class="overflow-auto" style="max-height: 100px">
         <ion-menu-toggle auto-hide="false">
           <!-- <ion-button
             *ngIf="branch.id !== user.company"

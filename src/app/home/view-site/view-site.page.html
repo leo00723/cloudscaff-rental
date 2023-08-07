@@ -4,9 +4,9 @@
     [showMenu]="false"
     [showBack]="true"
     path="/dashboard/sites"
-    btnName="settings-outline"
+    iconName="settings-outline"
     iconColor="primary"
-    (updated)="editSite(site)"
+    (updatedIcon)="editSite(site)"
   >
     <ion-toolbar *ngIf="user$ |async as user">
       <ion-segment
@@ -70,6 +70,17 @@
           *ngIf="scaffolds$ | async else loading"
           (selectedItem)="viewScaffold($event)"
         ></app-scaffold-table>
+        <ion-fab
+          class="m-2"
+          vertical="bottom"
+          horizontal="end"
+          slot="fixed"
+          *ngIf="site.status !== 'closed'"
+        >
+          <ion-fab-button (click)="addScaffold(site)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
       </div>
       <div *ngSwitchCase="'register'">
         <app-scaffold-table

@@ -29,10 +29,22 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date: "dd MMM yyyy" }}
+      {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
-
+  <ngx-datatable-column
+    name="Uploads"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <div>
+        <ion-badge color="tertiary" mode="ios" *ngIf="value">{{
+          value.length
+        }}</ion-badge>
+      </div>
+    </ng-template>
+  </ngx-datatable-column>
   <ngx-datatable-column
     name="Status"
     cellClass="text-center"

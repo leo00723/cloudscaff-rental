@@ -19,6 +19,7 @@ export class EstimateSummaryComponent {
     }
   }
   @Input() canDownload = false;
+  @Input() showUploads = false;
   estimate: Estimate;
   terms$: Observable<Term>;
   company: Company;

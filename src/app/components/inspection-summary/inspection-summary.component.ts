@@ -33,7 +33,7 @@ export class InspectionSummaryComponent {
     const sharedInspection = {
       inspection: this.inspection,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -52,7 +52,7 @@ export class InspectionSummaryComponent {
     const sharedInspection = {
       inspection: this.inspection,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

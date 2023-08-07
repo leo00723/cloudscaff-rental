@@ -13,7 +13,6 @@ import { UserState } from 'src/app/shared/user/user.state';
 })
 export class InspectionTemplatePage implements OnInit, OnDestroy {
   @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
-  items = [''];
   form: FormGroup;
   loading = false;
   private subs = new Subscription();
@@ -128,20 +127,20 @@ export class InspectionTemplatePage implements OnInit, OnDestroy {
             .subscribe((inspection: InspectionTemplate) => {
               if (inspection) {
                 this.form = this.masterSvc.fb().group({
-                  categories: this.masterSvc.fb().array(
-                    inspection.categories.map((c) =>
-                      this.masterSvc.fb().group({
-                        name: [c.name, Validators.required],
-                        items: this.masterSvc.fb().array(
-                          c.items.map((i) =>
-                            this.masterSvc.fb().group({
-                              question: [i.question, Validators.required],
-                            })
-                          )
-                        ),
-                      })
-                    )
-                  ),
+                  categories: this.masterSvc.fb().array([]),
+                });
+                inspection.categories.forEach((c) => {
+                  const category = this.masterSvc.fb().group({
+                    name: [c.name, Validators.required],
+                    items: this.masterSvc.fb().array([]),
+                  });
+                  c.items.forEach((i) => {
+                    const item = this.masterSvc.fb().group({
+                      question: [i.question, Validators.required],
+                    });
+                    (category.get('items') as FormArray).push(item);
+                  });
+                  this.categoryForms.push(category);
                 });
               } else {
                 this.form = this.masterSvc.fb().group({

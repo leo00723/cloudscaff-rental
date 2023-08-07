@@ -2,6 +2,7 @@ import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { InventoryItem } from './inventoryItem.model';
 import { Site } from './site.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface Shipment {
   id?: string;
@@ -15,4 +16,5 @@ export interface Shipment {
   status?: string;
   updatedBy?: string;
   date?: any;
+  uploads?: UploadedFile[];
 }

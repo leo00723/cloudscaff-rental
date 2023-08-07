@@ -26,6 +26,7 @@ export interface Enquiry {
   acceptedBy: string;
   rejectedBy: string;
   upload?: UploadedFile;
+  uploads?: UploadedFile[];
   probability?: string;
   type?: string;
 }

@@ -47,7 +47,7 @@
   <div class="container" *ngIf="company" [ngSwitch]="active">
     <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
       <!-- OVERVIEW TAB -->
-      <ion-grid *ngSwitchDefault>
+      <ion-grid [hidden]="active !== 'overview'">
         <app-title-block> Customer Information </app-title-block>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
@@ -127,6 +127,23 @@
               [min]="field('startDate').value"
               title="End Date"
             ></app-input-date>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12" *ngIf="inventoryEstimate.status === 'pending'">
+            <app-multiuploader></app-multiuploader>
+          </ion-col>
+          <ion-col size="12">
+            <app-title-block> Uploaded Files </app-title-block>
+          </ion-col>
+          <ion-col
+            sizeXl="2"
+            sizeLg="3"
+            sizeMd="4"
+            size="6"
+            *ngFor="let file of inventoryEstimate.uploads; let i = index"
+          >
+            <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
           </ion-col>
         </ion-row>
         <ion-row>

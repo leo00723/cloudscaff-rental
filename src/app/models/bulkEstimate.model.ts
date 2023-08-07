@@ -2,6 +2,7 @@ import { Budget } from './budget.model';
 import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { Comment, Estimate } from './estimate.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface BulkEstimate {
   code: string;
@@ -37,4 +38,5 @@ export interface BulkEstimate {
   excludeVAT?: boolean;
   addedToPA?: boolean;
   comments?: Comment[];
+  uploads?: UploadedFile[];
 }

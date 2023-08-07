@@ -7,6 +7,7 @@ import { Item } from './item.model';
 import { LabourBroker } from './labour-broker.model';
 import { LabourItem } from './labourItem.model';
 import { Transport, TransportItem } from './transport.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface Comment {
   name: string;
@@ -58,4 +59,5 @@ export interface Estimate {
   addedToPA?: boolean;
   comments?: Comment[];
   excludeVAT?: boolean;
+  uploads?: UploadedFile[];
 }

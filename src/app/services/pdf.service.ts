@@ -23,6 +23,10 @@ import { Item } from '../models/item.model';
 import { Shipment } from '../models/shipment.model';
 import { InventoryItem } from '../models/inventoryItem.model';
 import { Site } from '../models/site.model';
+import { AdditionalItem } from '../models/additionalItem.model';
+import { LabourItem } from '../models/labourItem.model';
+import { TransportItem } from '../models/transport.model';
+import { UploadedFile } from '../models/uploadedFile.model';
 const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 541.86 66.07"><defs><style>.cls-1{fill:#feb508;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><path class="cls-1" d="M67.87,66.07H3.34A3.31,3.31,0,0,1,0,62.77H0a3.31,3.31,0,0,1,3.31-3.31H67.87a3.31,3.31,0,0,0,3.31-3.3V33.79a3.31,3.31,0,0,0-3.31-3.31H24.4a3.3,3.3,0,0,1-3.3-3.3h0a3.31,3.31,0,0,1,3.3-3.31H67.87a9.91,9.91,0,0,1,9.91,9.92V56.16A9.91,9.91,0,0,1,67.87,66.07Z"/><path class="cls-1" d="M53.82,42.2H9.91A9.92,9.92,0,0,1,0,32.28V9.91A9.91,9.91,0,0,1,9.91,0H74.48a3.3,3.3,0,0,1,3.3,3.3h0a3.3,3.3,0,0,1-3.3,3.31H9.91a3.3,3.3,0,0,0-3.3,3.3V32.28a3.31,3.31,0,0,0,3.3,3.31H53.82a3.3,3.3,0,0,1,3.3,3.3h0A3.31,3.31,0,0,1,53.82,42.2Z"/><path class="cls-1" d="M275.51,24.55a2.35,2.35,0,0,1,2.35,2.35V47.42a7,7,0,0,1-7.05,7H244.91a7,7,0,0,1-7-7V26.83a2.36,2.36,0,0,1,2.35-2.35h0a2.35,2.35,0,0,1,2.35,2.35V47.4a2.36,2.36,0,0,0,2.35,2.35h25.91a2.36,2.36,0,0,0,2.35-2.35V26.9a2.35,2.35,0,0,1,2.34-2.35Z"/><path class="cls-1" d="M409.83,52.14a2.35,2.35,0,0,1-2.35,2.35H376.83a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H376.83a2.33,2.33,0,0,0-2.34,2.33V47.44a2.36,2.36,0,0,0,2.35,2.35h30.64a2.35,2.35,0,0,1,2.35,2.35Z"/><path class="cls-1" d="M281.9,24.34h33a7,7,0,0,1,7,7.05v15.9a7,7,0,0,1-7,7.05H281.83v-4.7H314.9a2.35,2.35,0,0,0,2.34-2.35V31.39A2.35,2.35,0,0,0,314.9,29h-33Z"/><path class="cls-1" d="M462.53,52.16V31.52a2.35,2.35,0,0,1,2.34-2.35h30.65a2.34,2.34,0,0,0,2.34-2.34h0a2.33,2.33,0,0,0-2.34-2.34H464.86a7,7,0,0,0-7,7V52.16a2.33,2.33,0,0,0,2.34,2.33h0A2.33,2.33,0,0,0,462.53,52.16Z"/><path class="cls-1" d="M416.21,54.34A2.35,2.35,0,0,1,413.87,52V31.48a7,7,0,0,1,7.05-7h25.91a7,7,0,0,1,7,7V52.06a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35V31.5a2.35,2.35,0,0,0-2.35-2.35H420.91a2.35,2.35,0,0,0-2.35,2.35V52a2.35,2.35,0,0,1-2.35,2.35Z"/><rect class="cls-1" x="431.53" y="23.7" width="4.66" height="31.1" transform="translate(394.61 473.12) rotate(-90)"/><path class="cls-1" d="M475.12,23.55h4.7a0,0,0,0,1,0,0v29a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35v-29A0,0,0,0,1,475.12,23.55Z" transform="translate(438.23 516.71) rotate(-90)"/><path class="cls-1" d="M506.53,52.16V31.52a2.35,2.35,0,0,1,2.34-2.35h30.65a2.34,2.34,0,0,0,2.34-2.34h0a2.33,2.33,0,0,0-2.34-2.34H508.86a7,7,0,0,0-7,7V52.16a2.33,2.33,0,0,0,2.34,2.33h0A2.33,2.33,0,0,0,506.53,52.16Z"/><path class="cls-1" d="M519.12,23.55h4.7a0,0,0,0,1,0,0v29a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35v-29A0,0,0,0,1,519.12,23.55Z" transform="translate(482.23 560.71) rotate(-90)"/><path class="cls-1" d="M339.61,36.89h19.26a7,7,0,0,1,7,7l0,3.5a7,7,0,0,1-7,7.05H328.18a2.35,2.35,0,0,1-2.35-2.35h0a2.35,2.35,0,0,1,2.35-2.35H358.9a2.35,2.35,0,0,0,2.34-2.35l0-3.5a2.34,2.34,0,0,0-2.33-2.35H339.61Z"/><path class="cls-1" d="M352.12,41.59H332.86a7,7,0,0,1-7-7.05l0-3a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H332.83a2.35,2.35,0,0,0-2.34,2.35l0,3a2.34,2.34,0,0,0,2.33,2.35h19.26Z"/><rect class="cls-1" x="281.9" y="29.04" width="4.67" height="20.6"/><path class="cls-1" d="M214,54.49H201a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h13v4.7H201a2.34,2.34,0,0,0-2.33,2.35v15.9A2.34,2.34,0,0,0,201,49.79h13Z"/><path class="cls-1" d="M213.86,24.49h13a7,7,0,0,1,7,7.05v15.9a7,7,0,0,1-7,7.05h-13v-4.7h13a2.35,2.35,0,0,0,2.34-2.35V31.54a2.35,2.35,0,0,0-2.34-2.35h-13Z"/><path class="cls-1" d="M154.64,26.82V47.46A2.35,2.35,0,0,0,157,49.8h30.42a2.35,2.35,0,0,1,2.34,2.35h0a2.34,2.34,0,0,1-2.34,2.34H157a7,7,0,0,1-7-7V26.82a2.33,2.33,0,0,1,2.33-2.33h0A2.33,2.33,0,0,1,154.64,26.82Z"/><path class="cls-1" d="M145.86,52.14a2.35,2.35,0,0,1-2.34,2.35H112.86a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H112.86a2.33,2.33,0,0,0-2.33,2.33V47.44a2.36,2.36,0,0,0,2.35,2.35h30.64a2.35,2.35,0,0,1,2.34,2.35Z"/></g></g></svg>`;
 const hr = {
   table: {
@@ -536,6 +540,7 @@ export class PdfService {
           },
           layout: 'noBorders',
         },
+        await this.addUploads(estimate.uploads),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
@@ -739,6 +744,7 @@ export class PdfService {
           },
           layout: 'noBorders',
         },
+        await this.addUploads(bulkEstimate.uploads),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
@@ -770,6 +776,9 @@ export class PdfService {
     let counterT1 = 0;
     paymentApplication.estimates.forEach((e) => {
       if (e.type === 'measured') {
+        counterT1 = this.addPAScaffold(e, scaffolds, counterT1, company);
+      }
+      if (e.type === 'bulk-measured') {
         counterT1 = this.addPAScaffold(e, scaffolds, counterT1, company);
       }
       if (e.type === 'measured-custom') {
@@ -888,9 +897,7 @@ export class PdfService {
 
     const data = {
       footer: await this.getFooter(),
-      info: this.getMetaData(
-        `${company.name}-Estimate-${paymentApplication.code}`
-      ),
+      info: this.getMetaData(`${company.name}-PA-${paymentApplication.code}`),
       content: [
         await this.getHeader(
           'Payment Application',
@@ -1258,6 +1265,7 @@ export class PdfService {
           },
           layout: 'noBorders',
         },
+        await this.addUploads(inventoryEstimate.uploads),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
@@ -1970,6 +1978,7 @@ export class PdfService {
           layout: tLayout,
           fillColor: inspection.status === 'Passed' ? '#EEF5EC' : '#FAECED',
         },
+        await this.addUploads(inspection.uploads),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
@@ -2092,6 +2101,50 @@ export class PdfService {
       },
       layout: tLayout,
     };
+    const checklist = [];
+    if (handover.questions) {
+      handover.questions.categories.forEach((c) => {
+        const items = [];
+        c.items.forEach((i, j) => {
+          items.push([
+            {
+              text: j + 1,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.question,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.value ? i.value : 'N/A',
+              style: 'h6',
+              alignment: 'center',
+            },
+          ]);
+        });
+        const questions = {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['auto', '*', 'auto'],
+            body: [
+              [
+                { text: '#', style: 'h4b', alignment: 'left' },
+                { text: 'Question', style: 'h4b', alignment: 'left' },
+                { text: 'Checklist', style: 'h4b', alignment: 'center' },
+              ],
+              ...items,
+            ],
+          },
+          layout: tLayout,
+        };
+        checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
+      });
+    }
+
     const signature = handover.signature
       ? {
           image: await this.getBase64ImageFromURL(handover.signature),
@@ -2104,6 +2157,7 @@ export class PdfService {
           alignment: 'Right',
           color: 'red',
         };
+
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Handover-${handover.code}`),
@@ -2145,6 +2199,7 @@ export class PdfService {
         { text: handover.notes },
         hr,
         summary,
+        checklist,
         hr,
         {
           table: {
@@ -2227,11 +2282,13 @@ export class PdfService {
           layout: tLayout,
         },
         hr,
+        await this.addUploads(handover.uploads),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
           pageBreak: 'before',
         },
+
         { text: terms ? terms.terms : '', style: { fontSize: 6 } },
       ],
       styles: stylesCS,
@@ -3070,6 +3127,7 @@ export class PdfService {
         this.getSubHeader(shipment.site.customer, company),
         hr,
         summary,
+        await this.addUploads(shipment.uploads),
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
@@ -3302,6 +3360,26 @@ export class PdfService {
     return address;
   }
 
+  private async addUploads(uploads: UploadedFile[]) {
+    const data: any[] = [
+      {
+        text: 'Uploads',
+        style: ['h4b', 'm20'],
+        pageBreak: 'before',
+      },
+    ];
+    for (const upload of uploads) {
+      if (upload.type.startsWith('image')) {
+        const img = {
+          image: await this.getBase64ImageFromURL(upload.downloadUrl),
+          width: 400,
+        };
+        data.push(img);
+      }
+    }
+    return data;
+  }
+
   private createEstimateTable(estimate: Estimate, company: Company) {
     const attachments = [];
     estimate.attachments.forEach((a) => {
@@ -3479,7 +3557,6 @@ export class PdfService {
 
     return summary;
   }
-
   private createInventoryTable(estimate: InventoryEstimate, company: Company) {
     const items = [];
     estimate.items.forEach((i) => {
@@ -3586,7 +3663,6 @@ export class PdfService {
 
     return summary;
   }
-
   private createShipmentTable(shipmentItems: InventoryItem[]) {
     const items = [];
     shipmentItems.forEach((item) => {
@@ -3725,6 +3801,8 @@ export class PdfService {
         style: 'custom',
         alignment: 'left',
       },
+      // { text: '', colSpan: 2 },
+      // {},
       {
         text: this.currency(scaffold.total, company.currency.symbol),
         style: 'custom',
@@ -3757,7 +3835,7 @@ export class PdfService {
       {
         text: scaffold.isWeeks
           ? scaffold.daysStanding
-          : scaffold.daysStanding / 7,
+          : Math.round(scaffold.daysStanding / 7),
         style: 'custom',
         alignment: 'center',
       },
@@ -3823,7 +3901,62 @@ export class PdfService {
       },
     ];
   }
-
+  private addPARowAdd(
+    data: AdditionalItem | LabourItem | TransportItem | Item,
+    i: number,
+    company: Company,
+    description: string
+  ) {
+    return [
+      { text: i, style: 'custom', alignment: 'left' },
+      {
+        // eslint-disable-next-line @typescript-eslint/dot-notation
+        text: description,
+        style: 'custom',
+        alignment: 'left',
+      },
+      {
+        text: this.currency(data.total, company.currency.symbol),
+        style: 'custom',
+        alignment: 'right',
+      },
+      {
+        text: '',
+        style: 'custom',
+        alignment: 'right',
+        colSpan: 15,
+      },
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {},
+      {
+        text: this.currency(data.previousGross || 0, company.currency.symbol),
+        style: 'custom',
+        alignment: 'right',
+      },
+      {
+        text: this.currency(data.grossTotal || 0, company.currency.symbol),
+        style: 'custom',
+        alignment: 'right',
+      },
+      {
+        text: this.currency(data.currentTotal || 0, company.currency.symbol),
+        style: 'custom',
+        alignment: 'right',
+      },
+    ];
+  }
   private addPAScaffold(
     e: Estimate,
     scaffolds: any[],
@@ -3839,12 +3972,57 @@ export class PdfService {
       },
     ];
     scaffolds.push(code);
+    // const description = [
+    //   { text: counter, style: 'custom', alignment: 'left' },
+    //   {
+    //     text: e.scaffold.description,
+    //     style: 'custom',
+    //     alignment: 'left',
+    //     colSpan: 20,
+    //   },
+    // ];
+    // scaffolds.push(description);
     const row = this.addPARow(e.scaffold, counter, company);
     scaffolds.push(row);
     e.attachments.forEach((att) => {
       counter++;
+      // const attDescription = [
+      //   { text: counter, style: 'custom', alignment: 'left' },
+      //   {
+      //     text: att.description,
+      //     style: 'custom',
+      //     alignment: 'left',
+      //     colSpan: 20,
+      //   },
+      // ];
+      // scaffolds.push(attDescription);
       const attrow = this.addPARow(att, counter, company);
       scaffolds.push(attrow);
+    });
+    e.labour.forEach((data) => {
+      counter++;
+      const dataRow = this.addPARowAdd(data, counter, company, data.type.name);
+      scaffolds.push(dataRow);
+    });
+    e.transport.forEach((data) => {
+      counter++;
+      const dataRow = this.addPARowAdd(data, counter, company, data.type.name);
+      scaffolds.push(dataRow);
+    });
+    e.additionals.forEach((data) => {
+      counter++;
+      const dataRow = this.addPARowAdd(data, counter, company, data.name);
+      scaffolds.push(dataRow);
+    });
+    e.boards.forEach((data) => {
+      counter++;
+      const dataRow = this.addPARowAdd(
+        data,
+        counter,
+        company,
+        `${data.length}x${data.width}`
+      );
+      scaffolds.push(dataRow);
     });
     return counter;
   }

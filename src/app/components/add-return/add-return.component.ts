@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -9,12 +9,14 @@ import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-return',
   templateUrl: './add-return.component.html',
 })
 export class AddReturnComponent implements OnInit, OnDestroy {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
   @Input() allowSend = false;
   @Input() siteData: Site;
@@ -24,7 +26,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       this.initEditForm();
     }
   }
-  return: Return = { status: 'pending', items: [] };
+  return: Return = { status: 'pending', items: [], uploads: [] };
   form: FormGroup;
   user: User;
   company: Company;
@@ -76,6 +78,22 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       this.updateDoc(status, false);
     });
   }
+  async uploadFiles() {
+    await this.masterSvc.notification().presentAlertConfirm(async () => {
+      await this.upload();
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/returns`,
+          this.return.id,
+          this.return
+        );
+      this.masterSvc
+        .notification()
+        .toast('Files uploaded successfully', 'success');
+    });
+  }
+
   update(val, item: InventoryItem, type: string) {
     switch (type) {
       case 'shipment':
@@ -156,6 +174,12 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   field(field: string) {
     return this.form.get(field) as FormControl;
   }
+
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.return.uploads.push(...newFiles);
+  }
+
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.return.site, Validators.required],
@@ -193,7 +217,8 @@ export class AddReturnComponent implements OnInit, OnDestroy {
           .edit()
           .generateDocCode(this.company.totalReturns, 'RET'),
       };
-
+      await this.upload();
+      returnItems.uploads = this.return.uploads;
       const doc = await this.masterSvc
         .edit()
         .addDocument(`company/${this.company.id}/returns`, returnItems);
@@ -233,7 +258,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
         items: this.itemBackup.filter((item) => item.shipmentQty > 0),
         status,
       });
-
+      await this.upload();
       await this.masterSvc
         .edit()
         .updateDoc(

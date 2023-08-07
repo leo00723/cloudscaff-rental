@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
@@ -11,12 +11,14 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-shipment',
   templateUrl: './add-shipment.component.html',
 })
 export class AddShipmentComponent implements OnInit, OnDestroy {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
   @Input() inventoryItems$: Observable<InventoryItem[]>;
   @Input() set value(val: Shipment) {
@@ -27,7 +29,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
   items: InventoryItem[];
   itemBackup: InventoryItem[];
-  shipment: Shipment = { status: 'pending' };
+  shipment: Shipment = { status: 'pending', uploads: [] };
   form: FormGroup;
   user: User;
   company: Company;
@@ -94,6 +96,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       try {
         this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
         const shipment: Shipment = { ...this.form.value };
+
         shipment.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
         this.company = this.masterSvc
           .store()
@@ -105,7 +108,8 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .toString()
           .padStart(6, '0')}`;
         shipment.date = new Date();
-
+        await this.upload();
+        shipment.uploads = this.shipment.uploads;
         await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/shipments`, shipment);
@@ -142,6 +146,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         );
         this.shipment.status = status;
         this.shipment.date = new Date();
+        await this.upload();
 
         await this.masterSvc
           .edit()
@@ -202,6 +207,11 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
   field(field: string) {
     return this.form.get(field) as FormControl;
+  }
+
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.shipment.uploads.push(...newFiles);
   }
 
   async delete() {
@@ -287,6 +297,8 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         (item) => item.shipmentQty > 0
       );
       this.shipment.status = 'pending';
+      await this.upload();
+
       await this.masterSvc
         .edit()
         .updateDoc(
@@ -323,7 +335,8 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
         .toString()
         .padStart(6, '0')}`;
-
+      await this.upload();
+      shipment.uploads = this.shipment.uploads;
       const doc = await this.masterSvc
         .edit()
         .addDocument(`company/${this.company.id}/shipments`, shipment);

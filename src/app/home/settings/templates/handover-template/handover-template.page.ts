@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { ItemReorderEventDetail } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { HandoverTemplate } from 'src/app/models/handoverTemplate.model';
@@ -16,10 +17,12 @@ export class HandoverTemplatePage implements OnInit, OnDestroy {
   template: HandoverTemplate = {
     detail: '',
     maxLoads: [''],
+    categories: [],
     date: new Date(),
     updatedBy: '',
     company: '',
   };
+  form: FormGroup;
   private subs = new Subscription();
   constructor(private masterSvc: MasterService) {}
   ngOnInit(): void {
@@ -28,10 +31,62 @@ export class HandoverTemplatePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
-
   ionViewDidEnter() {
     this.ready = true;
   }
+
+  get categoryForms() {
+    return this.form.get('categories') as FormArray;
+  }
+
+  itemForms(categoryIndex: number) {
+    return this.form.get(['categories', categoryIndex, 'items']) as FormArray;
+  }
+
+  addCategory() {
+    const category = this.masterSvc.fb().group({
+      name: ['', Validators.required],
+      items: this.masterSvc.fb().array([]),
+    });
+    this.categoryForms.push(category);
+  }
+  addQuestion(categoryIndex: number) {
+    const item = this.masterSvc.fb().group({
+      question: ['', Validators.required],
+    });
+    const itemarray = this.form.get([
+      'categories',
+      categoryIndex,
+      'items',
+    ]) as FormArray;
+    itemarray.push(item);
+  }
+
+  deleteCategory(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.categoryForms.removeAt(i);
+    });
+  }
+  deleteQuestion(categoryIndex: number, i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      const itemarray = this.form.get([
+        'categories',
+        categoryIndex,
+        'items',
+      ]) as FormArray;
+      itemarray.removeAt(i);
+    });
+  }
+
+  reorderQuestions(
+    ev: CustomEvent<ItemReorderEventDetail> | any,
+    categoryIndex: number
+  ) {
+    this.itemForms(categoryIndex).setValue(
+      ev.detail.complete(this.itemForms(categoryIndex).value)
+    );
+  }
+
   trackItem(index) {
     return index;
   }
@@ -57,6 +112,7 @@ export class HandoverTemplatePage implements OnInit, OnDestroy {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.template.company = company.id;
     this.template.updatedBy = user.id;
+    this.template = { ...this.template, ...this.form.value };
     this.loading = true;
     this.masterSvc
       .edit()
@@ -89,7 +145,34 @@ export class HandoverTemplatePage implements OnInit, OnDestroy {
             .getDocById(`company/${id}/templates`, 'handover')
             .subscribe((handover: HandoverTemplate) => {
               if (handover) {
+                this.form = this.masterSvc.fb().group({
+                  categories: this.masterSvc.fb().array([]),
+                });
+                if (handover.categories.length > 0) {
+                  handover.categories.forEach((c) => {
+                    const category = this.masterSvc.fb().group({
+                      name: [c.name, Validators.required],
+                      items: this.masterSvc.fb().array([]),
+                    });
+                    c.items.forEach((i) => {
+                      const item = this.masterSvc.fb().group({
+                        question: [i.question, Validators.required],
+                      });
+                      (category.get('items') as FormArray).push(item);
+                    });
+                    this.categoryForms.push(category);
+                  });
+                } else {
+                  this.addCategory();
+                  this.addQuestion(0);
+                }
                 Object.assign(this.template, handover);
+              } else {
+                this.form = this.masterSvc.fb().group({
+                  categories: this.masterSvc.fb().array([]),
+                });
+                this.addCategory();
+                this.addQuestion(0);
               }
             })
         );

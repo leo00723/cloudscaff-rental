@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
@@ -10,12 +10,14 @@ import { Scaffold } from 'src/app/models/scaffold.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-handover',
   templateUrl: './add-handover.component.html',
 })
 export class AddHandoverComponent implements OnInit {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() set value(val: Scaffold) {
     Object.assign(this.scaffold, val);
   }
@@ -31,6 +33,7 @@ export class AddHandoverComponent implements OnInit {
     date: new Date(),
     erectPercentage: 0,
     dismantlePercentage: 0,
+    uploads: [],
   };
 
   loading = false;
@@ -60,6 +63,9 @@ export class AddHandoverComponent implements OnInit {
         })
       ) as Observable<HandoverTemplate>;
   }
+  updateList(ev: HandoverTemplate) {
+    this.handover.questions = ev;
+  }
 
   updateScaffold(ev) {
     this.scaffold.scaffold = ev.scaffold;
@@ -86,6 +92,7 @@ export class AddHandoverComponent implements OnInit {
         this.handover.company = company;
         this.handover.customer = customer;
         this.handover.scaffold = this.scaffold;
+        await this.upload();
         await this.masterSvc
           .edit()
           .addDocument(`company/${company.id}/handovers`, this.handover);
@@ -117,5 +124,9 @@ export class AddHandoverComponent implements OnInit {
   }
   pinFormatter(value: number) {
     return `${value}%`;
+  }
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.handover.uploads.push(...newFiles);
   }
 }

@@ -187,6 +187,34 @@
             </tr>
           </tbody>
         </table>
+        <table class="table table-bordered" *ngIf="handover.handover.questions">
+          <ng-container
+            *ngFor="let category of handover.handover.questions.categories"
+          >
+            <thead>
+              <tr class="table-light">
+                <th colspan="3" scope="col">{{ category.name }}</th>
+              </tr>
+              <tr>
+                <th class="text-center" scope="col">#</th>
+                <th scope="col">Question</th>
+                <th class="text-center" scope="col">Checklist</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of category.items; let i = index"
+                class="align-middle"
+              >
+                <th class="text-center" scope="row">{{ i + 1 }}.</th>
+                <td>{{ item.question }}</td>
+                <td class="text-center">
+                  {{ item.value ? item.value : "N/A" }}
+                </td>
+              </tr>
+            </tbody>
+          </ng-container>
+        </table>
         <table class="table table-bordered mb-3">
           <thead>
             <tr class="table-light">
@@ -241,6 +269,18 @@
             </tr>
           </tbody>
         </table>
+      </ion-col>
+      <ion-col size="12">
+        <app-title-block> Uploaded Files </app-title-block>
+      </ion-col>
+      <ion-col
+        sizeXl="2"
+        sizeLg="3"
+        sizeMd="4"
+        size="6"
+        *ngFor="let file of handover.handover.uploads; let i = index"
+      >
+        <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
       </ion-col>
       <ion-col size="12" *ngIf="!handover.handover.signature">
         <ion-text><h4>Signature</h4></ion-text>

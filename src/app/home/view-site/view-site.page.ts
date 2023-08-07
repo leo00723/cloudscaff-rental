@@ -23,6 +23,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
+import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
 
 @Component({
   selector: 'app-view-site',
@@ -272,6 +273,17 @@ export class ViewSitePage implements OnInit {
     });
     return await modal.present();
   }
+
+  async addScaffold(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddScaffoldComponent,
+      componentProps: { siteData: site },
+      showBackdrop: false,
+      id: 'addScaffold',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
   viewScaffold(scaffold: Scaffold) {
     this.masterSvc
       .store()
@@ -294,5 +306,11 @@ export class ViewSitePage implements OnInit {
     this.masterSvc
       .pdf()
       .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
+  }
+
+  help() {
+    this.masterSvc
+      .router()
+      .navigateByUrl('/dashboard/settings/tutorial?ch=6&vid=0');
   }
 }

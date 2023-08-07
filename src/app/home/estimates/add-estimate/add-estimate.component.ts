@@ -13,12 +13,14 @@ import { UserState } from 'src/app/shared/user/user.state';
 import { MasterService } from '../../../services/master.service';
 import { AcceptEstimateComponent } from './accept-estimate/accept-estimate.component';
 import cloneDeep from 'lodash/cloneDeep';
+import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-estimate',
   templateUrl: './add-estimate.component.html',
 })
 export class AddEstimatePage implements OnInit {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() enquiryId = '';
   @Input() siteName: string;
   @Input() customer: Customer;
@@ -69,6 +71,7 @@ export class AddEstimatePage implements OnInit {
     budget: {},
     enquiryId: '',
     excludeVAT: false,
+    uploads: [],
   };
   user: User;
   company: Company;
@@ -462,6 +465,8 @@ export class AddEstimatePage implements OnInit {
         this.estimate.enquiryId = this.enquiryId;
         this.estimate.type = 'measured';
         this.estimate.addedToPA = false;
+        await this.upload();
+
         const estimate = await this.masterSvc
           .edit()
           .addDocument(
@@ -509,10 +514,11 @@ export class AddEstimatePage implements OnInit {
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
-      this.masterSvc.notification().presentAlertConfirm(() => {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
         this.loading = true;
         this.updateEstimateTotal();
         this.estimate.status = status;
+        await this.upload();
         this.masterSvc
           .edit()
           .updateDoc(
@@ -657,6 +663,11 @@ export class AddEstimatePage implements OnInit {
     });
   }
 
+  excludeVAT(args) {
+    this.field('excludeVAT').setValue(args.detail.checked);
+    this.updateEstimateTotal();
+  }
+
   async addComment() {
     this.addingComment = true;
     const comment: Comment = {
@@ -709,9 +720,9 @@ export class AddEstimatePage implements OnInit {
     }
   }
 
-  excludeVAT(args) {
-    this.field('excludeVAT').setValue(args.detail.checked);
-    this.updateEstimateTotal();
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.estimate.uploads.push(...newFiles);
   }
 
   //start the acceptance process

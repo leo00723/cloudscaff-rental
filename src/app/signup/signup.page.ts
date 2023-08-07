@@ -20,6 +20,7 @@ export class SignupPage implements OnInit {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       name: ['', Validators.required],
+      phone: ['', Validators.required],
       company: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });

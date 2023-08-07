@@ -13,6 +13,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { AcceptInventoryEstimateComponent } from './accept-inventory-estimate/accept-inventory-estimate.component';
+import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-inventory-estimate',
@@ -20,7 +21,10 @@ import { AcceptInventoryEstimateComponent } from './accept-inventory-estimate/ac
   styles: [],
 })
 export class InventoryEstimateComponent implements OnInit {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() enquiryId = '';
+  @Input() siteName: string;
+  @Input() customer: Customer;
   @Input() set value(val: BulkInventoryEstimate) {
     if (val) {
       Object.assign(this.inventoryEstimate, val);
@@ -59,6 +63,7 @@ export class InventoryEstimateComponent implements OnInit {
     enquiryId: '',
     type: '',
     excludeVAT: false,
+    uploads: [],
   };
   user: User;
   company: Company;
@@ -209,6 +214,7 @@ export class InventoryEstimateComponent implements OnInit {
         this.updateEstimateTotal();
         this.inventoryEstimate.enquiryId = this.enquiryId;
         this.inventoryEstimate.type = 'inventory-measured';
+        await this.upload();
         await this.masterSvc
           .edit()
           .addDocument(
@@ -250,10 +256,11 @@ export class InventoryEstimateComponent implements OnInit {
     if (status === 'accepted') {
       this.startAcceptance();
     } else {
-      this.masterSvc.notification().presentAlertConfirm(() => {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
         this.loading = true;
         this.updateEstimateTotal();
         this.inventoryEstimate.status = status;
+        await this.upload();
         this.masterSvc
           .edit()
           .updateDoc(
@@ -296,6 +303,11 @@ export class InventoryEstimateComponent implements OnInit {
   excludeVAT(args) {
     this.field('excludeVAT').setValue(args.detail.checked);
     this.updateEstimateTotal();
+  }
+
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.inventoryEstimate.uploads.push(...newFiles);
   }
 
   //start the acceptance process
@@ -395,14 +407,17 @@ export class InventoryEstimateComponent implements OnInit {
   }
 
   private initFrom() {
+    if (this.customer) {
+      this.show = 'editCustomer';
+    }
     this.form = this.masterSvc.fb().group({
-      customer: ['', Validators.required],
+      customer: [this.customer || '', Validators.required],
       message: [
         // eslint-disable-next-line max-len
         'We thank you for your scaffolding enquiry as per the Scope of Work detailed below. We attach herewith our estimate for your perusal.',
         Validators.required,
       ],
-      siteName: ['', Validators.required],
+      siteName: [this.siteName || '', Validators.required],
       startDate: ['', Validators.nullValidator],
       endDate: ['', Validators.nullValidator],
       discountPercentage: [

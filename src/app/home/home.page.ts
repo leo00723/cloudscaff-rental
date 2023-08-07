@@ -59,7 +59,7 @@ export class HomePage implements OnDestroy {
   version = environment.version;
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
-  isIphone = this.masterSvc.platform().is('iphone');
+  platform = this.masterSvc.platform();
   private subs = new Subscription();
   constructor(
     private masterSvc: MasterService,

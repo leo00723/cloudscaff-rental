@@ -2,6 +2,7 @@ import { Budget } from './budget.model';
 import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { InventoryEstimate } from './inventoryEstimate.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface BulkInventoryEstimate {
   code: string;
@@ -34,4 +35,5 @@ export interface BulkInventoryEstimate {
   enquiryId: string;
   type?: string;
   excludeVAT?: boolean;
+  uploads?: UploadedFile[];
 }

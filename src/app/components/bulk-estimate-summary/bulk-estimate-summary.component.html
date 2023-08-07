@@ -133,11 +133,11 @@
           <td class="text-center">1</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ estimate.scaffold.extraHire | number: "0.2-2" }}
+            {{ estimate.scaffold.extraHire | number : "0.2-2" }}
           </td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ estimate.scaffold.total | number: "0.2-2" }}
+            {{ estimate.scaffold.total | number : "0.2-2" }}
           </td>
         </tr>
         <tr class="small" *ngIf="estimate.scaffold.hireTotal > 0">
@@ -153,7 +153,7 @@
           <td class="text-center"></td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ estimate.scaffold.hireTotal | number: "0.2-2" }}
+            {{ estimate.scaffold.hireTotal | number : "0.2-2" }}
           </td>
         </tr>
         <!-- SCAFFOLD ATTACHMENTS -->
@@ -177,11 +177,11 @@
             <td class="text-center">1</td>
             <td class="text-end">
               {{ company.currency.symbol }}
-              {{ item.extraHire | number: "0.2-2" }}
+              {{ item.extraHire | number : "0.2-2" }}
             </td>
             <td class="text-end">
               {{ company.currency.symbol }}
-              {{ item.total | number: "0.2-2" }}
+              {{ item.total | number : "0.2-2" }}
             </td>
           </tr>
           <tr class="small" *ngIf="item.hireTotal > 0">
@@ -194,7 +194,7 @@
             <td class="text-center"></td>
             <td class="text-end">
               {{ company.currency.symbol }}
-              {{ item.hireTotal | number: "0.2-2" }}
+              {{ item.hireTotal | number : "0.2-2" }}
             </td>
           </tr>
         </ng-container>
@@ -210,11 +210,11 @@
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ item.extraHire | number: "0.2-2" }}
+            {{ item.extraHire | number : "0.2-2" }}
           </td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ item.total | number: "0.2-2" }}
+            {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- HIRE -->
@@ -228,7 +228,7 @@
           <td class="text-center"></td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ estimate.hire.total | number: "0.2-2" }}
+            {{ estimate.hire.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- LABOR -->
@@ -242,7 +242,7 @@
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-center"></td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- TRANSPORT -->
@@ -263,10 +263,10 @@
             <td class="text-center">{{ item.qty }}</td>
             <td class="text-end">
               {{ company.currency.symbol }}
-              {{ item.extraHire | number: "0.2-2" }}
+              {{ item.extraHire | number : "0.2-2" }}
             </td>
             <td class="text-end">
-              {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+              {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
             </td>
           </tr>
         </ng-container>
@@ -283,10 +283,11 @@
           <td>{{ item.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.extraHire | number: "0.2-2" }}
+            {{ company.currency.symbol }}
+            {{ item.extraHire | number : "0.2-2" }}
           </td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
       </tbody>
@@ -296,7 +297,7 @@
           <th class="text-end" colspan="3" scope="col">Subtotal</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ estimate.subtotal | number: "0.2-2" }}
+            {{ estimate.subtotal | number : "0.2-2" }}
           </th>
         </tr>
       </tfoot>
@@ -311,7 +312,7 @@
           <th class="text-end" colspan="3" scope="col">Subtotal</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ bulkEstimate.subtotal | number: "0.2-2" }}
+            {{ bulkEstimate.subtotal | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -320,7 +321,7 @@
           </th>
           <th class="text-end text-danger" colspan="2" scope="col">
             - {{ company.currency.symbol }}
-            {{ bulkEstimate.discount | number: "0.2-2" }}
+            {{ bulkEstimate.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -328,7 +329,7 @@
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
             {{
-              bulkEstimate.subtotal - bulkEstimate.discount | number: "0.2-2"
+              bulkEstimate.subtotal - bulkEstimate.discount | number : "0.2-2"
             }}
           </th>
         </tr>
@@ -338,7 +339,7 @@
           </th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ bulkEstimate.tax | number: "0.2-2" }}
+            {{ bulkEstimate.tax | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
@@ -347,24 +348,38 @@
           </th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ bulkEstimate.vat | number: "0.2-2" }}
+            {{ bulkEstimate.vat | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="3" scope="col">Total</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ bulkEstimate.total | number: "0.2-2" }}
+            {{ bulkEstimate.total | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="3" scope="col">Extra Hire</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ bulkEstimate.extraHire | number: "0.2-2" }}
+            {{ bulkEstimate.extraHire | number : "0.2-2" }}
           </th>
         </tr>
       </tfoot>
     </table>
   </ion-col>
+  <ng-container *ngIf="showUploads">
+    <ion-col size="12">
+      <app-title-block> Uploaded Files </app-title-block>
+    </ion-col>
+    <ion-col
+      sizeXl="2"
+      sizeLg="3"
+      sizeMd="4"
+      size="6"
+      *ngFor="let file of bulkEstimate.uploads; let i = index"
+    >
+      <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
+    </ion-col>
+  </ng-container>
 </ion-row>
