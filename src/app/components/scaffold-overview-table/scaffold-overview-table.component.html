@@ -51,7 +51,7 @@
     </tr>
     <ng-container *ngIf="detailed">
       <!-- HIRE -->
-      <tr class="small">
+      <tr class="small" *ngIf="scaffold.hire">
         <th class="text-center" scope="row"></th>
         <td>{{ company.terminology.hire }}</td>
         <td class="text-center">{{ scaffold.hire.daysStanding }} days</td>

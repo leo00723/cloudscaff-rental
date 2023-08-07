@@ -23,6 +23,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
+import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
 
 @Component({
   selector: 'app-view-site',
@@ -268,6 +269,17 @@ export class ViewSitePage implements OnInit {
       componentProps: { isEdit: true, value: returnData, siteData: site },
       showBackdrop: false,
       id: 'viewReturn',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async addScaffold(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddScaffoldComponent,
+      componentProps: { siteData: site },
+      showBackdrop: false,
+      id: 'addScaffold',
       cssClass: 'fullscreen',
     });
     return await modal.present();

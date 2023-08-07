@@ -86,11 +86,9 @@ export class AcceptEstimateComponent implements OnInit {
           .store()
           .selectSnapshot(CompanyState.company);
         const invoice: Invoice = {};
-        const code = `INV${new Date().toLocaleDateString('en', {
-          year: '2-digit',
-        })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
-          .toString()
-          .padStart(6, '0')}`;
+        const code = this.masterSvc
+          .edit()
+          .generateDocCode(company.totalInvoices, 'INV');
         Object.assign(invoice, {
           ...this.estimate,
           code,
@@ -174,11 +172,10 @@ export class AcceptEstimateComponent implements OnInit {
   changeSite(site) {
     if (site !== 'add') {
       this.show = 'selectedSite';
-      const code = `SCA${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${(site.totalScaffolds ? site.totalScaffolds + 1 : 1)
-        .toString()
-        .padStart(6, '0')}`;
+      const code = this.masterSvc
+        .edit()
+        .generateDocCode(site.totalScaffolds, 'SCA');
+
       this.site.name = site.name;
       this.field('scaffold', this.form2).setValue({
         code,

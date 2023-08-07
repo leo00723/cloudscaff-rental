@@ -58,7 +58,6 @@ export class ViewScaffoldPage implements OnInit {
                 new Navigate(`/dashboard/site/${this.ids[0]}-${this.ids[1]}`)
               );
           }
-          // this.masterSvc.store().dispatch(new SetSite(site));
         })
       ) as Observable<Scaffold>;
     this.inspections$ = this.masterSvc
