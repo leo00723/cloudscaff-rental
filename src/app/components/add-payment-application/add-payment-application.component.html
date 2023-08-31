@@ -225,7 +225,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="estimate.scaffold.total"
                               (ionChange)="
                                 paymentApplication.change(
@@ -292,7 +292,7 @@
                         <ion-popover trigger="EV-{{ j }}" triggerAction="click">
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="estimate.scaffold.erectionValue"
                               (ionChange)="
                                 paymentApplication.change(
@@ -309,7 +309,7 @@
                       <td class="text-center">
                         <ion-input
                           debounce="200"
-                          type="number"
+                          type="text"
                           [clearOnEdit]="true"
                           [value]="estimate.scaffold.appliedErectionPercentage"
                           (ionChange)="
@@ -344,7 +344,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]=""
                               (ionChange)="
                                 paymentApplication.change(
@@ -407,7 +407,7 @@
                         <ion-popover trigger="DV-{{ j }}" triggerAction="click">
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="estimate.scaffold.dismantleValue"
                               (ionChange)="
                                 paymentApplication.change(
@@ -424,7 +424,7 @@
                       <td class="text-center">
                         <ion-input
                           debounce="200"
-                          type="number"
+                          type="text"
                           [clearOnEdit]="true"
                           [value]="estimate.scaffold.appliedDismantlePercentage"
                           (ionChange)="
@@ -457,7 +457,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]=""
                               (ionChange)="
                                 paymentApplication.change(
@@ -482,7 +482,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]=""
                               (ionChange)="
                                 paymentApplication.change(
@@ -499,7 +499,7 @@
                       <td class="text-center">
                         <ion-input
                           debounce="200"
-                          type="number"
+                          type="text"
                           [clearOnEdit]="true"
                           [value]="estimate.scaffold.extraHireWeeks"
                           (ionChange)="
@@ -528,7 +528,7 @@
                         <ion-popover trigger="PG-{{ j }}" triggerAction="click">
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="estimate.scaffold.previousGross"
                               (ionChange)="
                                 paymentApplication.change(
@@ -585,7 +585,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="attachment.total"
                               (ionChange)="
                                 paymentApplication.change(
@@ -644,7 +644,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="attachment.erectionValue"
                               (ionChange)="
                                 paymentApplication.change(
@@ -661,7 +661,7 @@
                       <td class="text-center">
                         <ion-input
                           debounce="200"
-                          type="number"
+                          type="text"
                           [clearOnEdit]="true"
                           [value]="attachment.appliedErectionPercentage"
                           (ionChange)="
@@ -691,7 +691,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]=""
                               (ionChange)="
                                 paymentApplication.change(
@@ -748,7 +748,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="attachment.dismantleValue"
                               (ionChange)="
                                 paymentApplication.change(
@@ -765,7 +765,7 @@
                       <td class="text-center">
                         <ion-input
                           debounce="200"
-                          type="number"
+                          type="text"
                           [clearOnEdit]="true"
                           [value]="attachment.appliedDismantlePercentage"
                           (ionChange)="
@@ -790,7 +790,7 @@
                       <td class="text-center">
                         <ion-input
                           debounce="200"
-                          type="number"
+                          type="text"
                           [clearOnEdit]="true"
                           [value]="attachment.extraHireWeeks"
                           (ionChange)="
@@ -814,7 +814,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="attachment.previousGross"
                               (ionChange)="
                                 paymentApplication.change(
@@ -859,7 +859,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="attachment.total"
                               (ionChange)="
                                 paymentApplication.change(
@@ -885,7 +885,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="labour.previousGross"
                               (ionChange)="
                                 paymentApplication.changeTotal(
@@ -910,7 +910,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="labour.grossTotal"
                               (ionChange)="
                                 paymentApplication.changeTotal(
@@ -961,7 +961,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="attachment.total"
                               (ionChange)="
                                 paymentApplication.change(
@@ -987,7 +987,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="transport.previousGross"
                               (ionChange)="
                                 paymentApplication.changeTotal(
@@ -1012,7 +1012,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="transport.grossTotal"
                               (ionChange)="
                                 paymentApplication.changeTotal(
@@ -1062,7 +1062,7 @@
                        >
                          <ng-template>
                            <ion-input
-                             type="number"
+                             type="text"
                              [value]="attachment.total"
                              (ionChange)="
                                paymentApplication.change(
@@ -1088,7 +1088,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="additional.previousGross"
                               (ionChange)="
                                 paymentApplication.changeTotal(
@@ -1113,7 +1113,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="additional.grossTotal"
                               (ionChange)="
                                 paymentApplication.changeTotal(
@@ -1170,7 +1170,7 @@
                        >
                          <ng-template>
                            <ion-input
-                             type="number"
+                             type="text"
                              [value]="attachment.total"
                              (ionChange)="
                                paymentApplication.change(
@@ -1196,7 +1196,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="board.previousGross"
                               (ionChange)="
                                 paymentApplication.changeTotal(
@@ -1221,7 +1221,7 @@
                         >
                           <ng-template>
                             <ion-input
-                              type="number"
+                              type="text"
                               [value]="board.grossTotal"
                               (ionChange)="
                                 paymentApplication.changeTotal(
