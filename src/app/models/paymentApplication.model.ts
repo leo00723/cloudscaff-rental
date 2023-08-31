@@ -346,6 +346,13 @@ export class PaymentApplication {
   ) {
     const value = args.detail.value;
     switch (category) {
+      case 'PG':
+        {
+          item.previousGross = +value;
+          item.currentTotal =
+            item.grossTotal - (item.previousGross ? +item.previousGross : 0);
+        }
+        break;
       case 'GT':
         {
           item.grossTotal = +value;

@@ -879,8 +879,8 @@
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ labour.previousGross | number : "0.2-2" }}
                         </ion-label>
-                        <!-- <ion-popover
-                          trigger="PG-lab-{{ j }}{{i}}"
+                        <ion-popover
+                          trigger="PG-lab-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -888,12 +888,16 @@
                               type="number"
                               [value]="labour.previousGross"
                               (ionChange)="
-                                paymentApplication.change($event, labour, 'PG')
+                                paymentApplication.changeTotal(
+                                  $event,
+                                  labour,
+                                  'PG'
+                                )
                               "
                             >
                             </ion-input>
                           </ng-template>
-                        </ion-popover> -->
+                        </ion-popover>
                       </td>
                       <td class="text-end" id="GT-lab-{{ j }}{{ i }}">
                         <ion-label>
@@ -977,8 +981,8 @@
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ transport.previousGross | number : "0.2-2" }}
                         </ion-label>
-                        <!-- <ion-popover
-                          trigger="PG-tra-{{ j }}{{i}}"
+                        <ion-popover
+                          trigger="PG-tra-{{ j }}{{ i }}"
                           triggerAction="click"
                         >
                           <ng-template>
@@ -986,7 +990,7 @@
                               type="number"
                               [value]="transport.previousGross"
                               (ionChange)="
-                                paymentApplication.change(
+                                paymentApplication.changeTotal(
                                   $event,
                                   transport,
                                   'PG'
@@ -995,7 +999,7 @@
                             >
                             </ion-input>
                           </ng-template>
-                        </ion-popover> -->
+                        </ion-popover>
                       </td>
                       <td class="text-end" id="GT-tra-{{ j }}{{ i }}">
                         <ion-label>
@@ -1078,25 +1082,25 @@
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ additional.previousGross | number : "0.2-2" }}
                         </ion-label>
-                        <!-- <ion-popover
-                         trigger="PG-add-{{ j }}{{i}}"
-                         triggerAction="click"
-                       >
-                         <ng-template>
-                           <ion-input
-                             type="number"
-                             [value]="transport.previousGross"
-                             (ionChange)="
-                               paymentApplication.change(
-                                 $event,
-                                 transport,
-                                 'PG'
-                               )
-                             "
-                           >
-                           </ion-input>
-                         </ng-template>
-                       </ion-popover> -->
+                        <ion-popover
+                          trigger="PG-add-{{ j }}{{ i }}"
+                          triggerAction="click"
+                        >
+                          <ng-template>
+                            <ion-input
+                              type="number"
+                              [value]="additional.previousGross"
+                              (ionChange)="
+                                paymentApplication.changeTotal(
+                                  $event,
+                                  additional,
+                                  'PG'
+                                )
+                              "
+                            >
+                            </ion-input>
+                          </ng-template>
+                        </ion-popover>
                       </td>
                       <td class="text-end" id="GT-add-{{ j }}{{ i }}">
                         <ion-label>
@@ -1186,25 +1190,25 @@
                           >{{ paymentApplication.company.currency.symbol
                           }}{{ board.previousGross | number : "0.2-2" }}
                         </ion-label>
-                        <!-- <ion-popover
-                         trigger="PG-board-{{ j }}{{i}}"
-                         triggerAction="click"
-                       >
-                         <ng-template>
-                           <ion-input
-                             type="number"
-                             [value]="transport.previousGross"
-                             (ionChange)="
-                               paymentApplication.change(
-                                 $event,
-                                 transport,
-                                 'PG'
-                               )
-                             "
-                           >
-                           </ion-input>
-                         </ng-template>
-                       </ion-popover> -->
+                        <ion-popover
+                          trigger="PG-board-{{ j }}{{ i }}"
+                          triggerAction="click"
+                        >
+                          <ng-template>
+                            <ion-input
+                              type="number"
+                              [value]="board.previousGross"
+                              (ionChange)="
+                                paymentApplication.changeTotal(
+                                  $event,
+                                  board,
+                                  'PG'
+                                )
+                              "
+                            >
+                            </ion-input>
+                          </ng-template>
+                        </ion-popover>
                       </td>
                       <td class="text-end" id="GT-board-{{ j }}{{ i }}">
                         <ion-label>

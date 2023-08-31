@@ -36,17 +36,27 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date: "dd MMM yyyy" }}
+      {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
-    name="Total Amount"
+    name="Gross Total"
+    prop="grossTotal"
+    cellClass="text-end"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.company.currency.symbol }} {{ value | number : "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Current Total"
     prop="total"
     cellClass="text-end"
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row.company.currency.symbol }} {{ value | number: "0.2-2" }}
+      {{ row.company.currency.symbol }} {{ value | number : "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column

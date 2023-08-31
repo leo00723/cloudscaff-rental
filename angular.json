@@ -18,7 +18,8 @@
               "pdfmake/build/pdfmake",
               "pdfmake/build/vfs_fonts",
               "file-saver",
-              "lodash/cloneDeep"
+              "lodash/cloneDeep",
+              "papaparse"
             ],
             "outputPath": "www",
             "index": "src/index.html",
