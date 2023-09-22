@@ -18,7 +18,7 @@ exports.regiserCompany = functions.https.onCall(async (data) => {
       displayName: data.name,
     });
     const date = new Date();
-    const trialEnd = new Date().setDate(date.getDate() + 31);
+    const trialEnd = new Date().setDate(date.getDate() + 4);
     const company = await admin
       .firestore()
       .collection('company')
