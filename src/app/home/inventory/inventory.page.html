@@ -120,6 +120,10 @@
                 #fileInput
               />
             </ng-container>
+            <p class="text-center mt-5" *ngIf="uploading">
+              <span class="fw-bold">{{uploadCounter}}</span> uploaded of
+              <span class="fw-bold">{{uploadTotal}}</span>
+            </p>
             <ion-progress-bar
               type="indeterminate"
               *ngIf="uploading"

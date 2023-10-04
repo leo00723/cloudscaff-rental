@@ -50,6 +50,8 @@ export class InventoryPage implements OnInit {
   active = 1;
   importing = false;
   uploading = false;
+  uploadCounter = 0;
+  uploadTotal = 0;
 
   constructor(
     private masterSvc: MasterService,
@@ -248,20 +250,20 @@ export class InventoryPage implements OnInit {
           complete: async (result) => {
             this.uploading = true;
             const data = result.data.map((item) => ({
-              code: item.Code,
-              category: item.Category,
-              size: item.Size,
-              name: item.Description,
-              yardQty: item.Yard_Qty,
-              availableQty: item.Yard_Qty,
-              weight: item.Weight,
+              code: item.Code || '',
+              category: item.Category || '',
+              size: item.Size || '',
+              name: item.Description || '',
+              yardQty: item.Yard_Qty || 0,
+              availableQty: item.Yard_Qty || 0,
+              weight: item.Weight || 0,
               inMaintenanceQty: 0,
               inUseQty: 0,
               damagedQty: 0,
               lostQty: 0,
-              hireCost: item.Hire_Cost,
-              replacementCost: item.Replacement_Cost,
-              sellingCost: item.Selling_Cost,
+              hireCost: item.Hire_Cost || 0,
+              replacementCost: item.Replacement_Cost || 0,
+              sellingCost: item.Selling_Cost || 0,
               log: [
                 {
                   message: `${user.name} added ${item.Yard_Qty} items to the yard.`,
@@ -280,15 +282,35 @@ export class InventoryPage implements OnInit {
             const company = this.masterSvc
               .store()
               .selectSnapshot(CompanyState.company).id;
+            this.uploadCounter = 0;
+            this.uploadTotal = data.length || 0;
 
             for (const item of data) {
-              await this.masterSvc
-                .edit()
-                .addDocument(`company/${company}/stockItems`, item);
+              try {
+                await this.masterSvc
+                  .edit()
+                  .addDocument(`company/${company}/stockItems`, item);
+              } catch (error) {
+                console.log(error);
+              } finally {
+                this.uploadCounter++;
+              }
             }
+            if (this.uploadCounter === this.uploadTotal) {
+              this.importing = false;
+              this.uploading = false;
+              this.masterSvc
+                .notification()
+                .toast('Import Successful', 'success');
+            }
+          },
+
+          error: () => {
             this.importing = false;
             this.uploading = false;
-            this.masterSvc.notification().toast('Import Successful', 'success');
+            this.masterSvc
+              .notification()
+              .toast('Import Failed. Please try again.', 'danger');
           },
         });
       }
