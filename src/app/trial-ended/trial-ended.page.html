@@ -9,24 +9,34 @@
       ></ion-img>
     </ion-thumbnail>
   </div>
-  <ion-row class="container" style="min-height: 80vh">
-    <ion-col size="12" class="my-auto text-center">
+  <ion-row class="container justify-content-center" style="min-height: 80vh">
+    <ion-col size="12" class="my-auto text-center py-3">
       <ion-text>
         <h1 class="display-6 fw-bold">Your Cloudscaff trial has ended</h1>
         <p class="my-auto mt-2">
           Your account is currently paused. To continue using your account
-          please choose a subscription plan below
+          please choose a subscription plan below. <br />All plans include up to
+          20 users, unlimited usage and more. <br />
+          Should you require more than 20 users please contact support at
+          <a href="mailto:enterprise@cloudscaff.com"
+            >enterprise@cloudscaff.com</a
+          >
         </p>
       </ion-text>
-      <ion-button
-        *ngIf="company$ | async as company"
-        class="mt-3"
-        shape="round"
-        href="https://buy.stripe.com/3cscOxaMD12qdEIcMO?client_reference_id={{company.id}}"
-        target="_blank"
+    </ion-col>
+    <ion-col size="auto">
+      <stripe-buy-button
+        buy-button-id="buy_btn_1O2aAeGeP5MK7BRS0trRtBSW"
+        publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
       >
-        View Plans
-      </ion-button>
+      </stripe-buy-button>
+    </ion-col>
+    <ion-col size="auto ">
+      <stripe-buy-button
+        buy-button-id="buy_btn_1O2aE0GeP5MK7BRSf9aYTglb"
+        publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
+      >
+      </stripe-buy-button>
     </ion-col>
   </ion-row>
 </ion-content>
