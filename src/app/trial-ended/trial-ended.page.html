@@ -1,5 +1,5 @@
 <ion-content>
-  <div class="d-flex justify-content-center bg-primary py-5 px-2">
+  <!-- <div class="d-flex justify-content-center bg-primary py-5 px-2">
     <ion-thumbnail>
       <ion-img
         class="img-fluid"
@@ -8,8 +8,8 @@
         alt="logo"
       ></ion-img>
     </ion-thumbnail>
-  </div>
-  <ion-row class="container justify-content-center" style="min-height: 80vh">
+  </div> -->
+  <ion-row class="container justify-content-center">
     <ion-col size="12" class="my-auto text-center py-3">
       <ion-text>
         <h1 class="display-6 fw-bold">Your Cloudscaff trial has ended</h1>
@@ -24,7 +24,8 @@
         </p>
       </ion-text>
     </ion-col>
-    <ion-col size="auto">
+
+    <!-- <ion-col size="auto">
       <stripe-buy-button
         buy-button-id="buy_btn_1O2aAeGeP5MK7BRS0trRtBSW"
         publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
@@ -37,6 +38,13 @@
         publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
       >
       </stripe-buy-button>
-    </ion-col>
+    </ion-col> -->
   </ion-row>
+  <div class="p-5 bg-primary">
+    <stripe-pricing-table
+      pricing-table-id="prctbl_1O2b0lGeP5MK7BRSZx4bLGZG"
+      publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
+    >
+    </stripe-pricing-table>
+  </div>
 </ion-content>

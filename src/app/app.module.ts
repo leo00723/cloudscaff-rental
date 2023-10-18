@@ -59,6 +59,7 @@ import { SplashPage } from './splash/splash.page';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { HttpClientModule } from '@angular/common/http';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -138,6 +139,7 @@ import { TrialEndedPage } from './trial-ended/trial-ended.page';
     DecimalPipe,
     FileOpener,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
