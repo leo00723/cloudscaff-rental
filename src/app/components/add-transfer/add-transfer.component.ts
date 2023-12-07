@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { increment } from '@angular/fire/firestore';
+import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
@@ -256,7 +256,10 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       if (id) {
         this.sites$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/sites`, 'code', 'desc');
+          .getCollectionFiltered(`company/${id}/sites`, [
+            where('status', '==', 'active'),
+            orderBy('code', 'desc'),
+          ]);
       } else {
         this.masterSvc.log(
           '-----------------------try sites----------------------'

@@ -180,6 +180,16 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.return.uploads.push(...newFiles);
   }
 
+  async downloadPdf() {
+    if (!this.return.date) {
+      this.return.date = new Date();
+    }
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateReturn(this.return, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.return.code);
+  }
+
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.return.site, Validators.required],

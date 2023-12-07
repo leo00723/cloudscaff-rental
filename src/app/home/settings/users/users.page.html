@@ -5,7 +5,7 @@
   path="/dashboard/settings"
 ></app-header>
 
-<ion-content fullscreen="true" class="ion-padding">
+<ion-content class="ion-padding">
   <ng-container *ngIf="users$ | async as users else loading">
     <app-user-table
       [value]="users$"

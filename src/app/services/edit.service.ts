@@ -12,6 +12,7 @@ import {
   orderBy,
   OrderByDirection,
   query,
+  QueryConstraint,
   setDoc,
   where,
   WhereFilterOp,
@@ -86,6 +87,24 @@ export class EditService {
     return collectionData(this.collectionRef(collectionPath), {
       idField: 'id',
     }).pipe(
+      map((data: any) =>
+        data.map((d: any) => {
+          if (d.date) {
+            return { ...d, date: d.date.toDate() };
+          }
+          return d;
+        })
+      )
+    ) as Observable<any[]>;
+  }
+
+  getCollectionFiltered(collectionPath: string, filters: QueryConstraint[]) {
+    return collectionData(
+      query(this.collectionRef(collectionPath), ...filters),
+      {
+        idField: 'id',
+      }
+    ).pipe(
       map((data: any) =>
         data.map((d: any) => {
           if (d.date) {
