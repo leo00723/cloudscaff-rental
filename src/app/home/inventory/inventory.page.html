@@ -14,9 +14,9 @@
         <ion-segment-button value="2">
           <ion-label>Shipments</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="3">
+        <!-- <ion-segment-button value="3">
           <ion-label>Billable Shipments</ion-label>
-        </ion-segment-button>
+        </ion-segment-button> -->
         <ion-segment-button value="4">
           <ion-label>Requests</ion-label>
         </ion-segment-button>
@@ -37,9 +37,15 @@
       <div class="text-end" *ngIf="!importing && items.length !== 0">
         <a
           type="button"
-          class="btn btn-success btn-sm rounded-pill me-2"
+          class="btn btn-info btn-sm rounded-pill me-2"
           (click)="importing = true"
           >Import Inventory</a
+        >
+        <a
+          type="button"
+          class="btn btn-primary btn-sm rounded-pill me-2"
+          (click)="addItem()"
+          >Add New Item</a
         >
       </div>
       <div class="text-end" *ngIf="importing && items.length !== 0">
@@ -133,11 +139,6 @@
         </ion-col>
       </ion-row>
     </ng-container>
-    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="addItem()">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
   </ng-container>
   <ng-container *ngSwitchCase="2">
     <ion-accordion-group

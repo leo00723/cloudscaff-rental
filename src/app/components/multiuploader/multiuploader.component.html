@@ -4,6 +4,7 @@
   (hovered)="toggleHover($event)"
   (dropped)="onDrop($event)"
   [class.hovering]="isHovering"
+  *ngIf="!uploading"
 >
   <p class="lead fs-4 text-center p-3">
     Drag your documents, photos or videos here to upload.

@@ -386,6 +386,7 @@ exports.manageReturn = functions.firestore
                 inMaintenanceQty: admin.firestore.FieldValue.increment(
                   item.inMaintenanceQty
                 ),
+                yardQty: admin.firestore.FieldValue.increment(-item.lostQty),
               });
           }
         }

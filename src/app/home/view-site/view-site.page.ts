@@ -294,6 +294,48 @@ export class ViewSitePage implements OnInit {
       );
   }
 
+  async setUploads(uploads, site: Site) {
+    site.uploads
+      ? site.uploads.push(...uploads)
+      : (site.uploads = [...uploads]);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(`company/${site.companyId}/sites`, site.id, site);
+      this.masterSvc
+        .notification()
+        .toast('Files uploaded successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong uploading files. Please try again.',
+          'danger'
+        );
+    }
+  }
+
+  async removeUpload(index: number, site: Site) {
+    site.uploads.splice(index, 1);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(`company/${site.companyId}/sites`, site.id, site);
+      this.masterSvc
+        .notification()
+        .toast('Files deleted successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong deleting file. Please try again.',
+          'danger'
+        );
+    }
+  }
+
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
   }

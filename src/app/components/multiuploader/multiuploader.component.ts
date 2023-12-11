@@ -1,7 +1,9 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
+  Input,
   Output,
   QueryList,
   ViewChildren,
@@ -18,9 +20,16 @@ import { UploadTaskComponent } from './upload-task/upload-task.component';
 export class MultiuploaderComponent {
   @ViewChildren(UploadTaskComponent)
   uploadTasks: QueryList<UploadTaskComponent>;
+
+  @Input() autoupload = false;
+  @Output() uploaded = new EventEmitter<UploadedFile[]>();
+
   isHovering: boolean;
   files: { file: File; data: UploadedFile }[] = [];
   uploading = false;
+
+  constructor(private cdRef: ChangeDetectorRef) {}
+
   toggleHover(event: boolean) {
     this.isHovering = event;
   }
@@ -30,6 +39,12 @@ export class MultiuploaderComponent {
     for (let i = 0; i < list.length; i++) {
       this.files.push({ file: list.item(i), data: null });
     }
+    if (this.autoupload) {
+      setTimeout(async () => {
+        const urls = await this.startUpload();
+        this.uploaded.emit(urls);
+      }, 200);
+    }
   }
 
   deleteFile(index: number) {
@@ -38,10 +53,14 @@ export class MultiuploaderComponent {
 
   async startUpload() {
     const urls: UploadedFile[] = [];
+    this.uploading = true;
+    this.cdRef.detectChanges();
     for await (const task of this.uploadTasks) {
       const data = await task.startUpload();
       urls.push(data);
     }
+    this.uploading = false;
+    this.cdRef.detectChanges();
     return urls;
   }
 }

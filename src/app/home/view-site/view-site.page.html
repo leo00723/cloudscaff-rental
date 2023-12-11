@@ -32,12 +32,6 @@
           <ion-label>Returns</ion-label>
         </ion-segment-button>
         <!-- <ion-segment-button
-          value="estimates"
-          *ngIf="user.role !== 'Supervisor'"
-        >
-          <ion-label>Estimates</ion-label>
-        </ion-segment-button> -->
-        <ion-segment-button
           value="shipments"
           *ngIf="user.role !== 'Supervisor'"
         >
@@ -45,18 +39,15 @@
         </ion-segment-button>
         <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Shipment Invoices</ion-label>
-        </ion-segment-button>
-        <!-- <ion-segment-button
-          value="operationApplication"
-          *ngIf="user.role !== 'Supervisor'"
-        >
-          <ion-label>Operation Application</ion-label>
         </ion-segment-button> -->
         <ion-segment-button
           value="paymentApplication"
           *ngIf="user.role !== 'Supervisor'"
         >
           <ion-label>Payment Application</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="uploads" *ngIf="user.role !== 'Supervisor'">
+          <ion-label>Uploads</ion-label>
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>
@@ -137,13 +128,6 @@
           </ion-fab-button>
         </ion-fab>
       </div>
-      <!-- <div *ngSwitchCase="'estimates'">
-        <app-estimate-table
-          [value]="estimates$"
-          *ngIf="estimates$ | async else loading"
-          (selectedItem)="viewEstimate($event)"
-        ></app-estimate-table>
-      </div> -->
       <div *ngSwitchCase="'shipments'">
         <app-billable-shipments-table
           [value]="billableShipments$"
@@ -158,26 +142,6 @@
           (selectedItem)="viewShipmentInvoices($event)"
         ></app-shipment-invoices-table>
       </div>
-      <!-- <div *ngSwitchCase="'operationApplication'">
-        <ng-container
-          *ngIf="operationApplications$ | async as operationApplications else loading"
-        >
-          <app-payment-application-table
-            [value]="operationApplications$"
-            (selectedItem)="viewPaymentApplication($event,false)"
-          ></app-payment-application-table>
-          <ion-fab
-            class="m-2"
-            vertical="bottom"
-            horizontal="end"
-            slot="fixed"
-            *ngIf="site.status !== 'closed'"
-          >
-            <ion-fab-button (click)="addPaymentApplication(false)">
-              <ion-icon name="add"></ion-icon>
-            </ion-fab-button> </ion-fab
-        ></ng-container>
-      </div> -->
       <div *ngSwitchCase="'paymentApplication'">
         <ng-container
           *ngIf="paymentApplications$ | async as paymentApplications  else loading"
@@ -200,6 +164,32 @@
               <ion-icon name="add"></ion-icon>
             </ion-fab-button> </ion-fab
         ></ng-container>
+      </div>
+      <div *ngSwitchCase="'uploads'">
+        <ion-row>
+          <ion-col size="12">
+            <app-multiuploader
+              [autoupload]="true"
+              (uploaded)="setUploads($event,site)"
+            ></app-multiuploader>
+          </ion-col>
+          <ion-col size="12">
+            <app-title-block> Uploaded Files </app-title-block>
+            <ion-row>
+              <ion-col
+                size="12"
+                *ngFor="let file of site.uploads; let i = index"
+              >
+                <app-file-item
+                  [simplified]="true"
+                  [file]="file"
+                  [allowDelete]="true"
+                  (deleted)="removeUpload(i,site)"
+                ></app-file-item>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+        </ion-row>
       </div>
       <ng-template #loading>
         <div class="ion-padding">

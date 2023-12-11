@@ -53,6 +53,7 @@ export class CompanyPage implements OnDestroy {
     totalEstimates: 0,
     vat: 0,
     salesTax: 0,
+    gst: 0,
     totalSites: 0,
     users: [],
     vatNum: '',
@@ -216,6 +217,10 @@ export class CompanyPage implements OnDestroy {
           ],
           vat: [
             this.company.vat,
+            [Validators.required, Validators.min(0), Validators.max(100)],
+          ],
+          gst: [
+            this.company.gst,
             [Validators.required, Validators.min(0), Validators.max(100)],
           ],
           terminology: this.fb.group({

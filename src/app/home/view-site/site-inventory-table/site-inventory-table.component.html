@@ -85,3 +85,8 @@
     headerClass="text-center"
   ></ngx-datatable-column>
 </ngx-datatable>
+
+<ion-item>
+  <ion-label>Total weight</ion-label>
+  <ion-label slot="end">{{ inventoryItems | weight }}</ion-label>
+</ion-item>

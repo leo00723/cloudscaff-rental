@@ -52,7 +52,7 @@
 </div> -->
 
 <ngx-datatable
-  class="bootstrap striped rounded-lg mb-5"
+  class="bootstrap striped rounded-lg"
   [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="50"
@@ -183,3 +183,7 @@
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>
+<ion-item>
+  <ion-label>Total weight</ion-label>
+  <ion-label slot="end">{{ itemsBackup | weight }}</ion-label>
+</ion-item>

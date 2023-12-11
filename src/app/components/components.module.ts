@@ -95,6 +95,7 @@ import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
 import { FileItemComponent } from './multiuploader/file-item/file-item.component';
 import { AddScaffoldComponent } from './add-scaffold/add-scaffold.component';
+import { WeightPipe } from './weight.pipe';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -184,6 +185,7 @@ const COMPONENTS = [
   PagePlaceholderComponent,
   FileItemComponent,
   AddScaffoldComponent,
+  WeightPipe,
 ];
 const IMPORTS = [
   CommonModule,

@@ -271,7 +271,7 @@
             </ion-col>
             <ion-col size="12" *ngIf="showAll">
               <app-input-reactive
-                title="Sales Tax %"
+                title="Sales Tax % (set to 0 if you want to exclude this)"
                 controlName="salesTax"
                 type="number"
                 [form]="form"
@@ -280,8 +280,17 @@
             </ion-col>
             <ion-col size="12" *ngIf="showAll">
               <app-input-reactive
-                title="VAT %"
+                title="VAT % (set to 0 if you want to exclude this)"
                 controlName="vat"
+                type="number"
+                [form]="form"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col size="12" *ngIf="showAll">
+              <app-input-reactive
+                title="GST % (set to 0 if you want to exclude this)"
+                controlName="gst"
                 type="number"
                 [form]="form"
               >
