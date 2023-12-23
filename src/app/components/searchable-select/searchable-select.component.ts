@@ -22,6 +22,7 @@ export class SearchableSelectComponent implements OnChanges {
   @Input() multiple = false;
   @Input() add = false;
   @Input() showInput = true;
+  @Input() resetStatus = true;
   @Input() itemTextField = 'name';
   @Output() selectedChanged: EventEmitter<any> = new EventEmitter();
 
@@ -33,8 +34,10 @@ export class SearchableSelectComponent implements OnChanges {
 
   ngOnChanges(): void {
     this.filtered = this.data.sort((a, b) => {
-      a.selected = false;
-      b.selected = false;
+      if (this.resetStatus) {
+        a.selected = false;
+        b.selected = false;
+      }
       if (this.leaf(a) < this.leaf(b)) {
         return -1;
       }

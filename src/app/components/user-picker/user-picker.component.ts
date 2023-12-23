@@ -43,7 +43,7 @@ export class UserPickerComponent implements OnInit {
   }
 
   init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.subs.add(
@@ -51,18 +51,18 @@ export class UserPickerComponent implements OnInit {
             .edit()
             .getCollectionWhere('users', 'company', '==', id)
             .pipe(
-              map((users) => {
-                return users.map((u) => {
-                  let user = { ...u, selected: false };
+              map((users) =>
+                users.map((u) => {
+                  let userData = { ...u, selected: false };
                   this.selectedUsers.forEach((s) => {
                     if (u.id === s.id) {
-                      user = { ...user, selected: true };
+                      userData = { ...userData, selected: true };
                     }
                   });
 
-                  return user;
-                });
-              })
+                  return userData;
+                })
+              )
             )
             .subscribe((users) => {
               this.users = users;
@@ -83,11 +83,11 @@ export class UserPickerComponent implements OnInit {
     return index;
   }
 
-  selectUser(user: any) {
-    const index = this.selectedUsers.findIndex((u) => u.id === user.id);
-    if (index === -1 && user.selected) {
-      this.selectedUsers.push(user);
-    } else if (!user.selected) {
+  selectUser(selectedUser: any) {
+    const index = this.selectedUsers.findIndex((u) => u.id === selectedUser.id);
+    if (index === -1 && selectedUser.selected) {
+      this.selectedUsers.push(selectedUser);
+    } else if (!selectedUser.selected) {
       this.selectedUsers.splice(index, 1);
     }
   }

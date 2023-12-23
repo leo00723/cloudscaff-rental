@@ -26,18 +26,16 @@
           [form]="form"
           controlName="email"
         ></app-input-reactive>
-        <app-input-select-reactive
-          title="Role"
-          placeholder="Select Role"
-          controlName="role"
-          [form]="form"
-          [selectedText]="field('role').value"
+        <app-searchable-select
+          #roles
+          title="Select user permissions"
+          (click)="roles.open()"
+          [multiple]="true"
+          [data]="roleData"
+          (selectedChanged)="setRoles($event)"
         >
-          <ion-select-option [value]="role" *ngFor="let role of roles"
-            >{{ role }}
-          </ion-select-option>
-        </app-input-select-reactive>
-        <ion-item class="mb-3 rounded-3" fill="solid" mode="md">
+        </app-searchable-select>
+        <ion-item class="my-3 rounded-3" fill="solid" mode="md">
           <ion-label position="stacked">Password</ion-label>
           <app-show-hide-password>
             <ion-input
@@ -71,7 +69,7 @@
       </ion-button>
     </ion-col>
   </ion-row>
-  <ion-row *ngIf="isEdit">
+  <ion-row *ngIf="isEdit && this.user">
     <ion-col class="text-center mb-3">
       <img class="m-auto cursor-pointer" [src]="user.thumb" />
     </ion-col>
@@ -95,18 +93,21 @@
           controlName="phone"
           [readonly]="true"
         ></app-input-reactive>
-        <app-input-select-reactive
-          *ngIf="user.role !== 'Owner'"
-          title="Role"
-          placeholder="Select Role"
-          controlName="role"
-          [form]="form"
-          [selectedText]="field('role').value"
+        <app-searchable-select
+          #roles
+          title="Select user permissions"
+          (click)="roles.open()"
+          [multiple]="true"
+          [data]="roleData"
+          [resetStatus]="false"
+          (selectedChanged)="setRoles($event)"
         >
-          <ion-select-option [value]="role" *ngFor="let role of roles"
-            >{{ role }}
-          </ion-select-option>
-        </app-input-select-reactive>
+        </app-searchable-select>
+        <ion-item class="my-3" fill="solid" mode="md" shape="round">
+          <ul class="pt-3">
+            <li *ngFor="let item of user.permissionsList">{{ item }}</li>
+          </ul>
+        </ion-item>
       </form>
     </ion-col>
     <ion-col class="text-end">
@@ -129,9 +130,7 @@
         </ion-button>
         <ion-button
           color="success"
-          *ngIf="
-            !loading && user.role !== 'Owner' && user.id !== currentUser.id
-          "
+          *ngIf="!loading"
           (click)="update()"
           shape="round"
           [disabled]="form.invalid"

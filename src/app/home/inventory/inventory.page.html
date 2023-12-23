@@ -7,23 +7,39 @@
         selectOnFocus="true"
         [value]="active"
         mode="md"
+        *ngIf="user$ | async as user"
       >
         <ion-segment-button value="1">
           <ion-label>Overview</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="2">
+        <ion-segment-button
+          value="2"
+          *ngIf="user.permissionsList.includes('Shipments') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Shipments</ion-label>
         </ion-segment-button>
-        <!-- <ion-segment-button value="3">
+        <ion-segment-button
+          value="3"
+          *ngIf="user.permissionsList.includes('Billable Shipments') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Billable Shipments</ion-label>
-        </ion-segment-button> -->
-        <ion-segment-button value="4">
+        </ion-segment-button>
+        <ion-segment-button
+          value="4"
+          *ngIf="user.permissionsList.includes('Inventory Requests') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Requests</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="5">
+        <ion-segment-button
+          value="5"
+          *ngIf="user.permissionsList.includes('Inventory Returns') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Returns</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="6">
+        <ion-segment-button
+          value="6"
+          *ngIf="user.permissionsList.includes('Transfers') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Transfers</ion-label>
         </ion-segment-button>
       </ion-segment>

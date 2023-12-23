@@ -16,10 +16,16 @@
         <ion-segment-button value="overview">
           <ion-label>Overview</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="inspections">
+        <ion-segment-button
+          value="inspections"
+          *ngIf="user.permissionsList.includes('Inspections') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Inspections</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="handovers">
+        <ion-segment-button
+          value="handovers"
+          *ngIf="user.permissionsList.includes('Handovers') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Handovers</ion-label>
         </ion-segment-button>
         <!-- <ion-segment-button
@@ -28,13 +34,22 @@
         >
           <ion-label>Modifications</ion-label>
         </ion-segment-button> -->
-        <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
+        <ion-segment-button
+          value="invoices"
+          *ngIf="user.permissionsList.includes('Invoices') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Invoices</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="payments" *ngIf="user.role !== 'Supervisor'">
+        <ion-segment-button
+          value="payments"
+          *ngIf="user.permissionsList.includes('Payments') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Payments</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="credit" *ngIf="user.role !== 'Supervisor'">
+        <ion-segment-button
+          value="credit"
+          *ngIf="user.permissionsList.includes('Credit Notes') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Credit Notes</ion-label>
         </ion-segment-button>
       </ion-segment>

@@ -25,10 +25,16 @@
         <ion-segment-button value="inventory">
           <ion-label>Inventory</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="requests">
+        <ion-segment-button
+          value="requests"
+          *ngIf="user.permissionsList.includes('Site Requests') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Requests</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="returns">
+        <ion-segment-button
+          value="returns"
+          *ngIf="user.permissionsList.includes('Site Returns') || user.permissionsList.includes('Super Admin')"
+        >
           <ion-label>Returns</ion-label>
         </ion-segment-button>
         <!-- <ion-segment-button
@@ -42,7 +48,7 @@
         </ion-segment-button> -->
         <ion-segment-button
           value="paymentApplication"
-          *ngIf="user.role !== 'Supervisor'"
+          *ngIf="user.permissionsList.includes('Payment Applications') || user.permissionsList.includes('Super Admin')"
         >
           <ion-label>Payment Application</ion-label>
         </ion-segment-button>

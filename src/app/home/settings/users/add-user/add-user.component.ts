@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -10,7 +10,30 @@ import { CompanyState } from 'src/app/shared/company/company.state';
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
 })
-export class AddUserComponent {
+export class AddUserComponent implements OnInit {
+  roleData = [
+    'Super Admin',
+    'Enquiries',
+    'Estimates',
+    'Sites',
+    'Site Requests',
+    'Site Returns',
+    'Payment Applications',
+    'Inspections',
+    'Handovers',
+    'Invoices',
+    'Payments',
+    'Credit Notes',
+    'Inventory',
+    'Shipments',
+    'Billable Shipments',
+    'Inventory Requests',
+    'Inventory Returns',
+    'Transfers',
+    'Statements',
+    'Settings',
+  ].map((item) => ({ name: item, selected: false }));
+
   @Input() title = 'Add User';
   @Select() user$: Observable<User>;
   @Input() isCreate = true;
@@ -28,7 +51,8 @@ export class AddUserComponent {
   }
   form: FormGroup;
   loading = false;
-  roles = ['Super-Admin', 'Admin', 'Supervisor'];
+  initingRoles = false;
+
   constructor(private masterSvc: MasterService) {
     if (this.isCreate) {
       this.form = this.masterSvc.fb().group({
@@ -36,6 +60,22 @@ export class AddUserComponent {
         role: ['', Validators.required],
         password: ['', [Validators.required, Validators.minLength(6)]],
       });
+    }
+  }
+
+  ngOnInit(): void {
+    if (this.user.permissions) {
+      for (const data of this.roleData) {
+        // Find the corresponding item in array2
+        const item2 = this.user.permissions.find(
+          (item) => item.name === data.name
+        );
+
+        // If a corresponding item is found in array2, update selected in array1
+        if (item2) {
+          data.selected = item2.selected;
+        }
+      }
     }
   }
 
@@ -132,6 +172,12 @@ export class AddUserComponent {
         this.loading = false;
       }
     });
+  }
+
+  setRoles(permissions: any) {
+    this.user.permissions = permissions;
+    this.user.permissionsList = permissions.map((item) => item.name);
+    // console.log(this.user.permissionsList);
   }
 
   close() {

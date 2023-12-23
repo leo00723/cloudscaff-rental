@@ -185,5 +185,7 @@
 </ngx-datatable>
 <ion-item>
   <ion-label>Total weight</ion-label>
-  <ion-label slot="end">{{ itemsBackup | weight }}</ion-label>
+  <ion-label slot="end">{{
+    itemsBackup ? (itemsBackup | weight) : []
+  }}</ion-label>
 </ion-item>
