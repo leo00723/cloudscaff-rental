@@ -14,31 +14,31 @@
         </ion-segment-button>
         <ion-segment-button
           value="2"
-          *ngIf="user.permissionsList.includes('Shipments') || user.permissionsList.includes('Super Admin')"
+          *ngIf="user.permissionsList.includes('Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-label>Shipments</ion-label>
         </ion-segment-button>
         <ion-segment-button
           value="3"
-          *ngIf="user.permissionsList.includes('Billable Shipments') || user.permissionsList.includes('Super Admin')"
+          *ngIf="user.permissionsList.includes('Billable Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-label>Billable Shipments</ion-label>
         </ion-segment-button>
         <ion-segment-button
           value="4"
-          *ngIf="user.permissionsList.includes('Inventory Requests') || user.permissionsList.includes('Super Admin')"
+          *ngIf="user.permissionsList.includes('Inventory Requests') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-label>Requests</ion-label>
         </ion-segment-button>
         <ion-segment-button
           value="5"
-          *ngIf="user.permissionsList.includes('Inventory Returns') || user.permissionsList.includes('Super Admin')"
+          *ngIf="user.permissionsList.includes('Inventory Returns') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-label>Returns</ion-label>
         </ion-segment-button>
         <ion-segment-button
           value="6"
-          *ngIf="user.permissionsList.includes('Transfers') || user.permissionsList.includes('Super Admin')"
+          *ngIf="user.permissionsList.includes('Transfers') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-label>Transfers</ion-label>
         </ion-segment-button>

@@ -10,30 +10,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
 })
-export class AddUserComponent implements OnInit {
-  roleData = [
-    'Super Admin',
-    'Enquiries',
-    'Estimates',
-    'Sites',
-    'Site Requests',
-    'Site Returns',
-    'Payment Applications',
-    'Inspections',
-    'Handovers',
-    'Invoices',
-    'Payments',
-    'Credit Notes',
-    'Inventory',
-    'Shipments',
-    'Billable Shipments',
-    'Inventory Requests',
-    'Inventory Returns',
-    'Transfers',
-    'Statements',
-    'Settings',
-  ].map((item) => ({ name: item, selected: false }));
-
+export class AddUserComponent {
   @Input() title = 'Add User';
   @Select() user$: Observable<User>;
   @Input() isCreate = true;
@@ -51,7 +28,6 @@ export class AddUserComponent implements OnInit {
   }
   form: FormGroup;
   loading = false;
-  initingRoles = false;
 
   constructor(private masterSvc: MasterService) {
     if (this.isCreate) {
@@ -60,22 +36,6 @@ export class AddUserComponent implements OnInit {
         role: ['', Validators.required],
         password: ['', [Validators.required, Validators.minLength(6)]],
       });
-    }
-  }
-
-  ngOnInit(): void {
-    if (this.user.permissions) {
-      for (const data of this.roleData) {
-        // Find the corresponding item in array2
-        const item2 = this.user.permissions.find(
-          (item) => item.name === data.name
-        );
-
-        // If a corresponding item is found in array2, update selected in array1
-        if (item2) {
-          data.selected = item2.selected;
-        }
-      }
     }
   }
 
@@ -178,6 +138,9 @@ export class AddUserComponent implements OnInit {
     this.user.permissions = permissions;
     this.user.permissionsList = permissions.map((item) => item.name);
     // console.log(this.user.permissionsList);
+  }
+  setPermission(permission) {
+    console.log(permission);
   }
 
   close() {

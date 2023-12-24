@@ -26,15 +26,6 @@
           [form]="form"
           controlName="email"
         ></app-input-reactive>
-        <app-searchable-select
-          #roles
-          title="Select user permissions"
-          (click)="roles.open()"
-          [multiple]="true"
-          [data]="roleData"
-          (selectedChanged)="setRoles($event)"
-        >
-        </app-searchable-select>
         <ion-item class="my-3 rounded-3" fill="solid" mode="md">
           <ion-label position="stacked">Password</ion-label>
           <app-show-hide-password>
@@ -52,6 +43,23 @@
             >Please enter a valid password! Password must be 6 characters or
             more.</ion-note
           >
+        </ion-item>
+        <app-permissions-select
+          #permissions
+          (click)="permissions.open()"
+          [user]="user"
+          (selectedChanged)="setRoles($event)"
+        ></app-permissions-select>
+        <ion-item
+          class="my-3"
+          fill="solid"
+          mode="md"
+          shape="round"
+          *ngIf="user.permissions && user.permissionsList.length > 0"
+        >
+          <ul class="pt-3">
+            <li *ngFor="let item of user.permissionsList">{{ item }}</li>
+          </ul>
         </ion-item>
       </form>
     </ion-col>
@@ -93,17 +101,20 @@
           controlName="phone"
           [readonly]="true"
         ></app-input-reactive>
-        <app-searchable-select
-          #roles
-          title="Select user permissions"
-          (click)="roles.open()"
-          [multiple]="true"
-          [data]="roleData"
-          [resetStatus]="false"
+        <app-permissions-select
+          #permissions
+          (click)="permissions.open()"
+          [user]="user"
           (selectedChanged)="setRoles($event)"
+        ></app-permissions-select>
+
+        <ion-item
+          class="my-3"
+          fill="solid"
+          mode="md"
+          shape="round"
+          *ngIf="user.permissions && user.permissionsList.length > 0"
         >
-        </app-searchable-select>
-        <ion-item class="my-3" fill="solid" mode="md" shape="round">
           <ul class="pt-3">
             <li *ngFor="let item of user.permissionsList">{{ item }}</li>
           </ul>

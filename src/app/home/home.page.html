@@ -76,7 +76,7 @@
           lines="none"
           detail="false"
           routerLinkActive="selected"
-          *ngIf="user.permissionsList.includes(p.title) || user.permissionsList.includes('Super Admin')"
+          *ngIf="user.permissionsList.includes(p.title) || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-icon slot="start" [name]="p.icon"></ion-icon>
           <ion-label>{{ p.title }}</ion-label>
@@ -103,7 +103,7 @@
           [replaceUrl]="true"
           lines="none"
           detail="false"
-          *ngIf="user.permissionsList.includes('Settings') || user.permissionsList.includes('Super Admin')"
+          *ngIf="user.permissionsList.includes('Settings') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-icon slot="start" name="settings-outline"></ion-icon>
           <ion-label>Settings</ion-label>

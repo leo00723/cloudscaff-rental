@@ -1,0 +1,33 @@
+<app-header title="Notifications"> </app-header>
+
+<ion-content class="ion-padding">
+  <ion-list [inset]="true" mode="ios" color="dark">
+    <ng-container *ngFor="let item of notifications;let i =index">
+      <ion-item mode="ios" shape="round">
+        <ion-label position="stacked"> {{ item.date | date }} </ion-label>
+        <ion-text>
+          <p position="stacked">{{item.message}}</p>
+        </ion-text>
+        <ion-buttons slot="end" class="my-auto">
+          <ion-button
+            slot="icon-only"
+            slot="icon-only"
+            color="danger"
+            shape="round"
+            (click)="delete(i)"
+          >
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+          <ion-button
+            slot="icon-only"
+            color="tertiary"
+            shape="round"
+            (click)="archive(i)"
+          >
+            <ion-icon name="archive-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+</ion-content>

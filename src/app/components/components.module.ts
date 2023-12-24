@@ -96,6 +96,7 @@ import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.co
 import { FileItemComponent } from './multiuploader/file-item/file-item.component';
 import { AddScaffoldComponent } from './add-scaffold/add-scaffold.component';
 import { WeightPipe } from './weight.pipe';
+import { PermissionsSelectComponent } from './permissions-select/permissions-select.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -198,6 +199,7 @@ const IMPORTS = [
   ScrollingModule,
   SignaturePadModule,
   SearchableSelectComponent,
+  PermissionsSelectComponent,
 ];
 
 @NgModule({

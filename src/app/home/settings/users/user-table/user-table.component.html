@@ -68,10 +68,15 @@
       </ion-text>
     </ng-template>
   </ngx-datatable-column>
-  <ngx-datatable-column name="Role" cellClass="m-auto">
+  <ngx-datatable-column
+    name="Permissions"
+    prop="permissionsList"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-text>
-        <ion-badge class="m-0"> {{ value }} </ion-badge>
+        <ion-badge class="m-0"> {{ value ? value.length : 0 }} </ion-badge>
       </ion-text>
     </ng-template>
   </ngx-datatable-column>

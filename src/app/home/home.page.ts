@@ -54,6 +54,12 @@ export class HomePage implements OnDestroy {
       icon: 'document-text-outline',
       roles: 'Owner,Admin,Super-Admin',
     },
+    {
+      title: 'Notifications',
+      url: '/dashboard/notifications',
+      icon: 'notifications-outline',
+      roles: 'Owner,Admin,Super-Admin',
+    },
   ];
   loading = false;
   version = environment.version;
