@@ -298,7 +298,10 @@ export class AddStockitemComponent implements OnInit {
           this.inventoryItem.id,
           {
             ...this.form.value,
-            category: this.form.value.categoryType.name,
+            category:
+              this.form.value.categoryType.name ||
+              this.inventoryItemBackup.category ||
+              '',
             log: this.inventoryItem.log,
           }
         );

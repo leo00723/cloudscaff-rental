@@ -9,7 +9,7 @@ export class WeightPipe implements PipeTransform {
   transform(items: InventoryItem[]) {
     let weight = 0;
     for (const item of items) {
-      weight += isNaN(item.weight) ? 0 : +item.weight * +item.availableQty;
+      weight += isNaN(+item.weight) ? 0 : +item.weight * +item.availableQty;
     }
     return weight.toFixed(2);
   }

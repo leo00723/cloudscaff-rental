@@ -80,6 +80,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.initFrom();
+    this.form.markAllAsTouched();
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();

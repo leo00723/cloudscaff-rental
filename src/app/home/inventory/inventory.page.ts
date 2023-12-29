@@ -254,16 +254,16 @@ export class InventoryPage implements OnInit {
               category: item.Category || '',
               size: item.Size || '',
               name: item.Description || '',
-              yardQty: item.Yard_Qty || 0,
-              availableQty: item.Yard_Qty || 0,
-              weight: item.Weight || 0,
+              yardQty: +item.Yard_Qty || 0,
+              availableQty: +item.Yard_Qty || 0,
+              weight: parseFloat(item.Weight) || 0,
               inMaintenanceQty: 0,
               inUseQty: 0,
               damagedQty: 0,
               lostQty: 0,
-              hireCost: item.Hire_Cost || 0,
-              replacementCost: item.Replacement_Cost || 0,
-              sellingCost: item.Selling_Cost || 0,
+              hireCost: parseFloat(item.Hire_Cost) || 0,
+              replacementCost: parseFloat(item.Replacement_Cost) || 0,
+              sellingCost: parseFloat(item.Selling_Cost) || 0,
               log: [
                 {
                   message: `${user.name} added ${item.Yard_Qty} items to the yard.`,
@@ -284,7 +284,6 @@ export class InventoryPage implements OnInit {
               .selectSnapshot(CompanyState.company).id;
             this.uploadCounter = 0;
             this.uploadTotal = data.length || 0;
-
             for (const item of data) {
               try {
                 await this.masterSvc
