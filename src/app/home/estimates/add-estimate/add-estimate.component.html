@@ -21,7 +21,9 @@
       <ion-button
         *ngIf="
           estimate.status === 'rejected' &&
-          (user.role === 'Owner' || user.role === 'Super-Admin')
+          (user.permissionsList.includes('Estimates') ||
+            user.permissionsList.includes('Super Admin') ||
+            user.role === 'Owner')
         "
         slot="end"
         fill="solid"
@@ -1605,7 +1607,10 @@
           </ion-col>
           <ion-col
             size="12"
-            *ngIf="user.role === 'Owner' || user.role === 'Super-Admin'"
+            *ngIf="
+              user.permissionsList.includes('Super Admin') ||
+              user.role === 'Owner'
+            "
           >
             <ion-button
               fill="outline"

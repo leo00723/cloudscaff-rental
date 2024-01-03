@@ -28,37 +28,31 @@ export class HomePage implements OnDestroy {
       title: 'Enquiries',
       url: '/dashboard/enquiries',
       icon: 'reader-outline',
-      roles: 'Owner,Admin,Super-Admin',
     },
     {
       title: 'Estimates',
       url: '/dashboard/estimates',
       icon: 'options-outline',
-      roles: 'Owner,Admin,Super-Admin',
     },
     {
       title: 'Sites',
       url: '/dashboard/sites',
       icon: 'business-outline',
-      roles: 'Owner,Admin,Super-Admin,Supervisor',
     },
     {
       title: 'Inventory',
       url: '/dashboard/inventory',
       icon: 'bar-chart-outline',
-      roles: 'Owner,Admin,Super-Admin,Supervisor',
     },
     {
       title: 'Statements',
       url: '/dashboard/statements',
       icon: 'document-text-outline',
-      roles: 'Owner,Admin,Super-Admin',
     },
     {
       title: 'Notifications',
       url: '/dashboard/notifications',
       icon: 'notifications-outline',
-      roles: 'Owner,Admin,Super-Admin',
     },
   ];
   loading = false;

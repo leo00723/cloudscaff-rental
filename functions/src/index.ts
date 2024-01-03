@@ -41,6 +41,8 @@ exports.regiserCompany = functions.https.onCall(async (data) => {
         company: company.id,
         phone: data.phone || '',
         role: 'Owner',
+        permissions: [{ name: 'Super Admin', selected: true }],
+        permissionsList: ['Super Admin'],
         needsSetup: false,
         startDate: admin.firestore.Timestamp.fromDate(date),
       });
