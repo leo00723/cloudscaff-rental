@@ -15,7 +15,7 @@ export class AddUserComponent {
   @Select() user$: Observable<User>;
   @Input() isCreate = true;
   @Input() isEdit: boolean;
-  @Input() user: User;
+  @Input() user: User = { permissionsList: [] };
   @Output() updated = new EventEmitter<boolean>();
   @Input() set value(user: User) {
     this.user = user;
@@ -33,7 +33,6 @@ export class AddUserComponent {
     if (this.isCreate) {
       this.form = this.masterSvc.fb().group({
         email: ['', [Validators.required, Validators.email]],
-        role: ['', Validators.required],
         password: ['', [Validators.required, Validators.minLength(6)]],
       });
     }
@@ -68,11 +67,14 @@ export class AddUserComponent {
         const company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company).id;
-        const user = {
+        this.user = {
+          ...this.user,
           ...this.form.value,
           company,
         };
-        const res = await this.masterSvc.edit().callFunction('addUser', user);
+        const res = await this.masterSvc
+          .edit()
+          .callFunction('addUser', this.user);
         if (res.data === '200') {
           this.masterSvc
             .notification()
