@@ -166,7 +166,8 @@
       <ion-button
         *ngIf="
           !loading &&
-          (user.role === 'Owner' || user.role === 'Super-Admin') &&
+          (user.role === 'Owner' ||
+            user.permissionsList.includes('Super Admin')) &&
           isUpdate &&
           site.status !== 'closed'
         "
@@ -180,7 +181,8 @@
       <ion-button
         *ngIf="
           !loading &&
-          (user.role === 'Owner' || user.role === 'Super-Admin') &&
+          (user.role === 'Owner' ||
+            user.permissionsList.includes('Super Admin')) &&
           isUpdate &&
           site.status === 'closed'
         "
@@ -194,7 +196,8 @@
       <ion-button
         *ngIf="
           !loading &&
-          (user.role === 'Owner' || user.role === 'Super-Admin') &&
+          (user.role === 'Owner' ||
+            user.permissionsList.includes('Super Admin')) &&
           site.status !== 'closed' &&
           isUpdate
         "

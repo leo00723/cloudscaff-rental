@@ -126,7 +126,8 @@
 
       <ng-container
         *ngIf="
-          currentUser.role === 'Owner' || currentUser.role === 'Super-admin'
+          currentUser.role === 'Owner' ||
+          currentUser.permissionsList.includes('Super Admin')
         "
       >
         <ion-button

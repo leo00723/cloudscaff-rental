@@ -115,7 +115,8 @@
         <ion-button
           *ngIf="
             !loading &&
-            (user.role === 'Owner' || user.role === 'Super-Admin') &&
+            (user.role === 'Owner' ||
+              user.permissionsList.includes('Super Admin')) &&
             isDelete
           "
           shape="round"

@@ -166,7 +166,10 @@
                 [button]="true"
                 [detail]="false"
                 (click)="deleteItem(row)"
-                *ngIf="user.role === 'Owner' || user.role === 'Super-Admin'"
+                *ngIf="
+                  user.role === 'Owner' ||
+                  user.permissionsList.includes('Super Admin')
+                "
               >
                 <ion-label>Delete</ion-label>
               </ion-item>

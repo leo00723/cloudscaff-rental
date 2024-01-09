@@ -22,7 +22,6 @@ export class HomePage implements OnDestroy {
     //   title: 'Dashboard',
     //   url: '/dashboard/view',
     //   icon: 'home',
-    //   roles: 'Owner,Admin,Super-Admin',
     // },
     {
       title: 'Enquiries',
