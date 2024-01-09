@@ -71,7 +71,7 @@
         (click)="create()"
         expand="block"
         shape="round"
-        [disabled]="form.invalid || user.permissionsList.length > 0"
+        [disabled]="form.invalid || user.permissionsList.length < 1"
       >
         Create User
       </ion-button>

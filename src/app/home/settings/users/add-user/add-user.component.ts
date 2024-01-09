@@ -23,7 +23,7 @@ export class AddUserComponent {
       email: [this.user.email],
       name: [this.user.name],
       phone: [this.user.phone],
-      role: [this.user.role, [Validators.required]],
+      role: [this.user.role],
     });
   }
   form: FormGroup;
