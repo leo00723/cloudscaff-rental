@@ -1,33 +1,31 @@
-<app-header title="Notifications"> </app-header>
+<app-header
+  title="Notifications"
+  iconName="trash-outline"
+  iconColor="danger"
+  (updatedIcon)="deleteAll(this.notifications)"
+>
+</app-header>
 
-<ion-content class="ion-padding">
+<ion-content>
   <ion-list [inset]="true" mode="ios" color="dark">
-    <ng-container *ngFor="let item of notifications;let i =index">
-      <ion-item mode="ios" shape="round">
-        <ion-label position="stacked"> {{ item.date | date }} </ion-label>
-        <ion-text>
-          <p position="stacked">{{item.message}}</p>
-        </ion-text>
-        <ion-buttons slot="end" class="my-auto">
-          <ion-button
-            slot="icon-only"
-            slot="icon-only"
-            color="danger"
-            shape="round"
-            (click)="delete(i)"
-          >
-            <ion-icon name="trash-outline"></ion-icon>
-          </ion-button>
-          <ion-button
-            slot="icon-only"
-            color="tertiary"
-            shape="round"
-            (click)="archive(i)"
-          >
-            <ion-icon name="archive-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-item>
+    <ng-container *ngIf="notifications$|async as notifications">
+      <ng-container *ngFor="let item of notifications;let i =index">
+        <ion-item color="light" mode="ios" shape="round">
+          <ion-label position="stacked">
+            <span class="h6 fw-bold">{{item.title}}</span>
+            <span class="float-end my-auto">{{ item.date | date }}</span>
+          </ion-label>
+          <ion-text>
+            <p position="stacked" class="my-auto pb-2">{{item.message}}</p>
+          </ion-text>
+        </ion-item>
+      </ng-container>
+      <p
+        class="lead text-center fw-bold my-auto"
+        *ngIf="notifications.length === 0"
+      >
+        You have notifications.
+      </p>
     </ng-container>
   </ion-list>
 </ion-content>

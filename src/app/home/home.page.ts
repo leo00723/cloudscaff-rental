@@ -48,11 +48,6 @@ export class HomePage implements OnDestroy {
       url: '/dashboard/statements',
       icon: 'document-text-outline',
     },
-    {
-      title: 'Notifications',
-      url: '/dashboard/notifications',
-      icon: 'notifications-outline',
-    },
   ];
   loading = false;
   version = environment.version;
