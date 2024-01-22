@@ -89,20 +89,26 @@
         >
           <ion-icon slot="start" name="notifications-outline"></ion-icon>
           <ion-label>Notifications</ion-label>
+          <ion-badge
+            color="danger"
+            mode="ios"
+            *ngIf="notificationFlag$ | async as total"
+            >{{total}}</ion-badge
+          >
         </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+    <ion-list id="labels-list">
+      <ion-menu-toggle auto-hide="false">
         <ion-item
           href="https://billing.stripe.com/p/login/00gaHp4Nkac2gRq8ww"
           target="_blank"
           lines="none"
           detail="false"
         >
-          <ion-icon slot="start" name="notifications-outline"></ion-icon>
+          <ion-icon slot="start" name="card-outline"></ion-icon>
           <ion-label>Manage Subscription</ion-label>
         </ion-item>
-      </ion-menu-toggle>
-    </ion-list>
-    <ion-list id="labels-list">
-      <ion-menu-toggle auto-hide="false">
         <ion-item
           routerDirection="root"
           routerLinkActive="selected"

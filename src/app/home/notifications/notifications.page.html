@@ -2,13 +2,13 @@
   title="Notifications"
   iconName="trash-outline"
   iconColor="danger"
-  (updatedIcon)="deleteAll(this.notifications)"
+  (updatedIcon)="deleteAll()"
 >
 </app-header>
 
 <ion-content>
   <ion-list [inset]="true" mode="ios" color="dark">
-    <ng-container *ngIf="notifications$|async as notifications">
+    <ng-container *ngIf="notifications$| async as notifications">
       <ng-container *ngFor="let item of notifications;let i =index">
         <ion-item color="light" mode="ios" shape="round">
           <ion-label position="stacked">

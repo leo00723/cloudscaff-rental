@@ -60,6 +60,9 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { HttpClientModule } from '@angular/common/http';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NotificationsState } from './shared/notifications/notifications.state';
+import { NotificationFlagState } from './shared/notifications/notificationsFlag.state';
+import { NotificationService } from './services/notification.service';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -120,9 +123,19 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    NgxsModule.forRoot([AppState, RouterState, UserState, CompanyState], {
-      developmentMode: !environment.production,
-    }),
+    NgxsModule.forRoot(
+      [
+        AppState,
+        RouterState,
+        UserState,
+        CompanyState,
+        NotificationsState,
+        NotificationFlagState,
+      ],
+      {
+        developmentMode: !environment.production,
+      }
+    ),
     NgxsLoggerPluginModule.forRoot({ disabled: !environment.production }),
     NgxsReduxDevtoolsPluginModule.forRoot({
       disabled: !environment.production,
@@ -135,6 +148,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     ScreenTrackingService,
     UserTrackingService,
     MasterService,
+    NotificationService,
     FormBuilder,
     DecimalPipe,
     FileOpener,
