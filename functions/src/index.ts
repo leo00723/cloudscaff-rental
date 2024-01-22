@@ -32,4 +32,8 @@ exports.refreshXeroTokens = xero.refreshXeroTokens;
 
 //export notification functions to firebase
 
-exports.watchEnquiries = notifications.watchEnquiries;
+exports.enquiryCreated = notifications.enquiryCreated;
+exports.estimateCreated = notifications.estimateCreated;
+exports.estimateUpdates = notifications.estimateUpdates;
+exports.requestUpdates = notifications.requestUpdates;
+exports.returnUpdates = notifications.returnUpdates;
