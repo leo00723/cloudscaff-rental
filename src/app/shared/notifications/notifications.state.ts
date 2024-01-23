@@ -55,7 +55,9 @@ export class NotificationsState {
             this.store.dispatch(new SetNotificationFlag(counter));
             this.audio = new Audio();
             this.audio.src = 'assets/notification.wav';
-            this.audio.play();
+            setTimeout(() => {
+              this.audio.play();
+            }, 2000);
             counter = 0;
             this.notificationSvc.showNotification(
               'Cloudscaff Notification Recieved',

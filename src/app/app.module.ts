@@ -136,9 +136,9 @@ import { NotificationService } from './services/notification.service';
         developmentMode: !environment.production,
       }
     ),
-    NgxsLoggerPluginModule.forRoot({ disabled: !environment.production }),
+    NgxsLoggerPluginModule.forRoot({ disabled: environment.production }),
     NgxsReduxDevtoolsPluginModule.forRoot({
-      disabled: !environment.production,
+      disabled: environment.production,
     }),
     HttpClientModule,
     OAuthModule.forRoot(),
