@@ -54,4 +54,5 @@ export interface Company {
     tenantName?: string;
   };
   trialEnded?: boolean;
+  removeBranding?: boolean;
 }
