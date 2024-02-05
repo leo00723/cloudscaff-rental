@@ -140,7 +140,7 @@
           <td class="text-center">1</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ invoice.scaffold.total | number: "0.2-2" }}
+            {{ invoice.scaffold.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- SCAFFOLD ATTACHMENTS -->
@@ -161,7 +161,7 @@
           <td class="text-center">1</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ item.total | number: "0.2-2" }}
+            {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- BOARDS -->
@@ -176,7 +176,7 @@
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ item.total | number: "0.2-2" }}
+            {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- HIRE -->
@@ -189,7 +189,7 @@
           <td class="text-center">1</td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ invoice.hire.total | number: "0.2-2" }}
+            {{ invoice.hire.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- LABOR -->
@@ -202,7 +202,7 @@
           <td>{{ item.type.name }} - {{ item.rate.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- TRANSPORT -->
@@ -222,7 +222,7 @@
             </td>
             <td class="text-center">{{ item.qty }}</td>
             <td class="text-end">
-              {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+              {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
             </td>
           </tr>
         </ng-container>
@@ -239,7 +239,7 @@
           <td>{{ item.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
       </tbody>
@@ -249,7 +249,7 @@
           <th class="text-end" colspan="2" scope="col">Subtotal</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.subtotal | number: "0.2-2" }}
+            {{ invoice.subtotal | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -258,14 +258,14 @@
           </th>
           <th class="text-end text-danger" colspan="2" scope="col">
             - {{ company.currency.symbol }}
-            {{ invoice.discount | number: "0.2-2" }}
+            {{ invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="2" scope="col">Contract Total</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.subtotal - invoice.discount | number: "0.2-2" }}
+            {{ invoice.subtotal - invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
@@ -273,42 +273,42 @@
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th class="text-end" colspan="2" scope="col">
-            {{ company.currency.symbol }} {{ invoice.tax | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.tax | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
           <th class="text-end" colspan="2" scope="col">
-            VAT ({{ company.vat }}%)
+            {{ company.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
           </th>
           <th class="text-end" colspan="2" scope="col">
-            {{ company.currency.symbol }} {{ invoice.vat | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.vat | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="2" scope="col">Grand Total</th>
           <th class="text-end" colspan="2" scope="col">
-            {{ company.currency.symbol }} {{ invoice.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.total | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="2" scope="col">Amount Paid</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.totalPaid | number: "0.2-2" }}
+            {{ invoice.totalPaid | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="2" scope="col">Amount Outstanding</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.totalOutstanding | number: "0.2-2" }}
+            {{ invoice.totalOutstanding | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="2" scope="col">Amount Due</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.depositTotal | number: "0.2-2" }}
+            {{ invoice.depositTotal | number : "0.2-2" }}
           </th>
         </tr>
       </tfoot>

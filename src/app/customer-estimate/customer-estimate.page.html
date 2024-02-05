@@ -338,7 +338,8 @@
             </tr>
             <tr *ngIf="estimate.company.vat > 0">
               <th class="text-end" colspan="3" scope="col">
-                VAT ({{ estimate.company.vat }}%)
+                {{estimate.company.gst ? "GST" : "VAT"}} ({{
+                estimate.company.vat }}%)
               </th>
               <th class="text-end" colspan="2" scope="col">
                 {{ estimate.company.currency.symbol }} {{ estimate.estimate.vat

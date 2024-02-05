@@ -29,7 +29,7 @@ export class CreditSummaryComponent {
     const sharedCredit = {
       credit: this.credit,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -47,7 +47,7 @@ export class CreditSummaryComponent {
     const sharedCredit = {
       credit: this.credit,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

@@ -327,6 +327,7 @@ export class AddCreditComponent implements OnInit {
         bankName: this.company.bankName,
         swiftCode: this.company.swiftCode,
         id: this.company.id,
+        gst: this.company.gst,
       },
       code: this.isEdit ? this.credit.code : code,
       status: this.isEdit ? this.credit.status : 'pending',

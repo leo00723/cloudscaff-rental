@@ -37,7 +37,7 @@ export interface Company {
   totalOperationApplications?: number;
   users?: string[];
   vat?: number;
-  gst?: number;
+  gst?: boolean;
   vatNum?: string;
   salesTax?: number;
   regNumber?: string;

@@ -469,7 +469,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -673,7 +673,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -1003,7 +1003,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -1192,7 +1192,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -1301,7 +1301,9 @@ export class PdfService {
         body: [
           [
             {
-              text: `Total Exc VAT (${company.currency.symbol})`,
+              text: `Total Exc ${company.gst ? 'GST' : 'VAT'} (${
+                company.currency.symbol
+              })`,
               style: 'h4b',
               alignment: 'center',
             },
@@ -1702,7 +1704,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -2558,7 +2560,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -2814,7 +2816,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',

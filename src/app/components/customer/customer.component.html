@@ -41,7 +41,10 @@
           [readonly]="readOnly"
         ></app-input-reactive>
         <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
-          <ion-label>Exclude VAT on Estimates and Invoices</ion-label>
+          <ion-label
+            >Exclude {{ company.gst ? "GST" : "VAT" }} on Estimates and
+            Invoices</ion-label
+          >
           <ion-checkbox
             mode="ios"
             slot="end"

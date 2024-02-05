@@ -279,18 +279,17 @@
               </app-input-reactive>
             </ion-col>
             <ion-col size="12" *ngIf="showAll">
+              <ion-item mode="ios" class="rounded-3 mb-3">
+                <ion-checkbox
+                  shape="round"
+                  slot="end"
+                  formControlName="gst"
+                ></ion-checkbox>
+                <ion-label>Use GST instead of VAT?</ion-label>
+              </ion-item>
               <app-input-reactive
-                title="VAT % (set to 0 if you want to exclude this)"
+                title="{{form.get('gst').value ? 'GST' : 'VAT'}} % (set to 0 if you want to exclude this)"
                 controlName="vat"
-                type="number"
-                [form]="form"
-              >
-              </app-input-reactive>
-            </ion-col>
-            <ion-col size="12" *ngIf="showAll">
-              <app-input-reactive
-                title="GST % (set to 0 if you want to exclude this)"
-                controlName="gst"
                 type="number"
                 [form]="form"
               >
@@ -473,6 +472,14 @@
                 </app-input-reactive>
               </ion-col>
               <ion-col size="12" *ngIf="showAll">
+                <ion-item mode="ios" class="rounded-3 mb-3">
+                  <ion-checkbox
+                    shape="round"
+                    slot="end"
+                    formControlName="gst"
+                  ></ion-checkbox>
+                  <ion-label>Use GST instead of VAT?</ion-label>
+                </ion-item>
                 <app-input-reactive
                   title="VAT Number"
                   placeholder="Enter business VAT number"
@@ -647,7 +654,7 @@
               </ion-col>
               <ion-col size="12" *ngIf="showAll">
                 <app-input-reactive
-                  title="VAT %"
+                  title="{{form.get('gst').value ? 'GST' : 'VAT'}} % (set to 0 if you want to exclude this)"
                   controlName="vat"
                   type="number"
                   [form]="form"
