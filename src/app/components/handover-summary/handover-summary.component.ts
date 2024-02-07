@@ -76,6 +76,7 @@ export class HandoverSummaryComponent {
             this.handover.scaffold.id,
             {
               status: 'active-Handed over',
+              latestHandover: { ...this.handover },
             }
           );
         this.masterSvc
@@ -101,7 +102,7 @@ export class HandoverSummaryComponent {
     const sharedHandover = {
       handover: this.handover,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -120,7 +121,7 @@ export class HandoverSummaryComponent {
     const sharedHandover = {
       handover: this.handover,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

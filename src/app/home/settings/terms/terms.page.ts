@@ -81,6 +81,11 @@ export class TermsPage {
     return await modal.present();
   }
 
+  removeBilling(company: Company, page: string): boolean {
+    const billingPages = ['Estimate', 'Invoice', 'Credit', 'Payment'];
+    return !billingPages.includes(page) || !company.removeBilling;
+  }
+
   init() {
     this.terms$ = this.company$.pipe(
       switchMap((company) => {

@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Scaffold Register </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <app-scaffold-table
+    [value]="scaffolds$"
+    [showRegister]="true"
+    [showScaffoldList]="false"
+    *ngIf="scaffolds$ | async else loading"
+  ></app-scaffold-table>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

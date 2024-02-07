@@ -19,6 +19,7 @@ exports.regiserCompany = functions.https.onCall(async (data) => {
         needsSetup: true,
         trialEnded: false,
         isTrialing: true,
+        removeBilling: true,
         startDate: admin.firestore.Timestamp.fromDate(date),
         trialEndDate: admin.firestore.Timestamp.fromDate(new Date(trialEnd)),
       });

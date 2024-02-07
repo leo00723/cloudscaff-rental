@@ -8,36 +8,37 @@
     iconColor="primary"
     (updatedIcon)="editSite(site)"
   >
-    <ion-toolbar *ngIf="user$ |async as user">
-      <ion-segment
-        [scrollable]="true"
-        (ionChange)="segmentChanged($event)"
-        selectOnFocus="true"
-        [value]="active"
-        mode="md"
-      >
-        <ion-segment-button value="scaffolds">
-          <ion-label>Scaffolds</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="register">
-          <ion-label>Scaffold Register</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="inventory">
-          <ion-label>Inventory</ion-label>
-        </ion-segment-button>
-        <ion-segment-button
-          value="requests"
-          *ngIf="user.permissionsList.includes('Site Requests') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+    <ng-container *ngIf="company$ |async as company">
+      <ion-toolbar *ngIf="user$ |async as user">
+        <ion-segment
+          [scrollable]="true"
+          (ionChange)="segmentChanged($event)"
+          selectOnFocus="true"
+          [value]="active"
+          mode="md"
         >
-          <ion-label>Requests</ion-label>
-        </ion-segment-button>
-        <ion-segment-button
-          value="returns"
-          *ngIf="user.permissionsList.includes('Site Returns') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label>Returns</ion-label>
-        </ion-segment-button>
-        <!-- <ion-segment-button
+          <ion-segment-button value="scaffolds">
+            <ion-label>Scaffolds</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="register">
+            <ion-label>Scaffold Register</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="inventory">
+            <ion-label>Inventory</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="requests"
+            *ngIf="user.permissionsList.includes('Site Requests') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label>Requests</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="returns"
+            *ngIf="user.permissionsList.includes('Site Returns') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label>Returns</ion-label>
+          </ion-segment-button>
+          <!-- <ion-segment-button
           value="shipments"
           *ngIf="user.role !== 'Supervisor'"
         >
@@ -46,17 +47,21 @@
         <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Shipment Invoices</ion-label>
         </ion-segment-button> -->
-        <ion-segment-button
-          value="paymentApplication"
-          *ngIf="user.permissionsList.includes('Payment Applications') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label>Payment Application</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="uploads" *ngIf="user.role !== 'Supervisor'">
-          <ion-label>Uploads</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </ion-toolbar>
+          <ion-segment-button
+            value="paymentApplication"
+            *ngIf="(user.permissionsList.includes('Payment Applications') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
+          >
+            <ion-label>Payment Application</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="uploads"
+            *ngIf="user.role !== 'Supervisor'"
+          >
+            <ion-label>Uploads</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
+    </ng-container>
   </app-header>
 
   <ion-content fullscreen="true" class="ion-padding">
@@ -80,6 +85,35 @@
         </ion-fab>
       </div>
       <div *ngSwitchCase="'register'">
+        <div class="qrcodeImage" [hidden]="true">
+          <qrcode
+            #parent
+            qrdata="https://app.cloudscaff.com/viewRegister/{{ids[0]}}-{{ids[1]}}"
+            [imageSrc]="'assets/logos/logo.svg'"
+            [imageHeight]="75"
+            [imageWidth]="75"
+            title="SCAFFOLD REGISTER {{site.name}} {{site.code}}"
+            [allowEmptyString]="true"
+            [elementType]="'canvas'"
+            [errorCorrectionLevel]="'H'"
+            [margin]="4"
+            [scale]="1"
+            [width]="300"
+          ></qrcode>
+        </div>
+        <div class="text-end">
+          <ion-button
+            mode="ios"
+            fill="outline"
+            size="small"
+            shape="round"
+            color="tertiary"
+            (click)="saveAsImage(parent,site.name+'-'+site.code)"
+          >
+            Download QR
+            <ion-icon slot="end" name="qr-code-outline"></ion-icon>
+          </ion-button>
+        </div>
         <app-scaffold-table
           [value]="scaffolds$"
           [showRegister]="true"

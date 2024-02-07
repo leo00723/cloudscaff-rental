@@ -337,7 +337,10 @@
           </ion-row>
         </ion-col>
       </ion-row>
-      <ion-row class="card-outline mb-3" *ngIf="showAll">
+      <ion-row
+        class="card-outline mb-3"
+        *ngIf="showAll && !company?.removeBilling"
+      >
         <ion-col sizeLg="6" size="12">
           <h4>Intergrations</h4>
           <ion-text color="medium">

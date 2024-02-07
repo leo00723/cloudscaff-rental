@@ -63,6 +63,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NotificationsState } from './shared/notifications/notifications.state';
 import { NotificationFlagState } from './shared/notifications/notificationsFlag.state';
 import { NotificationService } from './services/notification.service';
+import { ScaffoldTableComponent } from './components/scaffold-table/scaffold-table.component';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {

@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { Company } from 'src/app/models/company.model';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
 })
 export class SettingsPage {
+  @Select() company$: Observable<Company>;
   settings = [
     {
       title: 'Business Settings',
@@ -48,4 +52,12 @@ export class SettingsPage {
       path: '/dashboard/settings/users',
     },
   ];
+  removeBilling(company: Company, page: string): boolean {
+    const billingPages = [
+      'Labor Profiles',
+      'Rate Profiles',
+      'Transport Profiles',
+    ];
+    return !billingPages.includes(page) || !company.removeBilling;
+  }
 }

@@ -139,6 +139,11 @@ export class HomePage implements OnDestroy {
     });
   }
 
+  removeBilling(company: Company, page: string): boolean {
+    const billingPages = ['Estimates', 'Statements'];
+    return !billingPages.includes(page) || !company.removeBilling;
+  }
+
   call() {
     window.open('https://calendly.com/cloudscaff/onboarding', '_blank');
   }

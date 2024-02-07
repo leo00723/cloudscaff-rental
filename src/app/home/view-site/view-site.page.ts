@@ -24,12 +24,14 @@ import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
+import { Company } from 'src/app/models/company.model';
 
 @Component({
   selector: 'app-view-site',
   templateUrl: './view-site.page.html',
 })
 export class ViewSitePage implements OnInit {
+  @Select() company$: Observable<Company>;
   @Select() user$: Observable<User>;
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
@@ -348,6 +350,27 @@ export class ViewSitePage implements OnInit {
     this.masterSvc
       .pdf()
       .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
+  }
+
+  async saveAsImage(parent: any, site: string) {
+    let parentElement = null;
+    // fetches base 64 data from canvas
+    parentElement = parent.qrcElement.nativeElement
+      .querySelector('canvas')
+      .toDataURL('image/png');
+
+    if (parentElement) {
+      // converts base 64 encoded image to blobData
+      const blobData = await (await fetch(parentElement)).blob();
+      // saves as image
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      // name of the file
+      link.download = site;
+      link.click();
+    }
   }
 
   help() {

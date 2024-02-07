@@ -100,7 +100,6 @@ export class AddHandoverComponent implements OnInit {
           .edit()
           .updateDoc(`company/${company.id}/scaffolds`, this.scaffold.id, {
             totalHandovers: increment(1),
-            latestHandover: { ...this.handover },
           });
         this.masterSvc
           .notification()

@@ -66,7 +66,7 @@
     </ion-list>
 
     <ion-list id="nav-list">
-      <ion-menu-toggle auto-hide="false">
+      <ion-menu-toggle auto-hide="false" *ngIf="company$|async as company">
         <ng-container *ngFor="let p of appPages; let i = index">
           <ion-item
             routerDirection="root"
@@ -74,7 +74,7 @@
             lines="none"
             detail="false"
             routerLinkActive="selected"
-            *ngIf="user.permissionsList.includes(p.title) || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+            *ngIf="(user.permissionsList.includes(p.title) || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && removeBilling(company,p.title)"
           >
             <ion-icon slot="start" [name]="p.icon"></ion-icon>
             <ion-label>{{ p.title }}</ion-label>
@@ -157,39 +157,40 @@
         </ion-button>
       </ion-label>
     </ion-item> -->
-    <ion-list id="settings-list">
-      <ion-item lines="none" detail="false">
-        <ion-label class="ion-text-center">
-          <ion-button size="block" shape="round" (click)="call()">
-            Need Help? <br />
-            Book a call
-          </ion-button>
-        </ion-label>
-      </ion-item>
+    <div class="mt-5" id="settings-list">
+      <!-- <ion-item lines="none" detail="false">
+        <ion-button fill="clear" expand="block" shape="round" (click)="call()">
+          Remove Cloudscaff Branding
+        </ion-button>
+      </ion-item> -->
+      <ion-button mode="ios" expand="block" shape="round" (click)="call()">
+        Need Help?
+      </ion-button>
       <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
-      <ion-item lines="none" detail="false" *ngIf="!loading">
+      <ion-button
+        *ngIf="!loading"
+        color="dark"
+        mode="ios"
+        shape="round"
+        expand="block"
+        fill="outline"
+        (click)="check()"
+      >
+        Check For Updates
+      </ion-button>
+    </div>
+    <div class="text-center mt-5">
+      <p>{{version}}</p>
+
+      <ion-text
+        class="small text-muted text-center"
+        *ngIf="company$ |async as company"
+      >
         <ion-label class="ion-text-center">
-          <ion-button shape="round" fill="clear" (click)="check()">
-            check for updates
-          </ion-button>
+          <small class="text-muted">{{company.id}}</small>
         </ion-label>
-      </ion-item>
-      <ion-item lines="none">
-        <ion-label class="ion-text-center">
-          <ion-note>{{version}}</ion-note>
-        </ion-label>
-      </ion-item>
-      <ion-item lines="none">
-        <ion-label class="ion-text-center">
-          <ion-text
-            class="small text-muted text-center"
-            *ngIf="company$ |async as company"
-          >
-            <small class="text-muted">{{company.id}}</small>
-          </ion-text>
-        </ion-label>
-      </ion-item>
-    </ion-list>
+      </ion-text>
+    </div>
   </ion-content>
 </ion-menu>
 

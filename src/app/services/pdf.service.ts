@@ -4069,7 +4069,7 @@ export class PdfService {
 
   private async getFooter() {
     const removeBranding =
-      this.store.selectSnapshot(CompanyState.company).removeBranding || false;
+      this.store.selectSnapshot(CompanyState.company)?.removeBranding || false;
     const footerCS = [];
     if (!removeBranding) {
       footerCS.push([

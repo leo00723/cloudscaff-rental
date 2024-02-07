@@ -118,6 +118,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'viewRegister/:id',
+    loadChildren: () =>
+      import('./customer-register/customer-register.module').then(
+        (m) => m.CustomerRegisterPageModule
+      ),
+  },
+  {
     path: '**',
     pathMatch: 'full',
     redirectTo: '/dashboard/sites',

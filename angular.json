@@ -18,7 +18,8 @@
               "pdfmake/build/vfs_fonts",
               "file-saver",
               "lodash/cloneDeep",
-              "papaparse"
+              "papaparse",
+              "qrcode"
             ],
             "outputPath": "www",
             "index": "src/index.html",

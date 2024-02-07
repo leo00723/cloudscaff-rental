@@ -102,6 +102,7 @@ export class AddInspectionComponent implements OnInit {
           .edit()
           .updateDoc(`company/${company.id}/scaffolds`, this.scaffold.id, {
             totalInspections: increment(1),
+            latestInspection: this.inspection,
           });
         this.masterSvc
           .notification()

@@ -5,55 +5,57 @@
     [showBack]="true"
     path="/dashboard/site/{{ids[0]}}-{{ids[1]}}"
   >
-    <ion-toolbar *ngIf="user$ |async as user">
-      <ion-segment
-        scrollable="true"
-        (ionChange)="segmentChanged($event)"
-        selectOnFocus="true"
-        [value]="active"
-        mode="md"
-      >
-        <ion-segment-button value="overview">
-          <ion-label>Overview</ion-label>
-        </ion-segment-button>
-        <ion-segment-button
-          value="inspections"
-          *ngIf="user.permissionsList.includes('Inspections') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+    <ng-container *ngIf="company$ |async as company">
+      <ion-toolbar *ngIf="user$ |async as user">
+        <ion-segment
+          scrollable="true"
+          (ionChange)="segmentChanged($event)"
+          selectOnFocus="true"
+          [value]="active"
+          mode="md"
         >
-          <ion-label>Inspections</ion-label>
-        </ion-segment-button>
-        <ion-segment-button
-          value="handovers"
-          *ngIf="user.permissionsList.includes('Handovers') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label>Handovers</ion-label>
-        </ion-segment-button>
-        <!-- <ion-segment-button
+          <ion-segment-button value="overview">
+            <ion-label>Overview</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="handovers"
+            *ngIf="user.permissionsList.includes('Handovers') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label>Handovers</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="inspections"
+            *ngIf="user.permissionsList.includes('Inspections') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label>Inspections</ion-label>
+          </ion-segment-button>
+          <!-- <ion-segment-button
           value="modifications"
           *ngIf="user.role !== 'Supervisor'"
         >
           <ion-label>Modifications</ion-label>
         </ion-segment-button> -->
-        <ion-segment-button
-          value="invoices"
-          *ngIf="user.permissionsList.includes('Invoices') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label>Invoices</ion-label>
-        </ion-segment-button>
-        <ion-segment-button
-          value="payments"
-          *ngIf="user.permissionsList.includes('Payments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label>Payments</ion-label>
-        </ion-segment-button>
-        <ion-segment-button
-          value="credit"
-          *ngIf="user.permissionsList.includes('Credit Notes') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label>Credit Notes</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </ion-toolbar>
+          <ion-segment-button
+            value="invoices"
+            *ngIf="(user.permissionsList.includes('Invoices') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
+          >
+            <ion-label>Invoices</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="payments"
+            *ngIf="(user.permissionsList.includes('Payments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
+          >
+            <ion-label>Payments</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="credit"
+            *ngIf="(user.permissionsList.includes('Credit Notes') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
+          >
+            <ion-label>Credit Notes</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
+    </ng-container>
   </app-header>
 
   <ion-content fullscreen="true" class="ion-padding">

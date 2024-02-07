@@ -42,6 +42,7 @@
     "@swimlane/ngx-datatable": "^20.1.0",
     "angular-oauth2-oidc": "^14.0.1",
     "angular2-signaturepad": "^4.0.2",
+    "angularx-qrcode": "^17.0.0",
     "bootstrap": "^5.2.2",
     "cordova-plugin-file-opener2": "^3.0.5",
     "date-fns": "^2.29.3",
