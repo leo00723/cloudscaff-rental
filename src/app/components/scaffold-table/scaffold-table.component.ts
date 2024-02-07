@@ -8,7 +8,7 @@ import {
   ViewEncapsulation,
   inject,
 } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { LoadingController, ModalController } from '@ionic/angular';
 import { Select } from '@ngxs/store';
 import {
   DatatableComponent,
@@ -53,6 +53,8 @@ export class ScaffoldTableComponent {
   selected = [];
   private modalController: ModalController = inject(ModalController);
   private masterSvc = inject(MasterService);
+  private loadingCtrl = inject(LoadingController);
+
   filterScaffold(scaffold: Scaffold) {
     return scaffold.latestHandover ? true : false;
   }
@@ -110,11 +112,17 @@ export class ScaffoldTableComponent {
       .edit()
       .getDocById(`company/${handover.company.id}/terms`, 'Handover')
       .subscribe(async (terms) => {
+        const loading = await this.loadingCtrl.create({
+          message: 'Downloading document',
+          mode: 'ios',
+        });
+        loading.present();
         handover = { ...handover, date: handover?.date?.toDate() };
         const pdf = await this.masterSvc
           .pdf()
           .generateHandover(handover, handover.company, terms || null);
         this.masterSvc.pdf().handlePdf(pdf, handover.code);
+        loading.dismiss();
       });
   }
   async downloadInspection(inspection: Inspection) {
@@ -122,11 +130,17 @@ export class ScaffoldTableComponent {
       .edit()
       .getDocById(`company/${inspection.company.id}/terms`, 'Inspection')
       .subscribe(async (terms) => {
+        const loading = await this.loadingCtrl.create({
+          message: 'Downloading document',
+          mode: 'ios',
+        });
+        loading.present();
         inspection = { ...inspection, date: inspection?.date?.toDate() };
         const pdf = await this.masterSvc
           .pdf()
           .generateInspection(inspection, inspection.company, terms || null);
         this.masterSvc.pdf().handlePdf(pdf, inspection.code);
+        loading.dismiss();
       });
   }
 }

@@ -19,7 +19,7 @@
               "file-saver",
               "lodash/cloneDeep",
               "papaparse",
-              "qrcode"
+              "@cordobo/qrcode"
             ],
             "outputPath": "www",
             "index": "src/index.html",
