@@ -65,7 +65,7 @@
     >
       <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
         <ion-badge [color]="getStatus(value)" mode="ios">{{
-          value.split("-")[1]
+          value.split("-")[1] || value
         }}</ion-badge>
       </ng-template>
     </ngx-datatable-column>
@@ -89,6 +89,7 @@
         <th rowspan="2">Created By</th>
         <th rowspan="2">Handover</th>
         <th rowspan="2">Inspection</th>
+        <th rowspan="2">Dismantle</th>
       </tr>
       <tr class="text-center">
         <th>Length</th>
@@ -109,9 +110,9 @@
             <td>{{ i + 1 }}</td>
             <!-- (click)="viewHandover(scaffold.latestHandover)"
             class="text-primary cursor-pointer" -->
-            <th>
+            <td class="fw-bold">
               {{ scaffold.code }}
-            </th>
+            </td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.length }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.width }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.height }}</td>
@@ -128,14 +129,23 @@
             <td>
               {{ scaffold.latestHandover.scaffold.totalArea | number }}
             </td>
-            <td
-              ngClass="text-{{
-                scaffold.latestHandover.type === 'Erected'
-                  ? 'success'
-                  : 'danger'
-              }}"
-            >
-              {{ scaffold.latestHandover.type }}
+            <td>
+              <ion-badge
+                mode="ios"
+                shape="round"
+                [color]="
+                  scaffold.latestHandover.type === 'Erected' &&
+                  scaffold.status !== 'Dismantled'
+                    ? 'success'
+                    : 'danger'
+                "
+              >
+                {{
+                  scaffold.status === "Dismantled"
+                    ? "Dismantled"
+                    : scaffold.latestHandover.type
+                }}
+              </ion-badge>
             </td>
 
             <td>{{ scaffold.latestHandover.notes }}</td>
@@ -161,6 +171,16 @@
                 }}</ion-button
               >
             </td>
+            <td>
+              <ion-button
+                *ngIf="scaffold.latestDismantle"
+                fill="clear"
+                size="small"
+                expand="block"
+                (click)="downloadHandover(scaffold.latestDismantle)"
+                >{{ scaffold.latestDismantle.date.toDate() | date }}</ion-button
+              >
+            </td>
           </tr>
           <!-- ATTACHMENTS -->
           <tr
@@ -178,7 +198,7 @@
             <td>
               {{ +attachment.length * +attachment.width * +attachment.height }}
             </td>
-            <td colspan="7"></td>
+            <td colspan="8"></td>
           </tr>
         </ng-container>
       </ng-container>

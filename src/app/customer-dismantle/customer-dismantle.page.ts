@@ -4,7 +4,7 @@ import { Store } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
 import { Company } from '../models/company.model';
 import { Handover } from '../models/handover.model';
-import { SharedHandover } from '../models/sharedHandover.model';
+import { SharedDismantle } from '../models/sharedDismantle.model';
 import { Term } from '../models/term.model';
 import { EditService } from '../services/edit.service';
 import { ImgService } from '../services/img.service';
@@ -13,11 +13,11 @@ import { PdfService } from '../services/pdf.service';
 import { Navigate } from '../shared/router.state';
 
 @Component({
-  selector: 'app-customer-handover',
-  templateUrl: './customer-handover.page.html',
+  selector: 'app-customer-dismantle',
+  templateUrl: './customer-dismantle.page.html',
 })
-export class CustomerHandoverPage {
-  handover$: Observable<SharedHandover>;
+export class CustomerDismantlePage {
+  dismantle$: Observable<SharedDismantle>;
   ids: string[];
   sent = false;
   isLoading = false;
@@ -34,10 +34,10 @@ export class CustomerHandoverPage {
       this.notificationSvc.toast('Document not found!', 'warning', 3000);
       this.store.dispatch(new Navigate('/login'));
     }
-    this.handover$ = this.editSvc
-      .getDocById('sharedHandovers', `${this.ids[0]}-${this.ids[1]}`)
+    this.dismantle$ = this.editSvc
+      .getDocById('sharedDismantles', `${this.ids[0]}-${this.ids[1]}`)
       .pipe(
-        tap(async (data: SharedHandover) => {
+        tap(async (data: SharedDismantle) => {
           if (data) {
             if (!data.viewed && !this.sent) {
               this.sent = true;
@@ -46,11 +46,11 @@ export class CustomerHandoverPage {
                 template: {
                   name: 'share',
                   data: {
-                    title: `Hey ${data.company.name}, ${data.handover.customer.name} has viewed your handover.`,
+                    title: `Hey ${data.company.name}, ${data.dismantle.customer.name} has viewed your dismantle.`,
                     message: '',
-                    btnText: 'View Handover',
-                    link: `https://app.cloudscaff.com/viewHandover/${this.ids[0]}-${this.ids[1]}`,
-                    subject: `${data.handover.customer.name} viewed the handover`,
+                    btnText: 'View Dismantle',
+                    link: `https://app.cloudscaff.com/viewDismantle/${this.ids[0]}-${this.ids[1]}`,
+                    subject: `${data.dismantle.customer.name} viewed the dismantle`,
                   },
                 },
               };
@@ -58,7 +58,7 @@ export class CustomerHandoverPage {
                 'mail',
                 JSON.parse(JSON.stringify(emailData))
               );
-              await this.editSvc.updateDoc('sharedHandovers', data.id, {
+              await this.editSvc.updateDoc('sharedDismantles', data.id, {
                 viewed: true,
               });
             }
@@ -70,38 +70,38 @@ export class CustomerHandoverPage {
       );
   }
 
-  async sign(handover: Handover, ev: { signature: string; name: string }) {
+  async sign(dismantle: Handover, ev: { signature: string; name: string }) {
     this.isLoading = true;
     try {
       const blob = await (await fetch(ev.signature)).blob();
       const res = await this.imgSvc.uploadBlob(
         blob,
-        `company/${handover.company.id}/handovers/${handover.id}/signature`,
+        `company/${dismantle.company.id}/dismantles/${dismantle.id}/signature`,
         ''
       );
       if (res) {
-        handover.signature = res.url2;
-        handover.signatureRef = res.ref;
-        handover.status = 'active-Signed';
-        handover.signedBy = ev.name;
+        dismantle.signature = res.url2;
+        dismantle.signatureRef = res.ref;
+        dismantle.status = 'Signed';
+        dismantle.signedBy = ev.name;
         this.editSvc.setDoc(
-          `company/${handover.company.id}/handovers`,
-          handover,
-          handover.id
+          `company/${dismantle.company.id}/dismantles`,
+          dismantle,
+          dismantle.id
         );
         await this.editSvc.updateDoc(
-          `company/${handover.company.id}/scaffolds`,
-          handover.scaffold.id,
+          `company/${dismantle.company.id}/scaffolds`,
+          dismantle.scaffold.id,
           {
-            status: 'active-Handed over',
-            latestHandover: { ...handover },
+            status: 'Dismantled',
+            latestDismantle: { ...dismantle },
           }
         );
         await this.editSvc.updateDoc(
-          'sharedHandovers',
-          `${handover.company.id}-${handover.id}`,
+          'sharedDismantles',
+          `${dismantle.company.id}-${dismantle.id}`,
           {
-            handover,
+            dismantle,
           }
         );
         this.notificationSvc.toast('Document signed successfully!', 'success');
@@ -119,9 +119,9 @@ export class CustomerHandoverPage {
     }
   }
 
-  async download(terms: Term | null, handover: Handover, company: Company) {
-    const pdf = await this.pdf.generateHandover(handover, company, terms);
-    if (!this.pdf.handlePdf(pdf, handover.code)) {
+  async download(terms: Term | null, dismantle: Handover, company: Company) {
+    const pdf = await this.pdf.generateDismantle(dismantle, company, terms);
+    if (!this.pdf.handlePdf(pdf, dismantle.code)) {
       this.notificationSvc.toast(
         'Documents can only be downloaded on pc or web',
         'warning',

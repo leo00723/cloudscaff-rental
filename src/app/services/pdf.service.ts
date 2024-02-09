@@ -2305,6 +2305,288 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
+  // HANDOVER PDF
+  async generateDismantle(
+    dismantle: Handover,
+    company: Company,
+    terms: Term | null
+  ) {
+    const attachments = [];
+    dismantle.scaffold.attachments.forEach((a, i) => {
+      attachments.push([
+        '',
+        {
+          text: `${company.terminology.scaffold} Level ${a.level}`,
+          style: 'h6',
+        },
+        {
+          text: `${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.safe,
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const boards = [];
+    dismantle.scaffold.boards.forEach((b, i) => {
+      boards.push([
+        '',
+        {
+          text: `${company.terminology.boards}`,
+          style: 'h6',
+        },
+        {
+          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Level ${b.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: b.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: 'Yes',
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', '*', '*', '*'],
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Detail', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Safe', style: 'h4b', alignment: 'center' },
+          ],
+          [
+            {
+              text: 1,
+              style: 'h4b',
+            },
+            {
+              text: `${company.terminology.scaffold} Details`,
+              style: 'h4b',
+              colSpan: 4,
+            },
+          ],
+          [
+            '',
+            {
+              text: `${company.terminology.scaffold} Level 0`,
+              style: 'h6',
+            },
+            {
+              text: `${dismantle.scaffold.scaffold.length}${company.measurement.symbol} x ${dismantle.scaffold.scaffold.width}${company.measurement.symbol} x ${dismantle.scaffold.scaffold.height}${company.measurement.symbol}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: '1',
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: dismantle.scaffold.scaffold.safe,
+              style: 'h6',
+              alignment: 'center',
+            },
+          ],
+          ...attachments,
+          ...boards,
+        ],
+      },
+      layout: tLayout,
+    };
+    const checklist = [];
+    if (dismantle.questions) {
+      dismantle.questions.categories.forEach((c) => {
+        const items = [];
+        c.items.forEach((i, j) => {
+          items.push([
+            {
+              text: j + 1,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.question,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.value ? i.value : 'N/A',
+              style: 'h6',
+              alignment: 'center',
+            },
+          ]);
+        });
+        const questions = {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['auto', '*', 'auto'],
+            body: [
+              [
+                { text: '#', style: 'h4b', alignment: 'left' },
+                { text: 'Question', style: 'h4b', alignment: 'left' },
+                { text: 'Checklist', style: 'h4b', alignment: 'center' },
+              ],
+              ...items,
+            ],
+          },
+          layout: tLayout,
+        };
+        checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
+      });
+    }
+
+    const signature = dismantle.signature
+      ? {
+          image: await this.getBase64ImageFromURL(dismantle.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Dismantle-${dismantle.code}`),
+      content: [
+        await this.getHeader(
+          'Dismantle',
+          dismantle.code,
+          dismantle.scaffold.siteCode,
+          dismantle.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          `https://app.cloudscaff.com/viewDismantle/${company.id}-${dismantle.id}`,
+          [
+            [
+              { text: 'Scaffold:', style: 'h6b' },
+              `${dismantle.scaffold.code}`,
+              '',
+              '',
+            ],
+            [
+              {
+                text: 'Status:',
+                style: 'h6b',
+              },
+              {
+                text: dismantle.safe,
+                style: 'h6b',
+                color: dismantle.safe === 'Passed' ? 'green' : 'red',
+              },
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getSubHeader(dismantle.customer, company),
+        hr,
+        { text: dismantle.notes },
+        hr,
+        summary,
+        checklist,
+        hr,
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Status',
+                  style: 'h4b',
+                  alignment: 'left',
+                  colSpan: 2,
+                },
+                {
+                  text: '',
+                  style: 'h4b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                {
+                  text: 'Maximum load of the scaffold?',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: dismantle.maxLoad,
+                  style: 'h4b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                {
+                  text: 'Is the scaffold safe for use?	',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: dismantle.safe,
+                  style: 'h4b',
+                  alignment: 'right',
+                  color: dismantle.safe === 'Passed' ? 'green' : 'red',
+                },
+              ],
+              [
+                {
+                  text: 'Signature',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature,
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
+        hr,
+        await this.addUploads(dismantle.uploads),
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+
+        { text: terms ? terms.terms : '', style: { fontSize: 6 } },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
   // INVOICE STANDARD PDF
   async generateInvoice(
     invoice: Invoice,

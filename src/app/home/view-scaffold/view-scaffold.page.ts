@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
@@ -8,9 +9,9 @@ import { AddInspectionComponent } from 'src/app/components/add-inspection/add-in
 import { AddInvoiceComponent } from 'src/app/components/add-invoice/add-invoice.component';
 import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
 import { AddPaymentComponent } from 'src/app/components/add-payment/add-payment.component';
+import { DismantleSummaryComponent } from 'src/app/components/dismantle-summary/dismantle-summary.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
-import { InvoiceSummaryComponent } from 'src/app/components/invoice-summary/invoice-summary.component';
 import { ViewInvoiceComponent } from 'src/app/components/view-invoice/view-invoice.component';
 import { ViewModificationComponent } from 'src/app/components/view-modification/view-modification.component';
 import { Company } from 'src/app/models/company.model';
@@ -35,6 +36,7 @@ export class ViewScaffoldPage implements OnInit {
   scaffold$: Observable<Scaffold>;
   inspections$: Observable<Inspection[]>;
   handovers$: Observable<Handover[]>;
+  dismantles$: Observable<Handover[]>;
   modifications$: Observable<Modification[]>;
   invoices$: Observable<Invoice[]>;
   payments$: Observable<Payment[]>;
@@ -62,64 +64,46 @@ export class ViewScaffoldPage implements OnInit {
       ) as Observable<Scaffold>;
     this.inspections$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/inspections`,
-        'scaffold.id',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Inspection[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/inspections`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Inspection[]>;
     this.handovers$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/handovers`,
-        'scaffold.id',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Handover[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/handovers`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Handover[]>;
+    this.dismantles$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/dismantles`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Handover[]>;
     this.modifications$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/modifications`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Modification[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/modifications`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Modification[]>;
     this.invoices$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/invoices`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Invoice[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/invoices`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Invoice[]>;
     this.payments$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/payments`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Payment[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/payments`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Payment[]>;
     this.credits$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/credits`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Credit[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/credits`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Credit[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -207,6 +191,18 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'viewHandover',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewDismantle(dismantle: Handover) {
+    const modal = await this.masterSvc.modal().create({
+      component: DismantleSummaryComponent,
+      componentProps: {
+        dismantle,
+      },
+      showBackdrop: false,
+      id: 'viewDismantle',
       cssClass: 'fullscreen',
     });
     return await modal.present();

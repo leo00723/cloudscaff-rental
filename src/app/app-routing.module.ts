@@ -111,6 +111,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'viewDismantle/:id',
+    loadChildren: () =>
+      import('./customer-dismantle/customer-dismantle.module').then(
+        (m) => m.CustomerDismantlePageModule
+      ),
+  },
+  {
     path: 'viewStatement/:id',
     loadChildren: () =>
       import('./customer-statement/customer-statement.module').then(

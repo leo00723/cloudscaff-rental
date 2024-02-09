@@ -38,6 +38,11 @@ export class TermsPage {
       path: 'Inspection',
     },
     {
+      title: `Dismantle T's & C's`,
+      description: `Here you update T's & C's for your dismantles.`,
+      path: 'Dismantle',
+    },
+    {
       title: `Invoice T's & C's`,
       description: `Here you update T's & C's for your invoices.`,
       path: 'Invoice',

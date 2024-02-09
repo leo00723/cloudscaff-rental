@@ -98,6 +98,7 @@ import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipm
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
+import { DismantleSummaryComponent } from './dismantle-summary/dismantle-summary.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -189,6 +190,7 @@ const COMPONENTS = [
   AddScaffoldComponent,
   WeightPipe,
   ScaffoldTableComponent,
+  DismantleSummaryComponent,
 ];
 const IMPORTS = [
   CommonModule,

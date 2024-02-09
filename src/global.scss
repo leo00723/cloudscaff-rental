@@ -39,11 +39,10 @@
 @import "@swimlane/ngx-datatable/assets/icons.css";
 @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
 
-
 /* Styles for the scrollbar track */
 ::-webkit-scrollbar {
-  width:0.2rem;
-  height:0.2rem;
+  width: 0.2rem;
+  height: 0.2rem;
 }
 
 /* Styles for the scrollbar thumb */
@@ -111,21 +110,31 @@ ion-modal {
   @extend.rounded-lg;
   @extend.p-2;
 }
+
+table,
+tr,
+td,
+th {
+  background-color: transparent !important;
+  color: var(--ion-color-dark) !important;
+  border-color: var(--ion-color-medium-tint) !important;
+}
+
 @include media-breakpoint-up(xs) {
-	.accordian-scroll {
-		overflow: scroll;
-		max-height: 60vh;
-	}
+  .accordian-scroll {
+    overflow: scroll;
+    max-height: 60vh;
+  }
 }
 @include media-breakpoint-up(lg) {
-	.accordian-scroll {
-		overflow: scroll;
-		max-height: 70vh;
-	}
+  .accordian-scroll {
+    overflow: scroll;
+    max-height: 70vh;
+  }
 }
 @include media-breakpoint-up(xl) {
-	.accordian-scroll {
-		overflow: scroll;
-		max-height: 70vh;
-	}
+  .accordian-scroll {
+    overflow: scroll;
+    max-height: 70vh;
+  }
 }

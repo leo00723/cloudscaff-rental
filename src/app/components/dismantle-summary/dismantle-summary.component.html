@@ -9,15 +9,15 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ handover.code }}</ion-title>
+    <ion-title>{{ dismantle.code }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content fullscreen="true" class="ion-padding">
-  <ion-grid class="container" *ngIf="handover; else loading">
+  <ion-grid class="container" *ngIf="dismantle; else loading">
     <ion-row class="py-2">
       <ion-col sizeMd="6" size="4">
         <ion-text>
-          <h4>Handover</h4>
+          <h4>Dismantle</h4>
         </ion-text>
       </ion-col>
       <ion-col sizeMd="6" size="8" class="text-end">
@@ -68,17 +68,17 @@
       </ion-col>
       <ion-col>
         <ion-label>
-          <h6>{{ handover.code }}</h6>
-          <h6>{{ handover.scaffold.code }}</h6>
-          <h6>{{ handover.scaffold.siteCode }}</h6>
-          <h6>{{ handover.date | date }}</h6>
+          <h6>{{ dismantle.code }}</h6>
+          <h6>{{ dismantle.scaffold.code }}</h6>
+          <h6>{{ dismantle.scaffold.siteCode }}</h6>
+          <h6>{{ dismantle.date | date }}</h6>
         </ion-label>
       </ion-col>
     </ion-row>
     <ion-item-divider mode="md"></ion-item-divider>
 
     <app-company-info-detail
-      [customer]="handover.customer"
+      [customer]="dismantle.customer"
     ></app-company-info-detail>
 
     <ion-item-divider mode="md"></ion-item-divider>
@@ -86,11 +86,11 @@
       <ion-col>
         <app-scaffold-overview-table
           [detailed]="false"
-          [scaffold]="handover.scaffold"
+          [scaffold]="dismantle.scaffold"
           [showSafe]="true"
         ></app-scaffold-overview-table>
-        <table class="table table-bordered" *ngIf="handover.questions">
-          <ng-container *ngFor="let category of handover.questions.categories">
+        <table class="table table-bordered" *ngIf="dismantle.questions">
+          <ng-container *ngFor="let category of dismantle.questions.categories">
             <thead>
               <tr class="table-light">
                 <th colspan="3" scope="col">{{ category.name }}</th>
@@ -118,19 +118,16 @@
         <table class="table table-bordered mb-3">
           <thead>
             <tr class="table-light">
-              <th colspan="2">Handover Details</th>
+              <th colspan="2">Dismantle Details</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="align-middle">
-              <td colspan="2" [innerText]="handover.detail"></td>
-            </tr>
-            <ng-container *ngIf="handover.notes">
+            <ng-container *ngIf="dismantle.notes">
               <tr class="align-middle table-light">
                 <th colspan="2">Notes</th>
               </tr>
               <tr class="align-middle">
-                <td colspan="2" [innerText]="handover.notes"></td>
+                <td colspan="2" [innerText]="dismantle.notes"></td>
               </tr>
             </ng-container>
             <tr class="align-middle table-light">
@@ -140,7 +137,7 @@
               <td>Maximum load of the scaffold?</td>
               <td class="text-center">
                 <ion-text slot="end">
-                  {{ handover.maxLoad }}
+                  {{ dismantle.maxLoad }}
                 </ion-text>
               </td>
             </tr>
@@ -148,23 +145,23 @@
               <td>Is the scaffold safe for use?</td>
               <td class="text-center">
                 <ion-text
-                  [color]="handover.safe === 'Passed' ? 'success' : 'danger'"
+                  [color]="dismantle.safe === 'Passed' ? 'success' : 'danger'"
                   slot="end"
                 >
-                  {{ handover.safe }}
+                  {{ dismantle.safe }}
                 </ion-text>
               </td>
             </tr>
-            <tr class="align-middle" *ngIf="handover.signature">
+            <tr class="align-middle" *ngIf="dismantle.signature">
               <td>Signed By</td>
               <td class="text-center">
-                <ion-text slot="end">{{ handover.signedBy }}</ion-text>
+                <ion-text slot="end">{{ dismantle.signedBy }}</ion-text>
               </td>
             </tr>
-            <tr class="align-middle" *ngIf="handover.signature">
+            <tr class="align-middle" *ngIf="dismantle.signature">
               <td>Signature</td>
               <td class="text-center">
-                <img [src]="handover.signature" />
+                <img [src]="dismantle.signature" />
               </td>
             </tr>
           </tbody>
@@ -178,13 +175,13 @@
             sizeLg="3"
             sizeMd="4"
             size="6"
-            *ngFor="let file of handover.uploads; let i = index"
+            *ngFor="let file of dismantle.uploads; let i = index"
           >
             <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
           </ion-col>
         </ion-row>
       </ion-col>
-      <ion-col size="12" *ngIf="!handover.signature">
+      <ion-col size="12" *ngIf="!dismantle.signature">
         <ion-text><h4>Signature</h4></ion-text>
         <app-signature-pad (result)="sign($event)"></app-signature-pad>
       </ion-col>
@@ -192,20 +189,6 @@
         type="indeterminate"
         *ngIf="isLoading"
       ></ion-progress-bar>
-      <ion-col
-        class="text-end"
-        *ngIf="handover.signature && !handover?.dismantled"
-      >
-        <ion-button
-          (click)="dismantle()"
-          fill="solid"
-          shape="round"
-          color="danger"
-          *ngIf="!isLoading"
-        >
-          Dismantle Scaffold
-        </ion-button>
-      </ion-col>
     </ion-row>
   </ion-grid>
   <ng-template #loading>

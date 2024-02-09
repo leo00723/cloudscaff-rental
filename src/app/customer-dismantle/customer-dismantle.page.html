@@ -1,22 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Cloudscaff - Handover</ion-title>
+    <ion-title>Cloudscaff - Dismantle</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid class="container" *ngIf="handover$ | async as handover">
+  <ion-grid class="container" *ngIf="dismantle$ | async as dismantle">
     <ion-row class="py-2">
       <ion-col sizeMd="6" size="4">
         <ion-text>
-          <h4>Handover</h4>
+          <h4>Dismantle</h4>
         </ion-text>
       </ion-col>
       <ion-col sizeMd="6" size="8" class="text-end">
         <ion-button
           size="small"
           fill="clear"
-          (click)="download(handover.terms, handover.handover,handover.company)"
+          (click)="download(dismantle.terms, dismantle.dismantle,dismantle.company)"
           color="primary"
         >
           <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
@@ -32,10 +32,10 @@
       </ion-col>
       <ion-col>
         <ion-label>
-          <h6>{{ handover.handover.code }}</h6>
-          <h6>{{ handover.handover.scaffold.code }}</h6>
-          <h6>{{ handover.handover.scaffold.siteCode }}</h6>
-          <h6>{{ handover.handover.date.toDate() | date }}</h6>
+          <h6>{{ dismantle.dismantle.code }}</h6>
+          <h6>{{ dismantle.dismantle.scaffold.code }}</h6>
+          <h6>{{ dismantle.dismantle.scaffold.siteCode }}</h6>
+          <h6>{{ dismantle.dismantle.date.toDate() | date }}</h6>
         </ion-label>
       </ion-col>
     </ion-row>
@@ -60,18 +60,18 @@
           </ion-col>
           <ion-col size="6">
             <ion-label>
-              <h6>{{ handover.handover.customer.name }}</h6>
-              <h6>{{ handover.handover.customer.email }}</h6>
-              <h6>{{ handover.handover.customer.rep }}</h6>
-              <h6>{{ handover.handover.customer.phone }}</h6>
-              <h6>{{ handover.handover.customer.regNumber }}</h6>
+              <h6>{{ dismantle.dismantle.customer.name }}</h6>
+              <h6>{{ dismantle.dismantle.customer.email }}</h6>
+              <h6>{{ dismantle.dismantle.customer.rep }}</h6>
+              <h6>{{ dismantle.dismantle.customer.phone }}</h6>
+              <h6>{{ dismantle.dismantle.customer.regNumber }}</h6>
               <br />
               <h6>
-                {{ handover.handover.customer.address }} <br />
-                {{ handover.handover.customer.suburb }}<br />{{
-                handover.handover.customer.city }}<br />{{
-                handover.handover.customer.zip }}<br />{{
-                handover.handover.customer.country }}
+                {{ dismantle.dismantle.customer.address }} <br />
+                {{ dismantle.dismantle.customer.suburb }}<br />{{
+                dismantle.dismantle.customer.city }}<br />{{
+                dismantle.dismantle.customer.zip }}<br />{{
+                dismantle.dismantle.customer.country }}
               </h6>
             </ion-label>
           </ion-col>
@@ -96,18 +96,18 @@
           </ion-col>
           <ion-col size="6">
             <ion-label>
-              <h6>{{ handover.handover.company.name }}</h6>
-              <h6>{{ handover.handover.company.email }}</h6>
+              <h6>{{ dismantle.dismantle.company.name }}</h6>
+              <h6>{{ dismantle.dismantle.company.email }}</h6>
               <h6>N/A</h6>
-              <h6>{{ handover.handover.company.phone }}</h6>
-              <h6>{{ handover.handover.company.regNumber }}</h6>
+              <h6>{{ dismantle.dismantle.company.phone }}</h6>
+              <h6>{{ dismantle.dismantle.company.regNumber }}</h6>
               <br />
               <h6>
-                {{ handover.handover.company.address }} <br />
-                {{ handover.handover.company.suburb }}<br />{{
-                handover.handover.company.city }}<br />{{
-                handover.handover.company.zip }}<br />{{
-                handover.handover.company.country }}
+                {{ dismantle.dismantle.company.address }} <br />
+                {{ dismantle.dismantle.company.suburb }}<br />{{
+                dismantle.dismantle.company.city }}<br />{{
+                dismantle.dismantle.company.zip }}<br />{{
+                dismantle.dismantle.company.country }}
               </h6>
             </ion-label>
           </ion-col>
@@ -132,40 +132,40 @@
             <tr>
               <th class="text-center" scope="row">1</th>
               <td colspan="4">
-                {{ handover.company.terminology.scaffold }} Details
+                {{ dismantle.company.terminology.scaffold }} Details
               </td>
             </tr>
             <!-- SCAFFOLD -->
             <tr class="small">
               <th class="text-center" scope="row"></th>
-              <td>{{ handover.company.terminology.scaffold }} Level 0</td>
+              <td>{{ dismantle.company.terminology.scaffold }} Level 0</td>
               <td class="text-center">
-                {{ handover.handover.scaffold.scaffold.length }}{{
-                handover.company.measurement.symbol }} x {{
-                handover.handover.scaffold.scaffold.width }}{{
-                handover.company.measurement.symbol }} x {{
-                handover.handover.scaffold.scaffold.height }}{{
-                handover.company.measurement.symbol }}
+                {{ dismantle.dismantle.scaffold.scaffold.length }}{{
+                dismantle.company.measurement.symbol }} x {{
+                dismantle.dismantle.scaffold.scaffold.width }}{{
+                dismantle.company.measurement.symbol }} x {{
+                dismantle.dismantle.scaffold.scaffold.height }}{{
+                dismantle.company.measurement.symbol }}
               </td>
               <td class="text-center">1</td>
               <td class="text-center">
-                {{ handover.handover.scaffold.scaffold.safe }}
+                {{ dismantle.dismantle.scaffold.scaffold.safe }}
               </td>
             </tr>
             <!-- ATTACHMENTS -->
             <tr
               class="small"
-              *ngFor="let item of handover.handover.scaffold.attachments; let i = index"
+              *ngFor="let item of dismantle.dismantle.scaffold.attachments; let i = index"
             >
               <th class="text-center" scope="row"></th>
               <td>
-                {{ handover.company.terminology.scaffold }} Level {{ item.level
+                {{ dismantle.company.terminology.scaffold }} Level {{ item.level
                 }}
               </td>
               <td class="text-center">
-                {{ item.length }}{{ handover.company.measurement.symbol }} x {{
-                item.width }}{{ handover.company.measurement.symbol }} x {{
-                item.height }}{{ handover.company.measurement.symbol }}
+                {{ item.length }}{{ dismantle.company.measurement.symbol }} x {{
+                item.width }}{{ dismantle.company.measurement.symbol }} x {{
+                item.height }}{{ dismantle.company.measurement.symbol }}
               </td>
               <td class="text-center">1</td>
               <td class="text-center">Yes</td>
@@ -173,23 +173,26 @@
             <!-- BOARDS -->
             <tr
               class="small"
-              *ngFor="let item of handover.handover.scaffold.boards; let i = index"
+              *ngFor="let item of dismantle.dismantle.scaffold.boards; let i = index"
             >
               <th class="text-center" scope="row"></th>
-              <td>{{ handover.company.terminology.boards }}</td>
+              <td>{{ dismantle.company.terminology.boards }}</td>
               <td class="text-center">
-                {{ item.length }}{{ handover.company.measurement.symbol }} x {{
-                item.width }}{{ handover.company.measurement.symbol }} - Level
-                {{ item.height }}{{ handover.company.measurement.symbol }}
+                {{ item.length }}{{ dismantle.company.measurement.symbol }} x {{
+                item.width }}{{ dismantle.company.measurement.symbol }} - Level
+                {{ item.height }}{{ dismantle.company.measurement.symbol }}
               </td>
               <td class="text-center">{{ item.qty }}</td>
               <td class="text-center">Yes</td>
             </tr>
           </tbody>
         </table>
-        <table class="table table-bordered" *ngIf="handover.handover.questions">
+        <table
+          class="table table-bordered"
+          *ngIf="dismantle.dismantle.questions"
+        >
           <ng-container
-            *ngFor="let category of handover.handover.questions.categories"
+            *ngFor="let category of dismantle.dismantle.questions.categories"
           >
             <thead>
               <tr class="table-light">
@@ -218,19 +221,16 @@
         <table class="table table-bordered mb-3">
           <thead>
             <tr class="table-light">
-              <th colspan="2">Handover Details</th>
+              <th colspan="2">Dismantle Details</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="align-middle">
-              <td colspan="2" [innerText]="handover.handover.detail"></td>
-            </tr>
-            <ng-container *ngIf="handover.handover.notes">
+            <ng-container *ngIf="dismantle.dismantle.notes">
               <tr class="align-middle table-light">
                 <th colspan="2">Notes</th>
               </tr>
               <tr class="align-middle">
-                <td colspan="2" [innerText]="handover.handover.notes"></td>
+                <td colspan="2" [innerText]="dismantle.dismantle.notes"></td>
               </tr>
             </ng-container>
             <tr class="align-middle table-light">
@@ -240,7 +240,7 @@
               <td>Maximum load of the scaffold?</td>
               <td class="text-center">
                 <ion-text slot="end">
-                  {{ handover.handover.maxLoad }}
+                  {{ dismantle.dismantle.maxLoad }}
                 </ion-text>
               </td>
             </tr>
@@ -248,23 +248,23 @@
               <td>Is the scaffold safe for use?</td>
               <td class="text-center">
                 <ion-text
-                  [color]="handover.handover.safe === 'Passed' ? 'success' : 'danger'"
+                  [color]="dismantle.dismantle.safe === 'Passed' ? 'success' : 'danger'"
                   slot="end"
                 >
-                  {{ handover.handover.safe }}
+                  {{ dismantle.dismantle.safe }}
                 </ion-text>
               </td>
             </tr>
-            <tr class="align-middle" *ngIf="handover.handover.signature">
+            <tr class="align-middle" *ngIf="dismantle.dismantle.signature">
               <td>Signed By</td>
               <td class="text-center">
-                <ion-text slot="end">{{handover.handover.signedBy}}</ion-text>
+                <ion-text slot="end">{{dismantle.dismantle.signedBy}}</ion-text>
               </td>
             </tr>
-            <tr class="align-middle" *ngIf="handover.handover.signature">
+            <tr class="align-middle" *ngIf="dismantle.dismantle.signature">
               <td>Signature</td>
               <td class="text-center">
-                <img [src]="handover.handover.signature" />
+                <img [src]="dismantle.dismantle.signature" />
               </td>
             </tr>
           </tbody>
@@ -278,14 +278,14 @@
         sizeLg="3"
         sizeMd="4"
         size="6"
-        *ngFor="let file of handover.handover.uploads; let i = index"
+        *ngFor="let file of dismantle.dismantle.uploads; let i = index"
       >
         <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
       </ion-col>
-      <ion-col size="12" *ngIf="!handover.handover.signature">
+      <ion-col size="12" *ngIf="!dismantle.dismantle.signature">
         <ion-text><h4>Signature</h4></ion-text>
         <app-signature-pad
-          (result)="sign(handover.handover,$event)"
+          (result)="sign(dismantle.dismantle,$event)"
         ></app-signature-pad>
       </ion-col>
       <ion-progress-bar

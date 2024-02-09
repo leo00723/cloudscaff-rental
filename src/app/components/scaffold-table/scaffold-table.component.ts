@@ -75,6 +75,8 @@ export class ScaffoldTableComponent {
         return 'primary';
       case 'inactive':
         return 'danger';
+      case 'Dismantled':
+        return 'danger';
     }
   }
 

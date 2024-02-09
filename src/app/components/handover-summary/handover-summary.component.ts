@@ -4,16 +4,16 @@ import {
   Component,
   Input,
 } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { increment, serverTimestamp } from '@angular/fire/firestore';
+import cloneDeep from 'lodash/cloneDeep';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Term } from 'src/app/models/term.model';
-import { EditService } from 'src/app/services/edit.service';
 import { ImgService } from 'src/app/services/img.service';
 import { MasterService } from 'src/app/services/master.service';
-import { NotificationService } from 'src/app/services/notification.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 import { ShareDocumentComponent } from '../share-document/share-document.component';
 
 @Component({
@@ -98,6 +98,56 @@ export class HandoverSummaryComponent {
       this.isLoading = false;
     }
   }
+
+  dismantle() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.isLoading = true;
+      try {
+        const user = this.masterSvc.store().selectSnapshot(UserState.user);
+        const company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+        const dismantle = cloneDeep(this.handover);
+        dismantle.date = serverTimestamp();
+        dismantle.code = this.masterSvc
+          .edit()
+          .generateDocCode(company.totalDismantles, 'DIS');
+        dismantle.createdBy = user.id;
+        dismantle.createdByName = user.name;
+        dismantle.company = company;
+        dismantle.signature = null;
+        dismantle.signatureRef = null;
+        dismantle.signedBy = null;
+        dismantle.status = 'Needs Signature';
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${company.id}/dismantles`, dismantle);
+        await this.masterSvc.edit().updateDoc('company', company.id, {
+          totalDismantles: increment(1),
+        });
+        await this.masterSvc
+          .edit()
+          .updateDoc(`company/${company.id}/handovers`, this.handover.id, {
+            dismantled: true,
+          });
+        this.masterSvc
+          .notification()
+          .toast('Dismantle created successfully', 'success');
+        this.close();
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your Dismantle, Please try again!',
+            'danger'
+          );
+      } finally {
+        this.isLoading = false;
+      }
+    });
+  }
+
   async download(terms: Term | null) {
     const sharedHandover = {
       handover: this.handover,
