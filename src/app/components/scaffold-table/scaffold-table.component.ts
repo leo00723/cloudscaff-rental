@@ -109,7 +109,7 @@ export class ScaffoldTableComponent {
       this.table.offset = 0;
     }
   }
-  downloadHandover(handover: Handover) {
+  async downloadHandover(handover: Handover) {
     this.masterSvc
       .edit()
       .getDocById(`company/${handover.company.id}/terms`, 'Handover')
@@ -124,6 +124,25 @@ export class ScaffoldTableComponent {
           .pdf()
           .generateHandover(handover, handover.company, terms || null);
         this.masterSvc.pdf().handlePdf(pdf, handover.code);
+        loading.dismiss();
+      });
+  }
+
+  async downloadDismantle(dismantle: Handover) {
+    this.masterSvc
+      .edit()
+      .getDocById(`company/${dismantle.company.id}/terms`, 'Dismantle')
+      .subscribe(async (terms) => {
+        const loading = await this.loadingCtrl.create({
+          message: 'Downloading document',
+          mode: 'ios',
+        });
+        loading.present();
+        dismantle = { ...dismantle, date: dismantle?.date?.toDate() };
+        const pdf = await this.masterSvc
+          .pdf()
+          .generateDismantle(dismantle, dismantle.company, terms || null);
+        this.masterSvc.pdf().handlePdf(pdf, dismantle.code);
         loading.dismiss();
       });
   }
