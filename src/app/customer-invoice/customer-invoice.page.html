@@ -322,7 +322,7 @@
             </tr>
             <tr *ngIf="invoice.company.vat > 0">
               <th class="text-end" colspan="2" scope="col">
-                {{invoice.company.gst ? "GST" : "VAT"}} ({{ invoice.company.vat
+                {{invoice.company?.gst ? "GST" : "VAT"}} ({{ invoice.company.vat
                 }}%)
               </th>
               <th class="text-end" colspan="2" scope="col">

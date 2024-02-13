@@ -514,7 +514,7 @@ export class AddInvoiceComponent implements OnInit {
         bankName: this.company.bankName,
         swiftCode: this.company.swiftCode,
         id: this.company.id,
-        gst: this.company.gst,
+        gst: this.company?.gst,
       },
       code: this.isEdit ? this.invoice.code : code,
       status: this.isEdit ? this.invoice.status : 'pending-Not Sent',

@@ -383,7 +383,7 @@
             </tr>
             <tr *ngIf="data.company.vat > 0">
               <th class="text-end" colspan="3" scope="col">
-                {{data.company.gst ? "GST" : "VAT"}} ({{data.company.vat }}%)
+                {{data.company?.gst ? "GST" : "VAT"}} ({{data.company.vat }}%)
               </th>
               <th class="text-end" colspan="2" scope="col">
                 {{data.company.currency.symbol }} {{ data.bulkEstimate.vat |

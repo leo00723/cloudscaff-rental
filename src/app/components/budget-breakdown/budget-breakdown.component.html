@@ -30,7 +30,7 @@
     </ion-col>
     <ion-col>
       <app-input-reactive
-        title="Total Exc {{ company.gst ? 'GST' : 'VAT' }} ({{
+        title="Total Exc {{ company?.gst ? 'GST' : 'VAT' }} ({{
           company.currency.symbol
         }})"
         controlName="subtotal"

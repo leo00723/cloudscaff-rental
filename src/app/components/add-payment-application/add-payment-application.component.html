@@ -1318,7 +1318,7 @@
                 <th scope="col">
                   {{
                     company.vat > 0
-                      ? (company.gst ? "GST" : "VAT") +
+                      ? (company?.gst ? "GST" : "VAT") +
                         " (" +
                         company.vat +
                         "%) Total"

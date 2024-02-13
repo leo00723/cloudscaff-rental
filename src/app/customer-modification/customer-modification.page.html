@@ -591,7 +591,7 @@
             </tr>
             <tr *ngIf="modification.company.vat > 0">
               <th class="text-end" colspan="2" scope="col">
-                {{modification.company.gst ? "GST" : "VAT"}} ({{
+                {{modification.company?.gst ? "GST" : "VAT"}} ({{
                 modification.company.vat }}%)
               </th>
               <th class="text-end" colspan="2" scope="col">

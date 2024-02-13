@@ -22,6 +22,7 @@ export class CompanyState {
   getCompany({ dispatch }: StateContext<string>, { payload }: GetCompany) {
     return this.editSvc.getDocById('company', payload).pipe(
       tap(async (company: Company) => {
+        company.gst = company?.gst || false;
         dispatch(new SetCompany(company));
         if (company.needsSetup) {
           dispatch(new Navigate('/dashboard/onboarding'));
