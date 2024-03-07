@@ -4362,7 +4362,7 @@ export class PdfService {
       footerCS.push([
         {
           image: await this.getBase64ImageFromURL(replaceBranding),
-          width: 80,
+          width: 100,
           alignment: 'right',
           margin: [0, -10, 20, 0],
         },
