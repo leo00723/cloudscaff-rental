@@ -56,5 +56,6 @@ export interface Company {
   };
   trialEnded?: boolean;
   removeBranding?: boolean;
+  replaceBranding?: string;
   removeBilling?: boolean;
 }

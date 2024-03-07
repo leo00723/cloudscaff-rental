@@ -4352,10 +4352,22 @@ export class PdfService {
   }
 
   private async getFooter() {
-    const removeBranding =
-      this.store.selectSnapshot(CompanyState.company)?.removeBranding || false;
+    const companyState = this.store.selectSnapshot(CompanyState.company);
+    const removeBranding = companyState?.removeBranding || false;
+    const replaceBranding = companyState?.replaceBranding || null;
     const footerCS = [];
-    if (!removeBranding) {
+    if (removeBranding) {
+      return footerCS;
+    } else if (replaceBranding) {
+      footerCS.push([
+        {
+          image: await this.getBase64ImageFromURL(replaceBranding),
+          width: 80,
+          alignment: 'right',
+          margin: [0, -10, 20, 0],
+        },
+      ]);
+    } else if (!removeBranding && !replaceBranding) {
       footerCS.push([
         {
           svg: footerlogo,
