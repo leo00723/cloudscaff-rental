@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title> Cloudscaff - Scaffold Register </ion-title>
+    <ion-title *ngIf="scaffolds$ | async as scaffolds"
+      >{{scaffolds[0].latestHandover.company.name}} - {{scaffolds[0].siteCode}}
+      - Scaffold Register
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
