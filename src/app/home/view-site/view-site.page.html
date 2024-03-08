@@ -85,35 +85,36 @@
         </ion-fab>
       </div>
       <div *ngSwitchCase="'register'">
-        <div class="qrcodeImage" [hidden]="true">
-          <qrcode
-            #parent
-            qrdata="https://app.cloudscaff.com/viewRegister/{{ids[0]}}-{{ids[1]}}"
-            [imageSrc]="'assets/logos/logo.svg'"
-            [imageHeight]="75"
-            [imageWidth]="75"
-            title="SCAFFOLD REGISTER {{site.name}} {{site.code}}"
-            [allowEmptyString]="true"
-            [elementType]="'canvas'"
-            [errorCorrectionLevel]="'H'"
-            [margin]="4"
-            [scale]="1"
-            [width]="300"
-          ></qrcode>
-        </div>
-        <div class="text-end">
-          <ion-button
-            mode="ios"
-            fill="outline"
-            size="small"
-            shape="round"
-            color="tertiary"
-            (click)="saveAsImage(parent,site.name+'-'+site.code)"
-          >
-            Download QR
-            <ion-icon slot="end" name="qr-code-outline"></ion-icon>
-          </ion-button>
-        </div>
+        <ng-container *ngIf="company$ | async as company">
+          <div class="qrcodeImage" [hidden]="true">
+            <!-- [imageSrc]="company?.replaceBranding || 'assets/logos/logo.svg'" -->
+            <qrcode
+              #parent
+              qrdata="https://app.cloudscaff.com/viewRegister/{{ids[0]}}-{{ids[1]}}"
+              [imageHeight]="75"
+              [imageWidth]="75"
+              title="SCAFFOLD REGISTER {{site.name}} {{site.code}}"
+              [allowEmptyString]="true"
+              [elementType]="'canvas'"
+              [errorCorrectionLevel]="'H'"
+              [margin]="4"
+              [scale]="1"
+              [width]="300"
+            ></qrcode>
+          </div>
+          <div class="text-end">
+            <ion-button
+              mode="ios"
+              fill="outline"
+              size="small"
+              shape="round"
+              color="tertiary"
+              (click)="saveAsImage(parent,site.name+'-'+site.code)"
+            >
+              Download QR
+              <ion-icon slot="end" name="qr-code-outline"></ion-icon>
+            </ion-button></div
+        ></ng-container>
         <app-scaffold-table
           [value]="scaffolds$"
           [showRegister]="true"
