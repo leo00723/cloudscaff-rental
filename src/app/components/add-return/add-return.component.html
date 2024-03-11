@@ -84,6 +84,9 @@
               <th scope="col">Name</th>
               <th scope="col" class="text-center">Available Qty</th>
               <th scope="col" class="text-center">Shipment Qty</th>
+              <th scope="col" class="text-center">
+                Weight ({{ company.mass.symbol }})
+              </th>
               <th scope="col" *ngIf="allowSend" class="text-center">
                 Maintenance Qty
               </th>
@@ -127,6 +130,9 @@
                   >
                     you cannot exceed the available qty
                   </ion-label>
+                </td>
+                <td class="text-end">
+                  {{ item.shipmentQty * item.weight | number }}
                 </td>
                 <td class="text-center" *ngIf="allowSend">
                   <ion-input
@@ -202,11 +208,22 @@
                       (ionBlur)="autoSave()"
                     >
                     </ion-input>
-                  </td></tr
-              ></ng-template>
+                  </td>
+                  <td class="text-end">
+                    {{ item.shipmentQty * item.weight | number }}
+                  </td>
+                </tr>
+              </ng-template>
             </ng-container>
           </tbody>
         </table>
+
+        <ion-item>
+          <ion-label>Total weight</ion-label>
+          <ion-label slot="end">
+            {{ return.items ? (return.items | weight) : [] }}
+          </ion-label>
+        </ion-item>
       </ion-col>
       <ion-col
         size="12"

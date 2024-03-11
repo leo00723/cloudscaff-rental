@@ -35,12 +35,12 @@
           >
             <ion-label>Dismantles</ion-label>
           </ion-segment-button>
-          <ion-segment-button
+          <!-- <ion-segment-button
             value="modifications"
             *ngIf="user.role !== 'Supervisor'"
           >
             <ion-label>Modifications</ion-label>
-          </ion-segment-button>
+          </ion-segment-button> -->
           <ion-segment-button
             value="invoices"
             *ngIf="(user.permissionsList.includes('Invoices') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
@@ -157,7 +157,7 @@
           </div>
         </ng-template>
       </div>
-      <div *ngSwitchCase="'modifications'">
+      <!-- <div *ngSwitchCase="'modifications'">
         <app-modification-table
           [value]="modifications$"
           *ngIf="modifications$ | async else loading"
@@ -176,7 +176,7 @@
             <app-skeleton-text></app-skeleton-text>
           </div>
         </ng-template>
-      </div>
+      </div> -->
       <div *ngSwitchCase="'invoices'">
         <app-invoice-table
           [value]="invoices$"
