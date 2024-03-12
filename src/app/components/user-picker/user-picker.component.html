@@ -1,10 +1,14 @@
 <ion-toolbar mode="ios">
+  <!-- Toolbar with "Done" button -->
   <ion-buttons slot="end">
     <ion-button (click)="done()"> Done </ion-button>
   </ion-buttons>
   <ion-title>Select Users</ion-title>
 </ion-toolbar>
+
+<!-- Virtual Scroll Viewport for efficient rendering of large lists -->
 <cdk-virtual-scroll-viewport itemSize="50" minBufferPx="900" maxBufferPx="1200">
+  <!-- Search bar for filtering users -->
   <ion-searchbar
     debounce="250"
     mode="ios"
@@ -12,21 +16,30 @@
     (ionChange)="updateFilter($event)"
   >
   </ion-searchbar>
+
+  <!-- List of users rendered using virtual scrolling -->
   <ion-list>
+    <!-- Loop through each user and render as an ion-item -->
     <ion-item *cdkVirtualFor="let user of users; trackBy: trackItem">
+      <!-- User avatar -->
       <ion-avatar slot="start">
         <img [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'" />
       </ion-avatar>
+
+      <!-- User name and title -->
       <ion-label>
         {{ user.name }}
-        <ion-badge color="light" mode="ios">
-          {{ user.role }}
+        <!-- Display user title as a badge if available -->
+        <ion-badge *ngIf="user.title" color="light" mode="ios">
+          {{ user.title }}
         </ion-badge>
       </ion-label>
+
+      <!-- Checkbox for selecting/deselecting users -->
       <ion-checkbox
         slot="end"
-        (ionChange)="selectUser(user)"
-        [(ngModel)]="user.selected"
+        (click)="selectUser(user)"
+        [checked]="user.selected"
         mode="ios"
       ></ion-checkbox>
     </ion-item>

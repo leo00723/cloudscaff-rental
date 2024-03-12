@@ -41,6 +41,20 @@
       </ion-avatar>
     </ng-template>
   </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Title"
+    prop="title"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-text>
+        <ion-badge mode="ios" color="tertiary" *ngIf="value" class="m-0">
+          {{ value }}
+        </ion-badge>
+      </ion-text>
+    </ng-template>
+  </ngx-datatable-column>
   <ngx-datatable-column name="Name" cellClass="m-auto">
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-text>
@@ -78,20 +92,6 @@
       <ion-text>
         <ion-badge color="success" class="m-0">
           {{ value ? value.length : 0 }}
-        </ion-badge>
-      </ion-text>
-    </ng-template>
-  </ngx-datatable-column>
-  <ngx-datatable-column
-    name="Title"
-    prop="title"
-    cellClass="text-center my-auto"
-    headerClass="text-center"
-  >
-    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      <ion-text>
-        <ion-badge mode="ios" color="tertiary" *ngIf="value" class="m-0">
-          {{ value }}
         </ion-badge>
       </ion-text>
     </ng-template>

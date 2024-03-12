@@ -98,13 +98,13 @@
           title="Name"
           [form]="form"
           controlName="name"
-          [readonly]="true"
+          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
         ></app-input-reactive>
         <app-input-reactive
           title="Contact Number"
           [form]="form"
           controlName="phone"
-          [readonly]="true"
+          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
         ></app-input-reactive>
         <app-input-reactive
           title="Title"

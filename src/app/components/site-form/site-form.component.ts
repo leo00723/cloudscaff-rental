@@ -240,14 +240,17 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     const modal = await this.masterSvc.modal().create({
       component: UserPickerComponent,
       componentProps: {
-        selectedUsers: this.site.users ? this.site.users : [],
+        data: this.site.users ? this.site.users : [],
       },
       cssClass: 'accept',
       showBackdrop: true,
       id: 'selectUsers',
     });
     await modal.present();
-    this.site.users = await (await modal.onWillDismiss()).data;
+    const modalData = await modal.onWillDismiss();
+    if (modalData.role === 'close') {
+      this.site.users = modalData.data;
+    }
 
     return true;
   }
