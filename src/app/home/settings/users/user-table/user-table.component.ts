@@ -11,7 +11,7 @@ import {
   SelectionType,
   SortType,
 } from '@swimlane/ngx-datatable';
-import { map, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, Observable } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 
 @Component({
@@ -49,16 +49,21 @@ export class UserTableComponent {
   }
 
   updateFilter(event) {
-    const val = event.detail.value.toLowerCase() as string;
+    const val = (event.detail.value || '').toLowerCase();
     this.temp$ = this.users$.pipe(
-      map((es) =>
-        es.filter(
-          (d) =>
-            d.email.toLowerCase().indexOf(val) !== -1 ||
-            d.role.toLowerCase().indexOf(val) !== -1 ||
-            !val
-        )
-      )
+      map((users) => {
+        if (!val) {
+          return users;
+        }
+        return users.filter(
+          (user) =>
+            user.email.toLowerCase().includes(val) ||
+            user.name?.toLowerCase().includes(val) ||
+            user.title?.toLowerCase().includes(val)
+        );
+      }),
+      debounceTime(100),
+      distinctUntilChanged()
     );
     this.table.offset = 0;
   }

@@ -1884,23 +1884,25 @@ export class PdfService {
     inspection.questions.categories.forEach((c) => {
       const items = [];
       c.items.forEach((i, j) => {
-        items.push([
-          {
-            text: j + 1,
-            style: 'h6',
-            alignment: 'left',
-          },
-          {
-            text: i.question,
-            style: 'h6',
-            alignment: 'left',
-          },
-          {
-            text: i.value ? i.value : 'N/A',
-            style: 'h6',
-            alignment: 'center',
-          },
-        ]);
+        if (i.value) {
+          items.push([
+            {
+              text: j + 1,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.question,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.value ? i.value : 'N/A',
+              style: 'h6',
+              alignment: 'center',
+            },
+          ]);
+        }
       });
       const questions = {
         table: {
@@ -2114,23 +2116,25 @@ export class PdfService {
       handover.questions.categories.forEach((c) => {
         const items = [];
         c.items.forEach((i, j) => {
-          items.push([
-            {
-              text: j + 1,
-              style: 'h6',
-              alignment: 'left',
-            },
-            {
-              text: i.question,
-              style: 'h6',
-              alignment: 'left',
-            },
-            {
-              text: i.value ? i.value : 'N/A',
-              style: 'h6',
-              alignment: 'center',
-            },
-          ]);
+          if (i.value) {
+            items.push([
+              {
+                text: j + 1,
+                style: 'h6',
+                alignment: 'left',
+              },
+              {
+                text: i.question,
+                style: 'h6',
+                alignment: 'left',
+              },
+              {
+                text: i.value ? i.value : 'N/A',
+                style: 'h6',
+                alignment: 'center',
+              },
+            ]);
+          }
         });
         const questions = {
           table: {
@@ -3685,6 +3689,9 @@ export class PdfService {
   }
 
   private async addUploads(uploads: UploadedFile[]) {
+    if (uploads.length === 0) {
+      return [];
+    }
     const data: any[] = [
       {
         text: 'Uploads',

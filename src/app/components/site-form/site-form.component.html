@@ -63,22 +63,27 @@
   <app-title-block>Users</app-title-block>
   <ion-row class="card-outline mb-3">
     <ion-col>
-      <ion-item *ngFor="let user of site.users">
+      <ion-item *ngFor="let user of site.users; let i = index">
         <ion-avatar slot="start">
           <img [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'" />
         </ion-avatar>
         <ion-label>
           {{ user.name }}
           <ion-badge color="light" mode="ios">
-            {{ user.role }}
+            {{ user?.title }}
           </ion-badge>
         </ion-label>
+        <ion-buttons slot="end">
+          <ion-button color="danger" shape="round" (click)="removeUser(i)">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-item>
       <ion-fab-button
         size="small"
         class="m-auto mt-3"
         color="success"
-        (click)="test()"
+        (click)="add()"
       >
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>

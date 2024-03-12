@@ -26,6 +26,11 @@
           [form]="form"
           controlName="email"
         ></app-input-reactive>
+        <app-input-reactive
+          title="Title"
+          [form]="form"
+          controlName="title"
+        ></app-input-reactive>
         <ion-item class="my-3 rounded-3" fill="solid" mode="md">
           <ion-label position="stacked">Password</ion-label>
           <app-show-hide-password>
@@ -100,6 +105,12 @@
           [form]="form"
           controlName="phone"
           [readonly]="true"
+        ></app-input-reactive>
+        <app-input-reactive
+          title="Title"
+          [form]="form"
+          controlName="title"
+          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
         ></app-input-reactive>
         <app-permissions-select
           #permissions

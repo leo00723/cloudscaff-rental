@@ -21,9 +21,9 @@ export class AddUserComponent {
     this.user = user;
     this.form = this.masterSvc.fb().group({
       email: [this.user.email],
-      name: [this.user.name],
-      phone: [this.user.phone],
-      role: [this.user.role],
+      name: [this.user?.name],
+      phone: [this.user?.phone],
+      title: [this.user?.title],
     });
   }
   form: FormGroup;
@@ -34,6 +34,7 @@ export class AddUserComponent {
       this.form = this.masterSvc.fb().group({
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
+        title: [''],
       });
     }
   }

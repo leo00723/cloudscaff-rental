@@ -12,4 +12,5 @@ export interface User {
   permissions?: any[];
   permissionsList?: string[];
   needsSetup?: boolean;
+  title?: string;
 }

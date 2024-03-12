@@ -204,8 +204,14 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     this.form.patchValue(address);
   }
 
-  test() {
+  add() {
     this.addUser().then();
+  }
+
+  removeUser(i) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.site.users.splice(i, 1);
+    });
   }
 
   changeBillingDate(days) {
