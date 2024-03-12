@@ -98,10 +98,10 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
     this.temp$ = this.inventoryItems$.pipe(
       map((es) =>
         es.filter((d) => {
-          const code = d.code.toLowerCase().includes(val);
-          const category = d.category?.toLowerCase().includes(val);
+          const code = d?.code.toString().toLowerCase().includes(val);
+          const category = d?.category?.toLowerCase().includes(val);
           const name = d.name?.toLowerCase().includes(val);
-          const size = d.size.toString().toLowerCase().includes(val);
+          const size = d?.size.toString().toLowerCase().includes(val);
 
           return code || category || name || size || !val;
         })

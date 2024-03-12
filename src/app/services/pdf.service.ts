@@ -1881,7 +1881,7 @@ export class PdfService {
       layout: tLayout,
     };
     const checklist = [];
-    inspection.questions.categories.forEach((c) => {
+    inspection?.questions?.categories.forEach((c) => {
       const items = [];
       c.items.forEach((i, j) => {
         items.push([
@@ -1921,6 +1921,19 @@ export class PdfService {
       };
       checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
     });
+
+    const signature = inspection.signature
+      ? {
+          image: await this.getBase64ImageFromURL(inspection.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
 
     const data = {
       footer: await this.getFooter(),
@@ -1985,6 +1998,26 @@ export class PdfService {
           },
           layout: tLayout,
           fillColor: inspection.status === 'Passed' ? '#EEF5EC' : '#FAECED',
+        },
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Signature',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature,
+              ],
+            ],
+          },
+          layout: tLayout,
+          fillColor: '#ffffff',
         },
         await this.addUploads(inspection.uploads),
         {

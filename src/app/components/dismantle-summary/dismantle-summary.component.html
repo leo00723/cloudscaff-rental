@@ -183,7 +183,7 @@
       </ion-col> -->
       <ion-col size="12" *ngIf="!dismantle.signature">
         <ion-text><h4>Signature</h4></ion-text>
-        <app-signature-pad (result)="sign($event)"></app-signature-pad>
+        <app-signature-pad (res)="sign($event)"></app-signature-pad>
       </ion-col>
       <ion-progress-bar
         type="indeterminate"

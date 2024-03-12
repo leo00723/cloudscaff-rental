@@ -88,9 +88,26 @@ export class AddInspectionComponent implements OnInit {
         this.inspection.customer = customer;
         this.inspection.scaffold = this.scaffold;
         await this.upload();
-        const data = await this.masterSvc
+        const doc = await this.masterSvc
           .edit()
           .addDocument(`company/${company.id}/inspections`, this.inspection);
+
+        const res = await this.imgService.uploadBlob(
+          this.blob,
+          `company/${this.inspection.company.id}/inspections/${doc.id}/signature`,
+          ''
+        );
+        if (res) {
+          this.inspection.signature = res.url2;
+          this.inspection.signatureRef = res.ref;
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.inspection.company.id}/inspections`,
+              this.inspection.id,
+              this.inspection
+            );
+        }
         await this.masterSvc
           .edit()
           .updateDoc(`company/${company.id}/scaffolds`, this.scaffold.id, {
@@ -101,24 +118,6 @@ export class AddInspectionComponent implements OnInit {
                 ? 'inactive-Failed Inspection'
                 : 'active-Handed over',
           });
-        // const res = await this.imgService.uploadBlob(
-        //   this.blob,
-        //   `company/${this.inspection.company.id}/inspections/${data.id}/signature`,
-        //   ''
-        // );
-        // if (res) {
-        //   this.inspection.signature = res.url2;
-        //   this.inspection.signatureRef = res.ref;
-        //   await this.masterSvc
-        //     .edit()
-        //     .setDoc(
-        //       `company/${this.inspection.company.id}/inspections`,
-        //       this.inspection,
-        //       this.inspection.id
-        //     );
-        // } else {
-        //   throw Error;
-        // }
         this.masterSvc
           .notification()
           .toast('Inspection created successfully', 'success');
@@ -138,21 +137,8 @@ export class AddInspectionComponent implements OnInit {
   }
 
   async sign(ev: { signature: string; name: string }) {
-    this.loading = true;
-    try {
-      this.blob = await (await fetch(ev.signature)).blob();
-      this.inspection.signedBy = ev.name;
-    } catch (e) {
-      console.error(e);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong signing your document. Please try again!',
-          'danger'
-        );
-    } finally {
-      this.loading = false;
-    }
+    this.blob = await (await fetch(ev.signature)).blob();
+    this.inspection.signedBy = ev.name;
   }
 
   async upload() {
