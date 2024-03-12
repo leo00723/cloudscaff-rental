@@ -99,8 +99,13 @@ export class ScaffoldTableComponent {
       map((data) =>
         data.filter(
           (s) =>
-            s.code.toLowerCase().indexOf(val) !== -1 ||
-            s.status.toLowerCase().indexOf(val) !== -1 ||
+            s.code?.toLowerCase().includes(val) ||
+            s.status?.toLowerCase().includes(val) ||
+            (s.latestHandover?.type?.toLowerCase().includes(val) &&
+              s.status !== 'Dismantled') ||
+            s.latestHandover?.scaffold?.scaffold?.length === val ||
+            s.latestHandover?.scaffold?.scaffold?.width === val ||
+            s.latestHandover?.scaffold?.scaffold?.height === val ||
             !val
         )
       )

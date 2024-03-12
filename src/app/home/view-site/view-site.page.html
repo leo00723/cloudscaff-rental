@@ -67,11 +67,92 @@
   <ion-content fullscreen="true" class="ion-padding">
     <ng-container [ngSwitch]="active">
       <div *ngSwitchDefault>
-        <app-scaffold-table
-          [value]="scaffolds$"
-          *ngIf="scaffolds$ | async else loading"
-          (selectedItem)="viewScaffold($event)"
-        ></app-scaffold-table>
+        <ion-item class="text-end" lines="none">
+          <ion-badge slot="end" color="primary" mode="ios">Pending</ion-badge>
+          <ion-badge slot="end" color="danger" mode="ios"
+            >Not safe for use</ion-badge
+          >
+          <ion-badge slot="end" color="success" mode="ios"
+            >Safe for use</ion-badge
+          >
+        </ion-item>
+        <ion-accordion-group
+          mode="ios"
+          class="rounded-lg overflow-hidden"
+          [multiple]="false"
+          [value]="['pending']"
+        >
+          <ion-accordion
+            value="pending"
+            *ngIf="pendingScaffolds$ | async as pendingScaffolds else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="primary"
+                >Pending Scaffolds ({{pendingScaffolds.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-scaffold-table
+                [value]="pendingScaffolds$"
+                *ngIf="pendingScaffolds$ | async else loading"
+                (selectedItem)="viewScaffold($event)"
+              ></app-scaffold-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion
+            value="inactive"
+            *ngIf="inactiveScaffolds$ | async as inactiveScaffolds else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="warning"
+                >Inactive Scaffolds ({{inactiveScaffolds.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-scaffold-table
+                [value]="inactiveScaffolds$"
+                *ngIf="inactiveScaffolds$ | async else loading"
+                (selectedItem)="viewScaffold($event)"
+              ></app-scaffold-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion
+            value="active"
+            *ngIf="erectedScaffolds$ | async as erectedScaffolds else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="success"
+                >Erected Scaffolds ({{erectedScaffolds.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-scaffold-table
+                [value]="erectedScaffolds$"
+                *ngIf="erectedScaffolds$ | async else loading"
+                (selectedItem)="viewScaffold($event)"
+              ></app-scaffold-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion
+            value="dismantled"
+            *ngIf="dismantledScaffolds$ | async as dismantledScaffolds else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="danger"
+                >Dismantled Scaffolds
+                ({{dismantledScaffolds.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-scaffold-table
+                [value]="dismantledScaffolds$"
+                *ngIf="dismantledScaffolds$ | async else loading"
+                (selectedItem)="viewScaffold($event)"
+              ></app-scaffold-table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+
         <ion-fab
           class="m-2"
           vertical="bottom"
