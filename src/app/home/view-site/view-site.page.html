@@ -94,6 +94,7 @@
             <div class="ion-padding" slot="content">
               <app-scaffold-table
                 [value]="pendingScaffolds$"
+                [showScaffoldList]="true"
                 *ngIf="pendingScaffolds$ | async else loading"
                 (selectedItem)="viewScaffold($event)"
               ></app-scaffold-table>
@@ -111,6 +112,7 @@
             <div class="ion-padding" slot="content">
               <app-scaffold-table
                 [value]="inactiveScaffolds$"
+                [showScaffoldList]="true"
                 *ngIf="inactiveScaffolds$ | async else loading"
                 (selectedItem)="viewScaffold($event)"
               ></app-scaffold-table>
@@ -128,6 +130,7 @@
             <div class="ion-padding" slot="content">
               <app-scaffold-table
                 [value]="erectedScaffolds$"
+                [showScaffoldList]="true"
                 *ngIf="erectedScaffolds$ | async else loading"
                 (selectedItem)="viewScaffold($event)"
               ></app-scaffold-table>
@@ -146,6 +149,7 @@
             <div class="ion-padding" slot="content">
               <app-scaffold-table
                 [value]="dismantledScaffolds$"
+                [showScaffoldList]="true"
                 *ngIf="dismantledScaffolds$ | async else loading"
                 (selectedItem)="viewScaffold($event)"
               ></app-scaffold-table>
@@ -196,13 +200,51 @@
               <ion-icon slot="end" name="qr-code-outline"></ion-icon>
             </ion-button></div
         ></ng-container>
-        <app-scaffold-table
-          [value]="scaffolds$"
-          [showRegister]="true"
-          [showScaffoldList]="false"
-          *ngIf="scaffolds$ | async else loading"
-          (selectedItem)="viewScaffold($event)"
-        ></app-scaffold-table>
+        <ion-accordion-group
+          mode="ios"
+          class="rounded-lg overflow-hidden"
+          [multiple]="false"
+          [value]="['active']"
+        >
+          <ion-accordion
+            value="active"
+            *ngIf="activeScaffolds$ | async as activeScaffolds else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="success"
+                >Active Scaffolds ({{activeScaffolds.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-scaffold-table
+                [value]="activeScaffolds$"
+                [showRegister]="true"
+                [allowInspection]="true"
+                *ngIf="activeScaffolds$ | async else loading"
+                (selectedItem)="viewScaffold($event)"
+              ></app-scaffold-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion
+            value="dismantled"
+            *ngIf="dismantledScaffolds$ | async as dismantledScaffolds else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="danger"
+                >Dismantled Scaffolds
+                ({{dismantledScaffolds.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-scaffold-table
+                [value]="dismantledScaffolds$"
+                [showRegister]="true"
+                *ngIf="dismantledScaffolds$ | async else loading"
+                (selectedItem)="viewScaffold($event)"
+              ></app-scaffold-table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
       </div>
       <div *ngSwitchCase="'inventory'">
         <app-site-inventory-table

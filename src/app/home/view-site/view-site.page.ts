@@ -30,6 +30,15 @@ import { orderBy, where } from '@angular/fire/firestore';
 @Component({
   selector: 'app-view-site',
   templateUrl: './view-site.page.html',
+  styles: [
+    `
+      /* Styles for the scrollbar track */
+      ::-webkit-scrollbar {
+        width: 0.2rem;
+        height: 0rem;
+      }
+    `,
+  ],
 })
 export class ViewSitePage implements OnInit {
   @Select() company$: Observable<Company>;
@@ -40,6 +49,7 @@ export class ViewSitePage implements OnInit {
   pendingScaffolds$: Observable<Scaffold[]>;
   inactiveScaffolds$: Observable<Scaffold[]>;
   erectedScaffolds$: Observable<Scaffold[]>;
+  activeScaffolds$: Observable<Scaffold[]>;
   dismantledScaffolds$: Observable<Scaffold[]>;
   requests$: Observable<Request[]>;
   returns$: Observable<Return[]>;
@@ -68,24 +78,16 @@ export class ViewSitePage implements OnInit {
       ) as Observable<Site>;
     this.estimates$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/estimates`,
-        'siteId',
-        '==',
-        this.ids[1],
-        'date',
-        'desc'
-      ) as Observable<Estimate[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/estimates`, [
+        where('siteId', '==', this.ids[1]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Estimate[]>;
     this.scaffolds$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/scaffolds`,
-        'siteId',
-        '==',
-        this.ids[1],
-        'date',
-        'desc'
-      ) as Observable<Scaffold[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
     this.pendingScaffolds$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
@@ -112,6 +114,14 @@ export class ViewSitePage implements OnInit {
       .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
         where('siteId', '==', this.ids[1]),
         where('status', '==', 'Dismantled'),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
+    this.activeScaffolds$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        where('status', '!=', 'Dismantled'),
+        orderBy('status', 'desc'),
         orderBy('date', 'desc'),
       ]) as Observable<Scaffold[]>;
     this.inventoryItems$ = this.masterSvc

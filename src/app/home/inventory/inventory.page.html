@@ -16,31 +16,81 @@
           value="2"
           *ngIf="user.permissionsList.includes('Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
-          <ion-label>Shipments</ion-label>
+          <ion-label
+            >Shipments
+            <ng-container *ngIf="pendingShipments$ | async as shipments">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="danger"
+                *ngIf="shipments.length > 0"
+              >
+                {{shipments.length}}
+              </ion-badge>
+            </ng-container>
+          </ion-label>
         </ion-segment-button>
-        <ion-segment-button
-          value="3"
-          *ngIf="user.permissionsList.includes('Billable Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label>Billable Shipments</ion-label>
-        </ion-segment-button>
+        <ng-container *ngIf="company$ |async as company">
+          <ion-segment-button
+            value="3"
+            *ngIf="(user.permissionsList.includes('Billable Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
+          >
+            <ion-label>Billable Shipments</ion-label>
+          </ion-segment-button>
+        </ng-container>
         <ion-segment-button
           value="4"
           *ngIf="user.permissionsList.includes('Inventory Requests') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
-          <ion-label>Requests</ion-label>
+          <ion-label
+            >Requests
+            <ng-container *ngIf="submittedRequests$ | async as requests">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="danger"
+                *ngIf="requests.length > 0"
+              >
+                {{requests.length}}
+              </ion-badge>
+            </ng-container>
+          </ion-label>
         </ion-segment-button>
         <ion-segment-button
           value="5"
           *ngIf="user.permissionsList.includes('Inventory Returns') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
-          <ion-label>Returns</ion-label>
+          <ion-label
+            >Returns
+            <ng-container *ngIf="submittedReturns$ | async as returns">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="danger"
+                *ngIf="returns.length > 0"
+              >
+                {{returns.length}}
+              </ion-badge>
+            </ng-container>
+          </ion-label>
         </ion-segment-button>
         <ion-segment-button
           value="6"
           *ngIf="user.permissionsList.includes('Transfers') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
-          <ion-label>Transfers</ion-label>
+          <ion-label
+            >Transfers
+            <ng-container *ngIf="pendingTransfers$ | async as transfers">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="danger"
+                *ngIf="transfers.length > 0"
+              >
+                {{transfers.length}}
+              </ion-badge>
+            </ng-container></ion-label
+          >
         </ion-segment-button>
       </ion-segment>
     </ion-toolbar>

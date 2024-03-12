@@ -12,8 +12,12 @@ export interface Inspection {
   notes?: string;
   questions?: InspectionTemplate;
   createdBy?: string;
+  createdByName?: string;
   company?: Company;
   customer?: Customer;
   scaffold?: Scaffold;
   uploads?: UploadedFile[];
+  signature?: string;
+  signatureRef?: string;
+  signedBy?: string;
 }

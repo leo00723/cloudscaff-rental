@@ -143,11 +143,17 @@
           *ngIf="dismantles$ | async else loading"
           (selectedItem)="viewDismantle($event)"
         ></app-handover-table>
-        <!-- <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addHandover(scaffold)">
+        <ion-fab
+          class="m-2"
+          vertical="bottom"
+          horizontal="end"
+          slot="fixed"
+          *ngIf="scaffold.status!== 'Dismantled' && scaffold?.latestHandover"
+        >
+          <ion-fab-button (click)="addDismantle(scaffold)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
-        </ion-fab> -->
+        </ion-fab>
         <ng-template #loading>
           <div class="ion-padding">
             <app-skeleton-text></app-skeleton-text>

@@ -1,8 +1,7 @@
-<ion-header>
+<ion-header mode="md">
   <ion-toolbar>
-    <ion-title *ngIf="scaffolds$ | async as scaffolds"
-      >{{scaffolds[0]?.latestHandover?.company?.name}} -
-      {{scaffolds[0]?.siteCode}} - Scaffold Register
+    <ion-title *ngIf="scaffolds$ | async as scaffolds">
+      Scaffold Register - {{scaffolds[0]?.siteCode}}
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -11,7 +10,6 @@
   <app-scaffold-table
     [value]="scaffolds$"
     [showRegister]="true"
-    [showScaffoldList]="false"
     *ngIf="scaffolds$ | async else loading"
   ></app-scaffold-table>
   <ng-template #loading>

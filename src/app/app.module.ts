@@ -134,9 +134,9 @@ import { TrialEndedPage } from './trial-ended/trial-ended.page';
         developmentMode: !environment.production,
       }
     ),
-    NgxsLoggerPluginModule.forRoot({ disabled: environment.production }),
+    NgxsLoggerPluginModule.forRoot({ disabled: true }),
     NgxsReduxDevtoolsPluginModule.forRoot({
-      disabled: environment.production,
+      disabled: true,
     }),
     HttpClientModule,
     OAuthModule.forRoot(),

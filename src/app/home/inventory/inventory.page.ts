@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { map, Observable } from 'rxjs';
@@ -27,6 +27,14 @@ import { UserState } from 'src/app/shared/user/user.state';
 @Component({
   selector: 'app-inventory',
   templateUrl: './inventory.page.html',
+  styles: [
+    `
+      ::-webkit-scrollbar {
+        width: 0.2rem;
+        height: 0rem;
+      }
+    `,
+  ],
 })
 export class InventoryPage implements OnInit {
   @Select() user$: Observable<User>;

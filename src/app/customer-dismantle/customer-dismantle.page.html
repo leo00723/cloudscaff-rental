@@ -187,7 +187,7 @@
             </tr>
           </tbody>
         </table>
-        <table
+        <!-- <table
           class="table table-bordered"
           *ngIf="dismantle.dismantle.questions"
         >
@@ -217,7 +217,7 @@
               </tr>
             </tbody>
           </ng-container>
-        </table>
+        </table> -->
         <table class="table table-bordered mb-3">
           <thead>
             <tr class="table-light">
@@ -225,7 +225,7 @@
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngIf="dismantle.dismantle.notes">
+            <!-- <ng-container *ngIf="dismantle.dismantle.notes">
               <tr class="align-middle table-light">
                 <th colspan="2">Notes</th>
               </tr>
@@ -254,7 +254,7 @@
                   {{ dismantle.dismantle.safe }}
                 </ion-text>
               </td>
-            </tr>
+            </tr> -->
             <tr class="align-middle" *ngIf="dismantle.dismantle.signature">
               <td>Signed By</td>
               <td class="text-center">
@@ -270,7 +270,7 @@
           </tbody>
         </table>
       </ion-col>
-      <ion-col size="12">
+      <!-- <ion-col size="12">
         <app-title-block> Uploaded Files </app-title-block>
       </ion-col>
       <ion-col
@@ -281,7 +281,7 @@
         *ngFor="let file of dismantle.dismantle.uploads; let i = index"
       >
         <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
-      </ion-col>
+      </ion-col> -->
       <ion-col size="12" *ngIf="!dismantle.dismantle.signature">
         <ion-text><h4>Signature</h4></ion-text>
         <app-signature-pad

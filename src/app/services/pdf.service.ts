@@ -1884,25 +1884,23 @@ export class PdfService {
     inspection.questions.categories.forEach((c) => {
       const items = [];
       c.items.forEach((i, j) => {
-        if (i.value) {
-          items.push([
-            {
-              text: j + 1,
-              style: 'h6',
-              alignment: 'left',
-            },
-            {
-              text: i.question,
-              style: 'h6',
-              alignment: 'left',
-            },
-            {
-              text: i.value ? i.value : 'N/A',
-              style: 'h6',
-              alignment: 'center',
-            },
-          ]);
-        }
+        items.push([
+          {
+            text: j + 1,
+            style: 'h6',
+            alignment: 'left',
+          },
+          {
+            text: i.question,
+            style: 'h6',
+            alignment: 'left',
+          },
+          {
+            text: i.value ? i.value : 'N/A',
+            style: 'h6',
+            alignment: 'center',
+          },
+        ]);
       });
       const questions = {
         table: {
@@ -2116,25 +2114,23 @@ export class PdfService {
       handover.questions.categories.forEach((c) => {
         const items = [];
         c.items.forEach((i, j) => {
-          if (i.value) {
-            items.push([
-              {
-                text: j + 1,
-                style: 'h6',
-                alignment: 'left',
-              },
-              {
-                text: i.question,
-                style: 'h6',
-                alignment: 'left',
-              },
-              {
-                text: i.value ? i.value : 'N/A',
-                style: 'h6',
-                alignment: 'center',
-              },
-            ]);
-          }
+          items.push([
+            {
+              text: j + 1,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.question,
+              style: 'h6',
+              alignment: 'left',
+            },
+            {
+              text: i.value ? i.value : 'N/A',
+              style: 'h6',
+              alignment: 'center',
+            },
+          ]);
         });
         const questions = {
           table: {
@@ -2419,48 +2415,48 @@ export class PdfService {
       layout: tLayout,
     };
     const checklist = [];
-    if (dismantle.questions) {
-      dismantle.questions.categories.forEach((c) => {
-        const items = [];
-        c.items.forEach((i, j) => {
-          items.push([
-            {
-              text: j + 1,
-              style: 'h6',
-              alignment: 'left',
-            },
-            {
-              text: i.question,
-              style: 'h6',
-              alignment: 'left',
-            },
-            {
-              text: i.value ? i.value : 'N/A',
-              style: 'h6',
-              alignment: 'center',
-            },
-          ]);
-        });
-        const questions = {
-          table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
-            headerRows: 1,
-            widths: ['auto', '*', 'auto'],
-            body: [
-              [
-                { text: '#', style: 'h4b', alignment: 'left' },
-                { text: 'Question', style: 'h4b', alignment: 'left' },
-                { text: 'Checklist', style: 'h4b', alignment: 'center' },
-              ],
-              ...items,
-            ],
-          },
-          layout: tLayout,
-        };
-        checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
-      });
-    }
+    // if (dismantle.questions) {
+    //   dismantle.questions.categories.forEach((c) => {
+    //     const items = [];
+    //     c.items.forEach((i, j) => {
+    //       items.push([
+    //         {
+    //           text: j + 1,
+    //           style: 'h6',
+    //           alignment: 'left',
+    //         },
+    //         {
+    //           text: i.question,
+    //           style: 'h6',
+    //           alignment: 'left',
+    //         },
+    //         {
+    //           text: i.value ? i.value : 'N/A',
+    //           style: 'h6',
+    //           alignment: 'center',
+    //         },
+    //       ]);
+    //     });
+    //     const questions = {
+    //       table: {
+    //         // headers are automatically repeated if the table spans over multiple pages
+    //         // you can declare how many rows should be treated as headers
+    //         headerRows: 1,
+    //         widths: ['auto', '*', 'auto'],
+    //         body: [
+    //           [
+    //             { text: '#', style: 'h4b', alignment: 'left' },
+    //             { text: 'Question', style: 'h4b', alignment: 'left' },
+    //             { text: 'Checklist', style: 'h4b', alignment: 'center' },
+    //           ],
+    //           ...items,
+    //         ],
+    //       },
+    //       layout: tLayout,
+    //     };
+    //     checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
+    //   });
+    // }
 
     const signature = dismantle.signature
       ? {
@@ -2512,11 +2508,11 @@ export class PdfService {
         ),
         hr,
         this.getSubHeader(dismantle.customer, company),
-        hr,
-        { text: dismantle.notes },
+        // hr,
+        // { text: dismantle.notes },
         hr,
         summary,
-        checklist,
+        // checklist,
         hr,
         {
           table: {
@@ -2525,44 +2521,44 @@ export class PdfService {
             headerRows: 1,
             widths: ['*', 'auto'],
             body: [
-              [
-                {
-                  text: 'Status',
-                  style: 'h4b',
-                  alignment: 'left',
-                  colSpan: 2,
-                },
-                {
-                  text: '',
-                  style: 'h4b',
-                  alignment: 'right',
-                },
-              ],
-              [
-                {
-                  text: 'Maximum load of the scaffold?',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-                {
-                  text: dismantle.maxLoad,
-                  style: 'h4b',
-                  alignment: 'right',
-                },
-              ],
-              [
-                {
-                  text: 'Is the scaffold safe for use?	',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-                {
-                  text: dismantle.safe,
-                  style: 'h4b',
-                  alignment: 'right',
-                  color: dismantle.safe === 'Passed' ? 'green' : 'red',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Status',
+              //     style: 'h4b',
+              //     alignment: 'left',
+              //     colSpan: 2,
+              //   },
+              //   {
+              //     text: '',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //   },
+              // ],
+              // [
+              //   {
+              //     text: 'Maximum load of the scaffold?',
+              //     style: 'h4b',
+              //     alignment: 'left',
+              //   },
+              //   {
+              //     text: dismantle.maxLoad,
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //   },
+              // ],
+              // [
+              //   {
+              //     text: 'Is the scaffold safe for use?	',
+              //     style: 'h4b',
+              //     alignment: 'left',
+              //   },
+              //   {
+              //     text: dismantle.safe,
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     color: dismantle.safe === 'Passed' ? 'green' : 'red',
+              //   },
+              // ],
               [
                 {
                   text: 'Signature',
@@ -2575,8 +2571,8 @@ export class PdfService {
           },
           layout: tLayout,
         },
-        hr,
-        await this.addUploads(dismantle.uploads),
+        // hr,
+        // await this.addUploads(dismantle.uploads),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],

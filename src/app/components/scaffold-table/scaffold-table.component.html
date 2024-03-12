@@ -83,10 +83,9 @@
         <th rowspan="2">Total Area</th>
         <th rowspan="2">Status</th>
         <th rowspan="2">Notes</th>
-        <th rowspan="2">Created By</th>
         <th rowspan="2">Handover</th>
         <th rowspan="2">Inspection</th>
-        <th rowspan="2">Dismantle</th>
+        <th rowspan="2">{{ allowInspection ? "Inspect" : "Dismantle" }}</th>
       </tr>
       <tr class="text-center">
         <th>Length</th>
@@ -107,8 +106,17 @@
             <td>{{ i + 1 }}</td>
             <!-- (click)="viewHandover(scaffold.latestHandover)"
             class="text-primary cursor-pointer" -->
-            <td class="fw-bold">
+            <td class="fw-bold" *ngIf="!allowInspection">
               {{ scaffold.code }}
+            </td>
+            <td class="fw-bold" *ngIf="allowInspection">
+              <ion-button
+                size="small"
+                fill="clear"
+                (click)="addInspection(scaffold)"
+              >
+                {{ scaffold.code }}
+              </ion-button>
             </td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.length }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.width }}</td>
@@ -131,22 +139,18 @@
                 mode="ios"
                 shape="round"
                 [color]="
-                  scaffold.latestHandover.type === 'Erected' &&
-                  scaffold.status !== 'Dismantled'
-                    ? 'success'
-                    : 'danger'
+                  scaffold.status.startsWith('active') ? 'success' : 'danger'
                 "
               >
                 {{
-                  scaffold.status === "Dismantled"
-                    ? "Dismantled"
-                    : scaffold.latestHandover.type
+                  scaffold.status.split("-")[1]
+                    ? scaffold.status.split("-")[1]
+                    : scaffold.status.split("-")[0]
                 }}
               </ion-badge>
             </td>
 
             <td>{{ scaffold.latestHandover.notes }}</td>
-            <td>{{ scaffold.latestHandover.createdByName }}</td>
             <td>
               <ion-button
                 fill="clear"
@@ -155,6 +159,7 @@
                 (click)="downloadHandover(scaffold.latestHandover)"
                 >{{ scaffold.latestHandover.date.toDate() | date }}</ion-button
               >
+              {{ scaffold.latestHandover.createdByName }}
             </td>
             <td>
               <ion-button
@@ -167,8 +172,9 @@
                   scaffold.latestInspection.date.toDate() | date
                 }}</ion-button
               >
+              {{ scaffold?.latestInspection?.createdByName }}
             </td>
-            <td>
+            <td *ngIf="!allowInspection">
               <ion-button
                 *ngIf="scaffold.latestDismantle"
                 fill="clear"
@@ -177,6 +183,18 @@
                 (click)="downloadDismantle(scaffold.latestDismantle)"
                 >{{ scaffold.latestDismantle.date.toDate() | date }}</ion-button
               >
+              {{ scaffold?.latestDismantle?.createdByName }}
+            </td>
+            <td class="fw-bold" *ngIf="allowInspection">
+              <ion-chip
+                color="tertiary"
+                size="small"
+                shape="round"
+                fill="outline"
+                (click)="addInspection(scaffold)"
+              >
+                Inspect
+              </ion-chip>
             </td>
           </tr>
           <!-- ATTACHMENTS -->
@@ -193,7 +211,10 @@
             <td>{{ attachment.width }}</td>
             <td>{{ attachment.height }}</td>
             <td>
-              {{ +attachment.length * +attachment.width * +attachment.height }}
+              {{
+                +attachment.length * +attachment.width * +attachment.height
+                  | number
+              }}
             </td>
             <td colspan="8"></td>
           </tr>

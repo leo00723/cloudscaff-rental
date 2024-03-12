@@ -84,6 +84,10 @@
       </ion-col>
     </ion-row>
     <ion-row class="mt-5">
+      <ion-col size="12" *ngIf="!blob">
+        <ion-text><h4>Signature</h4></ion-text>
+        <app-signature-pad (result)="sign($event)"></app-signature-pad>
+      </ion-col>
       <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
       <ion-col class="text-end" *ngIf="!loading">
         <ion-button

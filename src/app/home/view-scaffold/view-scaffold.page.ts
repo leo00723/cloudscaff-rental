@@ -1,5 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { orderBy, where } from '@angular/fire/firestore';
+import { Component, OnInit, inject } from '@angular/core';
+import {
+  increment,
+  orderBy,
+  serverTimestamp,
+  where,
+} from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
@@ -24,13 +29,28 @@ import { Payment } from 'src/app/models/payment.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
+import { UserState } from 'src/app/shared/user/user.state';
+import cloneDeep from 'lodash/cloneDeep';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-view-scaffold',
   templateUrl: './view-scaffold.page.html',
+  styles: [
+    `
+      /* Styles for the scrollbar track */
+      ::-webkit-scrollbar {
+        width: 0.2rem;
+        height: 0rem;
+      }
+    `,
+  ],
 })
 export class ViewScaffoldPage implements OnInit {
+  private loadingCtrl = inject(LoadingController);
+
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   scaffold$: Observable<Scaffold>;
@@ -133,6 +153,61 @@ export class ViewScaffoldPage implements OnInit {
       cssClass: 'fullscreen',
     });
     return await modal.present();
+  }
+  async addDismantle(scaffold: Scaffold) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      const loading = await this.loadingCtrl.create({
+        message: 'Creating Dismantle',
+        mode: 'ios',
+      });
+      try {
+        loading.present();
+        const user = this.masterSvc.store().selectSnapshot(UserState.user);
+        const company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+        const dismantle = cloneDeep(scaffold.latestHandover);
+        dismantle.date = serverTimestamp();
+        dismantle.code = this.masterSvc
+          .edit()
+          .generateDocCode(company.totalDismantles, 'DIS');
+        dismantle.createdBy = user.id;
+        dismantle.createdByName = user.name;
+        dismantle.company = company;
+        dismantle.signature = null;
+        dismantle.signatureRef = null;
+        dismantle.signedBy = null;
+        dismantle.status = 'Needs Signature';
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${company.id}/dismantles`, dismantle);
+        await this.masterSvc.edit().updateDoc('company', company.id, {
+          totalDismantles: increment(1),
+        });
+        // await this.masterSvc
+        //   .edit()
+        //   .updateDoc(
+        //     `company/${company.id}/handovers`,
+        //     scaffold.latestHandover.id,
+        //     {
+        //       dismantled: true,
+        //     }
+        //   );
+        this.masterSvc
+          .notification()
+          .toast('Dismantle created successfully', 'success');
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your Dismantle, Please try again!',
+            'danger'
+          );
+      } finally {
+        loading.dismiss();
+      }
+    });
   }
   async addModification(scaffold: Scaffold) {
     const modal = await this.masterSvc.modal().create({

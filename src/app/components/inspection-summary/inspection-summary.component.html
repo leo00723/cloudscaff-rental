@@ -143,6 +143,18 @@
                 </ion-text>
               </td>
             </tr>
+            <tr class="align-middle" *ngIf="inspection.signature">
+              <td>Signed By</td>
+              <td class="text-center">
+                <ion-text slot="end">{{ inspection.signedBy }}</ion-text>
+              </td>
+            </tr>
+            <tr class="align-middle" *ngIf="inspection.signature">
+              <td>Signature</td>
+              <td class="text-center">
+                <img [src]="inspection.signature" />
+              </td>
+            </tr>
           </tbody>
         </table>
       </ion-col>

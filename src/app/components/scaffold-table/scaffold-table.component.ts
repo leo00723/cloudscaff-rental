@@ -23,6 +23,7 @@ import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { MasterService } from 'src/app/services/master.service';
+import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
 
 @Component({
   selector: 'app-scaffold-table',
@@ -43,8 +44,9 @@ export class ScaffoldTableComponent {
     this.temp$ = estimates;
     this.scaffolds$ = estimates;
   }
-  @Input() showScaffoldList = true;
+  @Input() showScaffoldList = false;
   @Input() showRegister = false;
+  @Input() allowInspection = false;
   @Select() company$: Observable<Company>;
   scaffolds$: Observable<Scaffold[]>;
   temp$: Observable<Scaffold[]>;
@@ -88,6 +90,19 @@ export class ScaffoldTableComponent {
       },
       showBackdrop: false,
       id: 'viewHandover',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async addInspection(scaffold: Scaffold) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInspectionComponent,
+      componentProps: {
+        value: scaffold,
+      },
+      showBackdrop: false,
+      id: 'addInspection',
       cssClass: 'fullscreen',
     });
     return await modal.present();
