@@ -104,7 +104,7 @@ export class AddInspectionComponent implements OnInit {
             .edit()
             .updateDoc(
               `company/${this.inspection.company.id}/inspections`,
-              this.inspection.id,
+              doc.id,
               this.inspection
             );
         }

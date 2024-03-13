@@ -172,9 +172,9 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
     this.items = this.itemBackup.filter(
       (item) =>
-        item.code.toLowerCase().includes(val) ||
+        item?.code?.toString().toLowerCase().includes(val) ||
         item.name.toLowerCase().includes(val) ||
-        item.category.toLowerCase().includes(val) ||
+        item?.category?.toLowerCase().includes(val) ||
         !val
     );
     if (!val) {

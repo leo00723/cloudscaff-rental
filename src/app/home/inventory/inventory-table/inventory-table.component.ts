@@ -185,7 +185,7 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
 
           complete: async (result) => {
             const data = result.data.map((item) => ({
-              code: item.Code,
+              code: item.Code.toString(),
               category: item.Category,
               size: item.Size,
               name: item.Description,
