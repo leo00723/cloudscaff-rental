@@ -10,18 +10,18 @@ exports.regiserCompany = functions.https.onCall(async (data) => {
       displayName: data.name,
     });
     const date = new Date();
-    const trialEnd = new Date().setDate(date.getDate() + 4);
+    // const trialEnd = new Date().setDate(date.getDate() + 4);
     const company = await admin
       .firestore()
       .collection('company')
       .add({
         name: data.company,
         needsSetup: true,
-        trialEnded: false,
+        trialEnded: true,
         isTrialing: true,
         removeBilling: true,
         startDate: admin.firestore.Timestamp.fromDate(date),
-        trialEndDate: admin.firestore.Timestamp.fromDate(new Date(trialEnd)),
+        // trialEndDate: admin.firestore.Timestamp.fromDate(new Date(trialEnd)),
       });
     await admin.auth().setCustomUserClaims(auth.uid, { company: company.id });
     await admin
@@ -77,35 +77,35 @@ exports.deleteUser = functions.https.onCall(async (data) => {
   }
 });
 
-exports.checkTrials = functions.pubsub
-  .schedule('00 03 * * *')
-  .timeZone('America/Los_Angeles') // Users can choose timezone - default is America/Los_Angeles
-  .onRun(async () => {
-    try {
-      const data = await admin
-        .firestore()
-        .collection('company')
-        .where('isTrialing', '==', true)
-        .get();
-      for await (const companyDoc of data.docs) {
-        const company = companyDoc.data();
-        const today = admin.firestore.Timestamp.fromDate(new Date()).seconds;
-        let daysRemaining = null;
-        daysRemaining = daysBetween(company.trialEndDate.seconds, today);
-        //check if company trial ended
-        if (daysRemaining <= 0) {
-          await companyDoc.ref.update({
-            trialEnded: true,
-            isTrialing: false,
-          });
-        }
-      }
-      return true;
-    } catch (err) {
-      logger.error('something went wrong somewhere', err);
-      return false;
-    }
-  });
+// exports.checkTrials = functions.pubsub
+//   .schedule('00 03 * * *')
+//   .timeZone('America/Los_Angeles') // Users can choose timezone - default is America/Los_Angeles
+//   .onRun(async () => {
+//     try {
+//       const data = await admin
+//         .firestore()
+//         .collection('company')
+//         .where('isTrialing', '==', true)
+//         .get();
+//       for await (const companyDoc of data.docs) {
+//         const company = companyDoc.data();
+//         const today = admin.firestore.Timestamp.fromDate(new Date()).seconds;
+//         let daysRemaining = null;
+//         daysRemaining = daysBetween(company.trialEndDate.seconds, today);
+//         //check if company trial ended
+//         if (daysRemaining <= 0) {
+//           await companyDoc.ref.update({
+//             trialEnded: true,
+//             isTrialing: false,
+//           });
+//         }
+//       }
+//       return true;
+//     } catch (err) {
+//       logger.error('something went wrong somewhere', err);
+//       return false;
+//     }
+//   });
 
 exports.checkUsers = functions.pubsub
   .schedule('00 03 * * *')
@@ -133,5 +133,5 @@ exports.checkUsers = functions.pubsub
     }
   });
 
-const daysBetween = (startDateSeconds: number, endDateSeconds: number) =>
-  Math.round((startDateSeconds - endDateSeconds) / 60 / 60 / 24);
+// const daysBetween = (startDateSeconds: number, endDateSeconds: number) =>
+//   Math.round((startDateSeconds - endDateSeconds) / 60 / 60 / 24);
