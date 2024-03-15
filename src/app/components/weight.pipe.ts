@@ -11,11 +11,13 @@ import { CompanyState } from '../shared/company/company.state';
 export class WeightPipe implements PipeTransform {
   private decimalPipe = inject(DecimalPipe);
   private store = inject(Store);
-  transform(items: InventoryItem[]) {
+  transform(items: InventoryItem[], isShipment?: boolean) {
     const symbol = this.store.selectSnapshot(CompanyState.company).mass.symbol;
     let weight = 0;
     for (const item of items) {
-      weight += isNaN(+item.weight) ? 0 : +item.weight * +item.availableQty;
+      weight += isNaN(+item.weight)
+        ? 0
+        : +item.weight * (isShipment ? +item.shipmentQty : +item.availableQty);
     }
     return `${this.decimalPipe.transform(weight.toFixed(2))} (${symbol})`;
   }

@@ -159,6 +159,7 @@ export class AddScaffoldComponent implements OnInit {
       customerId: this.site.customer.id,
       siteId: this.site.id,
       siteCode: this.site.code,
+      siteName: this.site.name,
       scaffold: this.masterSvc.fb().group({
         rate: [''],
         type: [''],

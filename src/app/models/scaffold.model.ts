@@ -15,6 +15,7 @@ export interface Scaffold {
   customerId?: string;
   siteId?: string;
   siteCode?: string;
+  siteName?: string;
   createdBy?: string;
   scaffold?: Item;
   attachments?: Item[];

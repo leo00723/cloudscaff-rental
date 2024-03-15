@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
@@ -248,6 +249,41 @@ exports.returnUpdates = functions.firestore
             });
         }
       }
+    }
+  });
+
+exports.scaffoldUpdates = functions.firestore
+  .document('company/{companyId}/scaffolds/{id}')
+  .onUpdate(async (change, context) => {
+    if (change.after.data().status === 'inactive-Failed Inspection') {
+      const scaffold = change.after.data();
+      // get site users
+      const siteUsers = await getSiteUsers(
+        context.params.companyId,
+        change.after.data().siteId
+      );
+      // send notifications to site users
+      if (siteUsers) {
+        for await (const user of siteUsers) {
+          await admin
+            .firestore()
+            .collection(`users/${user.id}/notifications`)
+            .add({
+              title: 'Scaffold Failed Inspection',
+              date: admin.firestore.FieldValue.serverTimestamp(),
+              message: `Scaffold ${scaffold.code} on site ${scaffold.siteCode} ${scaffold?.siteName} failed recent inspection. Please take necessary actions.`,
+            });
+        }
+      }
+      // send notifications to scaffold creator
+      await admin
+        .firestore()
+        .collection(`users/${scaffold.createdBy}/notifications`)
+        .add({
+          title: 'Scaffold Failed Inspection',
+          date: admin.firestore.FieldValue.serverTimestamp(),
+          message: `Scaffold ${scaffold.code} on site ${scaffold.siteCode} ${scaffold?.siteName} failed recent inspection. Please take necessary actions.`,
+        });
     }
   });
 

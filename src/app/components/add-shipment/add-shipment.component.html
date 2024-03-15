@@ -130,6 +130,9 @@
                 <th scope="col">Name</th>
                 <th scope="col" class="text-center">Available Qty</th>
                 <th scope="col" class="text-center">Shipment Qty</th>
+                <th scope="col" class="text-center">
+                  Weight ({{ company.mass.symbol }})
+                </th>
                 <th scope="col" class="text-center">Item Checked</th>
               </tr>
             </thead>
@@ -159,6 +162,9 @@
                     <ion-label color="danger" *ngIf="item.error">
                       you cannot exceed the available qty
                     </ion-label>
+                  </td>
+                  <td class="text-end">
+                    {{ item.shipmentQty * item.weight | number }}
                   </td>
                   <td class="text-center">
                     <ion-checkbox
@@ -197,6 +203,9 @@
                         you cannot exceed the available qty
                       </ion-label>
                     </td>
+                    <td class="text-end">
+                      {{ item.shipmentQty * item.weight | number }}
+                    </td>
                     <td class="text-center">
                       <ion-checkbox
                         mode="ios"
@@ -209,6 +218,12 @@
               </ng-container>
             </tbody>
           </table>
+          <ion-item>
+            <ion-label>Total weight</ion-label>
+            <ion-label slot="end">
+              {{ shipment.items ? (shipment.items | weight : true) : [] }}
+            </ion-label>
+          </ion-item>
         </ion-col>
         <ion-col
           size="12"

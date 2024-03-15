@@ -174,6 +174,9 @@
                 <th scope="col">Name</th>
                 <th scope="col" class="text-center">Available Qty</th>
                 <th scope="col" class="text-center">Shipment Qty</th>
+                <th scope="col" class="text-center">
+                  Weight ({{ company.mass.symbol }})
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -201,6 +204,9 @@
                       you cannot exceed the available qty
                     </ion-label>
                   </td>
+                  <td class="text-end">
+                    {{ item.shipmentQty * item.weight | number }}
+                  </td>
                 </tr>
                 <ng-template #viewShipment>
                   <tr class="align-middle" *ngIf="item.shipmentQty > 0">
@@ -223,11 +229,20 @@
                         you cannot exceed the available qty
                       </ion-label>
                     </td>
+                    <td class="text-end">
+                      {{ item.shipmentQty * item.weight | number }}
+                    </td>
                   </tr></ng-template
                 >
               </ng-container>
             </tbody>
           </table>
+          <ion-item>
+            <ion-label>Total weight</ion-label>
+            <ion-label slot="end">
+              {{ transfer.items ? (transfer.items | weight : true) : [] }}
+            </ion-label>
+          </ion-item>
         </ion-col>
         <ion-col
           size="12"
