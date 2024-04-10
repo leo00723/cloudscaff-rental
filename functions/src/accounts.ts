@@ -22,6 +22,7 @@ exports.regiserCompany = functions.https.onCall(async (data) => {
         removeBilling: true,
         startDate: admin.firestore.Timestamp.fromDate(date),
         // trialEndDate: admin.firestore.Timestamp.fromDate(new Date(trialEnd)),
+        userLimit: 5,
       });
     await admin.auth().setCustomUserClaims(auth.uid, { company: company.id });
     await admin

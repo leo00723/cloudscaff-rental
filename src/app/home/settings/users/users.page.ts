@@ -4,12 +4,15 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { AddUserComponent } from './add-user/add-user.component';
+import { Select } from '@ngxs/store';
+import { Company } from 'src/app/models/company.model';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.page.html',
 })
 export class UsersPage implements OnInit {
+  @Select() company$: Observable<Company>;
   users$: Observable<User[]>;
   isLoading = true;
   constructor(private masterSvc: MasterService) {}
@@ -45,7 +48,7 @@ export class UsersPage implements OnInit {
   }
 
   init() {
-    let id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
         this.users$ = this.masterSvc

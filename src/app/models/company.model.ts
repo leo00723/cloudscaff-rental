@@ -58,4 +58,5 @@ export interface Company {
   removeBranding?: boolean;
   replaceBranding?: string;
   removeBilling?: boolean;
+  userLimit?: number;
 }

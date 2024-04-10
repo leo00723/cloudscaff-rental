@@ -12,17 +12,20 @@
       (selectedItem)="editUser($event)"
     ></app-user-table>
 
-    <ion-fab
-      class="m-2"
-      vertical="bottom"
-      horizontal="end"
-      slot="fixed"
-      *ngIf="users.length < 20"
-    >
-      <ion-fab-button (click)="addUser()">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button> </ion-fab
-  ></ng-container>
+    <ng-container *ngIf="company$ | async as company">
+      <ion-fab
+        class="m-2"
+        vertical="bottom"
+        horizontal="end"
+        slot="fixed"
+        *ngIf="company?.userLimit ? users.length < company?.userLimit : users.length < 5"
+      >
+        <ion-fab-button (click)="addUser()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
+  </ng-container>
   <ng-template #loading>
     <div class="ion-padding">
       <app-skeleton-text></app-skeleton-text>
