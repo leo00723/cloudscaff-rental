@@ -21,7 +21,7 @@
 </ion-item>
 <ngx-datatable
   class="bootstrap striped rounded-lg"
-  [limit]="15"
+  [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="'auto'"
   [columnMode]="'force'"
