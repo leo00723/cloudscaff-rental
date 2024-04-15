@@ -152,37 +152,41 @@
 
             <td>{{ scaffold.latestHandover.notes }}</td>
             <td>
-              <ion-button
-                fill="clear"
+              <strong>{{ scaffold?.latestHandover?.code }}</strong>
+              <br />
+              <ion-chip
                 size="small"
-                expand="block"
+                color="success"
                 (click)="downloadHandover(scaffold.latestHandover)"
-                >{{ scaffold.latestHandover.date.toDate() | date }}</ion-button
-              >
+                >{{ scaffold.latestHandover.date.toDate() | date }}
+              </ion-chip>
+              <br />
               {{ scaffold.latestHandover.createdByName }}
             </td>
             <td>
-              <ion-button
+              <strong>{{ scaffold?.latestInspection?.code }}</strong>
+              <br />
+              <ion-chip
                 *ngIf="scaffold.latestInspection"
-                fill="clear"
                 size="small"
-                expand="block"
+                color="primary"
                 (click)="downloadInspection(scaffold.latestInspection)"
-                >{{
-                  scaffold.latestInspection.date.toDate() | date
-                }}</ion-button
-              >
+                >{{ scaffold.latestInspection.date.toDate() | date }}
+              </ion-chip>
+              <br />
               {{ scaffold?.latestInspection?.createdByName }}
             </td>
             <td *ngIf="!allowInspection">
-              <ion-button
+              <strong>{{ scaffold?.latestDismantle?.code }}</strong>
+              <br />
+              <ion-chip
                 *ngIf="scaffold.latestDismantle"
-                fill="clear"
-                size="small"
-                expand="block"
+                color="danger"
                 (click)="downloadDismantle(scaffold.latestDismantle)"
-                >{{ scaffold.latestDismantle.date.toDate() | date }}</ion-button
               >
+                {{ scaffold.latestDismantle.date.toDate() | date }}</ion-chip
+              >
+              <br />
               {{ scaffold?.latestDismantle?.createdByName }}
             </td>
             <td class="fw-bold" *ngIf="allowInspection">

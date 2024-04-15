@@ -51,10 +51,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     endDate: undefined,
     status: '',
     users: [],
-    totalInspections: 0,
-    totalHandovers: 0,
     totalModifications: 0,
-    totalInvoices: 0,
   };
   @Input() modification: Modification = {
     additionals: [],

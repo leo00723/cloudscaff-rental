@@ -13,7 +13,6 @@ export interface Site {
   name?: string;
   suburb?: string;
   totalScaffolds?: number;
-  totalInvoices?: number;
   zip?: string;
   startDate?: any;
   endDate?: any;

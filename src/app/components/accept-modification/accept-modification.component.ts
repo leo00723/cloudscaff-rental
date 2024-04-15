@@ -60,15 +60,13 @@ export class AcceptModificationComponent {
         const company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
-        let invoice: Invoice = {};
-        const code = `INV${new Date().toLocaleDateString('en', {
-          year: '2-digit',
-        })}${(company.totalInvoices ? company.totalInvoices + 1 : 1)
-          .toString()
-          .padStart(6, '0')}`;
+        const invoice: Invoice = {};
+        const code = this.masterSvc
+          .edit()
+          .generateDocCode(company.totalInvoices, 'INV');
         Object.assign(invoice, {
           ...this.modification,
-          code: code,
+          code,
           id: '',
           estimateCode: this.modification.code,
           estimateId: this.modification.id,
@@ -116,8 +114,9 @@ export class AcceptModificationComponent {
   }
 
   close() {
-    if (this.page === 0)
+    if (this.page === 0) {
       this.masterSvc.modal().dismiss(undefined, 'close', 'acceptModification');
+    }
     this.page--;
   }
 

@@ -196,10 +196,7 @@ export class AcceptEstimateComponent implements OnInit {
         startDate: this.estimate.startDate,
         endDate: this.estimate.endDate,
         date: new Date(),
-        totalInspections: 0,
-        totalHandovers: 0,
         totalModifications: 0,
-        totalInvoices: 1,
         users: [],
         status: 'pending-Work In Progress',
       });

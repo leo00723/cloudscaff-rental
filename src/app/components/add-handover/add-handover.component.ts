@@ -40,23 +40,21 @@ export class AddHandoverComponent implements OnInit {
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit(): void {
-    const id = this.masterSvc.store().selectSnapshot(CompanyState.company).id;
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.customer$ = this.masterSvc
       .edit()
       .getDocById(
-        `company/${id}/customers`,
+        `company/${company.id}/customers`,
         this.scaffold.customerId
       ) as Observable<Customer>;
-    this.handover.code = `HAN${new Date().toLocaleDateString('en', {
-      year: '2-digit',
-    })}${(this.scaffold.totalHandovers ? this.scaffold.totalHandovers + 1 : 1)
-      .toString()
-      .padStart(6, '0')}`;
+    this.handover.code = this.masterSvc
+      .edit()
+      .generateDocCode(company.totalHandovers, 'HAN');
     this.handover.scaffold = this.scaffold;
 
     this.template$ = this.masterSvc
       .edit()
-      .getDocById(`company/${id}/templates`, 'handover')
+      .getDocById(`company/${company.id}/templates`, 'handover')
       .pipe(
         tap((handover: HandoverTemplate) => {
           this.handover.detail = handover.detail;
@@ -96,11 +94,9 @@ export class AddHandoverComponent implements OnInit {
         await this.masterSvc
           .edit()
           .addDocument(`company/${company.id}/handovers`, this.handover);
-        await this.masterSvc
-          .edit()
-          .updateDoc(`company/${company.id}/scaffolds`, this.scaffold.id, {
-            totalHandovers: increment(1),
-          });
+        await this.masterSvc.edit().updateDoc('company', company.id, {
+          totalHandovers: increment(1),
+        });
         this.masterSvc
           .notification()
           .toast('Handover created successfully', 'success');

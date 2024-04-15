@@ -31,10 +31,7 @@ export interface Scaffold {
   endDate?: any;
   status?: string;
   users?: User[];
-  totalInspections?: number;
-  totalHandovers?: number;
   totalModifications?: number;
-  totalInvoices?: number;
   totalArea?: number;
   totalPlatforms?: number;
   latestHandover?: Handover;

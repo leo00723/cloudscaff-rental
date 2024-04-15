@@ -40,27 +40,22 @@ export class AddInspectionComponent implements OnInit {
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit(): void {
-    const id = this.masterSvc.store().selectSnapshot(CompanyState.company).id;
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.customer$ = this.masterSvc
       .edit()
       .getDocById(
-        `company/${id}/customers`,
+        `company/${company.id}/customers`,
         this.scaffold.customerId
       ) as Observable<Customer>;
-    this.inspection.code = `INS${new Date().toLocaleDateString('en', {
-      year: '2-digit',
-    })}${(this.scaffold.totalInspections
-      ? this.scaffold.totalInspections + 1
-      : 1
-    )
-      .toString()
-      .padStart(6, '0')}`;
+    this.inspection.code = this.masterSvc
+      .edit()
+      .generateDocCode(company.totalInspections, 'INS');
     this.inspection.scaffold = this.scaffold;
 
     this.questions$ = this.masterSvc
       .edit()
       .getDocById(
-        `company/${id}/templates`,
+        `company/${company.id}/templates`,
         'inspection'
       ) as Observable<InspectionTemplate>;
   }
@@ -111,13 +106,15 @@ export class AddInspectionComponent implements OnInit {
         await this.masterSvc
           .edit()
           .updateDoc(`company/${company.id}/scaffolds`, this.scaffold.id, {
-            totalInspections: increment(1),
             latestInspection: this.inspection,
             status:
               this.inspection.status === 'Failed'
                 ? 'inactive-Failed Inspection'
                 : 'active-Handed over',
           });
+        await this.masterSvc.edit().updateDoc('company', company.id, {
+          totalInspections: increment(1),
+        });
         this.masterSvc
           .notification()
           .toast('Inspection created successfully', 'success');

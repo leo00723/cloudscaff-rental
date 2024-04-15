@@ -195,10 +195,7 @@ export class AddScaffoldComponent implements OnInit {
       startDate: [''],
       endDate: [''],
       date: new Date(),
-      totalInspections: 0,
-      totalHandovers: 0,
       totalModifications: 0,
-      totalInvoices: 0,
       users: this.masterSvc.fb().array([]),
       status: 'pending-Work In Progress',
     });
