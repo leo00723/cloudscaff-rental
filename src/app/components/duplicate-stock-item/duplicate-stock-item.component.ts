@@ -109,11 +109,20 @@ export class DuplicateStockItemComponent implements OnInit {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
+        const log = {
+          message: `${this.user.name} added ${
+            this.field('yardQty').value
+          } items to the yard.`,
+          user: this.user,
+          date: new Date(),
+          status: 'add',
+        };
         await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/stockItems`, {
             ...this.form.value,
             category: this.form.value.categoryType.name || '',
+            log: [log],
           });
         this.masterSvc.notification().toast('Stock Item Added', 'success');
         this.close();

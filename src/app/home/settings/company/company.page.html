@@ -339,7 +339,7 @@
       </ion-row>
       <ion-row
         class="card-outline mb-3"
-        *ngIf="showAll && !company?.removeBilling"
+        *ngIf="showAll && company?.removeBilling"
       >
         <ion-col sizeLg="6" size="12">
           <h4>Intergrations</h4>
@@ -375,26 +375,47 @@
               </ion-label>
             </ion-col>
             <ion-col size="12" *ngIf="company.tokens">
-              <ion-label>
-                Tenant Name: <br />
-                <p class="bg-light rounded-lg p-3">
-                  {{company.tokens.tenantName}}
-                </p>
-              </ion-label>
-              <ion-label>
-                Tenant ID: <br />
-                <p class="bg-light rounded-lg p-3">
-                  {{company.tokens.tenantID}}
-                </p>
-              </ion-label>
               <ion-button
-                (click)="connectTenant()"
+                *ngIf="!connections && !loading && !company?.tokens?.tenantName"
+                (click)="getTenants()"
                 expand="block"
                 fill="clear"
                 shape="round"
               >
-                Connect Tenant
+                Get Tenants
               </ion-button>
+              <ng-container *ngIf="connections && !company?.tokens?.tenantName">
+                <ion-item
+                  mode="md"
+                  shape="round"
+                  *ngFor="let connection of connections"
+                >
+                  <ion-label>{{connection.tenantName}}</ion-label>
+                  <ion-button
+                    color="tertiary"
+                    slot="end"
+                    (click)="connectTenant(connection)"
+                    fill="solid"
+                    shape="round"
+                  >
+                    Connect Tenant
+                  </ion-button>
+                </ion-item>
+              </ng-container>
+              <ng-container *ngIf="company?.tokens?.tenantName">
+                <ion-label>
+                  Tenant Name: <br />
+                  <p class="bg-light rounded-lg p-3">
+                    {{company.tokens.tenantName}}
+                  </p>
+                </ion-label>
+                <ion-label>
+                  Tenant ID: <br />
+                  <p class="bg-light rounded-lg p-3">
+                    {{company.tokens.tenantID}}
+                  </p>
+                </ion-label>
+              </ng-container>
               <!-- <ion-button
                 (click)="getInvoices()"
                 expand="block"
