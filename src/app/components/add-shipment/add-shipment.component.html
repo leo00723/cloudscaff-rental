@@ -121,59 +121,25 @@
           </ion-searchbar
         ></ion-col>
         <ion-col size="12">
-          <table class="table table-sm table-bordered">
-            <thead>
-              <tr>
-                <th scope="col">Code</th>
-                <th scope="col">Category</th>
-                <th scope="col">Size</th>
-                <th scope="col">Name</th>
-                <th scope="col" class="text-center">Available Qty</th>
-                <th scope="col" class="text-center">Shipment Qty</th>
-                <th scope="col" class="text-center">Item Checked</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngFor="let item of items; let i = index">
-                <tr class="align-middle" *ngIf="viewAll; else viewShipment">
-                  <th scope="row">{{ item.code }}</th>
-                  <td>{{ item.category }}</td>
-                  <td>{{ item.size }}</td>
-                  <td>{{ item.name }}</td>
-                  <td class="text-center">
-                    {{ item | calculate }}
-                  </td>
-                  <td class="text-center">
-                    <ion-input
-                      #qty
-                      debounce="300"
-                      inputmode="numeric"
-                      [color]="item.error ? 'danger' : 'success'"
-                      [clearOnEdit]="true"
-                      [value]="item.shipmentQty"
-                      (ionChange)="update($event, item)"
-                      (ionBlur)="autoSave()"
-                      [readonly]="shipment.status !== 'pending'"
-                    >
-                    </ion-input>
-                    <ion-label color="danger" *ngIf="item.error">
-                      you cannot exceed the available qty
-                    </ion-label>
-                  </td>
-                  <td class="text-center">
-                    <ion-checkbox
-                      mode="ios"
-                      [checked]="item.checked"
-                      (ionChange)="checkItem($event, item)"
-                      [disabled]="shipment.status === 'sent'"
-                    ></ion-checkbox>
-                  </td>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">Code</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Size</th>
+                  <th scope="col">Name</th>
+                  <th scope="col" class="text-center">Available Qty</th>
+                  <th scope="col" class="text-center">Shipment Qty</th>
+                  <th scope="col" class="text-center">
+                    Weight ({{ company.mass.symbol }})
+                  </th>
+                  <th scope="col" class="text-center">Item Checked</th>
                 </tr>
-                <ng-template #viewShipment>
-                  <tr
-                    class="align-middle"
-                    *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
-                  >
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let item of items; let i = index">
+                  <tr class="align-middle" *ngIf="viewAll; else viewShipment">
                     <th scope="row">{{ item.code }}</th>
                     <td>{{ item.category }}</td>
                     <td>{{ item.size }}</td>
@@ -184,18 +150,22 @@
                     <td class="text-center">
                       <ion-input
                         #qty
-                        debounce="200"
-                        type="number"
+                        debounce="300"
+                        inputmode="numeric"
                         [color]="item.error ? 'danger' : 'success'"
                         [clearOnEdit]="true"
                         [value]="item.shipmentQty"
                         (ionChange)="update($event, item)"
                         (ionBlur)="autoSave()"
+                        [readonly]="shipment.status !== 'pending'"
                       >
                       </ion-input>
                       <ion-label color="danger" *ngIf="item.error">
                         you cannot exceed the available qty
                       </ion-label>
+                    </td>
+                    <td class="text-end">
+                      {{ item.shipmentQty * item.weight | number }}
                     </td>
                     <td class="text-center">
                       <ion-checkbox
@@ -204,11 +174,58 @@
                         (ionChange)="checkItem($event, item)"
                         [disabled]="shipment.status === 'sent'"
                       ></ion-checkbox>
-                    </td></tr
-                ></ng-template>
-              </ng-container>
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                  <ng-template #viewShipment>
+                    <tr
+                      class="align-middle"
+                      *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
+                    >
+                      <th scope="row">{{ item.code }}</th>
+                      <td>{{ item.category }}</td>
+                      <td>{{ item.size }}</td>
+                      <td>{{ item.name }}</td>
+                      <td class="text-center">
+                        {{ item | calculate }}
+                      </td>
+                      <td class="text-center">
+                        <ion-input
+                          #qty
+                          debounce="200"
+                          type="number"
+                          [color]="item.error ? 'danger' : 'success'"
+                          [clearOnEdit]="true"
+                          [value]="item.shipmentQty"
+                          (ionChange)="update($event, item)"
+                          (ionBlur)="autoSave()"
+                        >
+                        </ion-input>
+                        <ion-label color="danger" *ngIf="item.error">
+                          you cannot exceed the available qty
+                        </ion-label>
+                      </td>
+                      <td class="text-end">
+                        {{ item.shipmentQty * item.weight | number }}
+                      </td>
+                      <td class="text-center">
+                        <ion-checkbox
+                          mode="ios"
+                          [checked]="item.checked"
+                          (ionChange)="checkItem($event, item)"
+                          [disabled]="shipment.status === 'sent'"
+                        ></ion-checkbox>
+                      </td></tr
+                  ></ng-template>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+          <ion-item>
+            <ion-label>Total weight</ion-label>
+            <ion-label slot="end">
+              {{ shipment.items ? (shipment.items | weight : true) : [] }}
+            </ion-label>
+          </ion-item>
         </ion-col>
         <ion-col
           size="12"

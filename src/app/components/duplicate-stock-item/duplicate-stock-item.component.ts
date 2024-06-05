@@ -92,15 +92,37 @@ export class DuplicateStockItemComponent implements OnInit {
     return this.form.get(field) as FormControl;
   }
 
+  changeCategory(event) {
+    if (event[0] === 'add') {
+      window.open(
+        'https://app.cloudscaff.com/dashboard/settings/templates/component',
+        '_blank'
+      );
+    } else {
+      this.field('categoryType').setValue(event[0]);
+      this.field('category').setValue(event[0].name);
+      this.field('size').setValue('');
+    }
+  }
+
   createItem() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
+        const log = {
+          message: `${this.user.name} added ${
+            this.field('yardQty').value
+          } items to the yard.`,
+          user: this.user,
+          date: new Date(),
+          status: 'add',
+        };
         await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/stockItems`, {
             ...this.form.value,
-            category: this.form.value.categoryType.name,
+            category: this.form.value.categoryType.name || '',
+            log: [log],
           });
         this.masterSvc.notification().toast('Stock Item Added', 'success');
         this.close();
@@ -124,6 +146,8 @@ export class DuplicateStockItemComponent implements OnInit {
       categoryType: [
         this.inventoryItem.categoryType ? this.inventoryItem.categoryType : '',
       ],
+      category: [this.inventoryItem.category || ''],
+
       size: [this.inventoryItem.size ? this.inventoryItem.size : ''],
       name: [this.inventoryItem.name, Validators.required],
       hireCost: [
@@ -151,16 +175,5 @@ export class DuplicateStockItemComponent implements OnInit {
       lostQty: [0, [Validators.min(0)]],
       crossHire: this.masterSvc.fb().array([]),
     });
-    if (this.inventoryItem.crossHire) {
-      this.inventoryItem.crossHire.forEach((c) => {
-        const crosshire = this.masterSvc.fb().group({
-          company: [c.company, Validators.required],
-          qty: [c.qty, [Validators.required, Validators.min(0)]],
-          date: [c.date, [Validators.required]],
-          notes: [c.notes],
-        });
-        this.crossHireForms.push(crosshire);
-      });
-    }
   }
 }

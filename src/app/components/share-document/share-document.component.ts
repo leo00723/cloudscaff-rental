@@ -402,6 +402,54 @@ export class ShareDocumentComponent {
           }
         }
         break;
+      case 'dismantle':
+        {
+          try {
+            this.loading = true;
+            const dismantle: Handover = this.data.doc.dismantle;
+            const company: Company = this.data.doc.company;
+            const link = `https://app.cloudscaff.com/viewDismantle/${company.id}-${dismantle.id}`;
+            const email = this.form.value;
+            const cc = email.cc.map((e) => e.email);
+            const emailData = {
+              to: email.email,
+              cc: cc.length > 0 ? cc : '',
+              template: {
+                name: 'share',
+                data: {
+                  title: `Hey ${dismantle.customer.name}, ${company.name} has sent you a Dismantle.`,
+                  message: '',
+                  btnText: 'View Dismantle',
+                  link,
+                  subject: `${company.name} Dismantle - ${dismantle.code}`,
+                },
+              },
+            };
+            await this.masterSvc
+              .edit()
+              .setDoc(
+                'sharedDismantles',
+                { ...this.data.doc, cc, email },
+                `${company.id}-${dismantle.id}`
+              );
+            await this.masterSvc
+              .edit()
+              .addDocument('mail', JSON.parse(JSON.stringify(emailData)));
+            this.form.reset();
+            this.masterSvc
+              .notification()
+              .toast('Dismantle shared successfully', 'success');
+            this.close();
+            this.loading = false;
+          } catch (error) {
+            console.error(error);
+            this.masterSvc
+              .notification()
+              .toast('Something went wrong! Please try again', 'danger');
+            this.loading = false;
+          }
+        }
+        break;
       case 'credit':
         {
           try {

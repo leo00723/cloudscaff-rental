@@ -33,7 +33,7 @@ export class ModificationSummaryComponent {
     const sharedModification = {
       modification: this.modification,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc.edit().setDoc(
       'sharedModifications',
@@ -53,7 +53,7 @@ export class ModificationSummaryComponent {
     const sharedModification = {
       modification: this.modification,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

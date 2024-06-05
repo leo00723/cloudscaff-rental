@@ -1,5 +1,23 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button
+        mode="ios"
+        fill="solid"
+        size="small"
+        shape="round"
+        color="primary"
+        id="hover-trigger"
+        (click)="logout()"
+      >
+        Log Out
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content>
-  <div class="d-flex justify-content-center bg-primary py-5 px-2">
+  <!-- <div class="d-flex justify-content-center bg-primary py-5 px-2">
     <ion-thumbnail>
       <ion-img
         class="img-fluid"
@@ -8,25 +26,41 @@
         alt="logo"
       ></ion-img>
     </ion-thumbnail>
-  </div>
-  <ion-row class="container" style="min-height: 80vh">
-    <ion-col size="12" class="my-auto text-center">
+  </div> -->
+  <ion-row class="container justify-content-center">
+    <ion-col size="12" class="my-auto text-center py-3">
       <ion-text>
-        <h1 class="display-6 fw-bold">Your Cloudscaff trial has ended</h1>
+        <h1 class="display-6 fw-bold">Choose Cloudscaff Membership</h1>
         <p class="my-auto mt-2">
-          Your account is currently paused. To continue using your account
-          please choose a subscription plan below
+          To get started please choose a subscription plan below.<br />
+          Should you require more than 50 users please contact support at
+          <a href="mailto:enterprise@cloudscaff.com"
+            >enterprise@cloudscaff.com</a
+          >
         </p>
       </ion-text>
-      <ion-button
-        *ngIf="company$ | async as company"
-        class="mt-3"
-        shape="round"
-        href="https://buy.stripe.com/3cscOxaMD12qdEIcMO?client_reference_id={{company.id}}"
-        target="_blank"
-      >
-        View Plans
-      </ion-button>
     </ion-col>
+
+    <!-- <ion-col size="auto">
+      <stripe-buy-button
+        buy-button-id="buy_btn_1O2aAeGeP5MK7BRS0trRtBSW"
+        publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
+      >
+      </stripe-buy-button>
+    </ion-col>
+    <ion-col size="auto ">
+      <stripe-buy-button
+        buy-button-id="buy_btn_1O2aE0GeP5MK7BRSf9aYTglb"
+        publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
+      >
+      </stripe-buy-button>
+    </ion-col> -->
   </ion-row>
+  <div class="p-5 bg-primary">
+    <stripe-pricing-table
+      pricing-table-id="prctbl_1PNZ83GeP5MK7BRSK31nK23C"
+      publishable-key="pk_live_51KyEjqGeP5MK7BRSVyrGEtbgWnBeoT7KsHCXzm8akePr0b4uWeXACpvIF55OCFY12KLTvc4QAr7iOAaMjNYFajMB00TAl082S9"
+    >
+    </stripe-pricing-table>
+  </div>
 </ion-content>

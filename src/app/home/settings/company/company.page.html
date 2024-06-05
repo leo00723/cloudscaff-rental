@@ -271,7 +271,7 @@
             </ion-col>
             <ion-col size="12" *ngIf="showAll">
               <app-input-reactive
-                title="Sales Tax %"
+                title="Sales Tax % (set to 0 if you want to exclude this)"
                 controlName="salesTax"
                 type="number"
                 [form]="form"
@@ -279,8 +279,16 @@
               </app-input-reactive>
             </ion-col>
             <ion-col size="12" *ngIf="showAll">
+              <ion-item mode="ios" class="rounded-3 mb-3">
+                <ion-checkbox
+                  shape="round"
+                  slot="end"
+                  formControlName="gst"
+                ></ion-checkbox>
+                <ion-label>Use GST instead of VAT?</ion-label>
+              </ion-item>
               <app-input-reactive
-                title="VAT %"
+                title="{{form.get('gst').value ? 'GST' : 'VAT'}} % (set to 0 if you want to exclude this)"
                 controlName="vat"
                 type="number"
                 [form]="form"
@@ -329,7 +337,10 @@
           </ion-row>
         </ion-col>
       </ion-row>
-      <ion-row class="card-outline mb-3" *ngIf="showAll">
+      <ion-row
+        class="card-outline mb-3"
+        *ngIf="showAll && company?.removeBilling"
+      >
         <ion-col sizeLg="6" size="12">
           <h4>Intergrations</h4>
           <ion-text color="medium">
@@ -364,26 +375,47 @@
               </ion-label>
             </ion-col>
             <ion-col size="12" *ngIf="company.tokens">
-              <ion-label>
-                Tenant Name: <br />
-                <p class="bg-light rounded-lg p-3">
-                  {{company.tokens.tenantName}}
-                </p>
-              </ion-label>
-              <ion-label>
-                Tenant ID: <br />
-                <p class="bg-light rounded-lg p-3">
-                  {{company.tokens.tenantID}}
-                </p>
-              </ion-label>
               <ion-button
-                (click)="connectTenant()"
+                *ngIf="!connections && !loading && !company?.tokens?.tenantName"
+                (click)="getTenants()"
                 expand="block"
                 fill="clear"
                 shape="round"
               >
-                Connect Tenant
+                Get Tenants
               </ion-button>
+              <ng-container *ngIf="connections && !company?.tokens?.tenantName">
+                <ion-item
+                  mode="md"
+                  shape="round"
+                  *ngFor="let connection of connections"
+                >
+                  <ion-label>{{connection.tenantName}}</ion-label>
+                  <ion-button
+                    color="tertiary"
+                    slot="end"
+                    (click)="connectTenant(connection)"
+                    fill="solid"
+                    shape="round"
+                  >
+                    Connect Tenant
+                  </ion-button>
+                </ion-item>
+              </ng-container>
+              <ng-container *ngIf="company?.tokens?.tenantName">
+                <ion-label>
+                  Tenant Name: <br />
+                  <p class="bg-light rounded-lg p-3">
+                    {{company.tokens.tenantName}}
+                  </p>
+                </ion-label>
+                <ion-label>
+                  Tenant ID: <br />
+                  <p class="bg-light rounded-lg p-3">
+                    {{company.tokens.tenantID}}
+                  </p>
+                </ion-label>
+              </ng-container>
               <!-- <ion-button
                 (click)="getInvoices()"
                 expand="block"
@@ -464,6 +496,14 @@
                 </app-input-reactive>
               </ion-col>
               <ion-col size="12" *ngIf="showAll">
+                <ion-item mode="ios" class="rounded-3 mb-3">
+                  <ion-checkbox
+                    shape="round"
+                    slot="end"
+                    formControlName="gst"
+                  ></ion-checkbox>
+                  <ion-label>Use GST instead of VAT?</ion-label>
+                </ion-item>
                 <app-input-reactive
                   title="VAT Number"
                   placeholder="Enter business VAT number"
@@ -638,7 +678,7 @@
               </ion-col>
               <ion-col size="12" *ngIf="showAll">
                 <app-input-reactive
-                  title="VAT %"
+                  title="{{form.get('gst').value ? 'GST' : 'VAT'}} % (set to 0 if you want to exclude this)"
                   controlName="vat"
                   type="number"
                   [form]="form"

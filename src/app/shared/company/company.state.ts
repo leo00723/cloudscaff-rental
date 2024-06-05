@@ -3,7 +3,6 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { catchError, tap } from 'rxjs/operators';
 import { Company } from 'src/app/models/company.model';
 import { EditService } from 'src/app/services/edit.service';
-import { XeroService } from 'src/app/services/xero.service';
 import { Navigate } from '../router.state';
 import { GetCompany, SetCompany } from './company.actions';
 
@@ -13,8 +12,7 @@ import { GetCompany, SetCompany } from './company.actions';
 })
 @Injectable()
 export class CompanyState {
-  tokenUpdated = false;
-  constructor(private editSvc: EditService, private xeroService: XeroService) {}
+  constructor(private editSvc: EditService) {}
   @Action(SetCompany)
   setCompany({ setState }: StateContext<Company>, { payload }: SetCompany) {
     setState(payload);
@@ -24,6 +22,7 @@ export class CompanyState {
   getCompany({ dispatch }: StateContext<string>, { payload }: GetCompany) {
     return this.editSvc.getDocById('company', payload).pipe(
       tap(async (company: Company) => {
+        company.gst = company?.gst || false;
         dispatch(new SetCompany(company));
         if (company.needsSetup) {
           dispatch(new Navigate('/dashboard/onboarding'));

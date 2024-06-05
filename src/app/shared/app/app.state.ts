@@ -13,7 +13,7 @@ export class AppState {
   constructor(private editSvc: EditService) {}
 
   @Action(SetVersion)
-  setCompany(
+  setVersion(
     { setState }: StateContext<{ version: string; message: string }>,
     { payload }: SetVersion
   ) {

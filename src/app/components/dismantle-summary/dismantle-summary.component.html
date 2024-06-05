@@ -1,0 +1,202 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ dismantle.code }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen="true" class="ion-padding">
+  <ion-grid class="container" *ngIf="dismantle; else loading">
+    <ion-row class="py-2">
+      <ion-col sizeMd="6" size="4">
+        <ion-text>
+          <h4>Dismantle</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col sizeMd="6" size="8" class="text-end">
+        <ng-container *ngIf="terms$ | async as terms; else noTerms">
+          <ion-button
+            size="small"
+            (click)="download(terms)"
+            fill="clear"
+            color="primary"
+          >
+            <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+          </ion-button>
+          <ion-button
+            size="small"
+            (click)="share(terms)"
+            fill="clear"
+            color="primary"
+          >
+            <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
+          </ion-button>
+        </ng-container>
+        <ng-template #noTerms>
+          <ion-button
+            size="small"
+            (click)="download(null)"
+            fill="clear"
+            color="primary"
+          >
+            <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+          </ion-button>
+          <ion-button
+            size="small"
+            (click)="share(null)"
+            fill="clear"
+            color="primary"
+          >
+            <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
+          </ion-button>
+        </ng-template>
+      </ion-col>
+      <ion-col>
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Scaffold Code:</h6>
+          <h6>Site Code:</h6>
+          <h6>Date Issued:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>
+          <h6>{{ dismantle.code }}</h6>
+          <h6>{{ dismantle.scaffold.code }}</h6>
+          <h6>{{ dismantle.scaffold.siteCode }}</h6>
+          <h6>{{ dismantle.date | date }}</h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <app-company-info-detail
+      [customer]="dismantle.customer"
+    ></app-company-info-detail>
+
+    <ion-item-divider mode="md"></ion-item-divider>
+    <ion-row class="py-2">
+      <ion-col>
+        <app-scaffold-overview-table
+          [detailed]="false"
+          [scaffold]="dismantle.scaffold"
+          [showSafe]="true"
+        ></app-scaffold-overview-table>
+        <!-- <table class="table table-bordered" *ngIf="dismantle.questions">
+          <ng-container *ngFor="let category of dismantle.questions.categories">
+            <thead>
+              <tr class="table-light">
+                <th colspan="3" scope="col">{{ category.name }}</th>
+              </tr>
+              <tr>
+                <th class="text-center" scope="col">#</th>
+                <th scope="col">Question</th>
+                <th class="text-center" scope="col">Checklist</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let item of category.items; let i = index"
+                class="align-middle"
+              >
+                <th class="text-center" scope="row">{{ i + 1 }}.</th>
+                <td>{{ item.question }}</td>
+                <td class="text-center">
+                  {{ item.value ? item.value : "N/A" }}
+                </td>
+              </tr>
+            </tbody>
+          </ng-container>
+        </table> -->
+        <table class="table table-bordered mb-3">
+          <thead>
+            <tr class="table-light">
+              <th colspan="2">Dismantle Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- <ng-container *ngIf="dismantle.notes">
+              <tr class="align-middle table-light">
+                <th colspan="2">Notes</th>
+              </tr>
+              <tr class="align-middle">
+                <td colspan="2" [innerText]="dismantle.notes"></td>
+              </tr>
+            </ng-container>
+            <tr class="align-middle table-light">
+              <th colspan="2">Status</th>
+            </tr> -->
+            <!-- <tr class="align-middle">
+              <td>Maximum load of the scaffold?</td>
+              <td class="text-center">
+                <ion-text slot="end">
+                  {{ dismantle.maxLoad }}
+                </ion-text>
+              </td>
+            </tr> -->
+            <!-- <tr class="align-middle">
+              <td>Is the scaffold safe for use?</td>
+              <td class="text-center">
+                <ion-text
+                  [color]="dismantle.safe === 'Passed' ? 'success' : 'danger'"
+                  slot="end"
+                >
+                  {{ dismantle.safe }}
+                </ion-text>
+              </td>
+            </tr> -->
+            <tr class="align-middle" *ngIf="dismantle.signature">
+              <td>Signed By</td>
+              <td class="text-center">
+                <ion-text slot="end">{{ dismantle.signedBy }}</ion-text>
+              </td>
+            </tr>
+            <tr class="align-middle" *ngIf="dismantle.signature">
+              <td>Signature</td>
+              <td class="text-center">
+                <img [src]="dismantle.signature" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ion-col>
+      <!-- <ion-col size="12">
+        <app-title-block> Uploaded Files </app-title-block>
+        <ion-row>
+          <ion-col
+            sizeXl="2"
+            sizeLg="3"
+            sizeMd="4"
+            size="6"
+            *ngFor="let file of dismantle.uploads; let i = index"
+          >
+            <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
+          </ion-col>
+        </ion-row>
+      </ion-col> -->
+      <ion-col size="12" *ngIf="!dismantle.signature">
+        <ion-text><h4>Signature</h4></ion-text>
+        <app-signature-pad (res)="sign($event)"></app-signature-pad>
+      </ion-col>
+      <ion-progress-bar
+        type="indeterminate"
+        *ngIf="isLoading"
+      ></ion-progress-bar>
+    </ion-row>
+  </ion-grid>
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

@@ -51,10 +51,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
     endDate: undefined,
     status: '',
     users: [],
-    totalInspections: 0,
-    totalHandovers: 0,
     totalModifications: 0,
-    totalInvoices: 0,
   };
   @Input() modification: Modification = {
     additionals: [],
@@ -546,6 +543,7 @@ export class AddModificationComponent implements OnInit, OnDestroy {
         bankName: this.company.bankName,
         swiftCode: this.company.swiftCode,
         id: this.company.id,
+        gst: this.company?.gst,
       },
       code: this.isEdit ? this.modification.code : code,
       status: this.isEdit ? this.modification.status : 'pending',

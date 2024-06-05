@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
-import { FileUploadComponent } from 'src/app/components/file-upload/file-upload.component';
+import { Observable, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Enquiry } from 'src/app/models/enquiry.model';
 import { User } from 'src/app/models/user.model';

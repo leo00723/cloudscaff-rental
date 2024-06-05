@@ -3,6 +3,8 @@ import { Select, Store } from '@ngxs/store';
 import { Company } from '../models/company.model';
 import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { EditService } from '../services/edit.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   templateUrl: './trial-ended.page.html',
@@ -10,7 +12,7 @@ import { Router } from '@angular/router';
 export class TrialEndedPage implements OnDestroy {
   @Select() company$: Observable<Company>;
   private sub: Subscription;
-  constructor(private router: Router) {
+  constructor(private router: Router, private auth: AuthService) {
     this.sub = this.company$.subscribe((company) => {
       if (!company.trialEnded) {
         this.router.navigateByUrl('/dashboard/sites');
@@ -20,5 +22,9 @@ export class TrialEndedPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+  }
+
+  async logout() {
+    await this.auth.logout();
   }
 }

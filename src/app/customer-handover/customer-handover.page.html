@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>customer-handover</ion-title>
+    <ion-title>Cloudscaff - Handover</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -285,7 +285,7 @@
       <ion-col size="12" *ngIf="!handover.handover.signature">
         <ion-text><h4>Signature</h4></ion-text>
         <app-signature-pad
-          (result)="sign(handover.handover,$event)"
+          (res)="sign(handover.handover,$event)"
         ></app-signature-pad>
       </ion-col>
       <ion-progress-bar

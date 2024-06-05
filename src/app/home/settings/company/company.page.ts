@@ -20,6 +20,7 @@ import { Currencies } from 'src/app/models/currencies.model';
 import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { MasterService } from '../../../services/master.service';
+import { SearchableSelectComponent } from 'src/app/components/searchable-select/searchable-select.component';
 
 @Component({
   selector: 'app-company',
@@ -53,6 +54,7 @@ export class CompanyPage implements OnDestroy {
     totalEstimates: 0,
     vat: 0,
     salesTax: 0,
+    gst: false,
     totalSites: 0,
     users: [],
     vatNum: '',
@@ -73,6 +75,7 @@ export class CompanyPage implements OnDestroy {
   loading = false;
   isLoading = true;
   page = 0;
+  connections: any[];
   private subs = new Subscription();
   constructor(
     private fb: FormBuilder,
@@ -147,19 +150,25 @@ export class CompanyPage implements OnDestroy {
     this.loading = true;
     const tokens = await this.xeroService.connect();
     if (tokens) {
-      console.log(tokens);
+      // console.log(tokens);
     }
     this.loading = false;
   }
-  async connectTenant() {
+  async getTenants() {
+    this.loading = true;
+    this.connections = (await this.xeroService.getConnections(
+      this.company
+    )) as [];
+    this.loading = false;
+  }
+  async connectTenant(connection) {
     this.loading = true;
     try {
-      const connections = await this.xeroService.getConnections(this.company);
-      if (connections[0]) {
+      if (connection) {
         this.company.tokens = {
           ...this.company.tokens,
-          tenantID: connections[0].tenantId,
-          tenantName: connections[0].tenantName,
+          tenantID: connection.tenantId,
+          tenantName: connection.tenantName,
         };
         await this.masterSvc
           .edit()
@@ -218,6 +227,7 @@ export class CompanyPage implements OnDestroy {
             this.company.vat,
             [Validators.required, Validators.min(0), Validators.max(100)],
           ],
+          gst: [this.company?.gst || false],
           terminology: this.fb.group({
             scaffold: [this.company.terminology.scaffold, Validators.required],
             boards: [this.company.terminology.boards, Validators.required],

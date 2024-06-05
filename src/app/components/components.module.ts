@@ -17,6 +17,7 @@ import { CompanyPage } from '../home/settings/company/company.page';
 import { AddSiteComponent } from '../home/sites/add-site/add-site.component';
 import { RequestsTableComponent } from '../home/view-site/requests-table/requests-table.component';
 import { ReturnsTableComponent } from '../home/view-site/returns-table/returns-table.component';
+import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.component';
 import { AcceptModificationComponent } from './accept-modification/accept-modification.component';
 import { AddBillableShipmentComponent } from './add-billable-shipment/add-billable-shipment.component';
 import { AddCreditComponent } from './add-credit/add-credit.component';
@@ -28,6 +29,7 @@ import { AddPaymentApplicationComponent } from './add-payment-application/add-pa
 import { AddPaymentComponent } from './add-payment/add-payment.component';
 import { AddRequestComponent } from './add-request/add-request.component';
 import { AddReturnComponent } from './add-return/add-return.component';
+import { AddScaffoldComponent } from './add-scaffold/add-scaffold.component';
 import { AddShipmentComponent } from './add-shipment/add-shipment.component';
 import { AddStockitemComponent } from './add-stockitem/add-stockitem.component';
 import { AddTransferComponent } from './add-transfer/add-transfer.component';
@@ -65,8 +67,12 @@ import { InventoryEstimateSummaryComponent } from './inventory-estimate-summary/
 import { InventoryEstimateTableComponent } from './inventory-estimate-table/inventory-estimate-table.component';
 import { InvoiceSummaryComponent } from './invoice-summary/invoice-summary.component';
 import { ModificationSummaryComponent } from './modification-summary/modification-summary.component';
+import { FileItemComponent } from './multiuploader/file-item/file-item.component';
 import { MultiuploaderComponent } from './multiuploader/multiuploader.component';
+import { UploadTaskComponent } from './multiuploader/upload-task/upload-task.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
+import { PermissionsSelectComponent } from './permissions-select/permissions-select.component';
 import { RepurposeInventoryComponent } from './repurpose-inventory/repurpose-inventory.component';
 import { ScaffoldEditformComponent } from './scaffold-editform/scaffold-editform.component';
 import { ScaffoldOverviewTableComponent } from './scaffold-overview-table/scaffold-overview-table.component';
@@ -81,7 +87,6 @@ import { StatementSummaryComponent } from './statement-summary/statement-summary
 import { TitleBlockComponent } from './title-block/title-block.component';
 import { TutorialGalleryComponent } from './tutorial-gallery/tutorial-gallery.component';
 import { VideoPlayerComponent } from './tutorial-gallery/video-player/video-player.component';
-import { UploadTaskComponent } from './multiuploader/upload-task/upload-task.component';
 import { UploaderComponent } from './uploader/uploader.component';
 import { UserPickerComponent } from './user-picker/user-picker.component';
 import { ViewBulkEstimateComponent } from './view-bulk-estimate/view-bulk-estimate.component';
@@ -92,9 +97,8 @@ import { ViewModificationComponent } from './view-modification/view-modification
 import { ViewShipmentInvoiceComponent } from './view-shipment-invoice/view-shipment-invoice.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
-import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
-import { FileItemComponent } from './multiuploader/file-item/file-item.component';
-import { AddScaffoldComponent } from './add-scaffold/add-scaffold.component';
+import { WeightPipe } from './weight.pipe';
+import { DismantleSummaryComponent } from './dismantle-summary/dismantle-summary.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -184,6 +188,9 @@ const COMPONENTS = [
   PagePlaceholderComponent,
   FileItemComponent,
   AddScaffoldComponent,
+  WeightPipe,
+  ScaffoldTableComponent,
+  DismantleSummaryComponent,
 ];
 const IMPORTS = [
   CommonModule,
@@ -196,6 +203,7 @@ const IMPORTS = [
   ScrollingModule,
   SignaturePadModule,
   SearchableSelectComponent,
+  PermissionsSelectComponent,
 ];
 
 @NgModule({

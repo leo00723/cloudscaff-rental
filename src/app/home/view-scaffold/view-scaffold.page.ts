@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import {
+  increment,
+  orderBy,
+  serverTimestamp,
+  where,
+} from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
@@ -8,9 +14,9 @@ import { AddInspectionComponent } from 'src/app/components/add-inspection/add-in
 import { AddInvoiceComponent } from 'src/app/components/add-invoice/add-invoice.component';
 import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
 import { AddPaymentComponent } from 'src/app/components/add-payment/add-payment.component';
+import { DismantleSummaryComponent } from 'src/app/components/dismantle-summary/dismantle-summary.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
-import { InvoiceSummaryComponent } from 'src/app/components/invoice-summary/invoice-summary.component';
 import { ViewInvoiceComponent } from 'src/app/components/view-invoice/view-invoice.component';
 import { ViewModificationComponent } from 'src/app/components/view-modification/view-modification.component';
 import { Company } from 'src/app/models/company.model';
@@ -23,18 +29,34 @@ import { Payment } from 'src/app/models/payment.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
+import { UserState } from 'src/app/shared/user/user.state';
+import cloneDeep from 'lodash/cloneDeep';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-view-scaffold',
   templateUrl: './view-scaffold.page.html',
+  styles: [
+    `
+      /* Styles for the scrollbar track */
+      ::-webkit-scrollbar {
+        width: 0.2rem;
+        height: 0rem;
+      }
+    `,
+  ],
 })
 export class ViewScaffoldPage implements OnInit {
+  private loadingCtrl = inject(LoadingController);
+
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   scaffold$: Observable<Scaffold>;
   inspections$: Observable<Inspection[]>;
   handovers$: Observable<Handover[]>;
+  dismantles$: Observable<Handover[]>;
   modifications$: Observable<Modification[]>;
   invoices$: Observable<Invoice[]>;
   payments$: Observable<Payment[]>;
@@ -62,64 +84,46 @@ export class ViewScaffoldPage implements OnInit {
       ) as Observable<Scaffold>;
     this.inspections$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/inspections`,
-        'scaffold.id',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Inspection[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/inspections`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Inspection[]>;
     this.handovers$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/handovers`,
-        'scaffold.id',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Handover[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/handovers`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Handover[]>;
+    this.dismantles$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/dismantles`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Handover[]>;
     this.modifications$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/modifications`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Modification[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/modifications`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Modification[]>;
     this.invoices$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/invoices`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Invoice[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/invoices`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Invoice[]>;
     this.payments$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/payments`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Payment[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/payments`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Payment[]>;
     this.credits$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/credits`,
-        'scaffoldId',
-        '==',
-        this.ids[2],
-        'date',
-        'desc'
-      ) as Observable<Credit[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/credits`, [
+        where('scaffold.id', '==', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Credit[]>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
@@ -149,6 +153,61 @@ export class ViewScaffoldPage implements OnInit {
       cssClass: 'fullscreen',
     });
     return await modal.present();
+  }
+  async addDismantle(scaffold: Scaffold) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      const loading = await this.loadingCtrl.create({
+        message: 'Creating Dismantle',
+        mode: 'ios',
+      });
+      try {
+        loading.present();
+        const user = this.masterSvc.store().selectSnapshot(UserState.user);
+        const company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+        const dismantle = cloneDeep(scaffold.latestHandover);
+        dismantle.date = serverTimestamp();
+        dismantle.code = this.masterSvc
+          .edit()
+          .generateDocCode(company.totalDismantles, 'DIS');
+        dismantle.createdBy = user.id;
+        dismantle.createdByName = user.name;
+        dismantle.company = company;
+        dismantle.signature = null;
+        dismantle.signatureRef = null;
+        dismantle.signedBy = null;
+        dismantle.status = 'Needs Signature';
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${company.id}/dismantles`, dismantle);
+        await this.masterSvc.edit().updateDoc('company', company.id, {
+          totalDismantles: increment(1),
+        });
+        // await this.masterSvc
+        //   .edit()
+        //   .updateDoc(
+        //     `company/${company.id}/handovers`,
+        //     scaffold.latestHandover.id,
+        //     {
+        //       dismantled: true,
+        //     }
+        //   );
+        this.masterSvc
+          .notification()
+          .toast('Dismantle created successfully', 'success');
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your Dismantle, Please try again!',
+            'danger'
+          );
+      } finally {
+        loading.dismiss();
+      }
+    });
   }
   async addModification(scaffold: Scaffold) {
     const modal = await this.masterSvc.modal().create({
@@ -207,6 +266,18 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'viewHandover',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewDismantle(dismantle: Handover) {
+    const modal = await this.masterSvc.modal().create({
+      component: DismantleSummaryComponent,
+      componentProps: {
+        dismantle,
+      },
+      showBackdrop: false,
+      id: 'viewDismantle',
       cssClass: 'fullscreen',
     });
     return await modal.present();

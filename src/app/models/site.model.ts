@@ -1,4 +1,5 @@
 import { Customer } from './customer.model';
+import { UploadedFile } from './uploadedFile.model';
 import { User } from './user.model';
 
 export interface Site {
@@ -12,7 +13,6 @@ export interface Site {
   name?: string;
   suburb?: string;
   totalScaffolds?: number;
-  totalInvoices?: number;
   zip?: string;
   startDate?: any;
   endDate?: any;
@@ -25,4 +25,5 @@ export interface Site {
   billingCycle?: number;
   billable?: boolean;
   previousGross?: number;
+  uploads?: UploadedFile[];
 }

@@ -22,43 +22,38 @@ export class HomePage implements OnDestroy {
     //   title: 'Dashboard',
     //   url: '/dashboard/view',
     //   icon: 'home',
-    //   roles: 'Owner,Admin,Super-Admin',
     // },
     {
       title: 'Enquiries',
       url: '/dashboard/enquiries',
       icon: 'reader-outline',
-      roles: 'Owner,Admin,Super-Admin',
     },
     {
       title: 'Estimates',
       url: '/dashboard/estimates',
       icon: 'options-outline',
-      roles: 'Owner,Admin,Super-Admin',
     },
     {
       title: 'Sites',
       url: '/dashboard/sites',
       icon: 'business-outline',
-      roles: 'Owner,Admin,Super-Admin,Supervisor',
     },
     {
       title: 'Inventory',
       url: '/dashboard/inventory',
       icon: 'bar-chart-outline',
-      roles: 'Owner,Admin,Super-Admin,Supervisor',
     },
     {
       title: 'Statements',
       url: '/dashboard/statements',
       icon: 'document-text-outline',
-      roles: 'Owner,Admin,Super-Admin',
     },
   ];
   loading = false;
   version = environment.version;
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
+  @Select() notificationFlag$: Observable<number>;
   platform = this.masterSvc.platform();
   private subs = new Subscription();
   constructor(
@@ -142,6 +137,11 @@ export class HomePage implements OnDestroy {
           .toast('Something went wrong, please try again!', 'danger');
       }
     });
+  }
+
+  removeBilling(company: Company, page: string): boolean {
+    const billingPages = ['Estimates', 'Statements'];
+    return !billingPages.includes(page) || !company.removeBilling;
   }
 
   call() {

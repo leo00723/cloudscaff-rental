@@ -9,5 +9,8 @@ export interface User {
   imageRef?: string;
   phone?: string;
   role?: string;
+  permissions?: any[];
+  permissionsList?: string[];
   needsSetup?: boolean;
+  title?: string;
 }

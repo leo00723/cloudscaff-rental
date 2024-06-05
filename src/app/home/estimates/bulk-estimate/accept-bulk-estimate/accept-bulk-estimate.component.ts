@@ -193,10 +193,7 @@ export class AcceptBulkEstimateComponent implements OnInit {
       startDate: this.bulkEstimate.startDate,
       endDate: this.bulkEstimate.endDate,
       date: new Date(),
-      totalInspections: 0,
-      totalHandovers: 0,
       totalModifications: 0,
-      totalInvoices: 1,
       users: [],
       status: 'pending-Work In Progress',
     };

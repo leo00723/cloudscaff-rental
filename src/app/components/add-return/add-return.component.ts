@@ -141,9 +141,9 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
     this.items = this.itemBackup.filter(
       (item) =>
-        item.code.toLowerCase().includes(val) ||
+        item?.code?.toString().toLowerCase().includes(val) ||
         item.name.toLowerCase().includes(val) ||
-        item.category.toLowerCase().includes(val) ||
+        item?.category?.toLowerCase().includes(val) ||
         !val
     );
     if (!val) {
@@ -178,6 +178,16 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   async upload() {
     const newFiles = await this.uploader.startUpload();
     this.return.uploads.push(...newFiles);
+  }
+
+  async downloadPdf() {
+    if (!this.return.date) {
+      this.return.date = new Date();
+    }
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateReturn(this.return, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.return.code);
   }
 
   private initEditForm() {

@@ -87,6 +87,13 @@ const routes: Routes = [
             (m) => m.InventoryPageModule
           ),
       },
+      {
+        path: 'notifications',
+        loadChildren: () =>
+          import('./notifications/notifications.module').then(
+            (m) => m.NotificationsPageModule
+          ),
+      },
     ],
   },
 ];

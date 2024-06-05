@@ -5,10 +5,23 @@
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
-
+<ion-item lines="none" mode="ios">
+  <ion-select
+    #rows
+    slot="start"
+    placeholder="7"
+    interface="popover"
+    [value]="7"
+  >
+    <ion-select-option value="7">7</ion-select-option>
+    <ion-select-option value="10">10</ion-select-option>
+    <ion-select-option value="50">50</ion-select-option>
+    <ion-select-option value="100">100</ion-select-option>
+  </ion-select>
+</ion-item>
 <ngx-datatable
   class="bootstrap striped rounded-lg"
-  [limit]="15"
+  [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="'auto'"
   [columnMode]="'force'"
@@ -26,6 +39,20 @@
       <ion-avatar mode="ios">
         <img [src]="value ? value : 'assets/icons/user.svg'" alt="image" />
       </ion-avatar>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Title"
+    prop="title"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-text>
+        <ion-badge mode="ios" color="tertiary" *ngIf="value" class="m-0">
+          {{ value }}
+        </ion-badge>
+      </ion-text>
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column name="Name" cellClass="m-auto">
@@ -55,10 +82,17 @@
       </ion-text>
     </ng-template>
   </ngx-datatable-column>
-  <ngx-datatable-column name="Role" cellClass="m-auto">
+  <ngx-datatable-column
+    name="Permissions"
+    prop="permissionsList"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-text>
-        <ion-badge class="m-0"> {{ value }} </ion-badge>
+        <ion-badge color="success" class="m-0">
+          {{ value ? value.length : 0 }}
+        </ion-badge>
       </ion-text>
     </ng-template>
   </ngx-datatable-column>

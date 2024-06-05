@@ -38,6 +38,11 @@ export class TermsPage {
       path: 'Inspection',
     },
     {
+      title: `Dismantle T's & C's`,
+      description: `Here you update T's & C's for your dismantles.`,
+      path: 'Dismantle',
+    },
+    {
       title: `Invoice T's & C's`,
       description: `Here you update T's & C's for your invoices.`,
       path: 'Invoice',
@@ -79,6 +84,11 @@ export class TermsPage {
       cssClass: 'fullscreen',
     });
     return await modal.present();
+  }
+
+  removeBilling(company: Company, page: string): boolean {
+    const billingPages = ['Estimate', 'Invoice', 'Credit', 'Payment'];
+    return !billingPages.includes(page) || !company.removeBilling;
   }
 
   init() {

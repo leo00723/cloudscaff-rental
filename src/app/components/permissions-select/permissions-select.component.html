@@ -1,0 +1,62 @@
+<ion-item
+  fill="solid"
+  lines="none"
+  class="rounded-3"
+  mode="md"
+  *ngIf="showInput"
+>
+  <ion-label>Set user permissions</ion-label>
+  <ion-button mode="ios" shape="round">Click here</ion-button>
+  <ng-template #placeholder>
+    <ion-text color="medium" class="my-2">Set user permissions</ion-text>
+  </ng-template>
+</ion-item>
+<ion-modal
+  [isOpen]="isOpen"
+  [backdropDismiss]="false"
+  [showBackdrop]="true"
+  [cssClass]="'date'"
+>
+  <ng-template>
+    <ion-header mode="ios">
+      <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+          <ion-button (click)="cancel()"> Cancel </ion-button>
+        </ion-buttons>
+        <ion-title>Set user permissions</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="select()"> Select </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar
+          class="py-2"
+          placeholder="Search"
+          (ionChange)="filter($any($event))"
+          [debounce]="250"
+        ></ion-searchbar>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ng-container *ngFor="let category of filtered">
+          <ion-list-header>
+            <ion-label>{{ category.title }}</ion-label>
+          </ion-list-header>
+          <ion-item
+            *ngFor="let item of category.options; let i = index"
+            mode="ios"
+          >
+            <ion-label>{{ item.name }}</ion-label>
+            <ion-toggle
+              slot="end"
+              [value]="item.selected"
+              [checked]="item.selected"
+              (ionChange)="item.selected = !item.selected"
+            ></ion-toggle>
+          </ion-item>
+        </ng-container>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

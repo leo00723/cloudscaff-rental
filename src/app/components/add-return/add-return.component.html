@@ -15,6 +15,15 @@
         <i class="text-muted fs-6">(Saving...)</i>
       </ion-text>
     </ion-title>
+    <ion-buttons slot="end" *ngIf="isEdit">
+      <ion-button (click)="downloadPdf()">
+        <ion-icon
+          slot="icon-only"
+          name="cloud-download-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -67,137 +76,156 @@
         </ion-searchbar
       ></ion-col>
       <ion-col size="12">
-        <table class="table table-sm table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Code</th>
-              <th scope="col">Category</th>
-              <th scope="col">Name</th>
-              <th scope="col" class="text-center">Available Qty</th>
-              <th scope="col" class="text-center">Shipment Qty</th>
-              <th scope="col" *ngIf="allowSend" class="text-center">
-                Maintenance Qty
-              </th>
-              <th scope="col" *ngIf="allowSend" class="text-center">
-                Damaged Qty
-              </th>
-              <th scope="col" *ngIf="allowSend" class="text-center">
-                Lost Qty
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let item of items; let i = index">
-              <tr class="align-middle" *ngIf="viewAll; else viewShipment">
-                <th scope="row">{{ item.code }}</th>
-                <td>{{ item.category }}</td>
-                <td>{{ item.name }}</td>
-                <td class="text-center">
-                  {{ item.availableQty }}
-                </td>
-                <td class="text-center">
-                  <ion-input
-                    #qty
-                    debounce="200"
-                    type="number"
-                    [color]="
-                      qty.value > item.availableQty || qty.value < 0
-                        ? 'danger'
-                        : 'success'
-                    "
-                    [clearOnEdit]="true"
-                    [value]="item.shipmentQty"
-                    (ionChange)="update($event, item, 'shipment')"
-                    [readonly]="return.status !== 'pending' || allowSend"
-                    (ionBlur)="autoSave()"
-                  >
-                  </ion-input>
-                  <ion-label
-                    color="danger"
-                    *ngIf="qty.value > item.availableQty"
-                  >
-                    you cannot exceed the available qty
-                  </ion-label>
-                </td>
-                <td class="text-center" *ngIf="allowSend">
-                  <ion-input
-                    #MaintenanceQty
-                    debounce="200"
-                    type="number"
-                    [color]="item.error ? 'danger' : 'primary'"
-                    [clearOnEdit]="true"
-                    [value]="item.inMaintenanceQty"
-                    (ionChange)="update($event, item, 'maintenance')"
-                    [readonly]="return.status !== 'pending' && !allowSend"
-                  >
-                  </ion-input>
-                  <ion-label color="danger" *ngIf="item.error">
-                    you cannot exceed the shipment qty
-                  </ion-label>
-                </td>
-                <td class="text-center" *ngIf="allowSend">
-                  <ion-input
-                    #DamagedQty
-                    debounce="200"
-                    type="number"
-                    [color]="item.error ? 'danger' : 'warning'"
-                    [clearOnEdit]="true"
-                    [value]="item.damagedQty"
-                    (ionChange)="update($event, item, 'damaged')"
-                    [readonly]="return.status !== 'pending' && !allowSend"
-                  >
-                  </ion-input>
-                  <ion-label color="danger" *ngIf="item.error">
-                    you cannot exceed the shipment qty
-                  </ion-label>
-                </td>
-                <td class="text-center" *ngIf="allowSend">
-                  <ion-input
-                    #LostQty
-                    debounce="200"
-                    type="number"
-                    [color]="item.error ? 'danger' : 'danger'"
-                    [clearOnEdit]="true"
-                    [value]="item.lostQty"
-                    (ionChange)="update($event, item, 'lost')"
-                    [readonly]="return.status !== 'pending' && !allowSend"
-                  >
-                  </ion-input>
-                  <ion-label color="danger" *ngIf="item.error">
-                    you cannot exceed the shipment qty
-                  </ion-label>
-                </td>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered table-fixed">
+            <thead>
+              <tr>
+                <th scope="col">Code</th>
+                <th scope="col">Category</th>
+                <th scope="col">Name</th>
+                <th scope="col" class="text-center">Available Qty</th>
+                <th scope="col" class="text-center">Shipment Qty</th>
+                <th scope="col" class="text-center">
+                  Weight ({{ company.mass.symbol }})
+                </th>
+                <th scope="col" *ngIf="allowSend" class="text-center">
+                  Maintenance Qty
+                </th>
+                <th scope="col" *ngIf="allowSend" class="text-center">
+                  Damaged Qty
+                </th>
+                <th scope="col" *ngIf="allowSend" class="text-center">
+                  Lost Qty
+                </th>
               </tr>
-              <ng-template #viewShipment>
-                <tr
-                  class="align-middle"
-                  *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
-                >
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of items; let i = index">
+                <tr class="align-middle" *ngIf="viewAll; else viewShipment">
                   <th scope="row">{{ item.code }}</th>
                   <td>{{ item.category }}</td>
                   <td>{{ item.name }}</td>
-                  <td class="text-center">{{ item.availableQty }}</td>
+                  <td class="text-center">
+                    {{ item.availableQty }}
+                  </td>
                   <td class="text-center">
                     <ion-input
                       #qty
                       debounce="200"
                       type="number"
                       [color]="
-                        qty.value > item.availableQty || qty.value < 0
+                        +qty.value > item.availableQty || +qty.value < 0
                           ? 'danger'
                           : 'success'
                       "
                       [clearOnEdit]="true"
                       [value]="item.shipmentQty"
                       (ionChange)="update($event, item, 'shipment')"
+                      [readonly]="return.status !== 'pending' || allowSend"
                       (ionBlur)="autoSave()"
                     >
                     </ion-input>
-                  </td></tr
-              ></ng-template>
-            </ng-container>
-          </tbody>
-        </table>
+                    <ion-label
+                      color="danger"
+                      *ngIf="+qty.value > item.availableQty"
+                    >
+                      you cannot exceed the available qty
+                    </ion-label>
+                  </td>
+                  <td class="text-end">
+                    {{ item.shipmentQty * item.weight | number }}
+                  </td>
+                  <td class="text-center" *ngIf="allowSend">
+                    <ion-input
+                      #MaintenanceQty
+                      debounce="200"
+                      type="number"
+                      [color]="item.error ? 'danger' : 'primary'"
+                      [clearOnEdit]="true"
+                      [value]="item.inMaintenanceQty"
+                      (ionChange)="update($event, item, 'maintenance')"
+                      [readonly]="return.status !== 'pending' && !allowSend"
+                    >
+                    </ion-input>
+                    <ion-label color="danger" *ngIf="item.error">
+                      you cannot exceed the shipment qty
+                    </ion-label>
+                  </td>
+                  <td class="text-center" *ngIf="allowSend">
+                    <ion-input
+                      #DamagedQty
+                      debounce="200"
+                      type="number"
+                      [color]="item.error ? 'danger' : 'warning'"
+                      [clearOnEdit]="true"
+                      [value]="item.damagedQty"
+                      (ionChange)="update($event, item, 'damaged')"
+                      [readonly]="return.status !== 'pending' && !allowSend"
+                    >
+                    </ion-input>
+                    <ion-label color="danger" *ngIf="item.error">
+                      you cannot exceed the shipment qty
+                    </ion-label>
+                  </td>
+                  <td class="text-center" *ngIf="allowSend">
+                    <ion-input
+                      #LostQty
+                      debounce="200"
+                      type="number"
+                      [color]="item.error ? 'danger' : 'danger'"
+                      [clearOnEdit]="true"
+                      [value]="item.lostQty"
+                      (ionChange)="update($event, item, 'lost')"
+                      [readonly]="return.status !== 'pending' && !allowSend"
+                    >
+                    </ion-input>
+                    <ion-label color="danger" *ngIf="item.error">
+                      you cannot exceed the shipment qty
+                    </ion-label>
+                  </td>
+                </tr>
+                <ng-template #viewShipment>
+                  <tr
+                    class="align-middle"
+                    *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
+                  >
+                    <th scope="row">{{ item.code }}</th>
+                    <td>{{ item.category }}</td>
+                    <td>{{ item.name }}</td>
+                    <td class="text-center">{{ item.availableQty }}</td>
+                    <td class="text-center">
+                      <ion-input
+                        #qty
+                        debounce="200"
+                        type="number"
+                        [color]="
+                          +qty.value > item.availableQty || +qty.value < 0
+                            ? 'danger'
+                            : 'success'
+                        "
+                        [clearOnEdit]="true"
+                        [value]="item.shipmentQty"
+                        (ionChange)="update($event, item, 'shipment')"
+                        (ionBlur)="autoSave()"
+                      >
+                      </ion-input>
+                    </td>
+                    <td class="text-end">
+                      {{ item.shipmentQty * item.weight | number }}
+                    </td>
+                  </tr>
+                </ng-template>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+
+        <ion-item>
+          <ion-label>Total weight</ion-label>
+          <ion-label slot="end">
+            {{ return.items ? (return.items | weight) : [] }}
+          </ion-label>
+        </ion-item>
       </ion-col>
       <ion-col
         size="12"

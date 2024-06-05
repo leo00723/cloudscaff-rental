@@ -108,7 +108,7 @@
           <td class="text-end"></td>
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ item.totalCost | number: "0.2-2" }}
+            {{ item.totalCost | number : "0.2-2" }}
           </td>
         </tr>
         <!-- LABOR -->
@@ -122,7 +122,7 @@
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-center"></td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
         <!-- TRANSPORT -->
@@ -143,10 +143,10 @@
             <td class="text-center">{{ item.qty }}</td>
             <td class="text-end">
               {{ company.currency.symbol }}
-              {{ item.extraHire | number: "0.2-2" }}
+              {{ item.extraHire | number : "0.2-2" }}
             </td>
             <td class="text-end">
-              {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+              {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
             </td>
           </tr>
         </ng-container>
@@ -163,10 +163,11 @@
           <td>{{ item.name }}</td>
           <td class="text-center">{{ item.qty }}</td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.extraHire | number: "0.2-2" }}
+            {{ company.currency.symbol }}
+            {{ item.extraHire | number : "0.2-2" }}
           </td>
           <td class="text-end">
-            {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+            {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
           </td>
         </tr>
       </tbody>
@@ -176,7 +177,7 @@
           <th class="text-end" colspan="3" scope="col">Subtotal</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.subtotal | number: "0.2-2" }}
+            {{ invoice.subtotal | number : "0.2-2" }}
           </th>
         </tr>
       </tfoot>
@@ -191,7 +192,7 @@
           <th class="text-end" colspan="3" scope="col">Subtotal</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.subtotal | number: "0.2-2" }}
+            {{ invoice.subtotal | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -200,14 +201,14 @@
           </th>
           <th class="text-end text-danger" colspan="2" scope="col">
             - {{ company.currency.symbol }}
-            {{ invoice.discount | number: "0.2-2" }}
+            {{ invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="3" scope="col">Contract Total</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.subtotal - invoice.discount | number: "0.2-2" }}
+            {{ invoice.subtotal - invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
@@ -216,30 +217,30 @@
           </th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.tax | number: "0.2-2" }}
+            {{ invoice.tax | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
           <th class="text-end" colspan="3" scope="col">
-            VAT ({{ company.vat }}%)
+            {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
           </th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.vat | number: "0.2-2" }}
+            {{ invoice.vat | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="3" scope="col">Total</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.total | number: "0.2-2" }}
+            {{ invoice.total | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="3" scope="col">Extra Hire</th>
           <th class="text-end" colspan="2" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.extraHire | number: "0.2-2" }}
+            {{ invoice.extraHire | number : "0.2-2" }}
           </th>
         </tr>
       </tfoot>

@@ -116,7 +116,7 @@ export class AddStockitemComponent implements OnInit {
           .edit()
           .addDocument(`company/${this.company.id}/stockItems`, {
             ...this.form.value,
-            category: this.form.value.categoryType.name,
+            category: this.form.value.categoryType.name || '',
             log: [log],
           });
         this.masterSvc.notification().toast('Stock Item Added', 'success');
@@ -298,7 +298,10 @@ export class AddStockitemComponent implements OnInit {
           this.inventoryItem.id,
           {
             ...this.form.value,
-            category: this.form.value.categoryType.name,
+            category:
+              this.form.value.categoryType.name ||
+              this.inventoryItemBackup.category ||
+              '',
             log: this.inventoryItem.log,
           }
         );

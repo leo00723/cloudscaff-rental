@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import {
   getAnalytics,
   provideAnalytics,
@@ -16,8 +17,6 @@ import {
 } from '@angular/fire/auth';
 import {
   connectFirestoreEmulator,
-  enableIndexedDbPersistence,
-  enableMultiTabIndexedDbPersistence,
   getFirestore,
   provideFirestore,
 } from '@angular/fire/firestore';
@@ -37,7 +36,7 @@ import {
   getStorage,
   provideStorage,
 } from '@angular/fire/storage';
-import { FormBuilder, FormsModule } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -47,17 +46,20 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { NgxsModule } from '@ngxs/store';
+import { OAuthModule } from 'angular-oauth2-oidc';
+import { QRCodeModule } from 'angularx-qrcode';
 import { MasterService } from 'src/app/services/master.service';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { NotificationService } from './services/notification.service';
 import { AppState } from './shared/app/app.state';
 import { CompanyState } from './shared/company/company.state';
+import { NotificationsState } from './shared/notifications/notifications.state';
+import { NotificationFlagState } from './shared/notifications/notificationsFlag.state';
 import { RouterState } from './shared/router.state';
 import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
-import { OAuthModule } from 'angular-oauth2-oidc';
-import { HttpClientModule } from '@angular/common/http';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
@@ -119,12 +121,22 @@ import { TrialEndedPage } from './trial-ended/trial-ended.page';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    NgxsModule.forRoot([AppState, RouterState, UserState, CompanyState], {
-      developmentMode: !environment.production,
-    }),
-    NgxsLoggerPluginModule.forRoot({ disabled: !environment.production }),
+    NgxsModule.forRoot(
+      [
+        AppState,
+        RouterState,
+        UserState,
+        CompanyState,
+        NotificationsState,
+        NotificationFlagState,
+      ],
+      {
+        developmentMode: !environment.production,
+      }
+    ),
+    NgxsLoggerPluginModule.forRoot({ disabled: true }),
     NgxsReduxDevtoolsPluginModule.forRoot({
-      disabled: !environment.production,
+      disabled: true,
     }),
     HttpClientModule,
     OAuthModule.forRoot(),
@@ -134,10 +146,12 @@ import { TrialEndedPage } from './trial-ended/trial-ended.page';
     ScreenTrackingService,
     UserTrackingService,
     MasterService,
+    NotificationService,
     FormBuilder,
     DecimalPipe,
     FileOpener,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

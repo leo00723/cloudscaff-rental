@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  Input,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -19,28 +20,24 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class SignaturePadComponent {
   @ViewChild(SignaturePad) signaturePad: SignaturePad;
-  @Output() result = new EventEmitter<{ signature: string; name: string }>();
+  @Input() showSave = true;
+  @Output() res = new EventEmitter<{ signature: string; name: string }>();
   signature: string;
   name: string;
-  signaturePadOptions: Object = {
+  signaturePadOptions: any = {
     minWidth: 0.1,
     canvasWidth: this.device.width() < 500 ? this.device.width() - 32 : 400,
     canvasHeight: 200,
   };
 
-  constructor(
-    private device: Platform,
-    private notificationSvc: NotificationService
-  ) {}
+  constructor(private device: Platform) {}
 
   clearSignature() {
     this.signaturePad.clear();
   }
 
   savePad() {
-    this.notificationSvc.presentAlertConfirm(() => {
-      const base64Data = this.signaturePad.toDataURL();
-      this.result.emit({ signature: base64Data, name: this.name });
-    });
+    const base64Data = this.signaturePad.toDataURL();
+    this.res.emit({ signature: base64Data, name: this.name });
   }
 }

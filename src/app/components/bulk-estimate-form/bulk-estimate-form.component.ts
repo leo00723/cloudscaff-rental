@@ -467,6 +467,7 @@ export class BulkEstimateFormComponent implements OnInit {
         bankName: this.company.bankName,
         swiftCode: this.company.swiftCode,
         id: this.company.id,
+        gst: this.company?.gst,
       },
       code: this.isEdit ? this.estimate.code : code,
       status: this.isEdit ? this.estimate.status : 'pending',

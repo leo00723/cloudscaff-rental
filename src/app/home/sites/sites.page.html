@@ -11,26 +11,34 @@
         [multiple]="true"
         [value]="['open']"
       >
-        <ion-accordion value="open">
+        <ion-accordion
+          value="open"
+          *ngIf="sites$ | async as activeSites else loading"
+        >
           <ion-item slot="header" color="light">
-            <ion-label color="success">Active Sites</ion-label>
+            <ion-label color="success"
+              >Active Sites ({{activeSites.length}})</ion-label
+            >
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-site-table
               [value]="sites$"
-              *ngIf="sites$ | async else loading"
               (selectedItem)="viewSite($event)"
             ></app-site-table>
           </div>
         </ion-accordion>
-        <ion-accordion value="closed">
+        <ion-accordion
+          value="closed"
+          *ngIf="closedSites$ | async as closedSites else loading"
+        >
           <ion-item slot="header" color="light">
-            <ion-label color="danger">Closed Sites</ion-label>
+            <ion-label color="danger"
+              >Closed Sites ({{closedSites.length}})</ion-label
+            >
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-site-table
               [value]="closedSites$"
-              *ngIf="closedSites$ | async else loading"
               (selectedItem)="viewSite($event)"
             ></app-site-table>
           </div>

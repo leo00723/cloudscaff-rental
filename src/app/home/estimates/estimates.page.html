@@ -1,5 +1,5 @@
 <app-header title="Estimates" btnName="help" (updated)="help()">
-  <ion-toolbar>
+  <ion-toolbar *ngIf="user$ | async as user">
     <ion-segment
       scrollable
       selectOnFocus="true"
@@ -10,10 +10,16 @@
       <ion-segment-button value="standard">
         <ion-label>Standard Estimates</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="bulk">
+      <ion-segment-button
+        value="bulk"
+        *ngIf="user.permissionsList.includes('Bulk Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+      >
         <ion-label>Bulk Estimates</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="inventory">
+      <ion-segment-button
+        value="inventory"
+        *ngIf="user.permissionsList.includes('Inventory Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+      >
         <ion-label>Inventory Estimates</ion-label>
       </ion-segment-button>
     </ion-segment>

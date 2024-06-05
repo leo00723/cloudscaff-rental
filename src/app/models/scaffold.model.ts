@@ -1,6 +1,7 @@
 import { AdditionalItem } from './additionalItem.model';
 import { Handover } from './handover.model';
 import { HireItem } from './hireItem.model';
+import { Inspection } from './inspection.model';
 import { Item } from './item.model';
 import { LabourItem } from './labourItem.model';
 import { TransportItem } from './transport.model';
@@ -14,6 +15,7 @@ export interface Scaffold {
   customerId?: string;
   siteId?: string;
   siteCode?: string;
+  siteName?: string;
   createdBy?: string;
   scaffold?: Item;
   attachments?: Item[];
@@ -29,11 +31,9 @@ export interface Scaffold {
   endDate?: any;
   status?: string;
   users?: User[];
-  totalInspections?: number;
-  totalHandovers?: number;
   totalModifications?: number;
-  totalInvoices?: number;
   totalArea?: number;
   totalPlatforms?: number;
   latestHandover?: Handover;
+  latestInspection?: Inspection;
 }

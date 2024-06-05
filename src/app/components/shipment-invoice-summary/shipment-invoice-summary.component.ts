@@ -14,7 +14,7 @@ import { ShareDocumentComponent } from '../share-document/share-document.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShipmentInvoiceSummaryComponent {
-  @Input() enquiryId: string = '';
+  @Input() enquiryId = '';
   @Input() invoice: InventoryEstimate;
   @Input() canDownload = false;
   terms$: Observable<Term>;
@@ -29,7 +29,7 @@ export class ShipmentInvoiceSummaryComponent {
     const sharedInvoice = {
       invoice: this.invoice,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -51,7 +51,7 @@ export class ShipmentInvoiceSummaryComponent {
     const sharedInvoice = {
       invoice: this.invoice,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

@@ -1,33 +1,36 @@
 /* eslint-disable max-len */
 import { DecimalPipe } from '@angular/common';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { Platform } from '@ionic/angular';
+import { Store } from '@ngxs/store';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { Term } from 'src/app/models/term.model';
 import { environment } from 'src/environments/environment';
+import { AdditionalItem } from '../models/additionalItem.model';
 import { BulkEstimate } from '../models/bulkEstimate.model';
 import { BulkInventoryEstimate } from '../models/bulkInventoryEstimate.model';
 import { Credit } from '../models/credit.model';
 import { Handover } from '../models/handover.model';
 import { Inspection } from '../models/inspection.model';
 import { InventoryEstimate } from '../models/inventoryEstimate.model';
+import { InventoryItem } from '../models/inventoryItem.model';
 import { Invoice } from '../models/invoice.model';
+import { Item } from '../models/item.model';
+import { LabourItem } from '../models/labourItem.model';
 import { Modification } from '../models/modification.model';
 import { PaymentApplication } from '../models/paymentApplication.model';
-import { Statement } from '../models/statement.mode';
-import { Item } from '../models/item.model';
+import { Return } from '../models/return.model';
 import { Shipment } from '../models/shipment.model';
-import { InventoryItem } from '../models/inventoryItem.model';
 import { Site } from '../models/site.model';
-import { AdditionalItem } from '../models/additionalItem.model';
-import { LabourItem } from '../models/labourItem.model';
+import { Statement } from '../models/statement.mode';
 import { TransportItem } from '../models/transport.model';
 import { UploadedFile } from '../models/uploadedFile.model';
-const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 541.86 66.07"><defs><style>.cls-1{fill:#feb508;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><path class="cls-1" d="M67.87,66.07H3.34A3.31,3.31,0,0,1,0,62.77H0a3.31,3.31,0,0,1,3.31-3.31H67.87a3.31,3.31,0,0,0,3.31-3.3V33.79a3.31,3.31,0,0,0-3.31-3.31H24.4a3.3,3.3,0,0,1-3.3-3.3h0a3.31,3.31,0,0,1,3.3-3.31H67.87a9.91,9.91,0,0,1,9.91,9.92V56.16A9.91,9.91,0,0,1,67.87,66.07Z"/><path class="cls-1" d="M53.82,42.2H9.91A9.92,9.92,0,0,1,0,32.28V9.91A9.91,9.91,0,0,1,9.91,0H74.48a3.3,3.3,0,0,1,3.3,3.3h0a3.3,3.3,0,0,1-3.3,3.31H9.91a3.3,3.3,0,0,0-3.3,3.3V32.28a3.31,3.31,0,0,0,3.3,3.31H53.82a3.3,3.3,0,0,1,3.3,3.3h0A3.31,3.31,0,0,1,53.82,42.2Z"/><path class="cls-1" d="M275.51,24.55a2.35,2.35,0,0,1,2.35,2.35V47.42a7,7,0,0,1-7.05,7H244.91a7,7,0,0,1-7-7V26.83a2.36,2.36,0,0,1,2.35-2.35h0a2.35,2.35,0,0,1,2.35,2.35V47.4a2.36,2.36,0,0,0,2.35,2.35h25.91a2.36,2.36,0,0,0,2.35-2.35V26.9a2.35,2.35,0,0,1,2.34-2.35Z"/><path class="cls-1" d="M409.83,52.14a2.35,2.35,0,0,1-2.35,2.35H376.83a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H376.83a2.33,2.33,0,0,0-2.34,2.33V47.44a2.36,2.36,0,0,0,2.35,2.35h30.64a2.35,2.35,0,0,1,2.35,2.35Z"/><path class="cls-1" d="M281.9,24.34h33a7,7,0,0,1,7,7.05v15.9a7,7,0,0,1-7,7.05H281.83v-4.7H314.9a2.35,2.35,0,0,0,2.34-2.35V31.39A2.35,2.35,0,0,0,314.9,29h-33Z"/><path class="cls-1" d="M462.53,52.16V31.52a2.35,2.35,0,0,1,2.34-2.35h30.65a2.34,2.34,0,0,0,2.34-2.34h0a2.33,2.33,0,0,0-2.34-2.34H464.86a7,7,0,0,0-7,7V52.16a2.33,2.33,0,0,0,2.34,2.33h0A2.33,2.33,0,0,0,462.53,52.16Z"/><path class="cls-1" d="M416.21,54.34A2.35,2.35,0,0,1,413.87,52V31.48a7,7,0,0,1,7.05-7h25.91a7,7,0,0,1,7,7V52.06a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35V31.5a2.35,2.35,0,0,0-2.35-2.35H420.91a2.35,2.35,0,0,0-2.35,2.35V52a2.35,2.35,0,0,1-2.35,2.35Z"/><rect class="cls-1" x="431.53" y="23.7" width="4.66" height="31.1" transform="translate(394.61 473.12) rotate(-90)"/><path class="cls-1" d="M475.12,23.55h4.7a0,0,0,0,1,0,0v29a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35v-29A0,0,0,0,1,475.12,23.55Z" transform="translate(438.23 516.71) rotate(-90)"/><path class="cls-1" d="M506.53,52.16V31.52a2.35,2.35,0,0,1,2.34-2.35h30.65a2.34,2.34,0,0,0,2.34-2.34h0a2.33,2.33,0,0,0-2.34-2.34H508.86a7,7,0,0,0-7,7V52.16a2.33,2.33,0,0,0,2.34,2.33h0A2.33,2.33,0,0,0,506.53,52.16Z"/><path class="cls-1" d="M519.12,23.55h4.7a0,0,0,0,1,0,0v29a2.35,2.35,0,0,1-2.35,2.35h0a2.35,2.35,0,0,1-2.35-2.35v-29A0,0,0,0,1,519.12,23.55Z" transform="translate(482.23 560.71) rotate(-90)"/><path class="cls-1" d="M339.61,36.89h19.26a7,7,0,0,1,7,7l0,3.5a7,7,0,0,1-7,7.05H328.18a2.35,2.35,0,0,1-2.35-2.35h0a2.35,2.35,0,0,1,2.35-2.35H358.9a2.35,2.35,0,0,0,2.34-2.35l0-3.5a2.34,2.34,0,0,0-2.33-2.35H339.61Z"/><path class="cls-1" d="M352.12,41.59H332.86a7,7,0,0,1-7-7.05l0-3a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H332.83a2.35,2.35,0,0,0-2.34,2.35l0,3a2.34,2.34,0,0,0,2.33,2.35h19.26Z"/><rect class="cls-1" x="281.9" y="29.04" width="4.67" height="20.6"/><path class="cls-1" d="M214,54.49H201a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h13v4.7H201a2.34,2.34,0,0,0-2.33,2.35v15.9A2.34,2.34,0,0,0,201,49.79h13Z"/><path class="cls-1" d="M213.86,24.49h13a7,7,0,0,1,7,7.05v15.9a7,7,0,0,1-7,7.05h-13v-4.7h13a2.35,2.35,0,0,0,2.34-2.35V31.54a2.35,2.35,0,0,0-2.34-2.35h-13Z"/><path class="cls-1" d="M154.64,26.82V47.46A2.35,2.35,0,0,0,157,49.8h30.42a2.35,2.35,0,0,1,2.34,2.35h0a2.34,2.34,0,0,1-2.34,2.34H157a7,7,0,0,1-7-7V26.82a2.33,2.33,0,0,1,2.33-2.33h0A2.33,2.33,0,0,1,154.64,26.82Z"/><path class="cls-1" d="M145.86,52.14a2.35,2.35,0,0,1-2.34,2.35H112.86a7,7,0,0,1-7-7.05V31.54a7,7,0,0,1,7-7h30.72a2.35,2.35,0,0,1,2.35,2.35h0a2.35,2.35,0,0,1-2.35,2.35H112.86a2.33,2.33,0,0,0-2.33,2.33V47.44a2.36,2.36,0,0,0,2.35,2.35h30.64a2.35,2.35,0,0,1,2.34,2.35Z"/></g></g></svg>`;
+import { CompanyState } from '../shared/company/company.state';
+const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388.58 26.87"><defs><style>.cls-1{fill:#fdb515;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><g id="Logo-Full-2" data-name="Logo-Full"><path class="cls-1" d="M151.2.19a2.08,2.08,0,0,1,2.09,2.09h0V20.57a6.24,6.24,0,0,1-6.24,6.24H123.93a6.24,6.24,0,0,1-6.24-6.24V2.22a2.1,2.1,0,0,1,2.09-2.1h0a2.1,2.1,0,0,1,2.1,2.1h0V20.55a2.1,2.1,0,0,0,2.09,2.1h23.09a2.11,2.11,0,0,0,2.1-2.1V2.28A2.09,2.09,0,0,1,151.24.19Z"/><path class="cls-1" d="M270.91,24.78a2.1,2.1,0,0,1-2.09,2.09H241.5a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,241.5.18h27.38A2.09,2.09,0,0,1,271,2.27h0a2.09,2.09,0,0,1-2.09,2.1H241.5a2.08,2.08,0,0,0-2.09,2.06h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.31a2.1,2.1,0,0,1,2.09,2.1Z"/><path class="cls-1" d="M156.89,0H186.3a6.24,6.24,0,0,1,6.24,6.24V20.45a6.24,6.24,0,0,1-6.19,6.29H156.83V22.55H186.3a2.1,2.1,0,0,0,2.09-2.1V6.28a2.1,2.1,0,0,0-2.06-2.13H156.89Z"/><path class="cls-1" d="M317.88,24.79V6.4A2.1,2.1,0,0,1,320,4.3h27.32a2.09,2.09,0,0,0,2.09-2.08h0A2.08,2.08,0,0,0,347.3.13H320a6.24,6.24,0,0,0-6.24,6.24V24.79a2.08,2.08,0,0,0,2.07,2.08h0a2.08,2.08,0,0,0,2.08-2.08Z"/><path class="cls-1" d="M276.6,26.74a2.11,2.11,0,0,1-2.09-2.09V6.36A6.24,6.24,0,0,1,280.75.12h23.14a6.24,6.24,0,0,1,6.23,6.24V24.71A2.09,2.09,0,0,1,308,26.8h0a2.09,2.09,0,0,1-2.09-2.09h0V6.38a2.09,2.09,0,0,0-2.1-2.09h-23a2.09,2.09,0,0,0-2.1,2.09h0V24.65a2.1,2.1,0,0,1-2.09,2.1h0Z"/><rect class="cls-1" x="278.47" y="11.22" width="27.72" height="4.15"/><path class="cls-1" d="M317.21,15.37V11.19h25.85a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.09H317.21Z"/><path class="cls-1" d="M357.09,24.79V6.4a2.11,2.11,0,0,1,2.09-2.1H386.5a2.08,2.08,0,0,0,2.08-2.08h0A2.08,2.08,0,0,0,386.51.13H359.17a6.24,6.24,0,0,0-6.24,6.24V24.79A2.08,2.08,0,0,0,355,26.87h0a2.08,2.08,0,0,0,2.07-2.08Z"/><path class="cls-1" d="M356.42,15.37V11.19h25.85a2.09,2.09,0,0,1,2.1,2.09h0a2.09,2.09,0,0,1-2.1,2.09Z"/><path class="cls-1" d="M208.33,11.19h17.16a6.23,6.23,0,0,1,6.24,6.23v3.12a6.24,6.24,0,0,1-6.19,6.29h-27.4a2.09,2.09,0,0,1-2.09-2.1h0a2.09,2.09,0,0,1,2.09-2.09h27.38a2.1,2.1,0,0,0,2.08-2.1V17.42a2.07,2.07,0,0,0-2.07-2.09h-17.2Z"/><path class="cls-1" d="M219.48,15.37H202.31a6.24,6.24,0,0,1-6.24-6.23V6.42A6.24,6.24,0,0,1,202.31.18h27.38a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.1H202.28a2.09,2.09,0,0,0-2.08,2.09V9.14a2.08,2.08,0,0,0,2.08,2.09h17.16Z"/><rect class="cls-1" x="156.89" y="4.19" width="4.16" height="18.36"/><path class="cls-1" d="M96.38,26.87H84.79a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,84.79.18H96.38V4.37H84.79a2.07,2.07,0,0,0-2.07,2.09h0V20.63a2.08,2.08,0,0,0,2.07,2.05H96.38Z"/><path class="cls-1" d="M96.25.13h11.59a6.24,6.24,0,0,1,6.24,6.24V20.59a6.24,6.24,0,0,1-6.2,6.28H96.25V22.68h11.59a2.1,2.1,0,0,0,2.09-2.09V6.42a2.1,2.1,0,0,0-2.09-2.1H96.25Z"/><path class="cls-1" d="M43.47,2.21v18.4a2.1,2.1,0,0,0,2.11,2.08H72.69a2.1,2.1,0,0,1,2.09,2.1h0a2.09,2.09,0,0,1-2.09,2.08H45.58a6.24,6.24,0,0,1-6.24-6.24V2.21A2.08,2.08,0,0,1,41.42.13h0A2.07,2.07,0,0,1,43.47,2.21Z"/><path class="cls-1" d="M35.65,24.78a2.09,2.09,0,0,1-2.09,2.09H6.24A6.24,6.24,0,0,1,0,20.63V6.42A6.24,6.24,0,0,1,6.24.18H33.62a2.1,2.1,0,0,1,2.09,2.09h0a2.1,2.1,0,0,1-2.09,2.1H6.24A2.08,2.08,0,0,0,4.16,6.44h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.3a2.1,2.1,0,0,1,2.09,2.1Z"/></g></g></g></svg>`;
 const hr = {
   table: {
     widths: ['100%'],
@@ -148,13 +151,14 @@ const defaultCS = {
 })
 export class PdfService {
   pdfMake: any;
+  private store = inject(Store);
   constructor(
     private decimalPipe: DecimalPipe,
     private platformService: Platform,
     private fileOpenerService: FileOpener
   ) {}
 
-  handlePdf(pdf: any, filename: string) {
+  async handlePdf(pdf: any, filename: string) {
     if (this.platformService.is('cordova')) {
       pdf.getBase64(async (data) => {
         try {
@@ -179,6 +183,8 @@ export class PdfService {
       }
 
       return true;
+    } else if (this.platformService.is('mobileweb')) {
+      pdf.download(filename);
     } else {
       return false;
     }
@@ -465,7 +471,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -669,7 +675,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -999,7 +1005,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -1188,7 +1194,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -1297,7 +1303,9 @@ export class PdfService {
         body: [
           [
             {
-              text: `Total Exc VAT (${company.currency.symbol})`,
+              text: `Total Exc ${company?.gst ? 'GST' : 'VAT'} (${
+                company.currency.symbol
+              })`,
               style: 'h4b',
               alignment: 'center',
             },
@@ -1698,7 +1706,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -1873,7 +1881,7 @@ export class PdfService {
       layout: tLayout,
     };
     const checklist = [];
-    inspection.questions.categories.forEach((c) => {
+    inspection?.questions?.categories.forEach((c) => {
       const items = [];
       c.items.forEach((i, j) => {
         items.push([
@@ -1913,6 +1921,19 @@ export class PdfService {
       };
       checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
     });
+
+    const signature = inspection.signature
+      ? {
+          image: await this.getBase64ImageFromURL(inspection.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
 
     const data = {
       footer: await this.getFooter(),
@@ -1977,6 +1998,26 @@ export class PdfService {
           },
           layout: tLayout,
           fillColor: inspection.status === 'Passed' ? '#EEF5EC' : '#FAECED',
+        },
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Signature',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature,
+              ],
+            ],
+          },
+          layout: tLayout,
+          fillColor: '#ffffff',
         },
         await this.addUploads(inspection.uploads),
         {
@@ -2297,6 +2338,288 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
+  // HANDOVER PDF
+  async generateDismantle(
+    dismantle: Handover,
+    company: Company,
+    terms: Term | null
+  ) {
+    const attachments = [];
+    dismantle.scaffold.attachments.forEach((a, i) => {
+      attachments.push([
+        '',
+        {
+          text: `${company.terminology.scaffold} Level ${a.level}`,
+          style: 'h6',
+        },
+        {
+          text: `${a.length}${company.measurement.symbol} x ${a.width}${company.measurement.symbol} x ${a.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: a.safe,
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const boards = [];
+    dismantle.scaffold.boards.forEach((b, i) => {
+      boards.push([
+        '',
+        {
+          text: `${company.terminology.boards}`,
+          style: 'h6',
+        },
+        {
+          text: `${b.length}${company.measurement.symbol} x ${b.width}${company.measurement.symbol} - Level ${b.height}${company.measurement.symbol}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: b.qty,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: 'Yes',
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', '*', '*', '*'],
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Detail', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Safe', style: 'h4b', alignment: 'center' },
+          ],
+          [
+            {
+              text: 1,
+              style: 'h4b',
+            },
+            {
+              text: `${company.terminology.scaffold} Details`,
+              style: 'h4b',
+              colSpan: 4,
+            },
+          ],
+          [
+            '',
+            {
+              text: `${company.terminology.scaffold} Level 0`,
+              style: 'h6',
+            },
+            {
+              text: `${dismantle.scaffold.scaffold.length}${company.measurement.symbol} x ${dismantle.scaffold.scaffold.width}${company.measurement.symbol} x ${dismantle.scaffold.scaffold.height}${company.measurement.symbol}`,
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: '1',
+              style: 'h6',
+              alignment: 'center',
+            },
+            {
+              text: dismantle.scaffold.scaffold.safe,
+              style: 'h6',
+              alignment: 'center',
+            },
+          ],
+          ...attachments,
+          ...boards,
+        ],
+      },
+      layout: tLayout,
+    };
+    const checklist = [];
+    // if (dismantle.questions) {
+    //   dismantle.questions.categories.forEach((c) => {
+    //     const items = [];
+    //     c.items.forEach((i, j) => {
+    //       items.push([
+    //         {
+    //           text: j + 1,
+    //           style: 'h6',
+    //           alignment: 'left',
+    //         },
+    //         {
+    //           text: i.question,
+    //           style: 'h6',
+    //           alignment: 'left',
+    //         },
+    //         {
+    //           text: i.value ? i.value : 'N/A',
+    //           style: 'h6',
+    //           alignment: 'center',
+    //         },
+    //       ]);
+    //     });
+    //     const questions = {
+    //       table: {
+    //         // headers are automatically repeated if the table spans over multiple pages
+    //         // you can declare how many rows should be treated as headers
+    //         headerRows: 1,
+    //         widths: ['auto', '*', 'auto'],
+    //         body: [
+    //           [
+    //             { text: '#', style: 'h4b', alignment: 'left' },
+    //             { text: 'Question', style: 'h4b', alignment: 'left' },
+    //             { text: 'Checklist', style: 'h4b', alignment: 'center' },
+    //           ],
+    //           ...items,
+    //         ],
+    //       },
+    //       layout: tLayout,
+    //     };
+    //     checklist.push(hr, { text: c.name, style: 'h4b' }, questions);
+    //   });
+    // }
+
+    const signature = dismantle.signature
+      ? {
+          image: await this.getBase64ImageFromURL(dismantle.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Dismantle-${dismantle.code}`),
+      content: [
+        await this.getHeader(
+          'Dismantle',
+          dismantle.code,
+          dismantle.scaffold.siteCode,
+          dismantle.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          `https://app.cloudscaff.com/viewDismantle/${company.id}-${dismantle.id}`,
+          [
+            [
+              { text: 'Scaffold:', style: 'h6b' },
+              `${dismantle.scaffold.code}`,
+              '',
+              '',
+            ],
+            [
+              {
+                text: 'Status:',
+                style: 'h6b',
+              },
+              {
+                text: dismantle.safe,
+                style: 'h6b',
+                color: dismantle.safe === 'Passed' ? 'green' : 'red',
+              },
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getSubHeader(dismantle.customer, company),
+        // hr,
+        // { text: dismantle.notes },
+        hr,
+        summary,
+        // checklist,
+        hr,
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              // [
+              //   {
+              //     text: 'Status',
+              //     style: 'h4b',
+              //     alignment: 'left',
+              //     colSpan: 2,
+              //   },
+              //   {
+              //     text: '',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //   },
+              // ],
+              // [
+              //   {
+              //     text: 'Maximum load of the scaffold?',
+              //     style: 'h4b',
+              //     alignment: 'left',
+              //   },
+              //   {
+              //     text: dismantle.maxLoad,
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //   },
+              // ],
+              // [
+              //   {
+              //     text: 'Is the scaffold safe for use?	',
+              //     style: 'h4b',
+              //     alignment: 'left',
+              //   },
+              //   {
+              //     text: dismantle.safe,
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     color: dismantle.safe === 'Passed' ? 'green' : 'red',
+              //   },
+              // ],
+              [
+                {
+                  text: 'Signature',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature,
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
+        // hr,
+        // await this.addUploads(dismantle.uploads),
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+
+        { text: terms ? terms.terms : '', style: { fontSize: 6 } },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
   // INVOICE STANDARD PDF
   async generateInvoice(
     invoice: Invoice,
@@ -2554,7 +2877,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -2810,7 +3133,7 @@ export class PdfService {
                 {
                   text:
                     company.vat > 0
-                      ? `VAT (${company.vat}%):`
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
                       ? `Tax (${company.salesTax}%):`
                       : '',
@@ -3123,8 +3446,8 @@ export class PdfService {
           null,
           []
         ),
-        hr,
-        this.getSubHeader(shipment.site.customer, company),
+        // hr,
+        // this.getSubHeader(shipment.site.customer, company),
         hr,
         summary,
         await this.addUploads(shipment.uploads),
@@ -3194,6 +3517,40 @@ export class PdfService {
         ),
         hr,
         summary,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  // RETURN INVENTORY PDF
+  async generateReturn(
+    returnDoc: Return,
+    company: Company,
+    terms: Term | null
+  ) {
+    const summary = this.createShipmentTable(returnDoc.items);
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
+      content: [
+        await this.getHeader(
+          'Return',
+          returnDoc.code,
+          returnDoc.site.name,
+          returnDoc.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/favicon.png',
+          null,
+          []
+        ),
+        // hr,
+        // this.getSubHeader(shipment.site.customer, company),
+        hr,
+        summary,
+        await this.addUploads(returnDoc.uploads),
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
@@ -3361,6 +3718,9 @@ export class PdfService {
   }
 
   private async addUploads(uploads: UploadedFile[]) {
+    if (uploads.length === 0) {
+      return [];
+    }
     const data: any[] = [
       {
         text: 'Uploads',
@@ -4028,15 +4388,31 @@ export class PdfService {
   }
 
   private async getFooter() {
+    const companyState = this.store.selectSnapshot(CompanyState.company);
+    const removeBranding = companyState?.removeBranding || false;
+    const replaceBranding = companyState?.replaceBranding || null;
     const footerCS = [];
-    footerCS.push([
-      {
-        svg: footerlogo,
-        width: 150,
-        alignment: 'right',
-        margin: [0, 5, 20, 0],
-      },
-    ]);
+    if (removeBranding) {
+      return footerCS;
+    } else if (replaceBranding) {
+      footerCS.push([
+        {
+          image: await this.getBase64ImageFromURL(replaceBranding),
+          width: 100,
+          alignment: 'right',
+          margin: [0, -10, 20, 0],
+        },
+      ]);
+    } else if (!removeBranding && !replaceBranding) {
+      footerCS.push([
+        {
+          svg: footerlogo,
+          width: 150,
+          alignment: 'right',
+          margin: [0, 5, 20, 0],
+        },
+      ]);
+    }
     return footerCS;
   }
   private getMetaData(title: string) {

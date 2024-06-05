@@ -37,7 +37,7 @@ export class SiteInventoryTableComponent {
       this.temp = this.inventoryItems.filter(
         (item) =>
           ['code', 'category', 'name'].some((field) =>
-            item[field].toLowerCase().includes(searchTerm)
+            item[field].toString().toLowerCase().includes(searchTerm)
           ) || item.availableQty.toString().toLowerCase().includes(searchTerm)
       );
     }

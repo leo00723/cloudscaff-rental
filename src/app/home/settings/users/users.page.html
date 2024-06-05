@@ -5,18 +5,27 @@
   path="/dashboard/settings"
 ></app-header>
 
-<ion-content fullscreen="true" class="ion-padding">
-  <app-user-table
-    [value]="users$"
-    *ngIf="users$ | async else loading"
-    (selectedItem)="editUser($event)"
-  ></app-user-table>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="users$ | async as users else loading">
+    <app-user-table
+      [value]="users$"
+      (selectedItem)="editUser($event)"
+    ></app-user-table>
 
-  <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addUser()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+    <ng-container *ngIf="company$ | async as company">
+      <ion-fab
+        class="m-2"
+        vertical="bottom"
+        horizontal="end"
+        slot="fixed"
+        *ngIf="company?.userLimit ? users.length < company?.userLimit : users.length < 5"
+      >
+        <ion-fab-button (click)="addUser()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
+  </ng-container>
   <ng-template #loading>
     <div class="ion-padding">
       <app-skeleton-text></app-skeleton-text>

@@ -112,14 +112,14 @@
             <td class="text-center">{{ item.qty }}</td>
             <td class="text-center">{{ item.unit }}</td>
             <td class="text-end">
-              {{ company.currency.symbol }} {{ item.rate | number: "0.2-2" }}
+              {{ company.currency.symbol }} {{ item.rate | number : "0.2-2" }}
             </td>
             <td class="text-end">
               {{ company.currency.symbol }}
-              {{ item.discount | number: "0.2-2" }}
+              {{ item.discount | number : "0.2-2" }}
             </td>
             <td class="text-end">
-              {{ company.currency.symbol }} {{ item.total | number: "0.2-2" }}
+              {{ company.currency.symbol }} {{ item.total | number : "0.2-2" }}
             </td>
           </tr>
         </tbody>
@@ -129,7 +129,7 @@
             <th class="text-end" colspan="6" scope="col">Subtotal</th>
             <th class="text-end" colspan="2" scope="col">
               {{ company.currency.symbol }}
-              {{ credit.subtotal | number: "0.2-2" }}
+              {{ credit.subtotal | number : "0.2-2" }}
             </th>
           </tr>
           <tr>
@@ -138,7 +138,7 @@
             </th>
             <th class="text-end text-danger" colspan="2" scope="col">
               - {{ company.currency.symbol }}
-              {{ credit.discount | number: "0.2-2" }}
+              {{ credit.discount | number : "0.2-2" }}
             </th>
           </tr>
           <tr *ngIf="company.salesTax > 0">
@@ -146,22 +146,22 @@
               Sales Tax ({{ company.salesTax }}%)
             </th>
             <th class="text-end" colspan="2" scope="col">
-              {{ company.currency.symbol }} {{ credit.tax | number: "0.2-2" }}
+              {{ company.currency.symbol }} {{ credit.tax | number : "0.2-2" }}
             </th>
           </tr>
           <tr *ngIf="company.vat > 0">
             <th class="text-end" colspan="6" scope="col">
-              VAT ({{ company.vat }}%)
+              {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
             </th>
             <th class="text-end" colspan="2" scope="col">
-              {{ company.currency.symbol }} {{ credit.vat | number: "0.2-2" }}
+              {{ company.currency.symbol }} {{ credit.vat | number : "0.2-2" }}
             </th>
           </tr>
           <tr>
             <th class="text-end" colspan="6" scope="col">Total</th>
             <th class="text-end" colspan="2" scope="col">
               {{ company.currency.symbol }}
-              {{ credit.total | number: "0.2-2" }}
+              {{ credit.total | number : "0.2-2" }}
             </th>
           </tr>
         </tfoot>

@@ -11,6 +11,18 @@ export class NotificationService {
     private alertController: AlertController
   ) {}
 
+  showNotification(title: string, options?: NotificationOptions): void {
+    if ('Notification' in window) {
+      // Check if the browser supports notifications
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          new Notification(title, options);
+        }
+      });
+    } else {
+    }
+  }
+
   async toast(
     header: string,
     color: string,

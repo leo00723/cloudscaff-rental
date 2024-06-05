@@ -15,7 +15,7 @@
 <ion-content class="ion-padding">
   <form [formGroup]="form">
     <ion-grid>
-      <ion-row>
+      <!-- <ion-row>
         <ion-col size="6">
           <app-input-select-reactive
             title="Category"
@@ -73,16 +73,6 @@
         </ion-col>
         <ion-col size="4">
           <app-input-reactive
-            title="Cross Hire Qty"
-            type="number"
-            controlName="crossHireQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col size="4">
-          <app-input-reactive
             title="Total Qty "
             type="number"
             controlName="availableQty"
@@ -127,71 +117,136 @@
           >
           </app-input-reactive>
         </ion-col>
-      </ion-row>
-      <ion-row
-        formArrayName="crossHire"
-        class="mb-3"
-        *ngFor="let hire of crossHireForms.controls; let i = index"
-      >
-        <ion-col size="12">
-          <ion-note> Cross Hire {{ i + 1 }} </ion-note>
-          <ion-chip
-            outline
-            color="danger"
-            class="ion-float-end"
-            (click)="deleteCrossHire(i)"
+      </ion-row> -->
+      <ion-row class="card-outline mb-3">
+        <ion-col sizeMd="6" size="12">
+          <ng-container
+            *ngIf="categories$ | async as categories; else addCategory"
           >
-            <ion-label>Delete</ion-label>
-          </ion-chip>
+            <app-input-reactive
+              (click)="CATEGORIES.open()"
+              title="Category"
+              [form]="form"
+              controlName="category"
+              [readonly]="true"
+            ></app-input-reactive>
+            <app-searchable-select
+              [showInput]="false"
+              title="Select Category"
+              [data]="categories.categories"
+              itemTextField="name"
+              [add]="true"
+              (selectedChanged)="changeCategory($event)"
+              #CATEGORIES
+            ></app-searchable-select>
+          </ng-container>
+          <ng-template #addCategory>
+            <app-searchable-select
+              (click)="CATEGORIES2.open()"
+              title="Select Category"
+              [data]="[]"
+              itemTextField="name"
+              [add]="true"
+              (selectedChanged)="changeCategory($event)"
+              #CATEGORIES2
+            ></app-searchable-select>
+          </ng-template>
         </ion-col>
-        <ion-col>
+        <ion-col sizeMd="6" size="12">
+          <app-input-select-reactive
+            title="Size"
+            placeholder="Select Size"
+            controlName="size"
+            [form]="form"
+            [selectedText]="field('size').value"
+          >
+            <ion-select-option
+              [value]="size.size"
+              *ngFor="let size of field('categoryType').value.items"
+              >{{ size.size }}
+            </ion-select-option>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive title="Code" controlName="code" [form]="form">
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="8" size="12">
           <app-input-reactive
-            title="Company"
-            controlName="company"
-            placeholder="Enter Company Name"
-            [form]="hire"
+            title="Description"
+            controlName="name"
+            [form]="form"
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col>
+        <ion-col size="12">
           <app-input-reactive
-            title="Qty"
+            title="Yard Qty"
             type="number"
-            controlName="qty"
-            [form]="hire"
+            controlName="yardQty"
+            [form]="form"
             (fieldChange)="update()"
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col>
-          <app-input-date
-            [form]="hire"
-            controlName="date"
-            title="Hire Date"
-          ></app-input-date>
-        </ion-col>
-        <ion-col size="12">
+        <!-- <ion-col sizeMd="4">
           <app-input-reactive
-            title="Notes"
-            [textarea]="true"
-            controlName="notes"
-            placeholder="Enter any notes..."
-            [form]="hire"
+            title="Cross Hire Qty"
+            type="number"
+            controlName="crossHireQty"
+            [form]="form"
+            [readonly]="true"
+          >
+          </app-input-reactive>
+        </ion-col> -->
+        <!-- <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            title="Total Qty "
+            type="number"
+            controlName="availableQty"
+            [form]="form"
+            [readonly]="true"
+          >
+          </app-input-reactive>
+        </ion-col> -->
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Weight  ({{ company.mass.symbol }})"
+            type="number"
+            controlName="weight"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Hire/Rent Cost ({{ company.currency.symbol }})"
+            type="number"
+            controlName="hireCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Replacement Cost ({{ company.currency.symbol }})"
+            type="number"
+            controlName="replacementCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Selling Cost ({{ company.currency.symbol }})"
+            type="number"
+            controlName="sellingCost"
+            [form]="form"
           >
           </app-input-reactive>
         </ion-col>
       </ion-row>
       <ion-row>
-        <ion-col size="12" class="text-center">
-          <ion-button
-            shape="round"
-            color="success"
-            (click)="addCrossHire()"
-            *ngIf="!loading"
-          >
-            Add Cross Hire
-          </ion-button>
-        </ion-col>
         <ion-col size="12" class="text-end">
           <ion-progress-bar
             type="indeterminate"

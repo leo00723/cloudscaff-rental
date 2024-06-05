@@ -149,9 +149,7 @@
           shape="round"
           color="success"
           *ngIf="customer$ | async as customer"
-          [disabled]="
-            handover.maxLoad.length === 0 || handover.safe.length === 0
-          "
+          [disabled]="handover.safe.length === 0"
           (click)="create(customer)"
           >Create Handover</ion-button
         >

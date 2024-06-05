@@ -46,6 +46,10 @@ export class HandoverTableComponent {
         return 'success';
       case 'pending':
         return 'primary';
+      case 'Needs Signature':
+        return 'primary';
+      case 'Signed':
+        return 'success';
     }
   }
 

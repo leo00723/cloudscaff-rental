@@ -6,7 +6,20 @@
 >
 </ion-searchbar>
 <ion-item lines="none" mode="ios">
-  <ion-button
+  <ion-select
+    #rows
+    slot="start"
+    placeholder="7"
+    interface="popover"
+    [value]="7"
+  >
+    <ion-select-option value="7">7</ion-select-option>
+    <ion-select-option value="10">10</ion-select-option>
+    <ion-select-option value="50">50</ion-select-option>
+    <ion-select-option value="100">100</ion-select-option>
+  </ion-select>
+</ion-item>
+<!-- <ion-button
     slot="end"
     (click)="export()"
     fill="outline"
@@ -14,12 +27,10 @@
     color="success"
   >
     Export CSV
-  </ion-button>
-</ion-item>
-
+  </ion-button> -->
 <ngx-datatable
   class="bootstrap striped rounded-lg"
-  [limit]="7"
+  [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="'auto'"
   [columnMode]="'force'"

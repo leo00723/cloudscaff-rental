@@ -193,7 +193,8 @@
               </tr>
               <tr *ngIf="credit.company.vat > 0">
                 <th class="text-end" colspan="6" scope="col">
-                  VAT ({{ credit.company.vat }}%)
+                  {{credit.company?.gst ? "GST" : "VAT"}} ({{ credit.company.vat
+                  }}%)
                 </th>
                 <th class="text-end" colspan="2" scope="col">
                   {{ credit.company.currency.symbol }} {{ credit.credit.vat |

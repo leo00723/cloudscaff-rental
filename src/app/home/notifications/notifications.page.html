@@ -1,0 +1,31 @@
+<app-header
+  title="Notifications"
+  iconName="trash-outline"
+  iconColor="danger"
+  (updatedIcon)="deleteAll()"
+>
+</app-header>
+
+<ion-content>
+  <ion-list [inset]="true" mode="ios" color="dark">
+    <ng-container *ngIf="notifications$| async as notifications">
+      <ng-container *ngFor="let item of notifications;let i =index">
+        <ion-item color="light" mode="ios" shape="round">
+          <ion-label position="stacked">
+            <span class="h6 fw-bold">{{item.title}}</span>
+            <span class="float-end my-auto">{{ item.date | date }}</span>
+          </ion-label>
+          <ion-text>
+            <p position="stacked" class="my-auto pb-2">{{item.message}}</p>
+          </ion-text>
+        </ion-item>
+      </ng-container>
+      <p
+        class="lead text-center fw-bold my-auto"
+        *ngIf="notifications.length === 0"
+      >
+        No Notifications Yet
+      </p>
+    </ng-container>
+  </ion-list>
+</ion-content>

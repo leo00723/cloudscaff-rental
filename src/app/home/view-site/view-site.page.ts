@@ -24,16 +24,33 @@ import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
+import { Company } from 'src/app/models/company.model';
+import { orderBy, where } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-view-site',
   templateUrl: './view-site.page.html',
+  styles: [
+    `
+      /* Styles for the scrollbar track */
+      ::-webkit-scrollbar {
+        width: 0.2rem;
+        height: 0rem;
+      }
+    `,
+  ],
 })
 export class ViewSitePage implements OnInit {
+  @Select() company$: Observable<Company>;
   @Select() user$: Observable<User>;
   site$: Observable<Site>;
   estimates$: Observable<Estimate[]>;
   scaffolds$: Observable<Scaffold[]>;
+  pendingScaffolds$: Observable<Scaffold[]>;
+  inactiveScaffolds$: Observable<Scaffold[]>;
+  erectedScaffolds$: Observable<Scaffold[]>;
+  activeScaffolds$: Observable<Scaffold[]>;
+  dismantledScaffolds$: Observable<Scaffold[]>;
   requests$: Observable<Request[]>;
   returns$: Observable<Return[]>;
   billableShipments$: Observable<InventoryEstimate[]>;
@@ -61,24 +78,52 @@ export class ViewSitePage implements OnInit {
       ) as Observable<Site>;
     this.estimates$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/estimates`,
-        'siteId',
-        '==',
-        this.ids[1],
-        'date',
-        'desc'
-      ) as Observable<Estimate[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/estimates`, [
+        where('siteId', '==', this.ids[1]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Estimate[]>;
     this.scaffolds$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/scaffolds`,
-        'siteId',
-        '==',
-        this.ids[1],
-        'date',
-        'desc'
-      ) as Observable<Scaffold[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
+    this.pendingScaffolds$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        where('status', '==', 'pending-Work In Progress'),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
+    this.inactiveScaffolds$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        where('status', '==', 'inactive-Failed Inspection'),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
+    this.erectedScaffolds$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        where('status', '==', 'active-Handed over'),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
+    this.dismantledScaffolds$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        where('status', '==', 'Dismantled'),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
+    this.activeScaffolds$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/scaffolds`, [
+        where('siteId', '==', this.ids[1]),
+        where('status', '!=', 'Dismantled'),
+        orderBy('status', 'desc'),
+        orderBy('date', 'desc'),
+      ]) as Observable<Scaffold[]>;
     this.inventoryItems$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.ids[0]}/siteStock`, this.ids[1]);
@@ -294,6 +339,48 @@ export class ViewSitePage implements OnInit {
       );
   }
 
+  async setUploads(uploads, site: Site) {
+    site.uploads
+      ? site.uploads.push(...uploads)
+      : (site.uploads = [...uploads]);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(`company/${site.companyId}/sites`, site.id, site);
+      this.masterSvc
+        .notification()
+        .toast('Files uploaded successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong uploading files. Please try again.',
+          'danger'
+        );
+    }
+  }
+
+  async removeUpload(index: number, site: Site) {
+    site.uploads.splice(index, 1);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(`company/${site.companyId}/sites`, site.id, site);
+      this.masterSvc
+        .notification()
+        .toast('Files deleted successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong deleting file. Please try again.',
+          'danger'
+        );
+    }
+  }
+
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
   }
@@ -306,6 +393,27 @@ export class ViewSitePage implements OnInit {
     this.masterSvc
       .pdf()
       .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
+  }
+
+  async saveAsImage(parent: any, site: string) {
+    let parentElement = null;
+    // fetches base 64 data from canvas
+    parentElement = parent.qrcElement.nativeElement
+      .querySelector('canvas')
+      .toDataURL('image/png');
+
+    if (parentElement) {
+      // converts base 64 encoded image to blobData
+      const blobData = await (await fetch(parentElement)).blob();
+      // saves as image
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      // name of the file
+      link.download = site;
+      link.click();
+    }
   }
 
   help() {

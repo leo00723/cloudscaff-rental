@@ -21,7 +21,9 @@
       <ion-button
         *ngIf="
           estimate.status === 'rejected' &&
-          (user.role === 'Owner' || user.role === 'Super-Admin')
+          (user.permissionsList.includes('Estimates') ||
+            user.permissionsList.includes('Super Admin') ||
+            user.role === 'Owner')
         "
         slot="end"
         fill="solid"
@@ -133,7 +135,7 @@
               class="rounded-3 my-3"
               mode="md"
             >
-              <ion-label position="stacked">Message</ion-label>
+              <ion-label position="stacked">Scope of works</ion-label>
               <ion-textarea #message formControlName="message"></ion-textarea>
             </ion-item>
           </ion-col>
@@ -1523,7 +1525,10 @@
         <ion-row>
           <ion-col size="12">
             <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
-              <ion-label>Exclude VAT on Estimate</ion-label>
+              <ion-label
+                >Exclude {{ company?.gst ? "GST" : "VAT" }} on
+                Estimate</ion-label
+              >
               <ion-checkbox
                 mode="ios"
                 slot="end"
@@ -1605,7 +1610,10 @@
           </ion-col>
           <ion-col
             size="12"
-            *ngIf="user.role === 'Owner' || user.role === 'Super-Admin'"
+            *ngIf="
+              user.permissionsList.includes('Super Admin') ||
+              user.role === 'Owner'
+            "
           >
             <ion-button
               fill="outline"

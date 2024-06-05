@@ -1,18 +1,16 @@
 import { NgModule } from '@angular/core';
-import { NgxsModule } from '@ngxs/store';
+import { QRCodeModule } from 'angularx-qrcode';
 import { ComponentsModule } from 'src/app/components/components.module';
-import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.component';
+import { PaymentApplicationTableComponent } from './payment-application-table/payment-application-table.component';
+import { ShipmentInvoicesTableComponent } from './shipment-invoices-table/shipment-invoices-table.component';
 import { SiteInventoryTableComponent } from './site-inventory-table/site-inventory-table.component';
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
-import { ShipmentInvoicesTableComponent } from './shipment-invoices-table/shipment-invoices-table.component';
-import { PaymentApplicationTableComponent } from './payment-application-table/payment-application-table.component';
 
 @NgModule({
-  imports: [ComponentsModule, ViewSitePageRoutingModule],
+  imports: [ComponentsModule, ViewSitePageRoutingModule, QRCodeModule],
   declarations: [
     ViewSitePage,
-    ScaffoldTableComponent,
     SiteInventoryTableComponent,
     ShipmentInvoicesTableComponent,
     PaymentApplicationTableComponent,

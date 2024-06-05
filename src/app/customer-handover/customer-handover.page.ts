@@ -94,6 +94,7 @@ export class CustomerHandoverPage {
           handover.scaffold.id,
           {
             status: 'active-Handed over',
+            latestHandover: { ...handover },
           }
         );
         await this.editSvc.updateDoc(

@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header mode="md">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button color="primary" *ngIf="showMenu"></ion-menu-button>
@@ -12,10 +12,9 @@
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
     <ion-buttons slot="end" *ngIf="btnName || iconName">
-      <ion-button
+      <ion-chip
         mode="ios"
         *ngIf="btnName"
-        fill="solid"
         size="small"
         shape="round"
         color="primary"
@@ -23,7 +22,7 @@
         (click)="update()"
       >
         View Tutorial
-      </ion-button>
+      </ion-chip>
       <ion-button (click)="updateIcon()" *ngIf="iconName">
         <ion-icon
           slot="icon-only"

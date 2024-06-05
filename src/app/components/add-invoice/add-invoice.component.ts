@@ -490,11 +490,9 @@ export class AddInvoiceComponent implements OnInit {
     }
 
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
-    const code = `EST${new Date().toLocaleDateString('en', {
-      year: '2-digit',
-    })}${(this.company.totalInvoices ? this.company.totalInvoices + 1 : 1)
-      .toString()
-      .padStart(6, '0')}`;
+    const code = this.masterSvc
+      .edit()
+      .generateDocCode(this.company.totalInvoices, 'INV');
 
     this.invoice = {
       ...this.invoice,
@@ -514,6 +512,7 @@ export class AddInvoiceComponent implements OnInit {
         bankName: this.company.bankName,
         swiftCode: this.company.swiftCode,
         id: this.company.id,
+        gst: this.company?.gst,
       },
       code: this.isEdit ? this.invoice.code : code,
       status: this.isEdit ? this.invoice.status : 'pending-Not Sent',

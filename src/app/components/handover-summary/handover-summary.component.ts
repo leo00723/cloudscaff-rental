@@ -4,15 +4,12 @@ import {
   Component,
   Input,
 } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Term } from 'src/app/models/term.model';
-import { EditService } from 'src/app/services/edit.service';
 import { ImgService } from 'src/app/services/img.service';
 import { MasterService } from 'src/app/services/master.service';
-import { NotificationService } from 'src/app/services/notification.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { ShareDocumentComponent } from '../share-document/share-document.component';
 
@@ -76,6 +73,7 @@ export class HandoverSummaryComponent {
             this.handover.scaffold.id,
             {
               status: 'active-Handed over',
+              latestHandover: { ...this.handover },
             }
           );
         this.masterSvc
@@ -97,11 +95,12 @@ export class HandoverSummaryComponent {
       this.isLoading = false;
     }
   }
+
   async download(terms: Term | null) {
     const sharedHandover = {
       handover: this.handover,
       company: this.company,
-      terms: terms,
+      terms,
     };
     await this.masterSvc
       .edit()
@@ -120,7 +119,7 @@ export class HandoverSummaryComponent {
     const sharedHandover = {
       handover: this.handover,
       company: this.company,
-      terms: terms,
+      terms,
     };
     const modal = await this.masterSvc.modal().create({
       component: ShareDocumentComponent,

@@ -26,18 +26,12 @@
           [form]="form"
           controlName="email"
         ></app-input-reactive>
-        <app-input-select-reactive
-          title="Role"
-          placeholder="Select Role"
-          controlName="role"
+        <app-input-reactive
+          title="Title"
           [form]="form"
-          [selectedText]="field('role').value"
-        >
-          <ion-select-option [value]="role" *ngFor="let role of roles"
-            >{{ role }}
-          </ion-select-option>
-        </app-input-select-reactive>
-        <ion-item class="mb-3 rounded-3" fill="solid" mode="md">
+          controlName="title"
+        ></app-input-reactive>
+        <ion-item class="my-3 rounded-3" fill="solid" mode="md">
           <ion-label position="stacked">Password</ion-label>
           <app-show-hide-password>
             <ion-input
@@ -55,6 +49,23 @@
             more.</ion-note
           >
         </ion-item>
+        <app-permissions-select
+          #permissions
+          (click)="permissions.open()"
+          [user]="user"
+          (selectedChanged)="setRoles($event)"
+        ></app-permissions-select>
+        <ion-item
+          class="my-3"
+          fill="solid"
+          mode="md"
+          shape="round"
+          *ngIf="user.permissions && user.permissionsList.length > 0"
+        >
+          <ul class="pt-3">
+            <li *ngFor="let item of user.permissionsList">{{ item }}</li>
+          </ul>
+        </ion-item>
       </form>
     </ion-col>
     <ion-col>
@@ -65,13 +76,13 @@
         (click)="create()"
         expand="block"
         shape="round"
-        [disabled]="form.invalid"
+        [disabled]="form.invalid || user.permissionsList.length < 1"
       >
         Create User
       </ion-button>
     </ion-col>
   </ion-row>
-  <ion-row *ngIf="isEdit">
+  <ion-row *ngIf="isEdit && this.user">
     <ion-col class="text-center mb-3">
       <img class="m-auto cursor-pointer" [src]="user.thumb" />
     </ion-col>
@@ -87,26 +98,38 @@
           title="Name"
           [form]="form"
           controlName="name"
-          [readonly]="true"
+          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
         ></app-input-reactive>
         <app-input-reactive
           title="Contact Number"
           [form]="form"
           controlName="phone"
-          [readonly]="true"
+          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
         ></app-input-reactive>
-        <app-input-select-reactive
-          *ngIf="user.role !== 'Owner'"
-          title="Role"
-          placeholder="Select Role"
-          controlName="role"
+        <app-input-reactive
+          title="Title"
           [form]="form"
-          [selectedText]="field('role').value"
+          controlName="title"
+          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
+        ></app-input-reactive>
+        <app-permissions-select
+          #permissions
+          (click)="permissions.open()"
+          [user]="user"
+          (selectedChanged)="setRoles($event)"
+        ></app-permissions-select>
+
+        <ion-item
+          class="my-3"
+          fill="solid"
+          mode="md"
+          shape="round"
+          *ngIf="user.permissions && user.permissionsList.length > 0"
         >
-          <ion-select-option [value]="role" *ngFor="let role of roles"
-            >{{ role }}
-          </ion-select-option>
-        </app-input-select-reactive>
+          <ul class="pt-3">
+            <li *ngFor="let item of user.permissionsList">{{ item }}</li>
+          </ul>
+        </ion-item>
       </form>
     </ion-col>
     <ion-col class="text-end">
@@ -114,7 +137,8 @@
 
       <ng-container
         *ngIf="
-          currentUser.role === 'Owner' || currentUser.role === 'Super-admin'
+          currentUser.role === 'Owner' ||
+          currentUser.permissionsList.includes('Super Admin')
         "
       >
         <ion-button
@@ -129,9 +153,7 @@
         </ion-button>
         <ion-button
           color="success"
-          *ngIf="
-            !loading && user.role !== 'Owner' && user.id !== currentUser.id
-          "
+          *ngIf="!loading"
           (click)="update()"
           shape="round"
           [disabled]="form.invalid"

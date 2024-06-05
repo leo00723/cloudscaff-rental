@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { increment } from '@angular/fire/firestore';
+import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -192,9 +192,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
     this.items = this.itemBackup.filter(
       (item) =>
-        item.code.toLowerCase().includes(val) ||
-        item.name.toLowerCase().includes(val) ||
-        item.category.toLowerCase().includes(val) ||
+        item?.code?.toString().toLowerCase().includes(val) ||
+        item.name?.toLowerCase().includes(val) ||
+        item?.category?.toLowerCase().includes(val) ||
         !val
     );
     if (!val) {
@@ -278,7 +278,10 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       if (id) {
         this.sites$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/sites`, 'code', 'desc');
+          .getCollectionFiltered(`company/${id}/sites`, [
+            where('status', '==', 'active'),
+            orderBy('code', 'desc'),
+          ]);
       } else {
         this.masterSvc.log(
           '-----------------------try sites----------------------'

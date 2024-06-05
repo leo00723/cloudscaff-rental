@@ -10,6 +10,7 @@ import { MasterService } from 'src/app/services/master.service';
 export class FileItemComponent {
   @Input() file: UploadedFile;
   @Input() allowDelete = true;
+  @Input() simplified = false;
   @Output() deleted = new EventEmitter<boolean>();
   private masterSvc: MasterService = inject(MasterService);
 

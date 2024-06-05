@@ -5,10 +5,23 @@
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
-
+<ion-item lines="none" mode="ios">
+  <ion-select
+    #rows
+    slot="start"
+    placeholder="7"
+    interface="popover"
+    [value]="7"
+  >
+    <ion-select-option value="7">7</ion-select-option>
+    <ion-select-option value="10">10</ion-select-option>
+    <ion-select-option value="50">50</ion-select-option>
+    <ion-select-option value="100">100</ion-select-option>
+  </ion-select>
+</ion-item>
 <ngx-datatable
   class="bootstrap striped rounded-lg"
-  [limit]="15"
+  [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="50"
   [columnMode]="'force'"
@@ -36,17 +49,27 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date: "dd MMM yyyy" }}
+      {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
-    name="Total Amount"
+    name="Net Overall Total"
+    prop="grossTotal"
+    cellClass="text-end"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.company.currency.symbol }} {{ value | number : "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Current Month Total"
     prop="total"
     cellClass="text-end"
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row.company.currency.symbol }} {{ value | number: "0.2-2" }}
+      {{ row.company.currency.symbol }} {{ value | number : "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column

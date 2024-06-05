@@ -278,7 +278,7 @@
             </tr>
             <tr *ngIf="data.company.vat > 0">
               <th class="text-end" colspan="3" scope="col">
-                VAT ({{data.company.vat }}%)
+                {{data.company?.gst ? "GST" : "VAT"}} ({{data.company.vat }}%)
               </th>
               <th class="text-end" colspan="2" scope="col">
                 {{data.company.currency.symbol }} {{ data.inventoryEstimate.vat
@@ -355,14 +355,14 @@
         >
           Reject
         </ion-button>
-        <ion-button
+        <!-- <ion-button
           shape="round"
           color="dark"
           *ngIf="!loading"
           (click)="update('negotiate',data)"
         >
           Negotiate
-        </ion-button>
+        </ion-button> -->
         <ion-button
           shape="round"
           color="primary"

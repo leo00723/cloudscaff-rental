@@ -10,7 +10,11 @@
     <ion-button shape="round" color="danger" (click)="clearSignature()"
       >Clear
     </ion-button>
-    <ion-button shape="round" color="success" (click)="savePad()"
+    <ion-button
+      shape="round"
+      color="success"
+      (click)="savePad()"
+      *ngIf="showSave"
       >Save
     </ion-button>
   </div>

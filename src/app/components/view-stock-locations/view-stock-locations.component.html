@@ -14,36 +14,38 @@
 </ion-header>
 <ion-content class="ion-padding">
   <ng-container *ngIf="locations$ | async as locations">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">Site Code</th>
-          <th scope="col">Site Name</th>
-          <th scope="col">Customer</th>
-          <th scope="col">Item Code</th>
-          <th scope="col">Name</th>
-          <th scope="col" class="text-center">Available Qty</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngIf="locations$ | async as locations">
-          <tr class="align-middle" *ngFor="let location of locations">
-            <td
-              (click)="viewSite(location)"
-              class="text-primary cursor-pointer"
-            >
-              {{ location.site.code }}
-            </td>
-            <td>{{ location.site.name }}</td>
-            <td>{{ location.site.customer.name }}</td>
-            <td>{{ location.item.code }}</td>
-            <td>{{ location.item.name }}</td>
-            <td class="text-center">
-              {{ location.item.availableQty }}
-            </td>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">Site Code</th>
+            <th scope="col">Site Name</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Item Code</th>
+            <th scope="col">Name</th>
+            <th scope="col" class="text-center">Available Qty</th>
           </tr>
-        </ng-container>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="locations$ | async as locations">
+            <tr class="align-middle" *ngFor="let location of locations">
+              <td
+                (click)="viewSite(location)"
+                class="text-primary cursor-pointer"
+              >
+                {{ location.site.code }}
+              </td>
+              <td>{{ location.site.name }}</td>
+              <td>{{ location.site.customer.name }}</td>
+              <td>{{ location.item.code }}</td>
+              <td>{{ location.item.name }}</td>
+              <td class="text-center">
+                {{ location.item.availableQty }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
   </ng-container>
 </ion-content>

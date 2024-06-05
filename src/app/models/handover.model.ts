@@ -26,4 +26,5 @@ export interface Handover {
   dismantlePercentage?: number;
   uploads?: UploadedFile[];
   questions?: HandoverTemplate;
+  dismantled?: boolean;
 }

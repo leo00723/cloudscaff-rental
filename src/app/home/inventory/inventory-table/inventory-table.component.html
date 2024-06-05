@@ -5,7 +5,19 @@
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
-
+<ion-item lines="none" mode="ios">
+  <ion-select
+    #rows
+    slot="start"
+    placeholder="10"
+    interface="popover"
+    [value]="10"
+  >
+    <ion-select-option value="10">10</ion-select-option>
+    <ion-select-option value="50">50</ion-select-option>
+    <ion-select-option value="100">100</ion-select-option>
+  </ion-select>
+</ion-item>
 <!-- <div class="text-end">
   <input
     style="display: none"
@@ -40,8 +52,8 @@
 </div> -->
 
 <ngx-datatable
-  class="bootstrap striped rounded-lg mb-5"
-  [limit]="15"
+  class="bootstrap striped rounded-lg"
+  [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="50"
   [columnMode]="'force'"
@@ -154,7 +166,10 @@
                 [button]="true"
                 [detail]="false"
                 (click)="deleteItem(row)"
-                *ngIf="user.role === 'Owner' || user.role === 'Super-Admin'"
+                *ngIf="
+                  user.role === 'Owner' ||
+                  user.permissionsList.includes('Super Admin')
+                "
               >
                 <ion-label>Delete</ion-label>
               </ion-item>
@@ -171,3 +186,9 @@
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>
+<ion-item>
+  <ion-label>Total weight</ion-label>
+  <ion-label slot="end">
+    {{ itemsBackup ? (itemsBackup | weight) : [] }}
+  </ion-label>
+</ion-item>

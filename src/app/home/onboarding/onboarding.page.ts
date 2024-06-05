@@ -291,14 +291,9 @@ export class OnboardingPage implements OnInit {
 
   ngOnInit() {}
 
-  next({ user, company }, settings: boolean) {
-    console.log('emmited');
-    if (!user?.needsSetup && !company?.needsSetup) {
-      if (settings) {
-        this.router.navigateByUrl('/dashboard/settings');
-      } else {
-        this.router.navigateByUrl('/dashboard/sites');
-      }
+  next({ user, company }) {
+    if (!(user?.needsSetup || company?.needsSetup)) {
+      this.router.navigateByUrl('/dashboard/sites');
     }
   }
 

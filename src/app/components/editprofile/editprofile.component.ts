@@ -62,6 +62,8 @@ export class EditprofileComponent implements OnInit {
       this.masterSvc
         .notification()
         .toast('Profile updated successfully', 'success');
+      this.masterSvc.router().navigateByUrl('/dashboard/sites');
+
       this.loading = false;
     } catch (e) {
       console.error(e);

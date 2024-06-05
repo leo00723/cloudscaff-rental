@@ -216,34 +216,35 @@
             <ion-button shape="round" *ngIf="isEdit" (click)="updateEnquiry()"
               >Update Enquiry</ion-button
             >
-            <ion-button
-              color="success"
-              shape="round"
-              *ngIf="isEdit && enquiry.estimate"
-              (click)="viewEstimate()"
-              >View Estimate</ion-button
-            >
-            <ion-button
-              color="success"
-              shape="round"
-              *ngIf="
-                (isEdit && enquiry.status === 'pending') ||
-                enquiry.status === 'overdue'
-              "
-              (click)="addEstimate()"
-              >Create Standard Estimate</ion-button
-            >
-            <ion-button
-              color="success"
-              shape="round"
-              *ngIf="
-                (isEdit && enquiry.status === 'pending') ||
-                enquiry.status === 'overdue'
-              "
-              (click)="addBulkEstimate()"
-              >Create Bulk Estimate</ion-button
-            >
-            <ion-button
+            <ng-container *ngIf="!company?.removeBilling">
+              <ion-button
+                color="success"
+                shape="round"
+                *ngIf="isEdit && enquiry.estimate"
+                (click)="viewEstimate()"
+                >View Estimate</ion-button
+              >
+              <ion-button
+                color="success"
+                shape="round"
+                *ngIf="
+                  (isEdit && enquiry.status === 'pending') ||
+                  enquiry.status === 'overdue'
+                "
+                (click)="addEstimate()"
+                >Create Standard Estimate</ion-button
+              >
+              <ion-button
+                color="success"
+                shape="round"
+                *ngIf="
+                  (isEdit && enquiry.status === 'pending') ||
+                  enquiry.status === 'overdue'
+                "
+                (click)="addBulkEstimate()"
+                >Create Bulk Estimate</ion-button
+              >
+              <!-- <ion-button
               color="success"
               shape="round"
               *ngIf="
@@ -252,7 +253,8 @@
               "
               (click)="addInventoryEstimate()"
               >Create Inventory Estimate</ion-button
-            >
+            > -->
+            </ng-container>
           </ion-col>
         </ion-row>
       </ion-grid>

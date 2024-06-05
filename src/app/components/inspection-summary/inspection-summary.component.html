@@ -91,7 +91,7 @@
         ></app-scaffold-overview-table>
         <table class="table table-bordered">
           <ng-container
-            *ngFor="let category of inspection.questions.categories"
+            *ngFor="let category of inspection?.questions?.categories"
           >
             <thead>
               <tr class="table-light">
@@ -141,6 +141,18 @@
                 >
                   {{ inspection.status }}
                 </ion-text>
+              </td>
+            </tr>
+            <tr class="align-middle" *ngIf="inspection.signature">
+              <td>Signed By</td>
+              <td class="text-center">
+                <ion-text slot="end">{{ inspection.signedBy }}</ion-text>
+              </td>
+            </tr>
+            <tr class="align-middle" *ngIf="inspection.signature">
+              <td>Signature</td>
+              <td class="text-center">
+                <img [src]="inspection.signature" />
               </td>
             </tr>
           </tbody>

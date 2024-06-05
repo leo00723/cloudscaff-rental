@@ -7,11 +7,10 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from '@angular/fire/auth';
-import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { GetUser } from 'src/app/shared/user/user.actions';
-import { GetCompany } from '../shared/company/company.actions';
 import { CompanyState } from '../shared/company/company.state';
+import { GetNotifications } from '../shared/notifications/notifications.actions';
 import { Navigate } from '../shared/router.state';
 import { UserState } from '../shared/user/user.state';
 
@@ -24,10 +23,10 @@ export class AuthService {
     onAuthStateChanged(this.auth, async (user) => {
       if (user) {
         this.loggedIn = true;
-        // const company = (await user.getIdTokenResult()).claims
-        //   .company as string;
-        // this.store.dispatch([new GetUser(user.uid), new GetCompany(company)]);
-        this.store.dispatch([new GetUser(user.uid)]);
+        this.store.dispatch([
+          new GetUser(user.uid),
+          new GetNotifications(user.uid),
+        ]);
       } else if (this.loggedIn) {
         this.store.dispatch(new Navigate('/login'));
       }
