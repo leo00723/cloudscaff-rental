@@ -201,7 +201,9 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   }
 
   autoSave() {
-    if (this.isEdit) {
+    if (this.loading) {
+      return;
+    } else if (this.isEdit) {
       if (this.return.status === 'pending') {
         this.updateDoc('pending', true);
       }
@@ -277,6 +279,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       driverName: [this.return?.driverName, Validators.nullValidator],
       driverNo: [this.return?.driverNo, Validators.nullValidator],
       vehicleReg: [this.return?.vehicleReg, Validators.nullValidator],
+      createdByName: [this.return?.createdByName || ''],
     });
   }
 
@@ -286,6 +289,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       returnDate: ['', Validators.required],
       notes: ['', Validators.nullValidator],
       createdBy: [this.user.id],
+      createdByName: [this.user.name],
       status: ['pending', Validators.required],
       company: [this.company],
       date: [new Date()],

@@ -84,6 +84,9 @@
     cellClass="text-center my-auto"
     headerClass="text-center"
   >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | number }}
+    </ng-template>
   </ngx-datatable-column>
   <!-- <ngx-datatable-column
     name="Cross Hire Qty"
@@ -102,29 +105,45 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row | calculate }}
+      {{ row | calculate | number }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
     name="In Use Qty"
     cellClass="text-center my-auto"
     headerClass="text-center"
-  ></ngx-datatable-column>
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | number }}
+    </ng-template></ngx-datatable-column
+  >
   <ngx-datatable-column
     name="In Maintenance Qty"
     cellClass="text-center my-auto"
     headerClass="text-center"
-  ></ngx-datatable-column>
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | number }}
+    </ng-template></ngx-datatable-column
+  >
   <ngx-datatable-column
     name="Damaged Qty"
     cellClass="text-center my-auto"
     headerClass="text-center"
-  ></ngx-datatable-column>
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | number }}
+    </ng-template></ngx-datatable-column
+  >
   <ngx-datatable-column
     name="Lost Qty"
     cellClass="text-center my-auto"
     headerClass="text-center"
-  ></ngx-datatable-column>
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | number }}
+    </ng-template></ngx-datatable-column
+  >
   <!-- <ngx-datatable-column
     name="Reserved Qty"
     cellClass="text-center"

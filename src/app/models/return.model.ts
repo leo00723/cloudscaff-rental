@@ -8,6 +8,7 @@ export interface Return {
   code?: string;
   company?: Company;
   createdBy?: string;
+  createdByName?: string;
   date?: any;
   items?: InventoryItem[];
   notes?: string;

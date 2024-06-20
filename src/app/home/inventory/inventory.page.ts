@@ -342,7 +342,7 @@ export class InventoryPage implements OnInit {
           .edit()
           .getCollectionFiltered(`company/${id}/shipments`, [
             where('status', 'in', ['sent', 'received']),
-            orderBy('code', 'asc'),
+            orderBy('code', 'desc'),
           ]);
         this.pendingShipments$ = this.masterSvc
           .edit()
