@@ -192,7 +192,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
 
         shipment.code = this.masterSvc
           .edit()
-          .generateDocCode(this.company.totalShipments, 'SHI');
+          .generateDocCode(this.company.totalShipments, 'DEL');
         newRequest.status = hasDeficit ? 'partial shipment' : 'approved';
 
         await this.masterSvc

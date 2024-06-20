@@ -47,9 +47,44 @@
           controlName="notes"
           [form]="form"
           [textarea]="true"
+          [readonly]="return.status !== 'pending'"
         >
         </app-input-reactive>
       </ion-col>
+      <ng-container *ngIf="allowSend || return.status === 'on-route'">
+        <ion-col size="12">
+          <ion-text color="medium">
+            <h4>Driver Information</h4>
+          </ion-text>
+        </ion-col>
+        <ion-col size="12" sizeMd="4">
+          <app-input-reactive
+            title="Driver Name"
+            controlName="driverName"
+            [form]="form"
+            [readonly]="return.status !== 'submitted'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="12" sizeMd="4">
+          <app-input-reactive
+            title="Driver Phone No"
+            controlName="driverNo"
+            [form]="form"
+            [readonly]="return.status !== 'submitted'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="12" sizeMd="4">
+          <app-input-reactive
+            title="Vehicle Registration"
+            controlName="vehicleReg"
+            [form]="form"
+            [readonly]="return.status !== 'submitted'"
+          >
+          </app-input-reactive>
+        </ion-col>
+      </ng-container>
       <ion-col size="6">
         <ion-text color="medium">
           <h4>Inventory Information</h4>
@@ -88,13 +123,34 @@
                 <th scope="col" class="text-center">
                   Weight ({{ company.mass.symbol }})
                 </th>
-                <th scope="col" *ngIf="allowSend" class="text-center">
+                <th
+                  scope="col"
+                  *ngIf="
+                    (allowSend && return.status === 'collected') ||
+                    return.status === 'received'
+                  "
+                  class="text-center"
+                >
                   Maintenance Qty
                 </th>
-                <th scope="col" *ngIf="allowSend" class="text-center">
+                <th
+                  scope="col"
+                  *ngIf="
+                    (allowSend && return.status === 'collected') ||
+                    return.status === 'received'
+                  "
+                  class="text-center"
+                >
                   Damaged Qty
                 </th>
-                <th scope="col" *ngIf="allowSend" class="text-center">
+                <th
+                  scope="col"
+                  *ngIf="
+                    (allowSend && return.status === 'collected') ||
+                    return.status === 'received'
+                  "
+                  class="text-center"
+                >
                   Lost Qty
                 </th>
               </tr>
@@ -135,7 +191,13 @@
                   <td class="text-end">
                     {{ item.shipmentQty * item.weight | number }}
                   </td>
-                  <td class="text-center" *ngIf="allowSend">
+                  <td
+                    class="text-center"
+                    *ngIf="
+                      (allowSend && return.status === 'collected') ||
+                      return.status === 'received'
+                    "
+                  >
                     <ion-input
                       #MaintenanceQty
                       debounce="200"
@@ -144,14 +206,23 @@
                       [clearOnEdit]="true"
                       [value]="item.inMaintenanceQty"
                       (ionChange)="update($event, item, 'maintenance')"
-                      [readonly]="return.status !== 'pending' && !allowSend"
+                      [readonly]="
+                        (return.status !== 'collected' && !allowSend) ||
+                        return.status === 'received'
+                      "
                     >
                     </ion-input>
                     <ion-label color="danger" *ngIf="item.error">
                       you cannot exceed the shipment qty
                     </ion-label>
                   </td>
-                  <td class="text-center" *ngIf="allowSend">
+                  <td
+                    class="text-center"
+                    *ngIf="
+                      (allowSend && return.status === 'collected') ||
+                      return.status === 'received'
+                    "
+                  >
                     <ion-input
                       #DamagedQty
                       debounce="200"
@@ -160,14 +231,23 @@
                       [clearOnEdit]="true"
                       [value]="item.damagedQty"
                       (ionChange)="update($event, item, 'damaged')"
-                      [readonly]="return.status !== 'pending' && !allowSend"
+                      [readonly]="
+                        (return.status !== 'collected' && !allowSend) ||
+                        return.status === 'received'
+                      "
                     >
                     </ion-input>
                     <ion-label color="danger" *ngIf="item.error">
                       you cannot exceed the shipment qty
                     </ion-label>
                   </td>
-                  <td class="text-center" *ngIf="allowSend">
+                  <td
+                    class="text-center"
+                    *ngIf="
+                      (allowSend && return.status === 'collected') ||
+                      return.status === 'received'
+                    "
+                  >
                     <ion-input
                       #LostQty
                       debounce="200"
@@ -176,7 +256,10 @@
                       [clearOnEdit]="true"
                       [value]="item.lostQty"
                       (ionChange)="update($event, item, 'lost')"
-                      [readonly]="return.status !== 'pending' && !allowSend"
+                      [readonly]="
+                        (return.status !== 'collected' && !allowSend) ||
+                        return.status === 'received'
+                      "
                     >
                     </ion-input>
                     <ion-label color="danger" *ngIf="item.error">
@@ -229,11 +312,15 @@
       </ion-col>
       <ion-col
         size="12"
-        *ngIf="return.status !== 'sent' && return.status !== 'void'"
+        *ngIf="
+          return.status !== 'sent' &&
+          return.status !== 'void' &&
+          return.status !== 'received'
+        "
       >
         <app-multiuploader></app-multiuploader>
       </ion-col>
-      <ion-col size="12">
+      <ion-col size="12" *ngIf="return?.uploads?.length > 0">
         <app-title-block> Uploaded Files </app-title-block>
         <ion-row>
           <ion-col
@@ -247,23 +334,46 @@
           </ion-col>
         </ion-row>
       </ion-col>
+      <ion-col size="12" *ngIf="return.status === 'collected' && allowSend">
+        <app-title-block> Received By </app-title-block>
+        <app-signature-pad
+          #signature
+          [showSave]="blob ? false : true"
+          (res)="sign($event)"
+        ></app-signature-pad>
+      </ion-col>
+      <ion-col class="mt-3" size="12" *ngIf="return.status === 'received'">
+        <app-title-block> Received By </app-title-block>
 
-      <ion-col
-        size="12"
-        class="text-end"
-        *ngIf="return.status !== 'void' && return.status !== 'sent'"
-      >
-        <ion-progress-bar
-          type="indeterminate"
-          *ngIf="loading"
-        ></ion-progress-bar>
-        <ion-button
-          shape="round"
-          [disabled]="form.invalid"
-          *ngIf="!isEdit && !loading"
-          (click)="createReturn()"
-          >Create Return</ion-button
-        >
+        <table class="table table-bordered mb-3">
+          <tbody>
+            <tr class="align-middle">
+              <td>Signed By</td>
+              <td class="text-center">
+                <ion-text slot="end">{{ return?.signedBy }}</ion-text>
+              </td>
+            </tr>
+            <tr class="align-middle">
+              <td>Signature</td>
+              <td class="text-center">
+                <img [src]="return?.signature" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ion-col>
+      <ion-col size="12" *ngIf="loading">
+        <ion-progress-bar type="indeterminate"></ion-progress-bar>
+      </ion-col>
+    </ion-row>
+    <ion-row
+      *ngIf="
+        return.status !== 'void' &&
+        return.status !== 'sent' &&
+        return.status !== 'received'
+      "
+    >
+      <ion-col size="1">
         <ion-button
           shape="round"
           *ngIf="isEdit && !loading"
@@ -271,6 +381,15 @@
           [disabled]="form.invalid"
           (click)="updateReturn('void')"
           >Void Return</ion-button
+        >
+      </ion-col>
+      <ion-col size="11" class="text-end">
+        <ion-button
+          shape="round"
+          [disabled]="form.invalid"
+          *ngIf="!isEdit && !loading"
+          (click)="createReturn()"
+          >Create Return</ion-button
         >
         <ion-button
           shape="round"
@@ -281,16 +400,6 @@
           [disabled]="form.invalid"
           (click)="uploadFiles()"
           >Upload Files</ion-button
-        >
-        <ion-button
-          shape="round"
-          *ngIf="
-            isEdit && return.status === 'submitted' && !loading && allowSend
-          "
-          color="success"
-          [disabled]="form.invalid || error"
-          (click)="updateReturn('sent')"
-          >Accept Return</ion-button
         >
         <ion-button
           shape="round"
@@ -318,6 +427,36 @@
           [disabled]="form.invalid"
           (click)="updateReturn('submitted')"
           >Submit Return</ion-button
+        >
+
+        <ion-button
+          shape="round"
+          *ngIf="
+            isEdit && return.status === 'submitted' && !loading && allowSend
+          "
+          color="success"
+          [disabled]="form.invalid || error"
+          (click)="updateReturn('on-route')"
+          >Accept Return</ion-button
+        >
+
+        <ion-button
+          shape="round"
+          *ngIf="isEdit && !loading && return.status === 'on-route'"
+          color="success"
+          (click)="updateReturn('collected')"
+          >Log Collection</ion-button
+        >
+
+        <ion-button
+          shape="round"
+          *ngIf="
+            isEdit && !loading && return.status === 'collected' && allowSend
+          "
+          color="success"
+          [disabled]="!blob || !return.signedBy"
+          (click)="approveReturn()"
+          >Approve Return</ion-button
         >
       </ion-col>
     </ion-row>

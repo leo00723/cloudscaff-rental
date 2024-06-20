@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -7,8 +8,10 @@ import { AddBillableShipmentComponent } from 'src/app/components/add-billable-sh
 import { AddPaymentApplicationComponent } from 'src/app/components/add-payment-application/add-payment-application.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
-import { ShipmentInvoiceSummaryComponent } from 'src/app/components/shipment-invoice-summary/shipment-invoice-summary.component';
+import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
+import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { ViewShipmentInvoiceComponent } from 'src/app/components/view-shipment-invoice/view-shipment-invoice.component';
+import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
@@ -16,6 +19,7 @@ import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
+import { Shipment } from 'src/app/models/shipment.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -23,9 +27,6 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
-import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
-import { Company } from 'src/app/models/company.model';
-import { orderBy, where } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-view-site',
@@ -57,6 +58,8 @@ export class ViewSitePage implements OnInit {
   shipmentInvoices$: Observable<InventoryEstimate[]>;
   paymentApplications$: Observable<PaymentApplication[]>;
   operationApplications$: Observable<PaymentApplication[]>;
+  outboundDeliveries$: Observable<Shipment[]>;
+  deliveries$: Observable<Shipment[]>;
 
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
@@ -137,6 +140,20 @@ export class ViewSitePage implements OnInit {
         'startDate',
         'desc'
       ) as Observable<Request[]>;
+    this.outboundDeliveries$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/shipments`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['on-route']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.deliveries$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/shipments`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['received']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
     this.returns$ = this.masterSvc
       .edit()
       .getCollectionWhereAndOrder(
@@ -315,6 +332,21 @@ export class ViewSitePage implements OnInit {
       showBackdrop: false,
       id: 'viewReturn',
       cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async viewShipment(shipment: Shipment) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddShipmentComponent,
+      componentProps: {
+        isEdit: true,
+        inventoryItems$: this.inventoryItems$,
+        value: shipment,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'editShipment',
     });
     return await modal.present();
   }

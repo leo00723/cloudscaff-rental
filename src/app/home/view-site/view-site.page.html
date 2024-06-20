@@ -33,6 +33,24 @@
             <ion-label>Requests</ion-label>
           </ion-segment-button>
           <ion-segment-button
+            value="deliveries"
+            *ngIf="user.permissionsList.includes('Site Deliveries') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label
+              >Deliveries
+              <ng-container *ngIf="outboundDeliveries$ | async as deliveries">
+                <ion-badge
+                  shape="round"
+                  mode="ios"
+                  color="warning"
+                  *ngIf="deliveries.length > 0"
+                >
+                  {{deliveries.length}}
+                </ion-badge>
+              </ng-container></ion-label
+            >
+          </ion-segment-button>
+          <ion-segment-button
             value="returns"
             *ngIf="user.permissionsList.includes('Site Returns') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
           >
@@ -174,12 +192,12 @@
           <div class="qrcodeImage" [hidden]="true">
             <!-- [imageSrc]="company?.replaceBranding || 'assets/logos/logo.svg'" -->
             <qrcode
-              #parent
-              qrdata="https://app.cloudscaff.com/viewRegister/{{ids[0]}}-{{ids[1]}}"
+              #QRCODE
+              [qrdata]="'https://app.cloudscaff.com/viewRegister/'+ids[0]+ids[1]"
               [imageHeight]="75"
               [imageWidth]="75"
-              title="SCAFFOLD REGISTER {{site.name}} {{site.code}}"
-              [allowEmptyString]="true"
+              title="SCAFFOLD_REGISTER_{{site.name}}_{{site.code}}"
+              [allowEmptyString]="false"
               [elementType]="'canvas'"
               [errorCorrectionLevel]="'H'"
               [margin]="4"
@@ -194,7 +212,7 @@
               size="small"
               shape="round"
               color="tertiary"
-              (click)="saveAsImage(parent,site.name+'-'+site.code)"
+              (click)="saveAsImage(QRCODE,site.name+'-'+site.code+'.png')"
             >
               Download QR
               <ion-icon slot="end" name="qr-code-outline"></ion-icon>
@@ -274,6 +292,40 @@
           </ion-fab-button>
         </ion-fab>
       </div>
+      <div *ngSwitchCase="'deliveries'">
+        <ion-accordion-group
+          mode="ios"
+          class="rounded-lg overflow-hidden mb-5"
+          [multiple]="true"
+          [value]="['outbound']"
+        >
+          <ion-accordion value="outbound">
+            <ion-item slot="header" color="light">
+              <ion-label color="warning">Outbound Deliveries</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-shipment-table
+                [value]="outboundDeliveries$"
+                *ngIf="outboundDeliveries$ | async else loading"
+                (selectedItem)="viewShipment($event)"
+              ></app-shipment-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion value="sent">
+            <ion-item slot="header" color="light">
+              <ion-label color="success">Completed Deliveries</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-shipment-table
+                [value]="deliveries$"
+                *ngIf="deliveries$ | async else loading"
+                (selectedItem)="viewShipment($event)"
+              ></app-shipment-table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </div>
+
       <div *ngSwitchCase="'returns'">
         <app-returns-table
           [value]="returns$"

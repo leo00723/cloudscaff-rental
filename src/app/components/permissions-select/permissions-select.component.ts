@@ -69,7 +69,7 @@ export class PermissionsSelectComponent implements OnInit {
     {
       title: 'Inventory',
       options: [
-        { name: 'Shipments', selected: false },
+        { name: 'Deliveries', selected: false },
         { name: 'Billable Shipments', selected: false },
         { name: 'Inventory Requests', selected: false },
         { name: 'Inventory Returns', selected: false },

@@ -134,7 +134,11 @@ export class AddInspectionComponent implements OnInit {
   }
 
   async sign(ev: { signature: string; name: string }) {
-    this.blob = await (await fetch(ev.signature)).blob();
+    if (ev.signature) {
+      this.blob = await (await fetch(ev.signature)).blob();
+    } else {
+      this.blob = null;
+    }
     this.inspection.signedBy = ev.name;
   }
 

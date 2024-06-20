@@ -15,7 +15,7 @@ export const environment = {
     measurementId: 'G-HKBBJEV8K0',
   },
   production: false,
-  version: 'v1.0.9',
+  version: 'v1.1.0',
   clientID: '5C93C5512BE849F0BFAB488727B9F29F',
   clientSecret: 'F1I5W-zPLxaa5jtfkR6UEUwiKsj9p_GWeYb6WGUZr4QRNbBZ',
 };

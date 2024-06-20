@@ -1,12 +1,15 @@
 <ion-header mode="md">
   <ion-toolbar>
-    <ion-title *ngIf="scaffolds$ | async as scaffolds">
-      Scaffold Register - {{scaffolds[0]?.siteCode}}
-    </ion-title>
+    <ion-title> Scaffold Register </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  <div class="fw-bold h5" *ngIf="scaffolds$ | async as scaffolds">
+    <ion-text>
+      {{scaffolds[0].siteName}} - {{scaffolds[0]?.siteCode}}
+    </ion-text>
+  </div>
   <app-scaffold-table
     [value]="scaffolds$"
     [showRegister]="true"

@@ -44,12 +44,16 @@ export class ShipmentTableComponent {
     switch (status) {
       case 'sent':
         return 'success';
-      case 'pending':
-        return 'primary';
-      case 'void':
-        return 'danger';
+      case 'received':
+        return 'success';
       case 'reserved':
         return 'warning';
+      case 'on-route':
+        return 'warning';
+      case 'void':
+        return 'danger';
+      default:
+        return 'primary';
     }
   }
 

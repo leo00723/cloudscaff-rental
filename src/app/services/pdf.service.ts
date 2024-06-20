@@ -1084,7 +1084,7 @@ export class PdfService {
     inventoryEstimate.estimates.forEach((e, i) => {
       const summary = this.createInventoryTable(e, company);
       shipments.push({
-        text: `Shipment ${i + 1} (${e.startDate} - ${e.endDate})`,
+        text: `Delivery ${i + 1} (${e.startDate} - ${e.endDate})`,
         style: ['h4b'],
       });
       shipments.push(summary);
@@ -4403,7 +4403,7 @@ export class PdfService {
           margin: [0, -10, 20, 0],
         },
       ]);
-    } else if (!removeBranding && !replaceBranding) {
+    } else if (!removeBranding && !replaceBranding && companyState) {
       footerCS.push([
         {
           svg: footerlogo,

@@ -1,4 +1,11 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -10,6 +17,7 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
+import { ImgService } from 'src/app/services/img.service';
 
 @Component({
   selector: 'app-add-return',
@@ -36,7 +44,12 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   itemBackup: InventoryItem[];
   searching = false;
   error = false;
+
+  blob: any;
+
+  private imgService = inject(ImgService);
   private subs = new Subscription();
+
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.auth().getUser();
     this.company = this.masterSvc.auth().getCompany();
@@ -46,7 +59,13 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.return.status !== 'sent' && !this.allowSend) {
+    if (
+      this.return.status !== 'sent' &&
+      this.return.status !== 'received' &&
+      this.return.status !== 'on-route' &&
+      this.return.status !== 'collected' &&
+      !this.allowSend
+    ) {
       this.subs.add(
         this.masterSvc
           .edit()
@@ -116,6 +135,62 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     }
     this.checkError(item);
   }
+
+  async sign(ev: { signature: string; name: string }) {
+    if (ev.signature) {
+      this.blob = await (await fetch(ev.signature)).blob();
+    } else {
+      this.blob = null;
+    }
+    this.return.signedBy = ev.name;
+  }
+
+  protected async approveReturn() {
+    try {
+      this.loading = true;
+      this.itemBackup ||= [...this.items];
+      Object.assign(this.return, {
+        ...this.form.value,
+        items: this.itemBackup.filter((item) => item.shipmentQty > 0),
+        status: 'received',
+      });
+      await this.upload();
+
+      const res = await this.imgService.uploadBlob(
+        this.blob,
+        `company/${this.return.company.id}/shipments/${this.return.id}/signature`,
+        ''
+      );
+      if (res) {
+        this.return.signature = res.url2;
+        this.return.signatureRef = res.ref;
+      }
+
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/returns`,
+          this.return.id,
+          this.return
+        );
+
+      this.masterSvc
+        .notification()
+        .toast('Return updated successfully', 'success');
+      this.close();
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating return. Please try again!',
+          'danger'
+        );
+    } finally {
+      this.loading = false;
+    }
+  }
+
   returnAll() {
     this.masterSvc.notification().presentAlertConfirm(() => {
       for (const item of this.items) {
@@ -193,12 +268,15 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.return.site, Validators.required],
-      returnDate: [this.return.returnDate, Validators.required],
-      notes: [this.return.notes, Validators.nullValidator],
+      returnDate: [this.return?.returnDate, Validators.required],
+      notes: [this.return?.notes, Validators.nullValidator],
       updatedBy: [this.user.id],
-      status: [this.return.status, Validators.required],
+      status: [this.return?.status, Validators.required],
       company: [this.company],
       date: [new Date()],
+      driverName: [this.return?.driverName, Validators.nullValidator],
+      driverNo: [this.return?.driverNo, Validators.nullValidator],
+      vehicleReg: [this.return?.vehicleReg, Validators.nullValidator],
     });
   }
 
@@ -211,6 +289,9 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       status: ['pending', Validators.required],
       company: [this.company],
       date: [new Date()],
+      driverName: ['', Validators.nullValidator],
+      driverNo: ['', Validators.nullValidator],
+      vehicleReg: ['', Validators.nullValidator],
     });
   }
 

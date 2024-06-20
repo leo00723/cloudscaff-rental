@@ -172,6 +172,7 @@ exports.manageTransfer = functions.firestore
         }
         return '200';
       }
+      return true;
     } catch (error) {
       logger.error(error);
       return error;
@@ -183,8 +184,10 @@ exports.manageReturn = functions.firestore
   .onUpdate(async (change, context) => {
     try {
       if (
-        change.before.data().status !== 'sent' &&
-        change.after.data().status === 'sent'
+        (change.before.data().status !== 'sent' ||
+          change.before.data().status !== 'received') &&
+        (change.after.data().status === 'sent' ||
+          change.after.data().status === 'received')
       ) {
         const returnData = change.after.data();
         // Get the shipment items on site
@@ -264,6 +267,7 @@ exports.manageReturn = functions.firestore
         }
         return '200';
       }
+      return true;
     } catch (error) {
       logger.error(error);
       return error;
@@ -527,8 +531,10 @@ async function shipItems(
 ) {
   try {
     if (
-      change.before.data().status !== 'sent' &&
-      change.after.data().status === 'sent'
+      (change.before.data().status !== 'sent' ||
+        change.before.data().status !== 'received') &&
+      (change.after.data().status === 'sent' ||
+        change.after.data().status === 'received')
     ) {
       const shipment = change.after.data();
       // Get the shipment items on site
@@ -620,6 +626,7 @@ async function shipItems(
       }
       return '200';
     }
+    return true;
   } catch (error) {
     logger.error(error);
     return error;

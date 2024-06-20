@@ -36,5 +36,6 @@ exports.enquiryCreated = notifications.enquiryCreated;
 exports.estimateCreated = notifications.estimateCreated;
 exports.estimateUpdates = notifications.estimateUpdates;
 exports.requestUpdates = notifications.requestUpdates;
+exports.deliveryUpdates = notifications.deliveryUpdates;
 exports.returnUpdates = notifications.returnUpdates;
 exports.scaffoldUpdates = notifications.scaffoldUpdates;

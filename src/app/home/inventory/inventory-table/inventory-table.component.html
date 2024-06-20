@@ -55,13 +55,13 @@
   class="bootstrap striped rounded-lg"
   [limit]="rows.value"
   [rows]="temp$ | async"
-  [rowHeight]="50"
+  [rowHeight]="'auto'"
   [columnMode]="'force'"
   [sortType]="sortType.multi"
   [headerHeight]="50"
   [footerHeight]="50"
   [selectionType]="selectionType.single"
-  trackByProp="code"
+  trackByProp="id"
   [scrollbarH]="true"
   (select)="onSelect($event)"
   [selected]="selected"
@@ -69,15 +69,22 @@
   <ngx-datatable-column
     name="Code"
     [checkboxable]="false"
+    cellClass="my-auto"
   ></ngx-datatable-column>
-  <ngx-datatable-column name="Category"></ngx-datatable-column>
-  <ngx-datatable-column name="Size"></ngx-datatable-column>
-  <ngx-datatable-column name="Description" prop="name"></ngx-datatable-column>
   <ngx-datatable-column
-    name="Yard Qty"
-    cellClass="text-center"
-    headerClass="text-center"
+    name="Category"
+    cellClass="my-auto"
   ></ngx-datatable-column>
+  <ngx-datatable-column name="Size" cellClass="my-auto"></ngx-datatable-column>
+  <ngx-datatable-column name="Description" prop="name" cellClass="my-auto">
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total Qty"
+    prop="yardQty"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+  </ngx-datatable-column>
   <!-- <ngx-datatable-column
     name="Cross Hire Qty"
     cellClass="text-center"
@@ -91,7 +98,7 @@
   ></ngx-datatable-column> -->
   <ngx-datatable-column
     name="Available Qty"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
@@ -100,22 +107,22 @@
   </ngx-datatable-column>
   <ngx-datatable-column
     name="In Use Qty"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
   <ngx-datatable-column
     name="In Maintenance Qty"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
   <ngx-datatable-column
     name="Damaged Qty"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
   <ngx-datatable-column
     name="Lost Qty"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
   <!-- <ngx-datatable-column
@@ -125,25 +132,30 @@
   ></ngx-datatable-column> -->
   <ngx-datatable-column
     name="Weight"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
   <ngx-datatable-column
     name="Hire Cost"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
   <ngx-datatable-column
     name="Replacement Cost"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
   <ngx-datatable-column
     name="Selling Cost"
-    cellClass="text-center"
+    cellClass="text-center my-auto"
     headerClass="text-center"
   ></ngx-datatable-column>
-  <ngx-datatable-column name="" headerClass="text-center" [sortable]="false">
+  <ngx-datatable-column
+    name=""
+    headerClass="text-center"
+    cellClass="my-auto"
+    [sortable]="false"
+  >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-icon
         size="small"

@@ -16,4 +16,10 @@ export interface Return {
   status?: string;
   updatedBy?: string;
   uploads?: UploadedFile[];
+  driverName?: string;
+  driverNo?: string;
+  vehicleReg?: string;
+  signedBy?: string;
+  signature?: string;
+  signatureRef?: string;
 }

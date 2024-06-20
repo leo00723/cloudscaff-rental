@@ -1,4 +1,11 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
@@ -12,6 +19,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
+import { ImgService } from 'src/app/services/img.service';
 
 @Component({
   selector: 'app-add-shipment',
@@ -38,7 +46,11 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   searching = false;
   error = false;
   sites$: Observable<Site[]>;
+  blob: any;
+
+  private imgService = inject(ImgService);
   private subs = new Subscription();
+
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -102,11 +114,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .store()
           .selectSnapshot(CompanyState.company);
 
-        shipment.code = `SHI${new Date().toLocaleDateString('en', {
-          year: '2-digit',
-        })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
-          .toString()
-          .padStart(6, '0')}`;
+        shipment.code = this.masterSvc
+          .edit()
+          .generateDocCode(this.company.totalShipments, 'DEL');
         shipment.date = new Date();
         await this.upload();
         shipment.uploads = this.shipment.uploads;
@@ -119,7 +129,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
 
         this.masterSvc
           .notification()
-          .toast('Shipment created successfully', 'success');
+          .toast('Delivery created successfully', 'success');
         this.close();
         this.loading = false;
       } catch (e) {
@@ -127,7 +137,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.masterSvc
           .notification()
           .toast(
-            'Something went wrong creating shipment. Please try again!',
+            'Something went wrong creating delivery. Please try again!',
             'danger'
           );
         this.loading = false;
@@ -147,6 +157,52 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.shipment.status = status;
         this.shipment.date = new Date();
         await this.upload();
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/shipments`,
+            this.shipment.id,
+            this.shipment
+          );
+        this.masterSvc
+          .notification()
+          .toast('Delivery updated successfully', 'success');
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating the delivery. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
+  }
+
+  async receiveDelivery() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+        Object.assign(this.shipment, this.form.value);
+        this.shipment.items = this.itemBackup.filter(
+          (item) => item.shipmentQty > 0
+        );
+        this.shipment.status = 'received';
+        this.shipment.date = new Date();
+        await this.upload();
+
+        const res = await this.imgService.uploadBlob(
+          this.blob,
+          `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature`,
+          ''
+        );
+        if (res) {
+          this.shipment.signature = res.url2;
+          this.shipment.signatureRef = res.ref;
+        }
 
         await this.masterSvc
           .edit()
@@ -157,14 +213,14 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           );
         this.masterSvc
           .notification()
-          .toast('Shipment updated successfully', 'success');
+          .toast('Delivery updated successfully', 'success');
         this.loading = false;
       } catch (e) {
         console.error(e);
         this.masterSvc
           .notification()
           .toast(
-            'Something went wrong updating the shipment. Please try again!',
+            'Something went wrong updating the delivery. Please try again!',
             'danger'
           );
         this.loading = false;
@@ -231,14 +287,27 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
   }
 
+  async sign(ev: { signature: string; name: string }) {
+    if (ev.signature) {
+      this.blob = await (await fetch(ev.signature)).blob();
+    } else {
+      this.blob = null;
+    }
+    this.shipment.signedBy = ev.name;
+  }
+
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.shipment.site, Validators.required],
-      startDate: [this.shipment.startDate, Validators.required],
-      endDate: [this.shipment.endDate, Validators.required],
+      startDate: [this.shipment?.startDate, Validators.nullValidator],
+      endDate: [this.shipment?.endDate, Validators.nullValidator],
       company: [this.company, Validators.required],
       status: [this.shipment.status, Validators.required],
       updatedBy: [this.user.id, Validators.required],
+      driverName: [this.shipment?.driverName, Validators.nullValidator],
+      driverNo: [this.shipment?.driverNo, Validators.nullValidator],
+      vehicleReg: [this.shipment?.vehicleReg, Validators.nullValidator],
+      notes: [this.shipment?.notes, Validators.nullValidator],
     });
     if (this.shipment.status === 'pending') {
       this.subs.add(
@@ -264,11 +333,15 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       site: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: ['', Validators.nullValidator],
+      endDate: ['', Validators.nullValidator],
       company: [this.company, Validators.required],
       status: ['pending', Validators.required],
       createdBy: [this.user.id, Validators.required],
+      driverName: ['', Validators.nullValidator],
+      driverNo: ['', Validators.nullValidator],
+      vehicleReg: ['', Validators.nullValidator],
+      notes: ['', Validators.nullValidator],
     });
   }
   private init() {
@@ -316,7 +389,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       this.masterSvc
         .notification()
         .toast(
-          'Something went wrong updating the shipment. Please try again!',
+          'Something went wrong updating the delivery. Please try again!',
           'danger'
         );
       this.loading = false;
@@ -333,11 +406,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .store()
         .selectSnapshot(CompanyState.company);
 
-      shipment.code = `SHI${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${(this.company.totalShipments ? this.company.totalShipments + 1 : 1)
-        .toString()
-        .padStart(6, '0')}`;
+      shipment.code = this.masterSvc
+        .edit()
+        .generateDocCode(this.company.totalShipments, 'DEL');
       await this.upload();
       shipment.uploads = this.shipment.uploads;
       const doc = await this.masterSvc
@@ -356,7 +427,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       this.masterSvc
         .notification()
         .toast(
-          'Something went wrong creating shipment. Please try again!',
+          'Something went wrong creating delivery. Please try again!',
           'danger'
         );
       this.loading = false;

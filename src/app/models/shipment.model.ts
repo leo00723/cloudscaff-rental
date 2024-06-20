@@ -17,4 +17,11 @@ export interface Shipment {
   updatedBy?: string;
   date?: any;
   uploads?: UploadedFile[];
+  notes?: string;
+  driverName?: string;
+  driverNo?: string;
+  vehicleReg?: string;
+  signedBy?: string;
+  signature?: string;
+  signatureRef?: string;
 }
