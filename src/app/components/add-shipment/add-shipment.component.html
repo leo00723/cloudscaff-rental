@@ -296,16 +296,28 @@
             </ion-col>
           </ion-row>
         </ion-col>
-        <ion-col size="12" *ngIf="shipment.status === 'on-route'">
-          <app-title-block> Received By </app-title-block>
+        <ion-col
+          size="12"
+          *ngIf="
+            shipment.status === 'on-route' || shipment.status === 'pending'
+          "
+        >
+          <app-title-block> Signature </app-title-block>
           <app-signature-pad
             #signature
             [showSave]="blob ? false : true"
             (res)="sign($event)"
           ></app-signature-pad>
         </ion-col>
-        <ion-col class="mt-3" size="12" *ngIf="shipment.status === 'received'">
-          <app-title-block> Received By </app-title-block>
+        <ion-col
+          class="mt-3"
+          size="12"
+          *ngIf="
+            (shipment?.signedBy || shipment?.signedBy2) &&
+            (shipment.status === 'on-route' || shipment.status === 'received')
+          "
+        >
+          <app-title-block> Signatures </app-title-block>
 
           <table class="table table-bordered mb-3">
             <tbody>
@@ -319,6 +331,18 @@
                 <td>Signature</td>
                 <td class="text-center">
                   <img [src]="shipment?.signature" />
+                </td>
+              </tr>
+              <tr class="align-middle">
+                <td>Signed By</td>
+                <td class="text-center">
+                  <ion-text slot="end">{{ shipment?.signedBy2 }}</ion-text>
+                </td>
+              </tr>
+              <tr class="align-middle">
+                <td>Signature</td>
+                <td class="text-center">
+                  <img [src]="shipment?.signature2" />
                 </td>
               </tr>
             </tbody>
@@ -365,16 +389,16 @@
             shape="round"
             *ngIf="isEdit && !loading && shipment.status === 'on-route'"
             color="success"
-            [disabled]="!blob || !shipment.signedBy"
+            [disabled]="!blob || !shipment.signedBy2"
             (click)="receiveDelivery()"
             >Receive Delivery</ion-button
           >
           <ion-button
             shape="round"
-            *ngIf="isEdit && !loading && shipment.status !== 'on-route'"
+            *ngIf="isEdit && !loading && shipment.status === 'pending'"
             color="success"
-            [disabled]="form.invalid"
-            (click)="updateShipment('on-route')"
+            [disabled]="!blob || !shipment.signedBy"
+            (click)="sendDelivery()"
             >Send Delivery</ion-button
           >
           <ion-button

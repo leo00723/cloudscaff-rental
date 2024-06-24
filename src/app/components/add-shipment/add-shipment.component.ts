@@ -181,6 +181,53 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
 
+  async sendDelivery() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
+        Object.assign(this.shipment, this.form.value);
+        this.shipment.items = this.itemBackup.filter(
+          (item) => item.shipmentQty > 0
+        );
+        this.shipment.status = 'on-route';
+        this.shipment.date = new Date();
+        await this.upload();
+
+        const res = await this.imgService.uploadBlob(
+          this.blob,
+          `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature`,
+          ''
+        );
+        if (res) {
+          this.shipment.signature = res.url2;
+          this.shipment.signatureRef = res.ref;
+        }
+
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/shipments`,
+            this.shipment.id,
+            this.shipment
+          );
+        this.masterSvc
+          .notification()
+          .toast('Delivery updated successfully', 'success');
+        this.loading = false;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating the delivery. Please try again!',
+            'danger'
+          );
+        this.loading = false;
+      }
+    });
+  }
+
   async receiveDelivery() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
@@ -196,12 +243,12 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
 
         const res = await this.imgService.uploadBlob(
           this.blob,
-          `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature`,
+          `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature2`,
           ''
         );
         if (res) {
-          this.shipment.signature = res.url2;
-          this.shipment.signatureRef = res.ref;
+          this.shipment.signature2 = res.url2;
+          this.shipment.signatureRef2 = res.ref;
         }
 
         await this.masterSvc
@@ -287,13 +334,18 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
   }
 
-  async sign(ev: { signature: string; name: string }) {
+  protected async sign(ev: { signature: string; name: string }) {
     if (ev.signature) {
       this.blob = await (await fetch(ev.signature)).blob();
+      if (this.shipment.status === 'pending') {
+        this.shipment.signedBy = ev.name;
+      } else if (this.shipment.status === 'on-route') {
+        this.shipment.signedBy2 = ev.name;
+      }
     } else {
       this.blob = null;
+      return;
     }
-    this.shipment.signedBy = ev.name;
   }
 
   private initEditForm() {

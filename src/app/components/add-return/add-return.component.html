@@ -342,16 +342,15 @@
           </ion-col>
         </ion-row>
       </ion-col>
-      <ion-col size="12" *ngIf="return.status === 'collected' && allowSend">
-        <app-title-block> Received By </app-title-block>
-        <app-signature-pad
-          #signature
-          [showSave]="blob ? false : true"
-          (res)="sign($event)"
-        ></app-signature-pad>
-      </ion-col>
-      <ion-col class="mt-3" size="12" *ngIf="return.status === 'received'">
-        <app-title-block> Received By </app-title-block>
+      <ion-col
+        class="mt-3"
+        size="12"
+        *ngIf="
+          (return?.signedBy || return?.signedBy2) &&
+          (return.status === 'collected' || return.status === 'received')
+        "
+      >
+        <app-title-block> Signatures </app-title-block>
 
         <table class="table table-bordered mb-3">
           <tbody>
@@ -367,8 +366,34 @@
                 <img [src]="return?.signature" />
               </td>
             </tr>
+            <tr class="align-middle">
+              <td>Signed By</td>
+              <td class="text-center">
+                <ion-text slot="end">{{ return?.signedBy2 }}</ion-text>
+              </td>
+            </tr>
+            <tr class="align-middle">
+              <td>Signature</td>
+              <td class="text-center">
+                <img [src]="return?.signature2" />
+              </td>
+            </tr>
           </tbody>
         </table>
+      </ion-col>
+      <ion-col
+        size="12"
+        *ngIf="
+          return.status === 'on-route' ||
+          (return.status === 'collected' && allowSend)
+        "
+      >
+        <app-title-block> Signature </app-title-block>
+        <app-signature-pad
+          #signature
+          [showSave]="blob ? false : true"
+          (res)="sign($event)"
+        ></app-signature-pad>
       </ion-col>
       <ion-col size="12" *ngIf="loading">
         <ion-progress-bar type="indeterminate"></ion-progress-bar>
@@ -445,14 +470,15 @@
           color="success"
           [disabled]="form.invalid || error"
           (click)="updateReturn('on-route')"
-          >Accept Return</ion-button
+          >Schedule Collection</ion-button
         >
 
         <ion-button
           shape="round"
           *ngIf="isEdit && !loading && return.status === 'on-route'"
           color="success"
-          (click)="updateReturn('collected')"
+          (click)="logCollection()"
+          [disabled]="!blob || !return.signedBy"
           >Return Collected</ion-button
         >
 
@@ -462,7 +488,7 @@
             isEdit && !loading && return.status === 'collected' && allowSend
           "
           color="success"
-          [disabled]="!blob || !return.signedBy"
+          [disabled]="!blob || !return.signedBy2"
           (click)="approveReturn()"
           >Approve Return</ion-button
         >

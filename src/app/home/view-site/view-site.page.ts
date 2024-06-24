@@ -53,7 +53,11 @@ export class ViewSitePage implements OnInit {
   activeScaffolds$: Observable<Scaffold[]>;
   dismantledScaffolds$: Observable<Scaffold[]>;
   requests$: Observable<Request[]>;
+
+  pendingReturns$: Observable<Return[]>;
+  outboundReturns$: Observable<Return[]>;
   returns$: Observable<Return[]>;
+
   billableShipments$: Observable<InventoryEstimate[]>;
   shipmentInvoices$: Observable<InventoryEstimate[]>;
   paymentApplications$: Observable<PaymentApplication[]>;
@@ -154,16 +158,27 @@ export class ViewSitePage implements OnInit {
         where('status', 'in', ['received']),
         orderBy('code', 'desc'),
       ]) as Observable<Shipment[]>;
+    this.pendingReturns$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['pending', 'submitted']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.outboundReturns$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['on-route', 'collected']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
     this.returns$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/returns`,
-        'site.id',
-        '==',
-        this.ids[1],
-        'date',
-        'desc'
-      ) as Observable<Return[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['sent', 'received']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
     this.billableShipments$ = this.masterSvc
       .edit()
       .getCollectionWhereAndOrder(

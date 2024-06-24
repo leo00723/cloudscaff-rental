@@ -139,10 +139,61 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   async sign(ev: { signature: string; name: string }) {
     if (ev.signature) {
       this.blob = await (await fetch(ev.signature)).blob();
+      if (this.return.status === 'on-route') {
+        this.return.signedBy = ev.name;
+      } else if (this.return.status === 'collected') {
+        this.return.signedBy2 = ev.name;
+      }
     } else {
       this.blob = null;
+      return;
     }
-    this.return.signedBy = ev.name;
+  }
+
+  protected async logCollection() {
+    try {
+      this.loading = true;
+      this.itemBackup ||= [...this.items];
+      Object.assign(this.return, {
+        ...this.form.value,
+        items: this.itemBackup.filter((item) => item.shipmentQty > 0),
+        status: 'collected',
+      });
+      await this.upload();
+
+      const res = await this.imgService.uploadBlob(
+        this.blob,
+        `company/${this.return.company.id}/shipments/${this.return.id}/signature`,
+        ''
+      );
+      if (res) {
+        this.return.signature = res.url2;
+        this.return.signatureRef = res.ref;
+      }
+
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/returns`,
+          this.return.id,
+          this.return
+        );
+
+      this.masterSvc
+        .notification()
+        .toast('Return updated successfully', 'success');
+      this.close();
+    } catch (e) {
+      console.error(e);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong updating return. Please try again!',
+          'danger'
+        );
+    } finally {
+      this.loading = false;
+    }
   }
 
   protected async approveReturn() {
@@ -158,12 +209,12 @@ export class AddReturnComponent implements OnInit, OnDestroy {
 
       const res = await this.imgService.uploadBlob(
         this.blob,
-        `company/${this.return.company.id}/shipments/${this.return.id}/signature`,
+        `company/${this.return.company.id}/shipments/${this.return.id}/signature2`,
         ''
       );
       if (res) {
-        this.return.signature = res.url2;
-        this.return.signatureRef = res.ref;
+        this.return.signature2 = res.url2;
+        this.return.signatureRef2 = res.ref;
       }
 
       await this.masterSvc

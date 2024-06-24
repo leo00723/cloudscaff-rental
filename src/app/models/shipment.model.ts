@@ -24,4 +24,7 @@ export interface Shipment {
   signedBy?: string;
   signature?: string;
   signatureRef?: string;
+  signedBy2?: string;
+  signature2?: string;
+  signatureRef2?: string;
 }
