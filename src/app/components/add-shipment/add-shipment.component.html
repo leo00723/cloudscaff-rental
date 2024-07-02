@@ -297,19 +297,6 @@
           </ion-row>
         </ion-col>
         <ion-col
-          size="12"
-          *ngIf="
-            shipment.status === 'on-route' || shipment.status === 'pending'
-          "
-        >
-          <app-title-block> Signature </app-title-block>
-          <app-signature-pad
-            #signature
-            [showSave]="blob ? false : true"
-            (res)="sign($event)"
-          ></app-signature-pad>
-        </ion-col>
-        <ion-col
           class="mt-3"
           size="12"
           *ngIf="
@@ -322,7 +309,7 @@
           <table class="table table-bordered mb-3">
             <tbody>
               <tr class="align-middle">
-                <td>Signed By</td>
+                <td>Sent By</td>
                 <td class="text-center">
                   <ion-text slot="end">{{ shipment?.signedBy }}</ion-text>
                 </td>
@@ -334,7 +321,7 @@
                 </td>
               </tr>
               <tr class="align-middle">
-                <td>Signed By</td>
+                <td>Received By</td>
                 <td class="text-center">
                   <ion-text slot="end">{{ shipment?.signedBy2 }}</ion-text>
                 </td>
@@ -347,6 +334,19 @@
               </tr>
             </tbody>
           </table>
+        </ion-col>
+        <ion-col
+          size="12"
+          *ngIf="
+            shipment.status === 'on-route' || shipment.status === 'pending'
+          "
+        >
+          <app-title-block> Signature </app-title-block>
+          <app-signature-pad
+            #signature
+            [showSave]="blob ? false : true"
+            (res)="sign($event)"
+          ></app-signature-pad>
         </ion-col>
         <ion-col size="12" *ngIf="loading">
           <ion-progress-bar type="indeterminate"></ion-progress-bar>

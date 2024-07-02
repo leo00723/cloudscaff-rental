@@ -314,7 +314,7 @@
         <ion-item>
           <ion-label>Total weight</ion-label>
           <ion-label slot="end">
-            {{ return.items ? (return.items | weight) : [] }}
+            {{ return.items ? (return.items | weight : true) : [] }}
           </ion-label>
         </ion-item>
       </ion-col>
