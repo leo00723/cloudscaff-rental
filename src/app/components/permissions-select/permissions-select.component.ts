@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, SearchbarCustomEvent } from '@ionic/angular';
+import { Company } from 'src/app/models/company.model';
 import { User } from 'src/app/models/user.model';
 
 @Component({
@@ -21,10 +22,49 @@ import { User } from 'src/app/models/user.model';
 })
 export class PermissionsSelectComponent implements OnInit {
   @Input() user: User;
+  @Input() company: Company;
   @Input() showInput = true;
   @Output() selectedChanged: EventEmitter<any> = new EventEmitter();
 
-  permissions = [
+  permissionsNoBilling = [
+    {
+      title: 'Admin',
+      options: [{ name: 'Super Admin', selected: false }],
+    },
+    {
+      title: 'Navigation',
+      options: [
+        { name: 'Enquiries', selected: false },
+        { name: 'Inventory', selected: false },
+        { name: 'Settings', selected: false },
+      ],
+    },
+    {
+      title: 'Sites',
+      options: [
+        { name: 'Site Requests', selected: false },
+        { name: 'Site Returns', selected: false },
+      ],
+    },
+    {
+      title: 'Scaffolds',
+      options: [
+        { name: 'Handovers', selected: false },
+        { name: 'Inspections', selected: false },
+        { name: 'Dismantles', selected: false },
+      ],
+    },
+    {
+      title: 'Inventory',
+      options: [
+        { name: 'Deliveries', selected: false },
+        { name: 'Inventory Requests', selected: false },
+        { name: 'Inventory Returns', selected: false },
+        { name: 'Transfers', selected: false },
+      ],
+    },
+  ];
+  permissionsBilling = [
     {
       title: 'Admin',
       options: [{ name: 'Super Admin', selected: false }],
@@ -34,7 +74,6 @@ export class PermissionsSelectComponent implements OnInit {
       options: [
         { name: 'Enquiries', selected: false },
         { name: 'Estimates', selected: false },
-        { name: 'Sites', selected: false },
         { name: 'Inventory', selected: false },
         { name: 'Statements', selected: false },
         { name: 'Settings', selected: false },
@@ -77,6 +116,9 @@ export class PermissionsSelectComponent implements OnInit {
       ],
     },
   ];
+
+  permissions = [];
+
   data: any[];
 
   isOpen = false;
@@ -86,6 +128,9 @@ export class PermissionsSelectComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+    this.permissions = this.company?.removeBilling
+      ? this.permissionsNoBilling
+      : this.permissionsBilling;
     if (this.user.permissions) {
       for (const category of this.permissions) {
         for (const option of category.options) {
