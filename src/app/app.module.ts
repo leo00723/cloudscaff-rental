@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import {
@@ -150,6 +150,7 @@ import { WeightPipe } from './components/weight.pipe';
     NotificationService,
     FormBuilder,
     DecimalPipe,
+    DatePipe,
     FileOpener,
     WeightPipe,
   ],
