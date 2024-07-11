@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
@@ -155,6 +155,7 @@ export class PdfService {
   private store = inject(Store);
   constructor(
     private decimalPipe: DecimalPipe,
+    private datePipe: DatePipe,
     private weightPipe: WeightPipe,
     private platformService: Platform,
     private fileOpenerService: FileOpener
@@ -1945,12 +1946,18 @@ export class PdfService {
           'Inspection',
           inspection.code,
           inspection.scaffold.siteCode,
-          inspection.date,
+          this.datePipe.transform(inspection.date, 'HH:mm dd MMM yyyy'),
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
           `https://app.cloudscaff.com/viewInspection/${company.id}-${inspection.id}`,
           [
+            [
+              { text: 'Site Name', style: 'h6b' },
+              `${inspection?.scaffold?.siteName || 'N/A'}`,
+              '',
+              '',
+            ],
             [
               { text: 'Scaffold:', style: 'h6b' },
               `${inspection.scaffold.code}`,
@@ -2010,7 +2017,7 @@ export class PdfService {
             body: [
               [
                 {
-                  text: 'Signature',
+                  text: `Signed by ${inspection.signedBy}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -2209,12 +2216,18 @@ export class PdfService {
           'Handover',
           handover.code,
           handover.scaffold.siteCode,
-          handover.date,
+          this.datePipe.transform(handover.date, 'HH:mm dd MMM yyyy'),
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
           `https://app.cloudscaff.com/viewHandover/${company.id}-${handover.id}`,
           [
+            [
+              { text: 'Site Name', style: 'h6b' },
+              `${handover?.scaffold?.siteName || 'N/A'}`,
+              '',
+              '',
+            ],
             [
               { text: 'Scaffold:', style: 'h6b' },
               `${handover.scaffold.code}`,
@@ -2314,7 +2327,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: 'Signature',
+                  text: `Signed by ${handover.signedBy}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -3869,7 +3882,7 @@ export class PdfService {
           ],
           [
             { text: 'Representative:', style: 'h6b' },
-            customer.name,
+            customer?.rep || 'N/A',
             { text: 'Representative:', style: 'h6b' },
             'N/A',
           ],
