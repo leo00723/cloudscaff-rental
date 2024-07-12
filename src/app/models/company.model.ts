@@ -47,6 +47,7 @@ export interface Company {
   totalReturns?: number;
   totalShipments?: number;
   totalSites?: number;
+  totalSIs?: number;
   totalTransfers?: number;
   trialEnded?: boolean;
   tokens?: {

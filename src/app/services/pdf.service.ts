@@ -4676,15 +4676,17 @@ export class PdfService {
   private toDate(date) {
     return new Date(date).toDateString();
   }
-  private getAddress(data: any) {
-    let address = '';
-    address = data.address !== null ? `${data.address}` : '';
-    address += data.suburb !== null ? `, ${data.suburb}` : '';
-    address += data.city !== null ? `, ${data.city}` : '';
-    address += data.zip !== null ? `, ${data.zip}` : '';
-    address += data.country !== null ? `, ${data.country}` : '';
-
-    return address;
+  private getAddress(data: any): string {
+    const components = [
+      data.address,
+      data.suburb,
+      data.city,
+      data.zip,
+      data.country,
+    ];
+    // Filter out null, undefined, and empty strings
+    const nonEmptyComponents = components.filter((component) => component);
+    return nonEmptyComponents.join(', ');
   }
 
   private createModificatonSummary(data, company: Company) {

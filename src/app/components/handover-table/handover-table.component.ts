@@ -53,19 +53,24 @@ export class HandoverTableComponent {
     }
   }
 
-  updateFilter(event) {
-    const val = event.detail.value.toLowerCase() as string;
+  updateFilter(event: any) {
+    const val = event.detail.value.toString().toLowerCase();
+
     this.temp$ = this.handovers$.pipe(
-      map((handover) =>
-        handover.filter(
-          (i) =>
-            i.code.toLowerCase().indexOf(val) !== -1 ||
-            i.notes.toLowerCase().indexOf(val) !== -1 ||
-            i.status.toLowerCase().indexOf(val) !== -1 ||
+      map((handovers) =>
+        handovers.filter(
+          (handover) =>
+            (handover.code && handover.code.toLowerCase().includes(val)) ||
+            (handover.date &&
+              handover.date.toString().toLowerCase().includes(val)) ||
+            (handover.notes && handover.notes.toLowerCase().includes(val)) ||
+            (handover.createdByName &&
+              handover.createdByName.toLowerCase().includes(val)) ||
             !val
         )
       )
     );
+
     this.table.offset = 0;
   }
 }

@@ -74,12 +74,13 @@
             lines="none"
             detail="false"
             routerLinkActive="selected"
-            *ngIf="(user.permissionsList.includes(p.title) || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && removeBilling(company,p.title)"
+            *ngIf="(user.permissionsList.includes(p.permission) || user.permissionsList.includes('Super Admin') || user.role === 'Owner' || p.title==='Sites') && removeBilling(company,p.title)"
           >
             <ion-icon slot="start" [name]="p.icon"></ion-icon>
             <ion-label>{{ p.title }}</ion-label>
           </ion-item>
         </ng-container>
+
         <ion-item
           routerDirection="root"
           routerLinkActive="selected"

@@ -1,0 +1,29 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="danger" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Signature</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="success" (click)="confirm()" [strong]="true"
+        >Confirm</ion-button
+      >
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="mt-5 d-grid justify-content-center">
+    <app-input-text
+      title="Name"
+      placeholder="Enter name"
+      (fieldChange)="name = $event"
+    ></app-input-text>
+    <signature-pad [options]="signaturePadOptions"></signature-pad>
+
+    <div class="text-end">
+      <ion-button shape="round" color="danger" (click)="clear()"
+        >Clear
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

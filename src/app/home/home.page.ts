@@ -25,13 +25,27 @@ export class HomePage implements OnDestroy {
     // },
     {
       title: 'Enquiries',
+      permission: 'Enquiries',
       url: '/dashboard/enquiries',
       icon: 'reader-outline',
     },
     {
       title: 'Estimates',
+      permission: 'Estimates',
       url: '/dashboard/estimates',
       icon: 'options-outline',
+    },
+    {
+      title: 'Instructions',
+      permission: 'Instructions',
+      url: '/dashboard/site-instructions',
+      icon: 'newspaper-outline',
+    },
+    {
+      title: 'Handovers',
+      permission: 'Handover List',
+      url: '/dashboard/handovers',
+      icon: 'receipt-outline',
     },
     {
       title: 'Sites',
@@ -40,11 +54,13 @@ export class HomePage implements OnDestroy {
     },
     {
       title: 'Inventory',
+      permission: 'Inventory',
       url: '/dashboard/inventory',
       icon: 'bar-chart-outline',
     },
     {
       title: 'Statements',
+      permission: 'Statements',
       url: '/dashboard/statements',
       icon: 'document-text-outline',
     },

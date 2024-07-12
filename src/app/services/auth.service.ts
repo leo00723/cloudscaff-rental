@@ -22,6 +22,8 @@ export class AuthService {
   constructor(private auth: Auth, private store: Store) {
     onAuthStateChanged(this.auth, async (user) => {
       if (user) {
+        // const { claims } = await user.getIdTokenResult();
+        // console.log(claims);
         this.loggedIn = true;
         this.store.dispatch([
           new GetUser(user.uid),

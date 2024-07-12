@@ -27,6 +27,8 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
+import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
+import { SI } from 'src/app/models/si.model';
 
 @Component({
   selector: 'app-view-site',
@@ -62,8 +64,13 @@ export class ViewSitePage implements OnInit {
   shipmentInvoices$: Observable<InventoryEstimate[]>;
   paymentApplications$: Observable<PaymentApplication[]>;
   operationApplications$: Observable<PaymentApplication[]>;
+
   outboundDeliveries$: Observable<Shipment[]>;
   deliveries$: Observable<Shipment[]>;
+
+  pendingInstructions$: Observable<SI[]>;
+  signedInstructions$: Observable<SI[]>;
+  instructions$: Observable<SI[]>;
 
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
@@ -158,11 +165,25 @@ export class ViewSitePage implements OnInit {
         where('status', 'in', ['received']),
         orderBy('code', 'desc'),
       ]) as Observable<Shipment[]>;
-    this.pendingReturns$ = this.masterSvc
+    this.pendingInstructions$ = this.masterSvc
       .edit()
-      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+      .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
         where('site.id', '==', this.ids[1]),
-        where('status', 'in', ['pending', 'submitted']),
+        where('status', 'in', ['needs signature']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.signedInstructions$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['signed']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.instructions$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['completed']),
         orderBy('code', 'desc'),
       ]) as Observable<Shipment[]>;
     this.outboundReturns$ = this.masterSvc
@@ -351,6 +372,28 @@ export class ViewSitePage implements OnInit {
     return await modal.present();
   }
 
+  async addInstruction(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInstructionComponent,
+      componentProps: { site },
+      showBackdrop: false,
+      id: 'addInstruction',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async viewInstruction(instruction: SI, site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInstructionComponent,
+      componentProps: { isEdit: true, value: instruction, site },
+      showBackdrop: false,
+      id: 'viewInstruction',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
   async viewShipment(shipment: Shipment) {
     const modal = await this.masterSvc.modal().create({
       component: AddShipmentComponent,
@@ -376,6 +419,7 @@ export class ViewSitePage implements OnInit {
     });
     return await modal.present();
   }
+
   viewScaffold(scaffold: Scaffold) {
     this.masterSvc
       .store()

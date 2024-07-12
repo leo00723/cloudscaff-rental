@@ -11,7 +11,7 @@
     slot="start"
     placeholder="7"
     interface="popover"
-    [value]="7"
+    [value]="10"
   >
     <ion-select-option value="7">7</ion-select-option>
     <ion-select-option value="10">10</ion-select-option>
@@ -35,7 +35,6 @@
   [selected]="selected"
 >
   <ngx-datatable-column name="Code"></ngx-datatable-column>
-  <ngx-datatable-column name="Notes"></ngx-datatable-column>
   <ngx-datatable-column
     name="Date"
     cellClass="text-center"
@@ -45,6 +44,12 @@
       {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
+  <ngx-datatable-column name="Notes"></ngx-datatable-column>
+
+  <ngx-datatable-column
+    name="Created By"
+    prop="createdByName"
+  ></ngx-datatable-column>
 
   <ngx-datatable-column
     name="Uploads"

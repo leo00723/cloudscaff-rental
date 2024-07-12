@@ -41,6 +41,20 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'handovers',
+        loadChildren: () =>
+          import('./handovers/handovers.module').then(
+            (m) => m.HandoversPageModule
+          ),
+      },
+      {
+        path: 'site-instructions',
+        loadChildren: () =>
+          import('./site-instructions/site-instructions.module').then(
+            (m) => m.SiteInstructionsPageModule
+          ),
+      },
+      {
         path: 'estimates',
         loadChildren: () =>
           import('./estimates/estimates.module').then(

@@ -35,6 +35,8 @@ export class PermissionsSelectComponent implements OnInit {
       title: 'Navigation',
       options: [
         { name: 'Enquiries', selected: false },
+        { name: 'Instructions', selected: false },
+        { name: 'Handover List', selected: false },
         { name: 'Inventory', selected: false },
         { name: 'Settings', selected: false },
       ],
@@ -44,6 +46,7 @@ export class PermissionsSelectComponent implements OnInit {
       options: [
         { name: 'Site Requests', selected: false },
         { name: 'Site Returns', selected: false },
+        { name: 'Site Instructions', selected: false },
       ],
     },
     {
@@ -74,6 +77,8 @@ export class PermissionsSelectComponent implements OnInit {
       options: [
         { name: 'Enquiries', selected: false },
         { name: 'Estimates', selected: false },
+        { name: 'Instructions', selected: false },
+        { name: 'Handovers', selected: false },
         { name: 'Inventory', selected: false },
         { name: 'Statements', selected: false },
         { name: 'Settings', selected: false },
@@ -91,6 +96,7 @@ export class PermissionsSelectComponent implements OnInit {
       options: [
         { name: 'Site Requests', selected: false },
         { name: 'Site Returns', selected: false },
+        { name: 'Site Instructions', selected: false },
         { name: 'Payment Applications', selected: false },
       ],
     },
