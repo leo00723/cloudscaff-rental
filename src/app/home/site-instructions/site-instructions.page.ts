@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { orderBy, where } from '@angular/fire/firestore';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
@@ -53,11 +54,10 @@ export class SiteInstructionsPage implements OnInit {
       if (id) {
         this.siteInstructions$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(
-            `company/${id}/siteInstructions`,
-            'code',
-            'desc'
-          );
+          .getCollectionFiltered(`company/${id}/siteInstructions`, [
+            where('status', '==', 'completed'),
+            orderBy('date', 'desc'),
+          ]) as Observable<SI[]>;
       } else {
         this.masterSvc.log(
           '-----------------------try si----------------------'

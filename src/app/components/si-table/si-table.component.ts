@@ -48,23 +48,29 @@ export class SITableComponent {
         return 'primary';
       case 'signed':
         return 'warning';
+      case 'scaffold created':
+        return 'tertiary';
     }
   }
 
-  updateFilter(event) {
+  updateFilter(event: any) {
     const val = event.detail.value.toString().toLowerCase();
+
     this.temp$ = this.sis$.pipe(
-      map((site) =>
-        site.filter(
-          (s) =>
-            s.code.toLowerCase().indexOf(val) !== -1 ||
-            s.site.name.toLowerCase().indexOf(val) !== -1 ||
-            s.site.customer.name.toLowerCase().indexOf(val) !== -1 ||
-            s.status.toLowerCase().indexOf(val) !== -1 ||
+      map((sis) =>
+        sis.filter(
+          (si) =>
+            (si.code && si.code.toLowerCase().includes(val)) ||
+            (si.date && si.date.toString().toLowerCase().includes(val)) ||
+            (si.notes && si.notes.toLowerCase().includes(val)) ||
+            (si.createdByName &&
+              si.createdByName.toLowerCase().includes(val)) ||
+            (si.notes && si.notes.toLowerCase().includes(val)) ||
             !val
         )
       )
     );
+
     this.table.offset = 0;
   }
 }

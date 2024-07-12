@@ -22,4 +22,5 @@ export interface SI {
   site?: Site;
   status?: string;
   uploads?: UploadedFile[];
+  scaffoldIDs?: string[];
 }

@@ -34,6 +34,9 @@ import { Navigate } from 'src/app/shared/router.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import cloneDeep from 'lodash/cloneDeep';
 import { LoadingController } from '@ionic/angular';
+import { SI } from 'src/app/models/si.model';
+import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
+import { Site } from 'src/app/models/site.model';
 
 @Component({
   selector: 'app-view-scaffold',
@@ -54,6 +57,7 @@ export class ViewScaffoldPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   scaffold$: Observable<Scaffold>;
+  instructions$: Observable<SI[]>;
   inspections$: Observable<Inspection[]>;
   handovers$: Observable<Handover[]>;
   dismantles$: Observable<Handover[]>;
@@ -61,6 +65,7 @@ export class ViewScaffoldPage implements OnInit {
   invoices$: Observable<Invoice[]>;
   payments$: Observable<Payment[]>;
   credits$: Observable<Credit[]>;
+  site$: Observable<Site>;
   active = 'overview';
   ids = [];
   constructor(
@@ -82,6 +87,12 @@ export class ViewScaffoldPage implements OnInit {
           }
         })
       ) as Observable<Scaffold>;
+    this.instructions$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
+        where('scaffoldIDs', 'array-contains', this.ids[2]),
+        orderBy('date', 'desc'),
+      ]) as Observable<SI[]>;
     this.inspections$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/inspections`, [
@@ -124,11 +135,44 @@ export class ViewScaffoldPage implements OnInit {
         where('scaffold.id', '==', this.ids[2]),
         orderBy('date', 'desc'),
       ]) as Observable<Credit[]>;
+    this.site$ = this.masterSvc
+      .edit()
+      .getDocById(
+        `company/${this.ids[0]}/sites`,
+        this.ids[1]
+      ) as Observable<Site>;
   }
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
   }
   ngOnInit() {}
+
+  async addInstruction(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInstructionComponent,
+      componentProps: { site, scaffoldID: this.ids[2] },
+      showBackdrop: false,
+      id: 'addInstruction',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async viewInstruction(instruction: SI) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInstructionComponent,
+      componentProps: {
+        isEdit: true,
+        value: instruction,
+        site: instruction.site,
+      },
+      showBackdrop: false,
+      id: 'viewInstruction',
+      cssClass: 'fullscreen',
+    });
+    modal.present();
+    return;
+  }
 
   async addInspection(scaffold: Scaffold) {
     const modal = await this.masterSvc.modal().create({

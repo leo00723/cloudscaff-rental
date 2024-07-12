@@ -33,6 +33,7 @@ import { UtilityService } from 'src/app/services/utility.service';
 export class AddInstructionComponent implements OnInit {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() site: Site;
+  @Input() scaffoldID?: string;
   @Input() isEdit = false;
   @Input() set value(val: SI) {
     if (val) {
@@ -50,6 +51,7 @@ export class AddInstructionComponent implements OnInit {
     attachments: [],
     boards: [],
     signatures: [],
+    scaffoldIDs: [],
   };
   form: FormGroup;
 
@@ -187,6 +189,9 @@ export class AddInstructionComponent implements OnInit {
         this.siteInstruction.company = company;
         this.siteInstruction.customer = customer;
         this.siteInstruction = { ...this.siteInstruction, ...this.form.value };
+        if (this.scaffoldID) {
+          this.siteInstruction.scaffoldIDs.push(this.scaffoldID);
+        }
         await this.upload();
         await this.masterSvc
           .edit()
@@ -258,10 +263,8 @@ export class AddInstructionComponent implements OnInit {
     const modal = await this.masterSvc.modal().create({
       component: SignatureModalComponent,
       showBackdrop: true,
-      initialBreakpoint: 0.55,
-      breakpoints: [0, 0.55],
       id: 'sign',
-      cssClass: 'accept',
+      cssClass: 'fullscreen',
     });
     modal.present();
     const { data, role } = await modal.onWillDismiss();
@@ -335,16 +338,16 @@ export class AddInstructionComponent implements OnInit {
     });
   }
 
-  voidInstruction() {
+  updateStatus(status: string) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
         await this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.siteInstruction.id}/siteInstructions`,
+            `company/${this.siteInstruction.company.id}/siteInstructions`,
             this.siteInstruction.id,
-            { status: 'void' }
+            { status }
           );
         this.masterSvc
           .notification()
@@ -361,6 +364,14 @@ export class AddInstructionComponent implements OnInit {
       } finally {
         this.loading = false;
       }
+    });
+  }
+
+  createScaffold() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.masterSvc
+        .modal()
+        .dismiss(this.siteInstruction, 'create-scaffold', 'viewInstruction');
     });
   }
 

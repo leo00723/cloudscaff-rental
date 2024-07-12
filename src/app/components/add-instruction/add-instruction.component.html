@@ -10,6 +10,20 @@
       </ion-button>
     </ion-buttons>
     <ion-title>{{ isEdit ? "Edit" : "Add" }} Site Instruction</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        strong="true"
+        shape="round"
+        color="success"
+        *ngIf="
+          (siteInstruction.status === 'scaffold created' ||
+            siteInstruction.status === 'signed') &&
+          isEdit
+        "
+        (click)="updateStatus('completed')"
+        >Done</ion-button
+      >
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content fullscreen="true">
@@ -301,9 +315,10 @@
               {{ i + 1 }}
             </td>
             <td>
-              {{ company.terminology.scaffold }} - {{ scaffold.length }} x
-              {{ scaffold.width }} x {{ scaffold.height }} x
-              {{ scaffold.level }}
+              {{ company.terminology.scaffold }} - {{ scaffold.length
+              }}{{ company.measurement.symbol }} x {{ scaffold.width
+              }}{{ company.measurement.symbol }} x {{ scaffold.height
+              }}{{ company.measurement.symbol }} level {{ scaffold?.level }}
             </td>
             <td>
               {{ scaffold.description }}
@@ -318,8 +333,9 @@
               {{ i + 1 + siteInstruction.attachments.length }}
             </td>
             <td>
-              {{ company.terminology.boards }} - {{ board.length }} x
-              {{ board.width }}
+              {{ company.terminology.boards }} - {{ board.length
+              }}{{ company.measurement.symbol }} x {{ board.width
+              }}{{ company.measurement.symbol }}
             </td>
             <td>
               {{ board.description }}
@@ -335,7 +351,7 @@
                 i +
                   1 +
                   siteInstruction.attachments.length +
-                  siteInstruction.boards.length
+                  +siteInstruction.boards.length
               }}
             </td>
             <td>Tasks</td>
@@ -399,6 +415,22 @@
           </tbody>
         </table>
       </ion-col>
+      <ion-col size="12">
+        <ion-button
+          class="mx-auto"
+          strong="true"
+          expand="full"
+          shape="round"
+          color="success"
+          *ngIf="
+            siteInstruction.status !== 'completed' &&
+            siteInstruction.status !== 'scaffold created' &&
+            isEdit
+          "
+          (click)="sign()"
+          >Sign</ion-button
+        >
+      </ion-col>
       <ion-col size="12" *ngIf="loading">
         <ion-progress-bar type="indeterminate"></ion-progress-bar>
       </ion-col>
@@ -407,10 +439,16 @@
     <ion-row class="mt-5" *ngIf="customer$ | async as customer">
       <ion-col size="1">
         <ion-button
+          [strong]="true"
           shape="round"
-          *ngIf="isEdit && !loading"
+          *ngIf="
+            isEdit &&
+            !loading &&
+            siteInstruction.status !== 'scaffold created' &&
+            siteInstruction.status !== 'completed'
+          "
           color="danger"
-          (click)="voidInstruction()"
+          (click)="updateStatus('void')"
           >Void Return</ion-button
         >
       </ion-col>
@@ -426,22 +464,23 @@
         <ion-button
           shape="round"
           color="primary"
-          *ngIf="
-            siteInstruction.status !== 'completed' &&
-            siteInstruction.status !== 'signed' &&
-            isEdit
-          "
+          *ngIf="siteInstruction.status === 'needs signature' && isEdit"
           (click)="updateInstruction(customer)"
           [disabled]="form.invalid"
           >Update Instruction</ion-button
         >
         <ion-button
           shape="round"
-          color="success"
-          *ngIf="siteInstruction.status !== 'completed' && isEdit"
-          (click)="sign()"
-          >Sign</ion-button
-        >
+          color="primary"
+          *ngIf="
+            (siteInstruction.status === 'signed' ||
+              siteInstruction.status === 'scaffold created') &&
+            isEdit
+          "
+          (click)="createScaffold()"
+          >Create Scaffold
+        </ion-button>
+
         <!-- <ng-container *ngIf="user$ | async as user">
           <ion-button
             shape="round"

@@ -176,7 +176,7 @@ export class ViewSitePage implements OnInit {
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
         where('site.id', '==', this.ids[1]),
-        where('status', 'in', ['signed']),
+        where('status', 'in', ['signed', 'scaffold created']),
         orderBy('code', 'desc'),
       ]) as Observable<Shipment[]>;
     this.instructions$ = this.masterSvc
@@ -391,7 +391,13 @@ export class ViewSitePage implements OnInit {
       id: 'viewInstruction',
       cssClass: 'fullscreen',
     });
-    return await modal.present();
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    if (role === 'create-scaffold') {
+      return await this.addScaffold(site, data);
+    }
+    return;
   }
 
   async viewShipment(shipment: Shipment) {
@@ -409,15 +415,16 @@ export class ViewSitePage implements OnInit {
     return await modal.present();
   }
 
-  async addScaffold(site: Site) {
+  async addScaffold(site: Site, siData?: SI) {
     const modal = await this.masterSvc.modal().create({
       component: AddScaffoldComponent,
-      componentProps: { siteData: site },
+      componentProps: { siteData: site, siData },
       showBackdrop: false,
       id: 'addScaffold',
       cssClass: 'fullscreen',
     });
-    return await modal.present();
+
+    return modal.present();
   }
 
   viewScaffold(scaffold: Scaffold) {
