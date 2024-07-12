@@ -370,7 +370,7 @@
           >
             <app-file-item
               [file]="file"
-              [allowDelete]="siteInstruction.status !== 'needs signature'"
+              [allowDelete]="siteInstruction.status === 'needs signature'"
             ></app-file-item>
           </ion-col>
         </ion-row>

@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Select } from '@ngxs/store';
-import { Observable, take } from 'rxjs';
+import { Observable } from 'rxjs';
+import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
 import { Company } from 'src/app/models/company.model';
-import { Enquiry } from 'src/app/models/enquiry.model';
+import { SI } from 'src/app/models/si.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
-import { AddEnquiryComponent } from '../enquiries/add-enquiry/add-enquiry.component';
-import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
-import { SI } from 'src/app/models/si.model';
 
 @Component({
   selector: 'app-site-instructions',
