@@ -163,6 +163,7 @@ export class ViewScaffoldPage implements OnInit {
       component: AddInstructionComponent,
       componentProps: {
         isEdit: true,
+        isScaffold: true,
         value: instruction,
         site: instruction.site,
       },

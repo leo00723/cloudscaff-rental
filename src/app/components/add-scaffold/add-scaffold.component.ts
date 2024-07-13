@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { increment } from '@angular/fire/firestore';
+import { arrayUnion, increment } from '@angular/fire/firestore';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import cloneDeep from 'lodash/cloneDeep';
 import { Observable } from 'rxjs';
@@ -115,21 +115,20 @@ export class AddScaffoldComponent implements OnInit {
           this.scaffold = this.form.value;
           this.scaffold.code = code;
           this.scaffold.createdBy = this.user.id;
+          if (this.siData) {
+            this.scaffold.siIDS = [this.siData.id];
+          }
           const doc = await this.masterSvc
             .edit()
             .addDocument(`company/${this.company.id}/scaffolds`, this.scaffold);
           if (this.siData) {
-            const scaffoldIDs =
-              this.siData?.scaffoldIDs.length > 0
-                ? [...this.siData.scaffoldIDs, doc.id]
-                : [doc.id];
             await this.masterSvc
               .edit()
               .updateDoc(
                 `company/${this.company.id}/siteInstructions`,
                 this.siData.id,
                 {
-                  scaffoldIDs,
+                  scaffoldIDs: arrayUnion(doc.id),
                   status: 'scaffold created',
                 }
               );

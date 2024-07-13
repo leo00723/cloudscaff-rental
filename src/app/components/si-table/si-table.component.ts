@@ -50,6 +50,8 @@ export class SITableComponent {
         return 'warning';
       case 'scaffold created':
         return 'tertiary';
+      case 'void':
+        return 'danger';
     }
   }
 

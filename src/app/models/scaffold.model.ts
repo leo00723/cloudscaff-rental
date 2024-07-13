@@ -36,4 +36,5 @@ export interface Scaffold {
   totalPlatforms?: number;
   latestHandover?: Handover;
   latestInspection?: Inspection;
+  siIDS?: string[];
 }

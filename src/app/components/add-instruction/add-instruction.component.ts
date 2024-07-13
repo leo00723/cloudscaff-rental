@@ -26,6 +26,7 @@ import { SignaturePadComponent } from '../signature-pad/signature-pad.component'
 import { SignatureModalComponent } from '../signature-modal/signature-modal.component';
 import { ImgService } from 'src/app/services/img.service';
 import { UtilityService } from 'src/app/services/utility.service';
+import { arrayUnion, orderBy, where } from '@angular/fire/firestore';
 @Component({
   selector: 'app-add-instruction',
   templateUrl: './add-instruction.component.html',
@@ -35,6 +36,7 @@ export class AddInstructionComponent implements OnInit {
   @Input() site: Site;
   @Input() scaffoldID?: string;
   @Input() isEdit = false;
+  @Input() isScaffold = false;
   @Input() set value(val: SI) {
     if (val) {
       Object.assign(this.siteInstruction, val);
@@ -54,7 +56,7 @@ export class AddInstructionComponent implements OnInit {
     scaffoldIDs: [],
   };
   form: FormGroup;
-
+  scaffolds$: Observable<Scaffold[]>;
   loading = false;
   protected utilitySvc = inject(UtilityService);
   private masterSvc = inject(MasterService);
@@ -114,6 +116,15 @@ export class AddInstructionComponent implements OnInit {
       this.boardForms.push(board);
     });
     this.form.get('notes').setValue(this.siteInstruction?.notes || '');
+    if (this.siteInstruction.id) {
+      console.log(this.siteInstruction.id);
+      this.scaffolds$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${company.id}/scaffolds`, [
+          where('siIDS', 'array-contains', this.siteInstruction.id),
+          orderBy('code', 'desc'),
+        ]);
+    }
   }
 
   get additionalForms() {
@@ -193,7 +204,7 @@ export class AddInstructionComponent implements OnInit {
           this.siteInstruction.scaffoldIDs.push(this.scaffoldID);
         }
         await this.upload();
-        await this.masterSvc
+        const doc = await this.masterSvc
           .edit()
           .addDocument(
             `company/${company.id}/siteInstructions`,
@@ -202,6 +213,13 @@ export class AddInstructionComponent implements OnInit {
         await this.masterSvc.edit().updateDoc('company', company.id, {
           totalSIs: increment(1),
         });
+        if (this.scaffoldID) {
+          await this.masterSvc
+            .edit()
+            .updateDoc(`company/${company.id}/scaffolds`, this.scaffoldID, {
+              siIDS: arrayUnion(doc.id),
+            });
+        }
         this.masterSvc
           .notification()
           .toast('Site Instruction created successfully', 'success');
@@ -373,6 +391,13 @@ export class AddInstructionComponent implements OnInit {
         .modal()
         .dismiss(this.siteInstruction, 'create-scaffold', 'viewInstruction');
     });
+  }
+
+  viewScaffold(scaffold: Scaffold) {
+    window.open(
+      `https://app.cloudscaff.com//dashboard/scaffold/${scaffold.companyId}-${scaffold.siteId}-${scaffold.id}`,
+      '_blank'
+    );
   }
 
   close() {
