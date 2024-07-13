@@ -57,6 +57,7 @@ exports.addUser = functions.https.onCall(async (data) => {
     await admin.firestore().collection('users').doc(auth.uid).set({
       email: auth.email,
       company: data.company,
+      title: data?.title,
       permissions: data.permissions,
       permissionsList: data.permissionsList,
       needsSetup: true,

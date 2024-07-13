@@ -116,6 +116,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
         .toString()
         .padStart(6, '0')}`;
       Object.assign(this.site, { ...this.form.value, code, date: new Date() });
+      this.setUserIDs();
       this.masterSvc
         .edit()
         .addDocument(`company/${this.site.companyId}/sites`, this.site)
@@ -150,6 +151,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
         this.site.updatedBy = this.user.name;
         Object.assign(this.site, this.form.value);
         this.site.status = status;
+        this.setUserIDs();
         await this.masterSvc
           .edit()
           .updateDoc(
@@ -253,6 +255,14 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     }
 
     return true;
+  }
+
+  setUserIDs() {
+    const ids = [];
+    this.site.users.forEach((users) => {
+      ids.push(users.id);
+    });
+    this.site.userIDS = ids;
   }
 
   private initFrom() {

@@ -424,9 +424,8 @@
           shape="round"
           color="success"
           *ngIf="
-            siteInstruction.status !== 'completed' &&
-              siteInstruction.status !== 'scaffold created' &&
-              siteInstruction.status !== 'void';
+            (siteInstruction.status === 'needs signature' ||
+              siteInstruction.status === 'signed') &&
             isEdit
           "
           (click)="sign()"

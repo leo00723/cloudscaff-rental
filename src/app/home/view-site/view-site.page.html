@@ -421,38 +421,50 @@
           [multiple]="true"
           [value]="['pending']"
         >
-          <ion-accordion value="pending">
+          <ion-accordion
+            value="pending"
+            *ngIf="pendingInstructions$ | async as pis else loading"
+          >
             <ion-item slot="header" color="light">
-              <ion-label color="primary">Pending Instructions</ion-label>
+              <ion-label color="primary"
+                >Pending Instructions ({{pis.length}})</ion-label
+              >
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-si-table
                 [value]="pendingInstructions$"
-                *ngIf="pendingInstructions$ | async else loading"
                 (selectedItem)="viewInstruction($event,site)"
               ></app-si-table>
             </div>
           </ion-accordion>
-          <ion-accordion value="signed">
+          <ion-accordion
+            value="signed"
+            *ngIf="signedInstructions$ | async as sis else loading"
+          >
             <ion-item slot="header" color="light">
-              <ion-label color="warning">Signed Instructions</ion-label>
+              <ion-label color="warning"
+                >Signed Instructions ({{sis.length}})</ion-label
+              >
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-si-table
                 [value]="signedInstructions$"
-                *ngIf="signedInstructions$ | async else loading"
                 (selectedItem)="viewInstruction($event,site)"
               ></app-si-table>
             </div>
           </ion-accordion>
-          <ion-accordion value="completed">
+          <ion-accordion
+            value="completed"
+            *ngIf="instructions$ | async as cis else loading"
+          >
             <ion-item slot="header" color="light">
-              <ion-label color="success">Completed Instructions</ion-label>
+              <ion-label color="success"
+                >Completed Instructions ({{cis.length}})</ion-label
+              >
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-si-table
                 [value]="instructions$"
-                *ngIf="instructions$ | async else loading"
                 (selectedItem)="viewInstruction($event,site)"
               ></app-si-table>
             </div>
