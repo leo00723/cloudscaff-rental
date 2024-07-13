@@ -65,6 +65,8 @@ export class SITableComponent {
             (si.code && si.code.toLowerCase().includes(val)) ||
             (si.date && si.date.toString().toLowerCase().includes(val)) ||
             (si.notes && si.notes.toLowerCase().includes(val)) ||
+            (si.customer.name &&
+              si.customer.name.toLowerCase().includes(val)) ||
             (si.createdByName &&
               si.createdByName.toLowerCase().includes(val)) ||
             (si.notes && si.notes.toLowerCase().includes(val)) ||
