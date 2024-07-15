@@ -45,8 +45,8 @@
         <tr>
           <th>#</th>
           <th>Modification</th>
-          <th>Description (L x W x H)</th>
           <th>Type</th>
+          <th>Description (L x W x H)</th>
         </tr>
       </thead>
       <tbody>
@@ -54,12 +54,12 @@
           <tr>
             <td>1</td>
             <td>Scaffold Modification</td>
+            <td class="text-capitalize">{{ item.type }}</td>
             <td>
               {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
               }}{{ company.measurement.symbol }} x {{ item.height
               }}{{ company.measurement.symbol }}
             </td>
-            <td class="text-capitalize">{{ item.type }}</td>
           </tr>
         </ng-container>
         <ng-container *ngFor="let item of changes.attachments; let i = index">
@@ -68,12 +68,13 @@
               {{ i + 2 }}
             </td>
             <td>Attachment Modification</td>
+            <td class="text-capitalize">{{ item.type }}</td>
+
             <td>
               {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
               }}{{ company.measurement.symbol }} x {{ item.height
               }}{{ company.measurement.symbol }}
             </td>
-            <td class="text-capitalize">{{ item.type }}</td>
           </tr>
         </ng-container>
         <ng-container *ngFor="let item of changes.boards; let i = index">
@@ -82,11 +83,12 @@
               {{ i + 2 + changes.attachments.length }}
             </td>
             <td>Board Modification</td>
+            <td class="text-capitalize">{{ item.type }}</td>
+
             <td>
               {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
               }}{{ company.measurement.symbol }}
             </td>
-            <td class="text-capitalize">{{ item.type }}</td>
           </tr>
         </ng-container>
       </tbody>
