@@ -57,11 +57,11 @@ export class ScaffoldCost {
         type: 'height-increase',
       };
       if (this.le.length > 0 && this.le.width > 0 && this.le.height > 0)
-        erection.push(this.le);
+        {erection.push(this.le);}
       if (this.we.length > 0 && this.we.width > 0 && this.we.height > 0)
-        erection.push(this.we);
+        {erection.push(this.we);}
       if (this.he.length > 0 && this.he.width > 0 && this.he.height > 0)
-        erection.push(this.he);
+        {erection.push(this.he);}
     } else if (
       ns.length <= cs.length &&
       ns.height <= cs.height &&
@@ -86,11 +86,11 @@ export class ScaffoldCost {
         type: 'height-decrease',
       };
       if (this.ld.length > 0 && this.ld.width > 0 && this.ld.height > 0)
-        dismantle.push(this.ld);
+        {dismantle.push(this.ld);}
       if (this.wd.length > 0 && this.wd.width > 0 && this.wd.height > 0)
-        dismantle.push(this.wd);
+        {dismantle.push(this.wd);}
       if (this.hd.length > 0 && this.hd.width > 0 && this.hd.height > 0)
-        dismantle.push(this.hd);
+        {dismantle.push(this.hd);}
     } else {
       if (cs.height > ns.height) {
         this.hd.height = cs.height - ns.height;

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { Select } from '@ngxs/store';
 import { Observable, tap } from 'rxjs';
@@ -11,6 +11,8 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
+import { ScaffoldCost } from 'src/app/models/scaffold-cost';
+import { HandoverService } from 'src/app/services/handover.service';
 
 @Component({
   selector: 'app-add-handover',
@@ -37,6 +39,10 @@ export class AddHandoverComponent implements OnInit {
   };
 
   loading = false;
+  changes = { scaffold: [], attachments: [], boards: [] };
+
+  private handoverSvc = inject(HandoverService);
+
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit(): void {
@@ -66,6 +72,7 @@ export class AddHandoverComponent implements OnInit {
   }
 
   updateScaffold(ev) {
+    this.changes = { scaffold: [], attachments: [], boards: [] };
     this.scaffold.scaffold = ev.scaffold;
     this.scaffold.boards = ev.boards;
     this.scaffold.attachments = ev.attachments;
@@ -76,6 +83,56 @@ export class AddHandoverComponent implements OnInit {
       this.scaffold.totalArea += area;
       this.scaffold.totalPlatforms += +b.qty;
     });
+    if (this.scaffold.latestHandover) {
+      const oldScaffold = this.scaffold.latestHandover.scaffold;
+      const newScaffold = this.scaffold;
+
+      this.changes.scaffold.push(
+        ...this.handoverSvc.checkChanges(
+          oldScaffold.scaffold,
+          newScaffold.scaffold
+        )
+      );
+      if (newScaffold.attachments.length >= oldScaffold.attachments.length) {
+        newScaffold.attachments.forEach((item, index) => {
+          const attChanges = this.handoverSvc.checkChanges(
+            oldScaffold.attachments[index]
+              ? oldScaffold.attachments[index]
+              : null,
+            item
+          );
+          this.changes.attachments.push(...attChanges);
+        });
+      } else {
+        oldScaffold.attachments.forEach((item, index) => {
+          const attChanges = this.handoverSvc.checkChanges(
+            item,
+            newScaffold.attachments[index]
+              ? newScaffold.attachments[index]
+              : null
+          );
+          this.changes.attachments.push(...attChanges);
+        });
+      }
+
+      if (newScaffold.boards.length >= oldScaffold.boards.length) {
+        newScaffold.boards.forEach((item, index) => {
+          const attChanges = this.handoverSvc.checkChanges(
+            oldScaffold.boards[index] ? oldScaffold.boards[index] : null,
+            item
+          );
+          this.changes.boards.push(...attChanges);
+        });
+      } else {
+        oldScaffold.boards.forEach((item, index) => {
+          const attChanges = this.handoverSvc.checkChanges(
+            item,
+            newScaffold.boards[index] ? newScaffold.boards[index] : null
+          );
+          this.changes.boards.push(...attChanges);
+        });
+      }
+    }
   }
   create(customer: Customer) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
@@ -89,7 +146,10 @@ export class AddHandoverComponent implements OnInit {
         this.handover.createdByName = user.name;
         this.handover.company = company;
         this.handover.customer = customer;
+        delete this.scaffold.latestHandover;
+        delete this.scaffold.latestInspection;
         this.handover.scaffold = this.scaffold;
+        this.handover.changes = this.changes;
         await this.upload();
         await this.masterSvc
           .edit()
@@ -120,6 +180,7 @@ export class AddHandoverComponent implements OnInit {
   pinFormatter(value: number) {
     return `${value}%`;
   }
+
   async upload() {
     const newFiles = await this.uploader.startUpload();
     this.handover.uploads.push(...newFiles);
