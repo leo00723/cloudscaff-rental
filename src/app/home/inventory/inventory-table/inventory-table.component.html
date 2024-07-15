@@ -5,7 +5,7 @@
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
-<ion-item lines="none" mode="ios">
+<!-- <ion-item lines="none" mode="ios">
   <ion-select
     #rows
     slot="start"
@@ -17,7 +17,7 @@
     <ion-select-option value="50">50</ion-select-option>
     <ion-select-option value="100">100</ion-select-option>
   </ion-select>
-</ion-item>
+</ion-item> -->
 <!-- <div class="text-end">
   <input
     style="display: none"
@@ -53,7 +53,6 @@
 
 <ngx-datatable
   class="bootstrap striped rounded-lg"
-  [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="'auto'"
   [columnMode]="'force'"
@@ -153,22 +152,35 @@
     name="Weight"
     cellClass="text-center my-auto"
     headerClass="text-center"
-  ></ngx-datatable-column>
+  >
+  </ngx-datatable-column>
   <ngx-datatable-column
     name="Hire Cost"
-    cellClass="text-center my-auto"
-    headerClass="text-center"
-  ></ngx-datatable-column>
+    cellClass="text-end my-auto"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
   <ngx-datatable-column
     name="Replacement Cost"
-    cellClass="text-center my-auto"
-    headerClass="text-center"
-  ></ngx-datatable-column>
+    cellClass="text-end my-auto"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
   <ngx-datatable-column
     name="Selling Cost"
-    cellClass="text-center my-auto"
-    headerClass="text-center"
-  ></ngx-datatable-column>
+    cellClass="text-end my-auto"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
   <ngx-datatable-column
     name=""
     headerClass="text-center"

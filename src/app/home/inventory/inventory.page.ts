@@ -335,7 +335,7 @@ export class InventoryPage implements OnInit {
       if (id) {
         this.inventoryItems$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/stockItems`, 'name', 'asc');
+          .getCollectionOrdered(`company/${id}/stockItems`, 'category', 'asc');
 
         // shipments
         this.shipments$ = this.masterSvc

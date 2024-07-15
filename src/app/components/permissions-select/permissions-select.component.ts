@@ -44,6 +44,7 @@ export class PermissionsSelectComponent implements OnInit {
     {
       title: 'Sites',
       options: [
+        { name: 'Site Deliveries', selected: false },
         { name: 'Site Requests', selected: false },
         { name: 'Site Returns', selected: false },
         { name: 'Site Instructions', selected: false },
@@ -94,6 +95,7 @@ export class PermissionsSelectComponent implements OnInit {
     {
       title: 'Sites',
       options: [
+        { name: 'Site Deliveries', selected: false },
         { name: 'Site Requests', selected: false },
         { name: 'Site Returns', selected: false },
         { name: 'Site Instructions', selected: false },
