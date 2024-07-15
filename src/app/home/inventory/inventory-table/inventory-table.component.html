@@ -66,6 +66,54 @@
   [selected]="selected"
 >
   <ngx-datatable-column
+    name="#"
+    headerClass="text-start"
+    cellClass="my-auto"
+    [sortable]="false"
+    [maxWidth]="50"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="settings-outline"
+        [id]="row.id"
+      ></ion-icon>
+      <ion-popover
+        [trigger]="row.id"
+        [dismissOnSelect]="true"
+        [showBackdrop]="false"
+      >
+        <ng-template>
+          <ion-content>
+            <ion-list>
+              <ion-item [button]="true" [detail]="false" (click)="edit()">
+                <ion-label>Edit</ion-label>
+              </ion-item>
+              <ion-item
+                [button]="true"
+                [detail]="false"
+                (click)="deleteItem(row)"
+                *ngIf="
+                  user.role === 'Owner' ||
+                  user.permissionsList.includes('Super Admin')
+                "
+              >
+                <ion-label>Delete</ion-label>
+              </ion-item>
+              <ion-item [button]="true" [detail]="false" (click)="duplicate()">
+                <ion-label>Duplicate</ion-label>
+              </ion-item>
+              <ion-item [button]="true" [detail]="false" (click)="view()">
+                <ion-label>View Locations</ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
     name="Code"
     [checkboxable]="false"
     cellClass="my-auto"
@@ -179,53 +227,6 @@
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
-    </ng-template>
-  </ngx-datatable-column>
-  <ngx-datatable-column
-    name=""
-    headerClass="text-center"
-    cellClass="my-auto"
-    [sortable]="false"
-  >
-    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      <ion-icon
-        size="small"
-        color="primary"
-        name="settings-outline"
-        [id]="row.id"
-      ></ion-icon>
-      <ion-popover
-        [trigger]="row.id"
-        [dismissOnSelect]="true"
-        [showBackdrop]="false"
-      >
-        <ng-template>
-          <ion-content>
-            <ion-list>
-              <ion-item [button]="true" [detail]="false" (click)="edit()">
-                <ion-label>Edit</ion-label>
-              </ion-item>
-              <ion-item
-                [button]="true"
-                [detail]="false"
-                (click)="deleteItem(row)"
-                *ngIf="
-                  user.role === 'Owner' ||
-                  user.permissionsList.includes('Super Admin')
-                "
-              >
-                <ion-label>Delete</ion-label>
-              </ion-item>
-              <ion-item [button]="true" [detail]="false" (click)="duplicate()">
-                <ion-label>Duplicate</ion-label>
-              </ion-item>
-              <ion-item [button]="true" [detail]="false" (click)="view()">
-                <ion-label>View Locations</ion-label>
-              </ion-item>
-            </ion-list>
-          </ion-content>
-        </ng-template>
-      </ion-popover>
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>
