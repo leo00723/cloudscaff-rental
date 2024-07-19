@@ -73,6 +73,7 @@ export class AddScaffoldComponent implements OnInit {
       total: [0],
       type: [''],
       width: ['', [Validators.required, Validators.min(1)]],
+      location: [''],
     });
 
     this.attachmentsForms.push(attachment);
@@ -115,6 +116,7 @@ export class AddScaffoldComponent implements OnInit {
           this.scaffold = this.form.value;
           this.scaffold.code = code;
           this.scaffold.createdBy = this.user.id;
+          this.scaffold.createdByName = this.user.name;
           if (this.siData) {
             this.scaffold.siIDS = [this.siData.id];
           }
@@ -193,6 +195,7 @@ export class AddScaffoldComponent implements OnInit {
         daysStanding: [''],
         hireTotal: [0],
         isWeeks: [''],
+        location: [''],
       }),
       attachments: this.masterSvc.fb().array([]),
       boards: this.masterSvc.fb().array([]),

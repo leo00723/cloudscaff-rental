@@ -15,6 +15,7 @@ export interface Transfer {
   notes?: string;
   status?: string;
   createdBy?: string;
+  createdByName?: string;
   updatedBy?: string;
   uploads?: UploadedFile[];
 }

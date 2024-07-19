@@ -54,7 +54,10 @@ export class ViewSitePage implements OnInit {
   erectedScaffolds$: Observable<Scaffold[]>;
   activeScaffolds$: Observable<Scaffold[]>;
   dismantledScaffolds$: Observable<Scaffold[]>;
-  requests$: Observable<Request[]>;
+
+  pendingRequests$: Observable<Request[]>;
+  submittedRequests$: Observable<Request[]>;
+  approvedRequests$: Observable<Request[]>;
 
   pendingReturns$: Observable<Return[]>;
   outboundReturns$: Observable<Return[]>;
@@ -141,16 +144,28 @@ export class ViewSitePage implements OnInit {
     this.inventoryItems$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.ids[0]}/siteStock`, this.ids[1]);
-    this.requests$ = this.masterSvc
+    this.pendingRequests$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/requests`,
-        'site.id',
-        '==',
-        this.ids[1],
-        'startDate',
-        'desc'
-      ) as Observable<Request[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['pending']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.submittedRequests$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['submitted']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.approvedRequests$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['approved']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+
     this.outboundDeliveries$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/shipments`, [
@@ -184,6 +199,13 @@ export class ViewSitePage implements OnInit {
       .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['completed']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.pendingReturns$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['pending', 'submitted']),
         orderBy('code', 'desc'),
       ]) as Observable<Shipment[]>;
     this.outboundReturns$ = this.masterSvc

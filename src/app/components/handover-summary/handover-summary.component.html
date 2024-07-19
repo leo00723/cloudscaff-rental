@@ -89,7 +89,7 @@
           [scaffold]="handover.scaffold"
           [showSafe]="true"
         ></app-scaffold-overview-table>
-        <table class="table table-bordered">
+        <table class="table table-bordered" *ngIf="handover?.changes">
           <thead>
             <tr>
               <th>#</th>

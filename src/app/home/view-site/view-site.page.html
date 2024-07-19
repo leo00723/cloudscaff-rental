@@ -225,7 +225,7 @@
             <!-- [imageSrc]="company?.replaceBranding || 'assets/logos/logo.svg'" -->
             <qrcode
               #QRCODE
-              [qrdata]="'https://app.cloudscaff.com/viewRegister/'+ids[0]+ids[1]"
+              [qrdata]="'https://app.cloudscaff.com/viewRegister/'+ids[0]+'-'+ids[1]"
               [imageHeight]="75"
               [imageWidth]="75"
               title="SCAFFOLD_REGISTER_{{site.name}}_{{site.code}}"
@@ -307,11 +307,50 @@
         ></ng-template>
       </ng-container>
       <ng-container *ngSwitchCase="'requests'">
-        <app-requests-table
-          [value]="requests$"
-          *ngIf="requests$ | async else loading"
-          (selectedItem)="viewRequest($event,site)"
-        ></app-requests-table>
+        <ion-accordion-group
+          mode="ios"
+          class="rounded-lg overflow-hidden"
+          [multiple]="true"
+          [value]="['pending']"
+        >
+          <ion-accordion value="pending">
+            <ion-item slot="header" color="light">
+              <ion-label color="primary">Pending Requests</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-requests-table
+                [value]="pendingRequests$"
+                *ngIf="pendingRequests$ | async else loading"
+                (selectedItem)="viewRequest($event,site)"
+              ></app-requests-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion value="outbound">
+            <ion-item slot="header" color="light">
+              <ion-label color="warning">Submitted Requests</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-requests-table
+                [value]="submittedRequests$"
+                *ngIf="submittedRequests$ | async else loading"
+                (selectedItem)="viewRequest($event,site)"
+              ></app-requests-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion value="approved">
+            <ion-item slot="header" color="light">
+              <ion-label color="success">Approved Requests</ion-label>
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-requests-table
+                [value]="approvedRequests$"
+                *ngIf="approvedRequests$ | async else loading"
+                (selectedItem)="viewRequest($event,site)"
+              ></app-requests-table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+
         <ion-fab
           class="m-2"
           vertical="bottom"

@@ -45,6 +45,8 @@ export class ScaffoldEditformComponent implements OnInit, OnDestroy {
     const handover = this.scaffold?.latestHandover?.scaffold || null;
     this.form = this.fb.group({
       scaffold: this.fb.group({
+        description: [handover?.scaffold?.description || ''],
+        location: [handover?.scaffold?.location || ''],
         length: [
           handover?.scaffold?.length || '',
           [Validators.required, Validators.min(0)],
@@ -65,6 +67,8 @@ export class ScaffoldEditformComponent implements OnInit, OnDestroy {
     });
     handover?.attachments.forEach((item) => {
       const attachment = this.fb.group({
+        description: [item?.description || ''],
+        location: [item?.location || ''],
         length: [item.length || '', [Validators.required, Validators.min(0)]],
         width: [item.width || '', [Validators.required, Validators.min(0)]],
         height: [item.height || '', [Validators.required, Validators.min(0)]],

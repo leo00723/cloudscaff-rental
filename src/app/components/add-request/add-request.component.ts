@@ -274,8 +274,8 @@ export class AddRequestComponent implements OnInit, OnDestroy {
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.request.site, Validators.required],
-      startDate: [this.request.startDate, Validators.required],
-      endDate: [this.request.endDate, Validators.required],
+      startDate: [this.request.startDate, Validators.nullValidator],
+      endDate: [this.request.endDate, Validators.nullValidator],
       company: [this.company, Validators.required],
       status: [this.request.status, Validators.required],
       updatedBy: [this.user.id, Validators.required],
@@ -308,11 +308,12 @@ export class AddRequestComponent implements OnInit, OnDestroy {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.site, Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: ['', Validators.nullValidator],
+      endDate: ['', Validators.nullValidator],
       company: [this.company, Validators.required],
       status: ['pending', Validators.required],
       createdBy: [this.user.id, Validators.required],
+      createdByName: [this.user.name, Validators.required],
       notes: [''],
     });
   }

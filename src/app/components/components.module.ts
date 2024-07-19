@@ -15,8 +15,8 @@ import { InventoryEstimateComponent } from '../home/estimates/inventory-estimate
 import { BillableShipmentsTableComponent } from '../home/inventory/billable-shipments-table/billable-shipments-table.component';
 import { CompanyPage } from '../home/settings/company/company.page';
 import { AddSiteComponent } from '../home/sites/add-site/add-site.component';
-import { RequestsTableComponent } from '../home/view-site/requests-table/requests-table.component';
-import { ReturnsTableComponent } from '../home/view-site/returns-table/returns-table.component';
+import { RequestsTableComponent } from './requests-table/requests-table.component';
+import { ReturnsTableComponent } from './returns-table/returns-table.component';
 import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.component';
 import { AcceptModificationComponent } from './accept-modification/accept-modification.component';
 import { AddBillableShipmentComponent } from './add-billable-shipment/add-billable-shipment.component';

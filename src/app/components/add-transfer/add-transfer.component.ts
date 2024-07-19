@@ -243,6 +243,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       transferDate: ['', Validators.required],
       notes: ['', Validators.nullValidator],
       createdBy: [this.user.id],
+      createdByName: [this.user.name],
       status: ['pending', Validators.required],
       company: [this.company],
       date: [new Date()],

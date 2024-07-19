@@ -39,60 +39,63 @@
       [scaffold]="scaffold"
       (formResult)="updateScaffold($event)"
     ></app-scaffold-editform>
-    <app-title-block>Modification Details</app-title-block>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Modification</th>
-          <th>Type of Change</th>
-          <th>Description (L x W x H)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ng-container *ngFor="let item of changes.scaffold; let i = index">
+    <ng-container *ngIf="scaffold?.latestHandover">
+      <app-title-block>Modification Details</app-title-block>
+      <table class="table table-bordered">
+        <thead>
           <tr>
-            <td>1</td>
-            <td>Scaffold Modification</td>
-            <td class="text-capitalize">{{ item.type }}</td>
-            <td>
-              {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
-              }}{{ company.measurement.symbol }} x {{ item.height
-              }}{{ company.measurement.symbol }}
-            </td>
+            <th>#</th>
+            <th>Modification</th>
+            <th>Type of Change</th>
+            <th>Description (L x W x H)</th>
           </tr>
-        </ng-container>
-        <ng-container *ngFor="let item of changes.attachments; let i = index">
-          <tr>
-            <td>
-              {{ i + 2 }}
-            </td>
-            <td>Attachment Modification</td>
-            <td class="text-capitalize">{{ item.type }}</td>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let item of changes.scaffold; let i = index">
+            <tr>
+              <td>1</td>
+              <td>Scaffold Modification</td>
+              <td class="text-capitalize">{{ item.type }}</td>
+              <td>
+                {{ item.length }}{{ company.measurement.symbol }} x
+                {{ item.width }}{{ company.measurement.symbol }} x
+                {{ item.height }}{{ company.measurement.symbol }}
+              </td>
+            </tr>
+          </ng-container>
+          <ng-container *ngFor="let item of changes.attachments; let i = index">
+            <tr>
+              <td>
+                {{ i + 2 }}
+              </td>
+              <td>Attachment Modification</td>
+              <td class="text-capitalize">{{ item.type }}</td>
 
-            <td>
-              {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
-              }}{{ company.measurement.symbol }} x {{ item.height
-              }}{{ company.measurement.symbol }}
-            </td>
-          </tr>
-        </ng-container>
-        <ng-container *ngFor="let item of changes.boards; let i = index">
-          <tr>
-            <td>
-              {{ i + 2 + changes.attachments.length }}
-            </td>
-            <td>Board Modification</td>
-            <td class="text-capitalize">{{ item.type }}</td>
+              <td>
+                {{ item.length }}{{ company.measurement.symbol }} x
+                {{ item.width }}{{ company.measurement.symbol }} x
+                {{ item.height }}{{ company.measurement.symbol }}
+              </td>
+            </tr>
+          </ng-container>
+          <ng-container *ngFor="let item of changes.boards; let i = index">
+            <tr>
+              <td>
+                {{ i + 2 + changes.attachments.length }}
+              </td>
+              <td>Board Modification</td>
+              <td class="text-capitalize">{{ item.type }}</td>
 
-            <td>
-              {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
-              }}{{ company.measurement.symbol }} - Level {{ item.height }}
-            </td>
-          </tr>
-        </ng-container>
-      </tbody>
-    </table>
+              <td>
+                {{ item.length }}{{ company.measurement.symbol }} x
+                {{ item.width }}{{ company.measurement.symbol }} - Level
+                {{ item.height }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </ng-container>
     <app-title-block>Checklist</app-title-block>
     <app-inspection-checklist
       [questions]="questions"
@@ -132,7 +135,7 @@
                 </ion-radio-group>
               </td>
             </tr>
-            <tr class="align-middle">
+            <!-- <tr class="align-middle">
               <td>Handover Type?</td>
               <td class="text-center">
                 <ion-radio-group slot="end" [(ngModel)]="handover.type">
@@ -184,7 +187,7 @@
                 </ion-range>
                 <ion-label> {{ handover.dismantlePercentage }}%</ion-label>
               </td>
-            </tr>
+            </tr> -->
           </tbody>
         </table>
         <app-input-text

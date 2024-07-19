@@ -22,6 +22,7 @@ export interface Enquiry {
   country: string;
   zip: string;
   createdBy: string;
+  createdByName?: string;
   updatedBy: string;
   acceptedBy: string;
   rejectedBy: string;

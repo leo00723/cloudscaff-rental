@@ -390,6 +390,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       company: [this.company, Validators.required],
       status: ['pending', Validators.required],
       createdBy: [this.user.id, Validators.required],
+      createdByName: [this.user.name, Validators.required],
       driverName: ['', Validators.nullValidator],
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],

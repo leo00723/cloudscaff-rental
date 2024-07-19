@@ -44,7 +44,7 @@
     prop="site.customer.name"
   ></ngx-datatable-column>
   <ngx-datatable-column
-    name="Date"
+    name="Start Date"
     cellClass="text-center"
     headerClass="text-center"
   >
@@ -53,18 +53,19 @@
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
-    name="Uploads"
-    cellClass="text-center my-auto"
+    name="End Date"
+    cellClass="text-center"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      <div>
-        <ion-badge color="tertiary" mode="ios" *ngIf="value">{{
-          value.length
-        }}</ion-badge>
-      </div>
+      {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Created By"
+    prop="createdByName"
+  ></ngx-datatable-column>
+
   <ngx-datatable-column
     name="Status"
     cellClass="text-center"

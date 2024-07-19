@@ -11,7 +11,12 @@
   <tbody>
     <tr>
       <th class="text-center" scope="row">1</th>
-      <td colspan="4">{{ company.terminology.scaffold }} Details</td>
+      <td colspan="4">
+        {{
+          scaffold.scaffold?.description ||
+            company.terminology.scaffold + " Details"
+        }}
+      </td>
     </tr>
     <!-- SCAFFOLD -->
     <tr class="small">
