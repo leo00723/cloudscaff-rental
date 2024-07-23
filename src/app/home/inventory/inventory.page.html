@@ -66,6 +66,16 @@
                 {{deliveries.length}}
               </ion-badge>
             </ng-container>
+            <ng-container *ngIf="reservedShipments$ | async as deliveries">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="tertiary"
+                *ngIf="deliveries.length > 0"
+              >
+                {{deliveries.length}}
+              </ion-badge>
+            </ng-container>
           </ion-label>
         </ion-segment-button>
         <ion-segment-button
@@ -255,6 +265,18 @@
           <app-shipment-table
             [value]="outboundShipments$"
             *ngIf="outboundShipments$ | async else loading"
+            (selectedItem)="viewShipment($event)"
+          ></app-shipment-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="reserved">
+        <ion-item slot="header" color="light">
+          <ion-label color="tertiary">Reserved Deliveries</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-shipment-table
+            [value]="reservedShipments$"
+            *ngIf="reservedShipments$ | async else loading"
             (selectedItem)="viewShipment($event)"
           ></app-shipment-table>
         </div>

@@ -45,6 +45,7 @@ export class InventoryPage implements OnInit {
   shipments$: Observable<Shipment[]>;
   pendingShipments$: Observable<Shipment[]>;
   outboundShipments$: Observable<Shipment[]>;
+  reservedShipments$: Observable<Shipment[]>;
 
   billableShipments$: Observable<InventoryEstimate[]>;
 
@@ -361,6 +362,16 @@ export class InventoryPage implements OnInit {
             'status',
             '==',
             'on-route',
+            'code',
+            'asc'
+          );
+        this.reservedShipments$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/shipments`,
+            'status',
+            '==',
+            'reserved',
             'code',
             'asc'
           );

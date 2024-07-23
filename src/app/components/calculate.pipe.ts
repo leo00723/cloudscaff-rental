@@ -9,10 +9,12 @@ export class CalculatePipe implements PipeTransform {
   transform(item: InventoryItem, isD?: boolean) {
     const totalQty = item.availableQty || 0;
     const inUseQty = item.inUseQty || 0;
+    const reservedQty = item.reservedQty || 0;
     const damaged = item.damagedQty || 0;
     const maintenance = item.inMaintenanceQty || 0;
     const lost = item.lostQty || 0;
-    const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
+    const availableQty =
+      totalQty - inUseQty - damaged - maintenance - lost - reservedQty;
     let deficit = 0;
     if (isD) {
       if (item.shipmentQty > availableQty) {

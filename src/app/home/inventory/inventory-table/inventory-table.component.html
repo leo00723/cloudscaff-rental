@@ -165,6 +165,15 @@
     </ng-template></ngx-datatable-column
   >
   <ngx-datatable-column
+    name="Reserved Qty"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | number }}
+    </ng-template></ngx-datatable-column
+  >
+  <ngx-datatable-column
     name="In Maintenance Qty"
     cellClass="text-center my-auto"
     headerClass="text-center"

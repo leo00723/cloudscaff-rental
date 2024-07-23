@@ -47,7 +47,7 @@ export class ShipmentTableComponent {
       case 'received':
         return 'success';
       case 'reserved':
-        return 'warning';
+        return 'tertiary';
       case 'on-route':
         return 'warning';
       case 'void':
