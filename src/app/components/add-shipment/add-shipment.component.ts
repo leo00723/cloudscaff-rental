@@ -167,6 +167,11 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.masterSvc
           .notification()
           .toast('Delivery updated successfully', 'success');
+        if (this.shipment.status === 'pending') {
+          this.initEditForm();
+        } else if (this.shipment.status === 'reserved') {
+          this.close();
+        }
         this.loading = false;
       } catch (e) {
         console.error(e);
@@ -397,6 +402,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       notes: ['', Validators.nullValidator],
     });
   }
+
   private init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
 
