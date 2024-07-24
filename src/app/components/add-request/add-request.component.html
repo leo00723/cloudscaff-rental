@@ -112,9 +112,10 @@
             <table class="table table-sm table-bordered">
               <thead>
                 <tr>
-                  <th scope="col">Code</th>
+                  <!-- <th scope="col">Code</th> -->
                   <!-- <th scope="col">Category</th> -->
                   <th scope="col">Name</th>
+                  <th scope="col" class="text-center">Location</th>
                   <th scope="col" class="text-center">Available Qty</th>
                   <th scope="col" class="text-center">Request Qty</th>
                   <th
@@ -133,9 +134,10 @@
               <tbody>
                 <ng-container *ngFor="let item of items; let i = index">
                   <tr class="align-middle" *ngIf="viewAll; else viewShipment">
-                    <th scope="row">{{ item.code }}</th>
+                    <!-- <th scope="row">{{ item.code }}</th> -->
                     <!-- <td>{{ item.category }}</td> -->
                     <td>{{ item.name }}</td>
+                    <td class="text-center">{{ item?.location }}</td>
                     <td class="text-center">
                       {{ item | calculate }}
                     </td>
@@ -171,8 +173,9 @@
                       class="align-middle"
                       *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
                     >
-                      <th scope="row">{{ item.code }}</th>
+                      <!-- <th scope="row">{{ item.code }}</th> -->
                       <td>{{ item.name }}</td>
+                      <td class="text-center">{{ item?.location }}</td>
                       <td class="text-center">
                         {{ item | calculate }}
                       </td>

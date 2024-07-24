@@ -176,6 +176,7 @@
                   <th scope="col">Category</th>
                   <th scope="col">Size</th>
                   <th scope="col">Name</th>
+                  <th scope="col" class="text-center">Location</th>
                   <th
                     scope="col"
                     class="text-center"
@@ -197,6 +198,7 @@
                     <td>{{ item.category }}</td>
                     <td>{{ item.size }}</td>
                     <td>{{ item.name }}</td>
+                    <td class="text-center">{{ item?.location }}</td>
                     <td
                       class="text-center"
                       *ngIf="shipment.status === 'pending'"
@@ -241,6 +243,7 @@
                       <td>{{ item.category }}</td>
                       <td>{{ item.size }}</td>
                       <td>{{ item.name }}</td>
+                      <td class="text-center">{{ item?.location }}</td>
                       <td
                         class="text-center"
                         *ngIf="shipment.status === 'pending'"

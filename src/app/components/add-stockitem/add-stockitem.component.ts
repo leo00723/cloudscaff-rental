@@ -116,7 +116,6 @@ export class AddStockitemComponent implements OnInit {
           .edit()
           .addDocument(`company/${this.company.id}/stockItems`, {
             ...this.form.value,
-            category: this.form.value.categoryType.name || '',
             log: [log],
           });
         this.masterSvc.notification().toast('Stock Item Added', 'success');
@@ -300,7 +299,7 @@ export class AddStockitemComponent implements OnInit {
             ...this.form.value,
             category:
               this.form.value.categoryType.name ||
-              this.inventoryItemBackup.category ||
+              this.form.value.category ||
               '',
             log: this.inventoryItem.log,
           }
@@ -322,11 +321,10 @@ export class AddStockitemComponent implements OnInit {
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       code: [this.inventoryItem.code, Validators.required],
-      categoryType: [
-        this.inventoryItem.categoryType ? this.inventoryItem.categoryType : '',
-      ],
+      categoryType: [this.inventoryItem.categoryType || ''],
       category: [this.inventoryItem.category || ''],
-      size: [this.inventoryItem.size ? this.inventoryItem.size : ''],
+      size: [this.inventoryItem.size || ''],
+      location: [this.inventoryItem.location || ''],
       name: [this.inventoryItem.name, Validators.required],
       hireCost: [
         this.inventoryItem.hireCost,
@@ -381,6 +379,7 @@ export class AddStockitemComponent implements OnInit {
       categoryType: [''],
       category: [''],
       size: [''],
+      location: [''],
       name: ['', Validators.required],
       hireCost: [0, [Validators.required, Validators.min(0)]],
       replacementCost: [0, [Validators.required, Validators.min(0)]],

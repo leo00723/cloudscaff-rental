@@ -123,9 +123,10 @@
           <table class="table table-sm table-bordered table-fixed">
             <thead>
               <tr>
-                <th scope="col">Code</th>
-                <th scope="col">Category</th>
+                <!-- <th scope="col">Code</th> -->
+                <!-- <th scope="col">Category</th> -->
                 <th scope="col">Name</th>
+                <th scope="col" class="text-center">Location</th>
                 <th scope="col" class="text-center">Site Qty</th>
                 <th scope="col" class="text-center">Return Qty</th>
                 <th scope="col" class="text-center">
@@ -166,9 +167,10 @@
             <tbody>
               <ng-container *ngFor="let item of items; let i = index">
                 <tr class="align-middle" *ngIf="viewAll; else viewShipment">
-                  <th scope="row">{{ item.code }}</th>
-                  <td>{{ item.category }}</td>
+                  <!-- <th scope="row">{{ item.code }}</th> -->
+                  <!-- <td>{{ item.category }}</td> -->
                   <td>{{ item.name }}</td>
+                  <td class="text-center">{{ item?.location }}</td>
                   <td class="text-center">
                     {{ item.availableQty }}
                   </td>
@@ -280,9 +282,10 @@
                     class="align-middle"
                     *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
                   >
-                    <th scope="row">{{ item.code }}</th>
-                    <td>{{ item.category }}</td>
+                    <!-- <th scope="row">{{ item.code }}</th> -->
+                    <!-- <td>{{ item.category }}</td> -->
                     <td>{{ item.name }}</td>
+                    <td class="text-center">{{ item?.location }}</td>
                     <td class="text-center">{{ item.availableQty }}</td>
                     <td class="text-center">
                       <ion-input

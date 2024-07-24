@@ -18,7 +18,7 @@
     <ion-grid>
       <app-title-block>Component Details</app-title-block>
       <ion-row class="card-outline mb-3">
-        <ion-col sizeMd="6" size="12">
+        <!-- <ion-col sizeMd="6" size="12">
           <ng-container
             *ngIf="categories$ | async as categories; else addCategory"
           >
@@ -65,15 +65,35 @@
               >{{ size.size }}
             </ion-select-option>
           </app-input-select-reactive>
+        </ion-col> -->
+        <ion-col sizeMd="6" size="12">
+          <app-input-reactive
+            title="Category"
+            controlName="category"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="6" size="12">
+          <app-input-reactive title="Size" controlName="size" [form]="form">
+          </app-input-reactive>
         </ion-col>
         <ion-col sizeMd="4" size="12">
           <app-input-reactive title="Code" controlName="code" [form]="form">
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="8" size="12">
+        <ion-col sizeMd="4" size="12">
           <app-input-reactive
             title="Description"
             controlName="name"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            title="Location"
+            controlName="location"
             [form]="form"
           >
           </app-input-reactive>
@@ -298,138 +318,141 @@
           </ion-button>
         </ion-col>
       </ion-row> -->
-      <app-title-block>Manage Qty</app-title-block>
-      <ion-row class="card-outline mb-3">
-        <ion-col sizeMd="4" size="12">
-          <app-input-text
-            title="Remove Yard Qty"
-            [optional]="true"
-            type="number"
-            [value]="removeQty"
-            (fieldChange)="removeQty = $event"
-          ></app-input-text>
-          <app-input-text
-            title="Comment"
-            [optional]="true"
-            (fieldChange)="comment = $event"
-          ></app-input-text>
-          <ion-button
-            class="float-end"
-            size="small"
-            color="danger"
-            shape="round"
-            (click)="removeYardQty()"
-          >
-            Remove
-          </ion-button>
-        </ion-col>
-        <ion-col sizeMd="4" size="12">
-          <app-input-text
-            title="Add Yard Qty"
-            [optional]="true"
-            [value]="addQty"
-            type="number"
-            (fieldChange)="addQty = $event"
-          ></app-input-text>
-          <app-input-text
-            title="Comment"
-            [optional]="true"
-            (fieldChange)="comment = $event"
-          ></app-input-text>
-
-          <ion-button
-            class="float-end"
-            size="small"
-            color="success"
-            shape="round"
-            (click)="addYardQty()"
-          >
-            Add
-          </ion-button>
-        </ion-col>
-        <ion-col sizeMd="4" size="12">
-          <app-input-text
-            title="Move Maintenance to Available"
-            [optional]="true"
-            type="number"
-            [value]="moveQty"
-            (fieldChange)="moveQty = $event"
-          ></app-input-text>
-          <app-input-text
-            title="Comment"
-            [optional]="true"
-            (fieldChange)="comment = $event"
-          ></app-input-text>
-          <ion-button
-            class="float-end"
-            size="small"
-            color="warning"
-            shape="round"
-            (click)="moveToYard()"
-          >
-            Move
-          </ion-button>
-        </ion-col>
-        <ion-col sizeMd="4" size="12">
-          <app-input-text
-            title="Move Available to Maintenance"
-            [optional]="true"
-            type="number"
-            [value]="maintenanceQty"
-            (fieldChange)="maintenanceQty = $event"
-          ></app-input-text>
-          <app-input-text
-            title="Comment"
-            [optional]="true"
-            (fieldChange)="comment = $event"
-          ></app-input-text>
-          <ion-button
-            class="float-end"
-            size="small"
-            color="warning"
-            shape="round"
-            (click)="moveTo('maintenance', 'inMaintenanceQty', maintenanceQty)"
-          >
-            Move
-          </ion-button>
-        </ion-col>
-        <ion-col sizeMd="4" size="12">
-          <app-input-text
-            title="Move Available to Damaged"
-            [optional]="true"
-            type="number"
-            [value]="damagedQty"
-            (fieldChange)="damagedQty = $event"
-          ></app-input-text>
-          <app-input-text
-            title="Comment"
-            [optional]="true"
-            (fieldChange)="comment = $event"
-          ></app-input-text>
-          <ion-button
-            class="float-end"
-            size="small"
-            color="warning"
-            shape="round"
-            (click)="moveTo('damaged', 'damagedQty', damagedQty)"
-          >
-            Move
-          </ion-button>
-        </ion-col>
-        <ion-col sizeMd="4" size="12" *ngIf="inventoryItem.damagedQty > 0">
-          <div class="h-100 d-flex justify-content-center align-items-center">
+      <ng-container *ngIf="isEdit">
+        <app-title-block>Manage Qty</app-title-block>
+        <ion-row class="card-outline mb-3">
+          <ion-col sizeMd="4" size="12">
+            <app-input-text
+              title="Remove Yard Qty"
+              [optional]="true"
+              type="number"
+              [value]="removeQty"
+              (fieldChange)="removeQty = $event"
+            ></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
+            ></app-input-text>
             <ion-button
-              class="my-auto w-100 h-100"
-              mode="ios"
-              fill="outline"
-              (click)="repurpose()"
+              class="float-end"
+              size="small"
+              color="danger"
+              shape="round"
+              (click)="removeYardQty()"
             >
-              Repurpose Damaged Items
+              Remove
             </ion-button>
-          </div>
-        </ion-col>
-      </ion-row>
+          </ion-col>
+          <ion-col sizeMd="4" size="12">
+            <app-input-text
+              title="Add Yard Qty"
+              [optional]="true"
+              [value]="addQty"
+              type="number"
+              (fieldChange)="addQty = $event"
+            ></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
+            ></app-input-text>
 
+            <ion-button
+              class="float-end"
+              size="small"
+              color="success"
+              shape="round"
+              (click)="addYardQty()"
+            >
+              Add
+            </ion-button>
+          </ion-col>
+          <ion-col sizeMd="4" size="12">
+            <app-input-text
+              title="Move Maintenance to Available"
+              [optional]="true"
+              type="number"
+              [value]="moveQty"
+              (fieldChange)="moveQty = $event"
+            ></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
+            ></app-input-text>
+            <ion-button
+              class="float-end"
+              size="small"
+              color="warning"
+              shape="round"
+              (click)="moveToYard()"
+            >
+              Move
+            </ion-button>
+          </ion-col>
+          <ion-col sizeMd="4" size="12">
+            <app-input-text
+              title="Move Available to Maintenance"
+              [optional]="true"
+              type="number"
+              [value]="maintenanceQty"
+              (fieldChange)="maintenanceQty = $event"
+            ></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
+            ></app-input-text>
+            <ion-button
+              class="float-end"
+              size="small"
+              color="warning"
+              shape="round"
+              (click)="
+                moveTo('maintenance', 'inMaintenanceQty', maintenanceQty)
+              "
+            >
+              Move
+            </ion-button>
+          </ion-col>
+          <ion-col sizeMd="4" size="12">
+            <app-input-text
+              title="Move Available to Damaged"
+              [optional]="true"
+              type="number"
+              [value]="damagedQty"
+              (fieldChange)="damagedQty = $event"
+            ></app-input-text>
+            <app-input-text
+              title="Comment"
+              [optional]="true"
+              (fieldChange)="comment = $event"
+            ></app-input-text>
+            <ion-button
+              class="float-end"
+              size="small"
+              color="warning"
+              shape="round"
+              (click)="moveTo('damaged', 'damagedQty', damagedQty)"
+            >
+              Move
+            </ion-button>
+          </ion-col>
+          <ion-col sizeMd="4" size="12" *ngIf="inventoryItem.damagedQty > 0">
+            <div class="h-100 d-flex justify-content-center align-items-center">
+              <ion-button
+                class="my-auto w-100 h-100"
+                mode="ios"
+                fill="outline"
+                (click)="repurpose()"
+              >
+                Repurpose Damaged Items
+              </ion-button>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ng-container>
       <ion-row *ngIf="isEdit">
         <ion-col size="12">
           <app-title-block>Log history</app-title-block>

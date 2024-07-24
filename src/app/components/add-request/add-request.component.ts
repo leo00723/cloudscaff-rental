@@ -246,8 +246,10 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     this.items = this.itemBackup.filter(
       (item) =>
         item?.code?.toString().toLowerCase().includes(val) ||
-        item.name.toLowerCase().includes(val) ||
-        item?.category?.toLowerCase().includes(val) ||
+        item?.name?.toString().toLowerCase().includes(val) ||
+        item?.category?.toString().toLowerCase().includes(val) ||
+        item?.size?.toString().toLowerCase().includes(val) ||
+        item?.location?.toString().toLowerCase().includes(val) ||
         !val
     );
     if (!val) {
