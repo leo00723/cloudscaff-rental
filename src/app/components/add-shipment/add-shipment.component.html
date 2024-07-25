@@ -16,17 +16,24 @@
       </ion-text>
     </ion-title>
     <ion-buttons slot="end" *ngIf="isEdit">
-      <ion-button
+      <ion-chip
+        (click)="downloadPicklist()"
+        mode="ios"
+        shape="round"
+        size="small"
+        color="primary"
+      >
+        Picklist
+      </ion-chip>
+      <ion-chip
         (click)="downloadPdf()"
         mode="ios"
         shape="round"
-        fill="outline"
         size="small"
         color="tertiary"
       >
-        Download PDF
-        <ion-icon slot="end" name="cloud-download-outline"></ion-icon>
-      </ion-button>
+        Delivery Note
+      </ion-chip>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -438,6 +445,7 @@
             (click)="sendDelivery()"
             >Send Delivery</ion-button
           >
+
           <ion-button
             shape="round"
             *ngIf="isEdit && !loading && shipment.status === 'on-route'"
@@ -446,6 +454,20 @@
             (click)="receiveDelivery()"
             >Receive Delivery</ion-button
           >
+
+          <ng-container
+            *ngIf="user.permissionsList.includes('Inventory Admin')"
+          >
+            <ion-button
+              shape="round"
+              fill="outline"
+              *ngIf="isEdit && !loading && shipment.status === 'pending'"
+              color="tertiary"
+              [disabled]="!blob || !shipment.signedBy"
+              (click)="receiveDelivery()"
+              >Send Immediately</ion-button
+            >
+          </ng-container>
           <!-- <ion-button
             shape="round"
             color="danger"

@@ -108,6 +108,7 @@ export class SitesPage implements OnInit {
       if (id && user) {
         if (
           user.permissionsList.includes('Super Admin') ||
+          user.permissionsList.includes('Site Admin') ||
           user.role === 'Owner'
         ) {
           this.sites$ = this.masterSvc

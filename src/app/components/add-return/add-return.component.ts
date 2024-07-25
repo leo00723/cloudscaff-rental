@@ -143,6 +143,8 @@ export class AddReturnComponent implements OnInit, OnDestroy {
         this.return.signedBy = ev.name;
       } else if (this.return.status === 'collected') {
         this.return.signedBy2 = ev.name;
+      } else {
+        this.return.signedBy2 = ev.name;
       }
     } else {
       this.blob = null;
@@ -317,6 +319,15 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     const pdf = await this.masterSvc
       .pdf()
       .generateReturn(this.return, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.return.code);
+  }
+  async downloadPicklist() {
+    if (!this.return.date) {
+      this.return.date = new Date();
+    }
+    const pdf = await this.masterSvc
+      .pdf()
+      .generatePickList(this.return, this.return.items, this.company);
     this.masterSvc.pdf().handlePdf(pdf, this.return.code);
   }
 

@@ -267,6 +267,7 @@ export class InventoryPage implements OnInit {
               category: item.Category || '',
               size: item.Size || '',
               name: item.Description || '',
+              location: item.Location || '',
               yardQty: +item.Yard_Qty || 0,
               availableQty: +item.Yard_Qty || 0,
               weight: parseFloat(item.Weight) || 0,

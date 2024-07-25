@@ -104,6 +104,7 @@ import { AddInstructionComponent } from './add-instruction/add-instruction.compo
 import { SITableComponent } from './si-table/si-table.component';
 import { SignatureModalComponent } from './signature-modal/signature-modal.component';
 import { HandoverTableComponent } from './handover-table/handover-table.component';
+import { ScaffoldOverviewTable2Component } from './scaffold-overview-table-2/scaffold-overview-table-2.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -175,6 +176,7 @@ const COMPONENTS = [
   SITableComponent,
   ScaffoldEditformComponent,
   ScaffoldOverviewTableComponent,
+  ScaffoldOverviewTable2Component,
   ScaffoldTableComponent,
   ShareDocumentComponent,
   ShipmentInvoiceSummaryComponent,

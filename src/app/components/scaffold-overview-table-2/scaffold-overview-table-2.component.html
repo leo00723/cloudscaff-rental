@@ -1,0 +1,54 @@
+<table class="table table-bordered" *ngIf="company$ | async as company">
+  <thead>
+    <tr>
+      <th scope="col">Item</th>
+      <th class="text-center" scope="col">Size (L x W x H)</th>
+      <th class="text-center" scope="col">Level</th>
+      <th scope="col">Description</th>
+      <th class="text-center" scope="col">Location</th>
+      <th class="text-center" scope="col" *ngIf="showSafe">Safe</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- SCAFFOLD -->
+    <tr class="small">
+      <th>{{ company.terminology.scaffold }}</th>
+
+      <td class="text-center">
+        {{ scaffold.scaffold.length }}{{ company.measurement.symbol }} x
+        {{ scaffold.scaffold.width }}{{ company.measurement.symbol }} x
+        {{ scaffold.scaffold.height }}{{ company.measurement.symbol }}
+      </td>
+      <td class="text-center">1</td>
+      <td>{{ scaffold.scaffold?.description }}</td>
+      <td class="text-center">{{ scaffold.scaffold?.location }}</td>
+      <td class="text-center" *ngIf="showSafe">{{ scaffold.scaffold.safe }}</td>
+    </tr>
+    <!-- ATTACHMENTS -->
+    <tr class="small" *ngFor="let item of scaffold.attachments; let i = index">
+      <th>Attachment</th>
+
+      <td class="text-center">
+        {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
+        }}{{ company.measurement.symbol }} x {{ item.height
+        }}{{ company.measurement.symbol }}
+      </td>
+      <td class="text-center">{{ item?.level }}</td>
+      <td>{{ item?.description }}</td>
+      <td class="text-center">{{ item?.location }}</td>
+      <td class="text-center" *ngIf="showSafe">Yes</td>
+    </tr>
+    <!-- BOARDS -->
+    <tr class="small" *ngFor="let item of scaffold.boards; let i = index">
+      <th>{{ company.terminology.boards }}</th>
+      <td class="text-center">
+        {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
+        }}{{ company.measurement.symbol }} - Qty ({{ item.qty }})
+      </td>
+      <td class="text-center">{{ item?.height }}</td>
+      <td>{{ item?.description }}</td>
+      <td class="text-center">{{ item?.location }}</td>
+      <td class="text-center" *ngIf="showSafe">Yes</td>
+    </tr>
+  </tbody>
+</table>

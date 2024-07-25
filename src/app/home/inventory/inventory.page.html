@@ -156,7 +156,7 @@
       </div>
       <app-inventory-table
         [value]="inventoryItems$"
-        *ngIf="items.length > 0 && !importing"
+        *ngIf="items.length > 0 && !importing && !uploading"
         (selectedItem)="viewItem($event)"
         (editItem)="editItem($event)"
         (duplicateItem)="duplicateItem($event)"
@@ -164,7 +164,7 @@
       </app-inventory-table>
       <ion-row
         class="text-center"
-        *ngIf="items.length === 0 || importing"
+        *ngIf="items.length === 0 || importing || uploading"
         style="height: 100%"
       >
         <!-- <ion-col class="m-auto" *ngSwitchCase="0">

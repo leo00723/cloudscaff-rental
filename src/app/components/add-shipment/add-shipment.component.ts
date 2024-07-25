@@ -331,6 +331,15 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.close();
   }
 
+  async downloadPicklist() {
+    if (!this.shipment.date) {
+      this.shipment.date = new Date();
+    }
+    const pdf = await this.masterSvc
+      .pdf()
+      .generatePickList(this.shipment, this.shipment.items, this.company);
+    this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
+  }
   async downloadPdf() {
     if (!this.shipment.date) {
       this.shipment.date = new Date();
@@ -348,6 +357,8 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.shipment.signedBy = ev.name;
       } else if (this.shipment.status === 'on-route') {
         this.shipment.signedBy2 = ev.name;
+      } else {
+        this.shipment.signedBy = ev.name;
       }
     } else {
       this.blob = null;
