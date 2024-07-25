@@ -9,6 +9,7 @@ export interface Shipment {
   code?: string;
   company?: Company;
   createdBy?: string;
+  createdByName?: string;
   endDate?: any;
   items?: InventoryItem[];
   site?: Site;
@@ -17,4 +18,14 @@ export interface Shipment {
   updatedBy?: string;
   date?: any;
   uploads?: UploadedFile[];
+  notes?: string;
+  driverName?: string;
+  driverNo?: string;
+  vehicleReg?: string;
+  signedBy?: string;
+  signature?: string;
+  signatureRef?: string;
+  signedBy2?: string;
+  signature2?: string;
+  signatureRef2?: string;
 }

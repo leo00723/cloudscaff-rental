@@ -10,18 +10,22 @@
       </ion-button>
     </ion-buttons>
     <ion-title
-      >{{ !isEdit ? "Add Shipment" : "Edit Shipment" }}
+      >{{ !isEdit ? "Add Delivery" : "Edit Delivery" }}
       <ion-text *ngIf="loading"
         ><i class="text-muted fs-6">(Saving...)</i>
       </ion-text>
     </ion-title>
     <ion-buttons slot="end" *ngIf="isEdit">
-      <ion-button (click)="downloadPdf()">
-        <ion-icon
-          slot="icon-only"
-          name="cloud-download-outline"
-          color="primary"
-        ></ion-icon>
+      <ion-button
+        (click)="downloadPdf()"
+        mode="ios"
+        shape="round"
+        fill="outline"
+        size="small"
+        color="tertiary"
+      >
+        Download PDF
+        <ion-icon slot="end" name="cloud-download-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -50,7 +54,6 @@
         </ion-col>
         <ion-col *ngIf="field('site').value as site">
           <app-input-text
-            *ngIf="shipment.status !== 'pending'"
             title="Site Name"
             [value]="site.name"
             [readonly]="true"
@@ -81,11 +84,12 @@
       <ion-row>
         <ion-col size="12">
           <ion-text color="medium">
-            <h4>Shipment Information</h4>
+            <h4>Delivery Information</h4>
           </ion-text>
         </ion-col>
         <ion-col size="6">
           <app-input-date
+            [readonly]="shipment.status !== 'pending'"
             [form]="form"
             controlName="startDate"
             title="Start Date"
@@ -93,11 +97,54 @@
         </ion-col>
         <ion-col size="6">
           <app-input-date
+            [readonly]="shipment.status !== 'pending'"
             [form]="form"
             controlName="endDate"
             [min]="field('startDate').value"
             title="End Date"
           ></app-input-date>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Notes"
+            controlName="notes"
+            [form]="form"
+            [textarea]="true"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="12">
+          <ion-text color="medium">
+            <h4>Driver Information</h4>
+          </ion-text>
+        </ion-col>
+        <ion-col size="12" sizeMd="4">
+          <app-input-reactive
+            title="Driver Name"
+            controlName="driverName"
+            [form]="form"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="12" sizeMd="4">
+          <app-input-reactive
+            title="Driver Phone No"
+            controlName="driverNo"
+            [form]="form"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col size="12" sizeMd="4">
+          <app-input-reactive
+            title="Vehicle Registration"
+            controlName="vehicleReg"
+            [form]="form"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
         </ion-col>
         <ion-col size="6">
           <ion-text color="medium">
@@ -129,8 +176,15 @@
                   <th scope="col">Category</th>
                   <th scope="col">Size</th>
                   <th scope="col">Name</th>
-                  <th scope="col" class="text-center">Available Qty</th>
-                  <th scope="col" class="text-center">Shipment Qty</th>
+                  <th scope="col" class="text-center">Location</th>
+                  <th
+                    scope="col"
+                    class="text-center"
+                    *ngIf="shipment.status === 'pending'"
+                  >
+                    Available Qty
+                  </th>
+                  <th scope="col" class="text-center">Delivery Qty</th>
                   <th scope="col" class="text-center">
                     Weight ({{ company.mass.symbol }})
                   </th>
@@ -144,8 +198,12 @@
                     <td>{{ item.category }}</td>
                     <td>{{ item.size }}</td>
                     <td>{{ item.name }}</td>
-                    <td class="text-center">
-                      {{ item | calculate }}
+                    <td class="text-center">{{ item?.location }}</td>
+                    <td
+                      class="text-center"
+                      *ngIf="shipment.status === 'pending'"
+                    >
+                      {{ item | calculate | number }}
                     </td>
                     <td class="text-center">
                       <ion-input
@@ -185,8 +243,12 @@
                       <td>{{ item.category }}</td>
                       <td>{{ item.size }}</td>
                       <td>{{ item.name }}</td>
-                      <td class="text-center">
-                        {{ item | calculate }}
+                      <td class="text-center">{{ item?.location }}</td>
+                      <td
+                        class="text-center"
+                        *ngIf="shipment.status === 'pending'"
+                      >
+                        {{ item | calculate | number }}
                       </td>
                       <td class="text-center">
                         <ion-input
@@ -229,11 +291,15 @@
         </ion-col>
         <ion-col
           size="12"
-          *ngIf="shipment.status !== 'sent' && shipment.status !== 'void'"
+          *ngIf="
+            shipment.status !== 'sent' &&
+            shipment.status !== 'void' &&
+            shipment.status !== 'received'
+          "
         >
           <app-multiuploader></app-multiuploader>
         </ion-col>
-        <ion-col size="12">
+        <ion-col size="12" *ngIf="shipment?.uploads?.length > 0">
           <app-title-block> Uploaded Files </app-title-block>
           <ion-row>
             <ion-col
@@ -250,31 +316,103 @@
             </ion-col>
           </ion-row>
         </ion-col>
-      </ion-row>
-      <ion-row>
+        <ion-col
+          class="mt-3"
+          size="12"
+          *ngIf="
+            (shipment?.signedBy || shipment?.signedBy2) &&
+            (shipment.status === 'on-route' || shipment.status === 'received')
+          "
+        >
+          <app-title-block> Signatures </app-title-block>
+
+          <table class="table table-bordered mb-3">
+            <tbody>
+              <tr class="align-middle">
+                <td>Sent By</td>
+                <td class="text-center">
+                  <ion-text slot="end">{{ shipment?.signedBy }}</ion-text>
+                </td>
+              </tr>
+              <tr class="align-middle">
+                <td>Signature</td>
+                <td class="text-center">
+                  <img [src]="shipment?.signature" />
+                </td>
+              </tr>
+              <tr class="align-middle">
+                <td>Received By</td>
+                <td class="text-center">
+                  <ion-text slot="end">{{ shipment?.signedBy2 }}</ion-text>
+                </td>
+              </tr>
+              <tr class="align-middle">
+                <td>Signature</td>
+                <td class="text-center">
+                  <img [src]="shipment?.signature2" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ion-col>
         <ion-col
           size="12"
-          class="text-end"
-          *ngIf="shipment.status !== 'void' && shipment.status !== 'sent'"
+          *ngIf="
+            shipment.status === 'on-route' || shipment.status === 'pending'
+          "
         >
-          <ion-progress-bar
-            type="indeterminate"
-            *ngIf="loading"
-          ></ion-progress-bar>
-          <ion-button
-            shape="round"
-            [disabled]="form.invalid || error"
-            *ngIf="!isEdit && !loading"
-            (click)="createShipment()"
-            >Create Shipment</ion-button
-          >
+          <app-title-block> Signature </app-title-block>
+          <app-signature-pad
+            #signature
+            [showSave]="blob ? false : true"
+            (res)="sign($event)"
+          ></app-signature-pad>
+        </ion-col>
+        <ion-col size="12" *ngIf="loading">
+          <ion-progress-bar type="indeterminate"></ion-progress-bar>
+        </ion-col>
+      </ion-row>
+      <ion-row
+        class="mt-3"
+        *ngIf="
+          shipment.status !== 'void' &&
+          shipment.status !== 'sent' &&
+          shipment.status !== 'received'
+        "
+      >
+        <ion-col size="6">
           <ion-button
             shape="round"
             *ngIf="isEdit && !loading"
             color="danger"
             [disabled]="form.invalid"
             (click)="updateShipment('void')"
-            >Void Shipment</ion-button
+            >Void Delivery</ion-button
+          >
+          <ion-button
+            shape="round"
+            *ngIf="isEdit && !loading && shipment.status === 'pending'"
+            color="tertiary"
+            [disabled]="form.invalid"
+            (click)="updateShipment('reserved')"
+            >Reserve Delivery</ion-button
+          >
+        </ion-col>
+        <ion-col size="6" class="text-end">
+          <ion-button
+            shape="round"
+            *ngIf="isEdit && !loading && shipment.status === 'reserved'"
+            color="primary"
+            [disabled]="form.invalid"
+            (click)="updateShipment('pending')"
+            >Unreserve Delivery</ion-button
+          >
+          <ion-button
+            shape="round"
+            [disabled]="form.invalid || error"
+            *ngIf="!isEdit && !loading"
+            (click)="createShipment()"
+            >Create Delivery</ion-button
           >
           <!-- <ion-button
             shape="round"
@@ -284,20 +422,29 @@
             (click)="updateShipment('reserved')"
             >Reserve Shipment</ion-button
           > -->
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading"
-            color="success"
-            [disabled]="form.invalid"
-            (click)="updateShipment('sent')"
-            >Send Shipment</ion-button
-          >
+
           <ion-button
             shape="round"
             *ngIf="isEdit && !loading && shipment.status === 'pending'"
             [disabled]="form.invalid"
             (click)="updateShipment('pending')"
-            >Update Shipment</ion-button
+            >Update Delivery</ion-button
+          >
+          <ion-button
+            shape="round"
+            *ngIf="isEdit && !loading && shipment.status === 'pending'"
+            color="success"
+            [disabled]="!blob || !shipment.signedBy"
+            (click)="sendDelivery()"
+            >Send Delivery</ion-button
+          >
+          <ion-button
+            shape="round"
+            *ngIf="isEdit && !loading && shipment.status === 'on-route'"
+            color="success"
+            [disabled]="!blob || !shipment.signedBy2"
+            (click)="receiveDelivery()"
+            >Receive Delivery</ion-button
           >
           <!-- <ion-button
             shape="round"

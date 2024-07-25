@@ -13,6 +13,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 export class AddUserComponent {
   @Input() title = 'Add User';
   @Select() user$: Observable<User>;
+  @Select() company$: Observable<User>;
   @Input() isCreate = true;
   @Input() isEdit: boolean;
   @Input() user: User = { permissionsList: [] };

@@ -35,7 +35,8 @@
   [selected]="selected"
 >
   <ngx-datatable-column name="Code"></ngx-datatable-column>
-  <ngx-datatable-column name="Notes"></ngx-datatable-column>
+  <ngx-datatable-column name="Notes" cellClass="my-auto">
+  </ngx-datatable-column>
   <ngx-datatable-column
     name="Date"
     cellClass="text-center"
@@ -45,6 +46,11 @@
       {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Created By"
+    prop="createdByName"
+  ></ngx-datatable-column>
+
   <ngx-datatable-column
     name="Uploads"
     cellClass="text-center my-auto"

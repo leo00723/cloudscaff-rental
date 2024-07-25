@@ -54,6 +54,7 @@ export class AddEnquiryComponent implements OnInit {
     country: '',
     zip: '',
     createdBy: '',
+    createdByName: '',
     updatedBy: '',
     acceptedBy: '',
     rejectedBy: '',
@@ -269,6 +270,7 @@ export class AddEnquiryComponent implements OnInit {
       company: this.company,
       code: this.isEdit ? this.enquiry.code : code,
       createdBy: this.isEdit ? this.enquiry.createdBy : this.user.id,
+      createdByName: this.isEdit ? this.enquiry.createdByName : this.user.name,
       updatedBy: this.user.id,
     });
   }

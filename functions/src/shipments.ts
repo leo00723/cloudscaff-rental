@@ -7,6 +7,7 @@ exports.manageShipment = functions.firestore
   .document('company/{companyId}/shipments/{shipmentId}')
   .onUpdate(async (change, context) => {
     await shipItems(change, context);
+    await reserveItems(change, context);
   });
 
 exports.manageBillableShipment = functions.firestore
@@ -172,6 +173,7 @@ exports.manageTransfer = functions.firestore
         }
         return '200';
       }
+      return true;
     } catch (error) {
       logger.error(error);
       return error;
@@ -183,8 +185,10 @@ exports.manageReturn = functions.firestore
   .onUpdate(async (change, context) => {
     try {
       if (
-        change.before.data().status !== 'sent' &&
-        change.after.data().status === 'sent'
+        (change.before.data().status !== 'sent' ||
+          change.before.data().status !== 'received') &&
+        (change.after.data().status === 'sent' ||
+          change.after.data().status === 'received')
       ) {
         const returnData = change.after.data();
         // Get the shipment items on site
@@ -264,6 +268,7 @@ exports.manageReturn = functions.firestore
         }
         return '200';
       }
+      return true;
     } catch (error) {
       logger.error(error);
       return error;
@@ -521,14 +526,16 @@ exports.manageReturn = functions.firestore
 // }
 
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-async function shipItems(
+const shipItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
   context: functions.EventContext
-) {
+) => {
   try {
     if (
-      change.before.data().status !== 'sent' &&
-      change.after.data().status === 'sent'
+      (change.before.data().status !== 'sent' ||
+        change.before.data().status !== 'received') &&
+      (change.after.data().status === 'sent' ||
+        change.after.data().status === 'received')
     ) {
       const shipment = change.after.data();
       // Get the shipment items on site
@@ -620,8 +627,58 @@ async function shipItems(
       }
       return '200';
     }
+    return true;
   } catch (error) {
     logger.error(error);
     return error;
   }
-}
+};
+
+const reserveItems = async (
+  change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
+  context: functions.EventContext
+) => {
+  try {
+    if (
+      change.before.data().status !== 'reserved' &&
+      change.after.data().status === 'reserved'
+    ) {
+      const shipment = change.after.data();
+      // update the stock list
+      for (const item of shipment.items) {
+        await admin
+          .firestore()
+          .doc(`company/${context.params.companyId}/stockItems/${item.id}`)
+          .update({
+            reservedQty: admin.firestore.FieldValue.increment(
+              +item.shipmentQty
+            ),
+          });
+      }
+
+      return '200';
+    } else if (
+      change.before.data().status === 'reserved' &&
+      change.after.data().status === 'pending'
+    ) {
+      const shipment = change.after.data();
+      // update the stock list
+      for (const item of shipment.items) {
+        await admin
+          .firestore()
+          .doc(`company/${context.params.companyId}/stockItems/${item.id}`)
+          .update({
+            reservedQty: admin.firestore.FieldValue.increment(
+              -+item.shipmentQty
+            ),
+          });
+      }
+
+      return '200';
+    }
+    return true;
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+};

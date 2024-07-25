@@ -12,24 +12,7 @@
         <ion-segment-button value="1">
           <ion-label>Overview</ion-label>
         </ion-segment-button>
-        <ion-segment-button
-          value="2"
-          *ngIf="user.permissionsList.includes('Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-        >
-          <ion-label
-            >Shipments
-            <ng-container *ngIf="pendingShipments$ | async as shipments">
-              <ion-badge
-                shape="round"
-                mode="ios"
-                color="danger"
-                *ngIf="shipments.length > 0"
-              >
-                {{shipments.length}}
-              </ion-badge>
-            </ng-container>
-          </ion-label>
-        </ion-segment-button>
+
         <ng-container *ngIf="company$ |async as company">
           <ion-segment-button
             value="3"
@@ -57,6 +40,45 @@
           </ion-label>
         </ion-segment-button>
         <ion-segment-button
+          value="2"
+          *ngIf="user.permissionsList.includes('Shipments') || user.permissionsList.includes('Deliveries') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+        >
+          <ion-label
+            >Deliveries
+            <ng-container *ngIf="pendingShipments$ | async as shipments">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="danger"
+                *ngIf="shipments.length > 0"
+              >
+                {{shipments.length}}
+              </ion-badge>
+            </ng-container>
+
+            <ng-container *ngIf="outboundShipments$ | async as deliveries">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="warning"
+                *ngIf="deliveries.length > 0"
+              >
+                {{deliveries.length}}
+              </ion-badge>
+            </ng-container>
+            <ng-container *ngIf="reservedShipments$ | async as deliveries">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="tertiary"
+                *ngIf="deliveries.length > 0"
+              >
+                {{deliveries.length}}
+              </ion-badge>
+            </ng-container>
+          </ion-label>
+        </ion-segment-button>
+        <ion-segment-button
           value="5"
           *ngIf="user.permissionsList.includes('Inventory Returns') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
@@ -67,6 +89,16 @@
                 shape="round"
                 mode="ios"
                 color="danger"
+                *ngIf="returns.length > 0"
+              >
+                {{returns.length}}
+              </ion-badge>
+            </ng-container>
+            <ng-container *ngIf="outboundReturns$ | async as returns">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="warning"
                 *ngIf="returns.length > 0"
               >
                 {{returns.length}}
@@ -211,11 +243,11 @@
       mode="ios"
       class="rounded-lg overflow-hidden mb-5"
       [multiple]="true"
-      [value]="['pending']"
+      [value]="['pending','outbound']"
     >
       <ion-accordion value="pending">
         <ion-item slot="header" color="light">
-          <ion-label color="primary">Pending Shipments</ion-label>
+          <ion-label color="primary">Pending Deliveries</ion-label>
         </ion-item>
         <div class="ion-padding" slot="content">
           <app-shipment-table
@@ -225,9 +257,33 @@
           ></app-shipment-table>
         </div>
       </ion-accordion>
+      <ion-accordion value="outbound">
+        <ion-item slot="header" color="light">
+          <ion-label color="warning">Outbound Deliveries</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-shipment-table
+            [value]="outboundShipments$"
+            *ngIf="outboundShipments$ | async else loading"
+            (selectedItem)="viewShipment($event)"
+          ></app-shipment-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion value="reserved">
+        <ion-item slot="header" color="light">
+          <ion-label color="tertiary">Reserved Deliveries</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-shipment-table
+            [value]="reservedShipments$"
+            *ngIf="reservedShipments$ | async else loading"
+            (selectedItem)="viewShipment($event)"
+          ></app-shipment-table>
+        </div>
+      </ion-accordion>
       <ion-accordion value="sent">
         <ion-item slot="header" color="light">
-          <ion-label color="success">Approved Shipments</ion-label>
+          <ion-label color="success">Completed Deliveries</ion-label>
         </ion-item>
         <div class="ion-padding" slot="content">
           <app-shipment-table
@@ -273,7 +329,7 @@
       </ion-accordion>
       <ion-accordion value="partial">
         <ion-item slot="header" color="light">
-          <ion-label color="tertiary">Partially Shipped Requests</ion-label>
+          <ion-label color="tertiary">Partially Delivered Requests</ion-label>
         </ion-item>
         <div class="ion-padding" slot="content">
           <app-requests-table
@@ -302,7 +358,7 @@
       mode="ios"
       class="rounded-lg overflow-hidden"
       [multiple]="true"
-      [value]="['pending']"
+      [value]="['pending','outbound']"
     >
       <ion-accordion value="pending">
         <ion-item slot="header" color="light">
@@ -316,9 +372,21 @@
           ></app-returns-table>
         </div>
       </ion-accordion>
+      <ion-accordion value="outbound">
+        <ion-item slot="header" color="light">
+          <ion-label color="warning">Outbound Returns</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-returns-table
+            [value]="outboundReturns$"
+            *ngIf="outboundReturns$ | async else loading"
+            (selectedItem)="viewReturn($event)"
+          ></app-returns-table>
+        </div>
+      </ion-accordion>
       <ion-accordion value="approved">
         <ion-item slot="header" color="light">
-          <ion-label color="success">Approved Returns</ion-label>
+          <ion-label color="success">Completed Returns</ion-label>
         </ion-item>
         <div class="ion-padding" slot="content">
           <app-returns-table
@@ -351,7 +419,7 @@
       </ion-accordion>
       <ion-accordion value="sent">
         <ion-item slot="header" color="light">
-          <ion-label color="success">Approved Transfers</ion-label>
+          <ion-label color="success">Completed Transfers</ion-label>
         </ion-item>
         <div class="ion-padding" slot="content">
           <app-transfer-table

@@ -18,7 +18,7 @@
         vertical="bottom"
         horizontal="end"
         slot="fixed"
-        *ngIf="company?.userLimit ? users.length < company?.userLimit : users.length < 5"
+        *ngIf="company?.userLimit ? users.length < company?.userLimit : users.length < 100"
       >
         <ion-fab-button (click)="addUser()">
           <ion-icon name="add"></ion-icon>

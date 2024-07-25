@@ -40,11 +40,21 @@
         </ion-col>
         <ion-col size="12">
           <ion-row formGroupName="scaffold">
-            <ion-col size="12">
+            <ion-col size="12" sizeMd="6">
               <app-input-reactive
                 title="Description"
                 controlName="description"
                 placeholder="Enter description"
+                [form]="field('scaffold')"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col size="12" sizeMd="6">
+              <app-input-reactive
+                title="Location"
+                [optional]="true"
+                controlName="location"
+                placeholder="Enter scaffold location"
                 [form]="field('scaffold')"
               >
               </app-input-reactive>

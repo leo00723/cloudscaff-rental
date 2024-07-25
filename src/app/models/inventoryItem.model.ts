@@ -13,6 +13,7 @@ export interface InventoryItem {
   category?: string;
   size?: string;
   name?: string;
+  location?: string;
   hireCost?: number;
   replacementCost?: number;
   sellingCost?: number;

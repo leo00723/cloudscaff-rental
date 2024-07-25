@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -7,8 +8,10 @@ import { AddBillableShipmentComponent } from 'src/app/components/add-billable-sh
 import { AddPaymentApplicationComponent } from 'src/app/components/add-payment-application/add-payment-application.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
-import { ShipmentInvoiceSummaryComponent } from 'src/app/components/shipment-invoice-summary/shipment-invoice-summary.component';
+import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
+import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { ViewShipmentInvoiceComponent } from 'src/app/components/view-shipment-invoice/view-shipment-invoice.component';
+import { Company } from 'src/app/models/company.model';
 import { Estimate } from 'src/app/models/estimate.model';
 import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
@@ -16,6 +19,7 @@ import { PaymentApplication } from 'src/app/models/paymentApplication.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
+import { Shipment } from 'src/app/models/shipment.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -23,9 +27,8 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { ViewEstimateComponent } from '../../components/view-estimate/view-estimate.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
-import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffold.component';
-import { Company } from 'src/app/models/company.model';
-import { orderBy, where } from '@angular/fire/firestore';
+import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
+import { SI } from 'src/app/models/si.model';
 
 @Component({
   selector: 'app-view-site',
@@ -51,12 +54,26 @@ export class ViewSitePage implements OnInit {
   erectedScaffolds$: Observable<Scaffold[]>;
   activeScaffolds$: Observable<Scaffold[]>;
   dismantledScaffolds$: Observable<Scaffold[]>;
-  requests$: Observable<Request[]>;
+
+  pendingRequests$: Observable<Request[]>;
+  submittedRequests$: Observable<Request[]>;
+  approvedRequests$: Observable<Request[]>;
+
+  pendingReturns$: Observable<Return[]>;
+  outboundReturns$: Observable<Return[]>;
   returns$: Observable<Return[]>;
+
   billableShipments$: Observable<InventoryEstimate[]>;
   shipmentInvoices$: Observable<InventoryEstimate[]>;
   paymentApplications$: Observable<PaymentApplication[]>;
   operationApplications$: Observable<PaymentApplication[]>;
+
+  outboundDeliveries$: Observable<Shipment[]>;
+  deliveries$: Observable<Shipment[]>;
+
+  pendingInstructions$: Observable<SI[]>;
+  signedInstructions$: Observable<SI[]>;
+  instructions$: Observable<SI[]>;
 
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
@@ -127,26 +144,84 @@ export class ViewSitePage implements OnInit {
     this.inventoryItems$ = this.masterSvc
       .edit()
       .getDocById(`company/${this.ids[0]}/siteStock`, this.ids[1]);
-    this.requests$ = this.masterSvc
+    this.pendingRequests$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/requests`,
-        'site.id',
-        '==',
-        this.ids[1],
-        'startDate',
-        'desc'
-      ) as Observable<Request[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['pending']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.submittedRequests$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['submitted']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.approvedRequests$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['approved']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+
+    this.outboundDeliveries$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/shipments`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['on-route']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.deliveries$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/shipments`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['received']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.pendingInstructions$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['needs signature']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.signedInstructions$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['signed', 'scaffold created']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.instructions$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['completed']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.pendingReturns$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['pending', 'submitted']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
+    this.outboundReturns$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['on-route', 'collected']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
     this.returns$ = this.masterSvc
       .edit()
-      .getCollectionWhereAndOrder(
-        `company/${this.ids[0]}/returns`,
-        'site.id',
-        '==',
-        this.ids[1],
-        'date',
-        'desc'
-      ) as Observable<Return[]>;
+      .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['sent', 'received']),
+        orderBy('code', 'desc'),
+      ]) as Observable<Shipment[]>;
     this.billableShipments$ = this.masterSvc
       .edit()
       .getCollectionWhereAndOrder(
@@ -319,16 +394,61 @@ export class ViewSitePage implements OnInit {
     return await modal.present();
   }
 
-  async addScaffold(site: Site) {
+  async addInstruction(site: Site) {
     const modal = await this.masterSvc.modal().create({
-      component: AddScaffoldComponent,
-      componentProps: { siteData: site },
+      component: AddInstructionComponent,
+      componentProps: { site },
       showBackdrop: false,
-      id: 'addScaffold',
+      id: 'addInstruction',
       cssClass: 'fullscreen',
     });
     return await modal.present();
   }
+
+  async viewInstruction(instruction: SI, site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddInstructionComponent,
+      componentProps: { isEdit: true, value: instruction, site },
+      showBackdrop: false,
+      id: 'viewInstruction',
+      cssClass: 'fullscreen',
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    if (role === 'create-scaffold') {
+      return await this.addScaffold(site, data);
+    }
+    return;
+  }
+
+  async viewShipment(shipment: Shipment) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddShipmentComponent,
+      componentProps: {
+        isEdit: true,
+        inventoryItems$: this.inventoryItems$,
+        value: shipment,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'editShipment',
+    });
+    return await modal.present();
+  }
+
+  async addScaffold(site: Site, siData?: SI) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddScaffoldComponent,
+      componentProps: { siteData: site, siData },
+      showBackdrop: false,
+      id: 'addScaffold',
+      cssClass: 'fullscreen',
+    });
+
+    return modal.present();
+  }
+
   viewScaffold(scaffold: Scaffold) {
     this.masterSvc
       .store()

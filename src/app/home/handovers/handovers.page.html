@@ -1,0 +1,27 @@
+<app-header title="Handover Certificates"> </app-header>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="company$ |async as company">
+    <ng-container *ngIf="company.totalSIs > 0">
+      <app-handover-table
+        [value]="handovers$"
+        *ngIf="handovers$ | async else loading"
+        (selectedItem)="viewHandover($event)"
+      ></app-handover-table>
+    </ng-container>
+    <app-page-placeholder
+      *ngIf="company.totalSIs === 0 || !company.totalSIs"
+      title="No Handovers?"
+      subtitle="Create your first Handover in a scaffold."
+      (clicked)="addHandover()"
+    ></app-page-placeholder>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

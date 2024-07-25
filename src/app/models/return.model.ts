@@ -8,6 +8,7 @@ export interface Return {
   code?: string;
   company?: Company;
   createdBy?: string;
+  createdByName?: string;
   date?: any;
   items?: InventoryItem[];
   notes?: string;
@@ -16,4 +17,13 @@ export interface Return {
   status?: string;
   updatedBy?: string;
   uploads?: UploadedFile[];
+  driverName?: string;
+  driverNo?: string;
+  vehicleReg?: string;
+  signedBy?: string;
+  signature?: string;
+  signatureRef?: string;
+  signedBy2?: string;
+  signature2?: string;
+  signatureRef2?: string;
 }

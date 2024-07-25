@@ -1,18 +1,18 @@
-.dropzone{
+.dropzone {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  min-width: 80vw;
+  min-width: 100%;
   font-weight: 200;
-  height:300px;
+  height: 250px;
   border: 2px dashed var(--ion-color-primary);
   border-radius: 5px;
   background: var(--ion-color-white);
   margin: 10px 0;
-  &.hovering{
-    border:2px solid var(--ion-color-primary);
-    color:-var(--ion-color-light);
+  &.hovering {
+    border: 2px solid var(--ion-color-primary);
+    color: -var(--ion-color-light);
   }
 }
 

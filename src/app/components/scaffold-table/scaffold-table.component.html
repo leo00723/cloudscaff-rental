@@ -38,6 +38,14 @@
   >
     <ngx-datatable-column name="Code"></ngx-datatable-column>
     <ngx-datatable-column
+      name="Description"
+      prop="scaffold.description"
+    ></ngx-datatable-column>
+    <ngx-datatable-column
+      name="Location"
+      prop="scaffold.location"
+    ></ngx-datatable-column>
+    <ngx-datatable-column
       name="Start Date"
       cellClass="text-center"
       headerClass="text-center"
@@ -55,6 +63,10 @@
         {{ value | date : "dd MMM yyyy" }}
       </ng-template>
     </ngx-datatable-column>
+    <ngx-datatable-column
+      name="Created By"
+      prop="createdByName"
+    ></ngx-datatable-column>
     <ngx-datatable-column
       name="Status"
       cellClass="text-center"
@@ -77,6 +89,7 @@
       <tr class="align-middle text-center">
         <th rowspan="2">#</th>
         <th rowspan="2">Code</th>
+        <th rowspan="2">Location</th>
         <th colspan="3">Size</th>
         <th rowspan="2">Volume</th>
         <th rowspan="2">No. of Platforms</th>
@@ -113,11 +126,12 @@
               <ion-button
                 size="small"
                 fill="clear"
-                (click)="addInspection(scaffold)"
+                (click)="viewScaffold(scaffold)"
               >
                 {{ scaffold.code }}
               </ion-button>
             </td>
+            <td>{{ scaffold.scaffold?.location }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.length }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.width }}</td>
             <td>{{ scaffold.latestHandover.scaffold.scaffold.height }}</td>
@@ -211,6 +225,7 @@
           >
             <td>{{ i + 1 }}.{{ j + 1 }}</td>
             <td>Attachment</td>
+            <td>{{ attachment?.location }}</td>
             <td>{{ attachment.length }}</td>
             <td>{{ attachment.width }}</td>
             <td>{{ attachment.height }}</td>

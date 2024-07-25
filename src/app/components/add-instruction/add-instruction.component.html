@@ -1,0 +1,518 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" color="primary">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? "Edit" : "Add" }} Site Instruction</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        strong="true"
+        shape="round"
+        color="success"
+        *ngIf="
+          (siteInstruction.status === 'scaffold created' ||
+            siteInstruction.status === 'signed') &&
+          isEdit
+        "
+        (click)="updateStatus('completed')"
+        >Done</ion-button
+      >
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen="true">
+  <ion-grid class="container" *ngIf="company$ | async as company">
+    <ion-row class="py-2">
+      <ion-col size="12">
+        <h3>SITE INSTRUCTION</h3>
+      </ion-col>
+      <ion-col>
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Site Code:</h6>
+          <h6>Site Name:</h6>
+          <h6>Site Address:</h6>
+          <h6>Customer:</h6>
+          <h6>Date Issued:</h6>
+          <h6>Created By:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col>
+        <ion-label>
+          <h6>{{ siteInstruction.code || "..." }}</h6>
+          <h6>{{ siteInstruction.site?.code }}</h6>
+          <h6>{{ siteInstruction.site?.name }}</h6>
+          <h6>{{ utilitySvc.getAddress(siteInstruction?.customer) }}</h6>
+          <h6>{{ siteInstruction.customer?.name }}</h6>
+          <h6>{{ siteInstruction.date | date }}</h6>
+          <h6>{{ siteInstruction.createdByName }}</h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <form
+      [formGroup]="form"
+      *ngIf="form && siteInstruction.status === 'needs signature'"
+      class="pt-2"
+    >
+      <!-- ATTACHMENTS -->
+      <ion-row class="card-outline mb-3">
+        <ion-col size="12">
+          <ion-text color="medium">
+            <h4>{{ company.terminology.scaffold }}s</h4>
+          </ion-text>
+        </ion-col>
+        <ion-col size="12">
+          <ion-row
+            formArrayName="attachments"
+            class="mb-3"
+            *ngFor="let attachment of attachmentForms.controls; let i = index"
+          >
+            <ion-col size="12">
+              <ion-note> Scaffold {{ i + 1 }} </ion-note>
+              <ion-chip
+                outline
+                color="danger"
+                class="ion-float-end"
+                (click)="deleteAttachment(i)"
+              >
+                <ion-label>Delete</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Length ({{ company.measurement.symbol }})"
+                type="number"
+                controlName="length"
+                placeholder="L"
+                [form]="attachment"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Width ({{ company.measurement.symbol }})"
+                type="number"
+                controlName="width"
+                placeholder="W"
+                [form]="attachment"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Height ({{ company.measurement.symbol }})"
+                type="number"
+                controlName="height"
+                placeholder="H"
+                [form]="attachment"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Level"
+                type="number"
+                controlName="level"
+                placeholder="1"
+                [form]="attachment"
+                [optional]="true"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-reactive
+                title="Description"
+                type="text"
+                controlName="description"
+                placeholder="Enter description"
+                [form]="attachment"
+                [optional]="true"
+              >
+              </app-input-reactive>
+            </ion-col>
+          </ion-row>
+          <ion-row class="mb-3">
+            <ion-col>
+              <ion-fab-button
+                size="small"
+                class="m-auto"
+                color="success"
+                (click)="addAttachment()"
+              >
+                <ion-icon name="add"></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+      <!-- BOARDS -->
+      <ion-row class="card-outline mb-3">
+        <ion-col size="12">
+          <ion-text color="medium">
+            <h4>{{ company.terminology.boards }}</h4>
+          </ion-text>
+        </ion-col>
+        <ion-col size="12">
+          <ion-row
+            formArrayName="boards"
+            class="mb-3"
+            *ngFor="let board of boardForms.controls; let i = index"
+          >
+            <ion-col size="12">
+              <ion-note> Item {{ i + 1 }} </ion-note>
+              <ion-chip
+                outline
+                color="danger"
+                class="ion-float-end"
+                (click)="deleteBoard(i)"
+              >
+                <ion-label>Delete</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Length ({{ company.measurement.symbol }})"
+                type="number"
+                controlName="length"
+                placeholder="L"
+                [form]="board"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Width ({{ company.measurement.symbol }})"
+                type="number"
+                controlName="width"
+                placeholder="W"
+                [form]="board"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Qty"
+                type="number"
+                controlName="qty"
+                placeholder="Enter Qty"
+                [form]="board"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-reactive
+                title="Description"
+                type="text"
+                controlName="description"
+                placeholder="Enter description"
+                [form]="board"
+                [optional]="true"
+              >
+              </app-input-reactive>
+            </ion-col>
+          </ion-row>
+          <ion-row class="mb-3">
+            <ion-col>
+              <ion-fab-button
+                size="small"
+                class="m-auto"
+                color="success"
+                (click)="addBoard()"
+              >
+                <ion-icon name="add"></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+
+      <!-- ADDITIONALS -->
+      <ion-row class="card-outline mb-3">
+        <ion-col size="12">
+          <ion-text color="medium">
+            <h4>Tasks</h4>
+          </ion-text>
+        </ion-col>
+        <ion-col size="12">
+          <ion-row
+            formArrayName="boards"
+            class="mb-3"
+            *ngFor="let additional of additionalForms.controls; let i = index"
+          >
+            <ion-col size="12">
+              <ion-note> Item {{ i + 1 }} </ion-note>
+              <ion-chip
+                outline
+                color="danger"
+                class="ion-float-end"
+                (click)="deleteAdditional(i)"
+              >
+                <ion-label>Delete</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Description "
+                type="text"
+                [textarea]="true"
+                controlName="description"
+                placeholder="Enter description"
+                [form]="additional"
+              >
+              </app-input-reactive>
+            </ion-col>
+          </ion-row>
+          <ion-row class="mb-3">
+            <ion-col>
+              <ion-fab-button
+                size="small"
+                class="m-auto"
+                color="success"
+                (click)="addAdditional()"
+              >
+                <ion-icon name="add"></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+      <ion-row class="py-2">
+        <ion-col size="12" class="p-0">
+          <app-input-reactive
+            [textarea]="true"
+            title="Notes"
+            [optional]="true"
+            controlName="notes"
+            [form]="form"
+          ></app-input-reactive>
+        </ion-col>
+      </ion-row>
+    </form>
+
+    <table
+      class="table table-bordered mb-3"
+      *ngIf="siteInstruction.status !== 'needs signature' && isEdit"
+    >
+      <thead>
+        <tr class="align-middle">
+          <th>#</th>
+          <th>Detail</th>
+          <th class="text-center">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container
+          *ngFor="let scaffold of siteInstruction.attachments; let i = index"
+        >
+          <tr class="align-middle">
+            <td>
+              {{ i + 1 }}
+            </td>
+            <td>
+              {{ company.terminology.scaffold }} - {{ scaffold.length
+              }}{{ company.measurement.symbol }} x {{ scaffold.width
+              }}{{ company.measurement.symbol }} x {{ scaffold.height
+              }}{{ company.measurement.symbol }} level {{ scaffold?.level }}
+            </td>
+            <td>
+              {{ scaffold.description }}
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container
+          *ngFor="let board of siteInstruction.boards; let i = index"
+        >
+          <tr class="align-middle">
+            <td>
+              {{ i + 1 + siteInstruction.attachments.length }}
+            </td>
+            <td>
+              {{ company.terminology.boards }} - {{ board.length
+              }}{{ company.measurement.symbol }} x {{ board.width
+              }}{{ company.measurement.symbol }}
+            </td>
+            <td>
+              {{ board.description }}
+            </td>
+          </tr>
+        </ng-container>
+        <ng-container
+          *ngFor="let task of siteInstruction.additionals; let i = index"
+        >
+          <tr class="align-middle">
+            <td>
+              {{
+                i +
+                  1 +
+                  siteInstruction.attachments.length +
+                  +siteInstruction.boards.length
+              }}
+            </td>
+            <td>Tasks</td>
+            <td>{{ task.description }}</td>
+          </tr>
+        </ng-container>
+        <tr>
+          <th colspan="3">Notes</th>
+        </tr>
+        <tr class="align-middle">
+          <td colspan="3">
+            {{ siteInstruction.notes }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ion-row class="py-2">
+      <ion-col size="12" *ngIf="siteInstruction.status === 'needs signature'">
+        <app-multiuploader></app-multiuploader>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="siteInstruction?.uploads?.length > 0">
+        <app-title-block> Uploaded Files </app-title-block>
+        <ion-row>
+          <ion-col
+            sizeXl="2"
+            sizeLg="3"
+            sizeMd="4"
+            size="6"
+            *ngFor="let file of siteInstruction.uploads; let i = index"
+          >
+            <app-file-item
+              [file]="file"
+              [allowDelete]="siteInstruction.status === 'needs signature'"
+            ></app-file-item>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+      <ion-col
+        class="mt-3"
+        size="12"
+        *ngIf="siteInstruction?.signatures.length > 0"
+      >
+        <app-title-block> Signatures </app-title-block>
+
+        <table class="table table-bordered mb-3">
+          <tbody>
+            <tr class="align-middle">
+              <td>Signed By</td>
+              <td class="text-center">Signature</td>
+            </tr>
+            <ng-container *ngFor="let signature of siteInstruction.signatures">
+              <tr class="align-middle">
+                <td>{{ signature?.signedBy }}</td>
+                <td class="text-center">
+                  <img [src]="signature?.signature" />
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-button
+          class="mx-auto"
+          strong="true"
+          expand="full"
+          shape="round"
+          color="success"
+          *ngIf="
+            (siteInstruction.status === 'needs signature' ||
+              siteInstruction.status === 'signed') &&
+            isEdit
+          "
+          (click)="sign()"
+          >Sign</ion-button
+        >
+      </ion-col>
+      <ng-container *ngIf="scaffolds$ | async as scaffolds">
+        <ion-col class="mt-3" size="12" *ngIf="scaffolds.length > 0">
+          <app-title-block> Scaffolds Linked </app-title-block>
+
+          <ng-container *ngFor="let scaffold of scaffolds">
+            <ion-item>
+              <ion-label>{{ scaffold.code }}</ion-label>
+              <ion-chip
+                slot="end"
+                color="primary"
+                (click)="viewScaffold(scaffold)"
+                shape="round"
+              >
+                View
+              </ion-chip>
+            </ion-item>
+          </ng-container>
+        </ion-col>
+      </ng-container>
+      <ion-col size="12" *ngIf="loading">
+        <ion-progress-bar type="indeterminate"></ion-progress-bar>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="mt-5" *ngIf="customer$ | async as customer">
+      <ion-col size="2">
+        <ion-button
+          [strong]="true"
+          shape="round"
+          *ngIf="
+            isEdit &&
+            !loading &&
+            siteInstruction.status !== 'scaffold created' &&
+            siteInstruction.status !== 'completed' &&
+            siteInstruction.status !== 'void'
+          "
+          color="danger"
+          (click)="updateStatus('void')"
+          >Void Return</ion-button
+        >
+      </ion-col>
+      <ion-col size="10" class="text-end" *ngIf="!loading">
+        <ion-button
+          *ngIf="siteInstruction.status !== 'completed' && !isEdit"
+          shape="round"
+          color="success"
+          [disabled]="form.invalid"
+          (click)="createInstruction(customer)"
+          >Create Instruction</ion-button
+        >
+        <ion-button
+          shape="round"
+          color="primary"
+          *ngIf="siteInstruction.status === 'needs signature' && isEdit"
+          (click)="updateInstruction(customer)"
+          [disabled]="form.invalid"
+          >Update Instruction</ion-button
+        >
+        <ion-button
+          shape="round"
+          color="primary"
+          *ngIf="
+            (siteInstruction.status === 'signed' ||
+              siteInstruction.status === 'scaffold created') &&
+            !isScaffold &&
+            isEdit
+          "
+          (click)="createScaffold()"
+          >Create Scaffold
+        </ion-button>
+
+        <!-- <ng-container *ngIf="user$ | async as user">
+          <ion-button
+            shape="round"
+            color="danger"
+            *ngIf="user.role === 'Owner' && isEdit"
+            (click)="deleteInstruction()"
+            >Delete Instruction</ion-button
+          >
+        </ng-container> -->
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

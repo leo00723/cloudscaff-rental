@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
-import { map, Observable } from 'rxjs';
+import * as Papa from 'papaparse';
+import { Observable, map } from 'rxjs';
 import { AddBillableShipmentComponent } from 'src/app/components/add-billable-shipment/add-billable-shipment.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
@@ -21,7 +23,6 @@ import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
-import * as Papa from 'papaparse';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
@@ -43,6 +44,8 @@ export class InventoryPage implements OnInit {
 
   shipments$: Observable<Shipment[]>;
   pendingShipments$: Observable<Shipment[]>;
+  outboundShipments$: Observable<Shipment[]>;
+  reservedShipments$: Observable<Shipment[]>;
 
   billableShipments$: Observable<InventoryEstimate[]>;
 
@@ -55,6 +58,8 @@ export class InventoryPage implements OnInit {
 
   returns$: Observable<Return[]>;
   submittedReturns$: Observable<Return[]>;
+  outboundReturns$: Observable<Return[]>;
+
   active = 1;
   importing = false;
   uploading = false;
@@ -331,19 +336,15 @@ export class InventoryPage implements OnInit {
       if (id) {
         this.inventoryItems$ = this.masterSvc
           .edit()
-          .getCollectionOrdered(`company/${id}/stockItems`, 'name', 'asc');
+          .getCollectionOrdered(`company/${id}/stockItems`, 'category', 'asc');
 
         // shipments
         this.shipments$ = this.masterSvc
           .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/shipments`,
-            'status',
-            '==',
-            'sent',
-            'code',
-            'asc'
-          );
+          .getCollectionFiltered(`company/${id}/shipments`, [
+            where('status', 'in', ['sent', 'received']),
+            orderBy('code', 'desc'),
+          ]);
         this.pendingShipments$ = this.masterSvc
           .edit()
           .getCollectionWhereAndOrder(
@@ -351,6 +352,26 @@ export class InventoryPage implements OnInit {
             'status',
             '==',
             'pending',
+            'code',
+            'asc'
+          );
+        this.outboundShipments$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/shipments`,
+            'status',
+            '==',
+            'on-route',
+            'code',
+            'asc'
+          );
+        this.reservedShipments$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/shipments`,
+            'status',
+            '==',
+            'reserved',
             'code',
             'asc'
           );
@@ -417,14 +438,10 @@ export class InventoryPage implements OnInit {
         // returns
         this.returns$ = this.masterSvc
           .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/returns`,
-            'status',
-            '==',
-            'sent',
-            'code',
-            'asc'
-          );
+          .getCollectionFiltered(`company/${id}/returns`, [
+            where('status', 'in', ['sent', 'received']),
+            orderBy('code', 'desc'),
+          ]);
         this.submittedReturns$ = this.masterSvc
           .edit()
           .getCollectionWhereAndOrder(
@@ -433,8 +450,14 @@ export class InventoryPage implements OnInit {
             '==',
             'submitted',
             'code',
-            'asc'
+            'desc'
           );
+        this.outboundReturns$ = this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${id}/returns`, [
+            where('status', 'in', ['on-route', 'collected']),
+            orderBy('code', 'desc'),
+          ]);
       } else {
         this.masterSvc.log(
           '-----------------------try inventory----------------------'

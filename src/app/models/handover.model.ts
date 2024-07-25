@@ -4,10 +4,21 @@ import { HandoverTemplate } from './handoverTemplate.model';
 import { Scaffold } from './scaffold.model';
 import { UploadedFile } from './uploadedFile.model';
 
+export interface ItemChange {
+  length: number;
+  width: number;
+  height: number;
+  type: string;
+}
 export interface Handover {
   id?: string;
   date?: any;
   code?: string;
+  changes?: {
+    scaffold: ItemChange[];
+    attachments: ItemChange[];
+    boards: ItemChange[];
+  };
   status?: string;
   notes?: string;
   detail?: string;

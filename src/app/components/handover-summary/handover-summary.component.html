@@ -89,6 +89,64 @@
           [scaffold]="handover.scaffold"
           [showSafe]="true"
         ></app-scaffold-overview-table>
+        <table class="table table-bordered" *ngIf="handover?.changes">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Modification Details</th>
+              <th>Type of Change</th>
+              <th>Description (L x W x H)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container
+              *ngFor="let item of handover?.changes?.scaffold; let i = index"
+            >
+              <tr>
+                <td>1</td>
+                <td>Scaffold Modification</td>
+                <td class="text-capitalize">{{ item.type }}</td>
+
+                <td>
+                  {{ item.length }}{{ company.measurement.symbol }} x
+                  {{ item.width }}{{ company.measurement.symbol }} x
+                  {{ item.height }}{{ company.measurement.symbol }}
+                </td>
+              </tr>
+            </ng-container>
+            <ng-container
+              *ngFor="let item of handover?.changes?.attachments; let i = index"
+            >
+              <tr>
+                <td>
+                  {{ i + 2 }}
+                </td>
+                <td>Attachment Modification</td>
+                <td class="text-capitalize">{{ item.type }}</td>
+                <td>
+                  {{ item.length }}{{ company.measurement.symbol }} x
+                  {{ item.width }}{{ company.measurement.symbol }} x
+                  {{ item.height }}{{ company.measurement.symbol }}
+                </td>
+              </tr>
+            </ng-container>
+            <ng-container
+              *ngFor="let item of handover?.changes?.boards; let i = index"
+            >
+              <tr>
+                <td>
+                  {{ i + 2 + handover.changes.attachments.length }}
+                </td>
+                <td>Board Modification</td>
+                <td class="text-capitalize">{{ item.type }}</td>
+                <td>
+                  {{ item.length }}{{ company.measurement.symbol }} x
+                  {{ item.width }}{{ company.measurement.symbol }}
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
         <table class="table table-bordered" *ngIf="handover.questions">
           <ng-container *ngFor="let category of handover.questions.categories">
             <thead>

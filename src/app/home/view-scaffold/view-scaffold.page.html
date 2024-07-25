@@ -18,6 +18,24 @@
             <ion-label>Overview</ion-label>
           </ion-segment-button>
           <ion-segment-button
+            value="SI"
+            *ngIf="user.permissionsList.includes('Site Instructions') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label
+              >Site Instructions
+              <!-- <ng-container *ngIf="instructions$ | async as instructions">
+                <ion-badge
+                  shape="round"
+                  mode="ios"
+                  color="danger"
+                  *ngIf="instructions.length > 0"
+                >
+                  {{instructions.length}}
+                </ion-badge>
+              </ng-container> -->
+            </ion-label>
+          </ion-segment-button>
+          <ion-segment-button
             value="handovers"
             *ngIf="user.permissionsList.includes('Handovers') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
           >
@@ -35,10 +53,7 @@
           >
             <ion-label>Dismantles</ion-label>
           </ion-segment-button>
-          <!-- <ion-segment-button
-            value="modifications"
-            *ngIf="user.role !== 'Supervisor'"
-          >
+          <!-- <ion-segment-button value="modifications">
             <ion-label>Modifications</ion-label>
           </ion-segment-button> -->
           <ion-segment-button
@@ -97,6 +112,32 @@
           </ion-col>
         </ion-row>
       </div>
+      <ng-container *ngSwitchCase="'SI'">
+        <app-si-table
+          [value]="instructions$"
+          *ngIf="instructions$ | async else loading"
+          (selectedItem)="viewInstruction($event)"
+        ></app-si-table>
+        <ion-fab
+          class="m-2"
+          vertical="bottom"
+          horizontal="end"
+          slot="fixed"
+          *ngIf="site$ |async as site"
+        >
+          <ion-fab-button (click)="addInstruction(site)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+        <ng-template #loading>
+          <div class="ion-padding">
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+            <app-skeleton-text></app-skeleton-text>
+          </div>
+        </ng-template>
+      </ng-container>
       <div *ngSwitchCase="'inspections'">
         <app-inspection-table
           [value]="inspections$"
@@ -163,7 +204,7 @@
           </div>
         </ng-template>
       </div>
-      <!-- <div *ngSwitchCase="'modifications'">
+      <div *ngSwitchCase="'modifications'">
         <app-modification-table
           [value]="modifications$"
           *ngIf="modifications$ | async else loading"
@@ -182,7 +223,7 @@
             <app-skeleton-text></app-skeleton-text>
           </div>
         </ng-template>
-      </div> -->
+      </div>
       <div *ngSwitchCase="'invoices'">
         <app-invoice-table
           [value]="invoices$"

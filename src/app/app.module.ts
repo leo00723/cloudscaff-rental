@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import {
@@ -61,6 +61,7 @@ import { RouterState } from './shared/router.state';
 import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
+import { WeightPipe } from './components/weight.pipe';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -149,7 +150,9 @@ import { TrialEndedPage } from './trial-ended/trial-ended.page';
     NotificationService,
     FormBuilder,
     DecimalPipe,
+    DatePipe,
     FileOpener,
+    WeightPipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],

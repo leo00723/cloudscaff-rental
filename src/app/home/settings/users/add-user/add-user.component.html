@@ -18,149 +18,159 @@
   class="ion-padding"
   *ngIf="user$ | async as currentUser"
 >
-  <ion-row *ngIf="isCreate">
-    <ion-col size="12">
-      <form [formGroup]="form">
-        <app-input-reactive
-          title="Email"
-          [form]="form"
-          controlName="email"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Title"
-          [form]="form"
-          controlName="title"
-        ></app-input-reactive>
-        <ion-item class="my-3 rounded-3" fill="solid" mode="md">
-          <ion-label position="stacked">Password</ion-label>
-          <app-show-hide-password>
-            <ion-input
-              type="password"
-              id="password"
-              placeholder="Password"
-              formControlName="password"
-            ></ion-input>
-          </app-show-hide-password>
-          <ion-note
-            slot="error"
-            color="danger"
-            *ngIf="checkStatus(field('password'))"
-            >Please enter a valid password! Password must be 6 characters or
-            more.</ion-note
+  <ng-container *ngIf="company$ | async as company">
+    <ion-row *ngIf="isCreate">
+      <ion-col size="12">
+        <form [formGroup]="form">
+          <app-input-reactive
+            title="Email"
+            [form]="form"
+            controlName="email"
+          ></app-input-reactive>
+          <app-input-reactive
+            title="Title"
+            [form]="form"
+            controlName="title"
+          ></app-input-reactive>
+          <ion-item class="my-3 rounded-3" fill="solid" mode="md">
+            <ion-label position="stacked">Password</ion-label>
+            <app-show-hide-password>
+              <ion-input
+                type="password"
+                id="password"
+                placeholder="Password"
+                formControlName="password"
+              ></ion-input>
+            </app-show-hide-password>
+            <ion-note
+              slot="error"
+              color="danger"
+              *ngIf="checkStatus(field('password'))"
+              >Please enter a valid password! Password must be 6 characters or
+              more.</ion-note
+            >
+          </ion-item>
+          <app-permissions-select
+            #permissions
+            (click)="permissions.open()"
+            [user]="user"
+            [company]="company"
+            (selectedChanged)="setRoles($event)"
+          ></app-permissions-select>
+          <ion-item
+            class="my-3"
+            fill="solid"
+            mode="md"
+            shape="round"
+            *ngIf="user.permissions && user.permissionsList.length > 0"
           >
-        </ion-item>
-        <app-permissions-select
-          #permissions
-          (click)="permissions.open()"
-          [user]="user"
-          (selectedChanged)="setRoles($event)"
-        ></app-permissions-select>
-        <ion-item
-          class="my-3"
-          fill="solid"
-          mode="md"
-          shape="round"
-          *ngIf="user.permissions && user.permissionsList.length > 0"
-        >
-          <ul class="pt-3">
-            <li *ngFor="let item of user.permissionsList">{{ item }}</li>
-          </ul>
-        </ion-item>
-      </form>
-    </ion-col>
-    <ion-col>
-      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+            <ul class="pt-3">
+              <li *ngFor="let item of user.permissionsList">{{ item }}</li>
+            </ul>
+          </ion-item>
+        </form>
+      </ion-col>
+      <ion-col>
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
 
-      <ion-button
-        *ngIf="!loading"
-        (click)="create()"
-        expand="block"
-        shape="round"
-        [disabled]="form.invalid || user.permissionsList.length < 1"
-      >
-        Create User
-      </ion-button>
-    </ion-col>
-  </ion-row>
-  <ion-row *ngIf="isEdit && this.user">
-    <ion-col class="text-center mb-3">
-      <img class="m-auto cursor-pointer" [src]="user.thumb" />
-    </ion-col>
-    <ion-col size="12">
-      <form [formGroup]="form">
-        <app-input-reactive
-          title="Email"
-          [form]="form"
-          controlName="email"
-          [readonly]="true"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Name"
-          [form]="form"
-          controlName="name"
-          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Contact Number"
-          [form]="form"
-          controlName="phone"
-          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Title"
-          [form]="form"
-          controlName="title"
-          [readonly]="!currentUser.permissionsList.includes('Super Admin')"
-        ></app-input-reactive>
-        <app-permissions-select
-          #permissions
-          (click)="permissions.open()"
-          [user]="user"
-          (selectedChanged)="setRoles($event)"
-        ></app-permissions-select>
-
-        <ion-item
-          class="my-3"
-          fill="solid"
-          mode="md"
-          shape="round"
-          *ngIf="user.permissions && user.permissionsList.length > 0"
-        >
-          <ul class="pt-3">
-            <li *ngFor="let item of user.permissionsList">{{ item }}</li>
-          </ul>
-        </ion-item>
-      </form>
-    </ion-col>
-    <ion-col class="text-end">
-      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
-
-      <ng-container
-        *ngIf="
-          currentUser.role === 'Owner' ||
-          currentUser.permissionsList.includes('Super Admin')
-        "
-      >
         <ion-button
-          *ngIf="
-            !loading && user.role !== 'Owner' && user.id !== currentUser.id
-          "
-          (click)="delete()"
-          color="danger"
-          shape="round"
-        >
-          Delete User
-        </ion-button>
-        <ion-button
-          color="success"
           *ngIf="!loading"
-          (click)="update()"
+          (click)="create()"
+          expand="block"
           shape="round"
-          [disabled]="form.invalid"
+          [disabled]="form.invalid || user.permissionsList.length < 1"
         >
-          Update User
+          Create User
         </ion-button>
-      </ng-container>
-    </ion-col>
-  </ion-row>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="isEdit && this.user">
+      <ion-col class="text-center mb-3">
+        <img class="m-auto cursor-pointer" [src]="user.thumb" />
+      </ion-col>
+      <ion-col size="12">
+        <form [formGroup]="form">
+          <app-input-reactive
+            title="Email"
+            [form]="form"
+            controlName="email"
+            [readonly]="true"
+          ></app-input-reactive>
+          <app-input-reactive
+            title="Name"
+            [form]="form"
+            controlName="name"
+            [readonly]="!currentUser.permissionsList.includes('Super Admin')"
+          ></app-input-reactive>
+          <app-input-reactive
+            title="Contact Number"
+            [form]="form"
+            controlName="phone"
+            [readonly]="!currentUser.permissionsList.includes('Super Admin')"
+          ></app-input-reactive>
+          <app-input-reactive
+            title="Title"
+            [form]="form"
+            controlName="title"
+            [readonly]="!currentUser.permissionsList.includes('Super Admin')"
+          ></app-input-reactive>
+          <app-permissions-select
+            #permissionsEdit
+            (click)="permissionsEdit.open()"
+            [user]="user"
+            [company]="company"
+            (selectedChanged)="setRoles($event)"
+          ></app-permissions-select>
+
+          <ion-item
+            class="my-3"
+            fill="solid"
+            mode="md"
+            shape="round"
+            *ngIf="user.permissions && user.permissionsList.length > 0"
+          >
+            <ul class="pt-3">
+              <li *ngFor="let item of user.permissionsList">{{ item }}</li>
+            </ul>
+          </ion-item>
+        </form>
+      </ion-col>
+      <ion-col class="text-end">
+        <ion-progress-bar
+          type="indeterminate"
+          *ngIf="loading"
+        ></ion-progress-bar>
+
+        <ng-container
+          *ngIf="
+            currentUser.role === 'Owner' ||
+            currentUser.permissionsList.includes('Super Admin')
+          "
+        >
+          <ion-button
+            *ngIf="
+              !loading && user.role !== 'Owner' && user.id !== currentUser.id
+            "
+            (click)="delete()"
+            color="danger"
+            shape="round"
+          >
+            Delete User
+          </ion-button>
+          <ion-button
+            color="success"
+            *ngIf="!loading"
+            (click)="update()"
+            shape="round"
+            [disabled]="form.invalid"
+          >
+            Update User
+          </ion-button>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+  </ng-container>
 </ion-content>

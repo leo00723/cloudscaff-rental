@@ -177,79 +177,76 @@ exports.requestUpdates = functions.firestore
     }
   });
 
+exports.deliveryUpdates = functions.firestore
+  .document('company/{companyId}/shipments/{id}')
+  .onUpdate(async (change, context) => {
+    const data = change.after.data();
+    const companyId = context.params.companyId;
+    const shipmentCode = data.code;
+    const site = data.site;
+
+    let title;
+    let message;
+
+    if (data.status === 'on-route') {
+      title = 'Delivery On Route';
+      message = `A new delivery ${shipmentCode} is on route for site ${site.name}.`;
+    } else if (data.status === 'received') {
+      title = 'Delivery Received';
+      message = `Delivery ${shipmentCode} has been received by ${data.signedBy}.`;
+    } else {
+      // Exit early if status is not relevant
+      return;
+    }
+
+    const [users, siteUsers] = await Promise.all([
+      getUsers(companyId, ['Shipments', 'Deliveries']),
+      getSiteUsers(companyId, site.id),
+    ]);
+
+    await Promise.all([
+      sendNotifications(users, title, message),
+      sendNotifications(siteUsers, title, message),
+    ]);
+  });
+
 exports.returnUpdates = functions.firestore
   .document('company/{companyId}/returns/{id}')
   .onUpdate(async (change, context) => {
-    if (change.after.data().status === 'submitted') {
-      // get inventory users
-      const users = await getUsers(context.params.companyId, [
-        'Inventory Returns',
-      ]);
+    const data = change.after.data();
+    const companyId = context.params.companyId;
+    const returnCode = data.code;
+    const site = data.site;
 
-      // get site users
-      const siteUsers = await getSiteUsers(
-        context.params.companyId,
-        change.after.data().site.id
-      );
+    let title;
+    let message;
 
-      // send notifications to site users
-      if (siteUsers) {
-        for await (const user of siteUsers) {
-          await admin
-            .firestore()
-            .collection(`users/${user.id}/notifications`)
-            .add({
-              title: 'Return Submitted',
-              date: admin.firestore.FieldValue.serverTimestamp(),
-              message: `A new return ${
-                change.after.data().code
-              } has been submitted for ${
-                change.after.data().site.name
-              }. Check details and update if necessary.`,
-            });
-        }
-      }
-
-      // send notifications to inventory users
-      if (users) {
-        for await (const user of users.docs) {
-          await admin
-            .firestore()
-            .collection(`users/${user.id}/notifications`)
-            .add({
-              title: 'Return Submitted',
-              date: admin.firestore.FieldValue.serverTimestamp(),
-              message: `A new return ${
-                change.after.data().code
-              } has been submitted for ${
-                change.after.data().site.name
-              }. Check details and update if necessary.`,
-            });
-        }
-      }
-    } else if (change.after.data().status === 'sent') {
-      // get site users
-      const siteUsers = await getSiteUsers(
-        context.params.companyId,
-        change.after.data().site.id
-      );
-
-      // send notifications to site users
-      if (siteUsers) {
-        for await (const user of siteUsers) {
-          await admin
-            .firestore()
-            .collection(`users/${user.id}/notifications`)
-            .add({
-              title: 'Inventory Return Approved',
-              date: admin.firestore.FieldValue.serverTimestamp(),
-              message: `A inventory return ${
-                change.after.data().code
-              } has been approved for ${change.after.data().site.name}.`,
-            });
-        }
-      }
+    if (data.status === 'submitted') {
+      title = 'Return Submitted';
+      message = `A new return ${returnCode} has been submitted for ${site.name}. Check details and update if necessary.`;
+    } else if (data.status === 'on-route') {
+      title = 'Driver on route';
+      message = `Return ${returnCode} has been approved for ${site.name}. Driver on route for collection.`;
+    } else if (data.status === 'collected') {
+      title = 'Return collected';
+      message = `Return ${returnCode} has been collected for ${site.name}. Driver on route to yard.`;
+    } else if (data.status === 'received') {
+      title = 'Return has been processed';
+      message = `Return ${returnCode} has been processed for ${site.name}.`;
+    } else {
+      // Exit early if status is not relevant
+      return;
     }
+
+    const [users, siteUsers] = await Promise.all([
+      getUsers(companyId, ['Inventory Returns']),
+      getSiteUsers(companyId, site.id),
+    ]);
+
+    await Promise.all([
+      sendNotifications(users, title, message),
+      sendNotifications(siteUsers, title, message),
+    ]);
   });
 
 exports.scaffoldUpdates = functions.firestore
@@ -287,8 +284,27 @@ exports.scaffoldUpdates = functions.firestore
     }
   });
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-async function getUsers(companyId: string, permissions: string[]) {
+const sendNotifications = async (users: any, title: any, message: any) => {
+  if (users && users.docs) {
+    for (const user of users.docs) {
+      await admin.firestore().collection(`users/${user.id}/notifications`).add({
+        title,
+        date: admin.firestore.FieldValue.serverTimestamp(),
+        message,
+      });
+    }
+  } else if (users) {
+    for (const user of users) {
+      await admin.firestore().collection(`users/${user.id}/notifications`).add({
+        title,
+        date: admin.firestore.FieldValue.serverTimestamp(),
+        message,
+      });
+    }
+  }
+};
+
+const getUsers = async (companyId: string, permissions: string[]) => {
   try {
     const users = await admin
       .firestore()
@@ -301,10 +317,9 @@ async function getUsers(companyId: string, permissions: string[]) {
     logger.log(error);
     return null;
   }
-}
+};
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-async function getSiteUsers(companyId: string, siteId: string) {
+const getSiteUsers = async (companyId: string, siteId: string) => {
   try {
     const site = await admin
       .firestore()
@@ -316,4 +331,4 @@ async function getSiteUsers(companyId: string, siteId: string) {
     logger.log(error);
     return null;
   }
-}
+};

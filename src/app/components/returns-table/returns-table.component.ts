@@ -45,12 +45,20 @@ export class ReturnsTableComponent {
     switch (status) {
       case 'sent':
         return 'success';
+      case 'received':
+        return 'success';
       case 'pending':
         return 'primary';
       case 'void':
         return 'danger';
       case 'reserved':
         return 'warning';
+      case 'on-route':
+        return 'warning';
+      case 'collected':
+        return 'tertiary';
+      default:
+        return 'primary';
     }
   }
 

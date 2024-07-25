@@ -24,6 +24,7 @@ import { Inspection } from 'src/app/models/inspection.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { MasterService } from 'src/app/services/master.service';
 import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
+import { Navigate } from 'src/app/shared/router.state';
 
 @Component({
   selector: 'app-scaffold-table',
@@ -106,6 +107,16 @@ export class ScaffoldTableComponent {
       cssClass: 'fullscreen',
     });
     return await modal.present();
+  }
+
+  viewScaffold(scaffold: Scaffold) {
+    this.masterSvc
+      .store()
+      .dispatch(
+        new Navigate(
+          `/dashboard/scaffold/${scaffold.companyId}-${scaffold.siteId}-${scaffold.id}`
+        )
+      );
   }
 
   updateFilter(event) {

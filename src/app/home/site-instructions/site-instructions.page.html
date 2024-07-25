@@ -1,0 +1,27 @@
+<app-header title="Site Instructions"> </app-header>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="company$ |async as company">
+    <ng-container *ngIf="company.totalSIs > 0">
+      <app-si-table
+        [value]="siteInstructions$"
+        *ngIf="siteInstructions$ | async else loading"
+        (selectedItem)="viewInstruction($event)"
+      ></app-si-table>
+    </ng-container>
+    <app-page-placeholder
+      *ngIf="company.totalSIs === 0 || !company.totalSIs"
+      title="No Site Instructions?"
+      subtitle="Create your first Site Instruction in a Site."
+      (clicked)="addSI()"
+    ></app-page-placeholder>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

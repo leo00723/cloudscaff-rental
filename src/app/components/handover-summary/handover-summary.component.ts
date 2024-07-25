@@ -59,6 +59,7 @@ export class HandoverSummaryComponent {
         this.handover.signatureRef = res.ref;
         this.handover.status = 'active-Signed';
         this.handover.signedBy = ev.name;
+        this.handover.date = new Date();
         this.masterSvc
           .edit()
           .setDoc(

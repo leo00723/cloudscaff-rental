@@ -1,10 +1,11 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { increment } from '@angular/fire/firestore';
+import { arrayUnion, increment } from '@angular/fire/firestore';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import cloneDeep from 'lodash/cloneDeep';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
+import { SI } from 'src/app/models/si.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -21,6 +22,7 @@ export class AddScaffoldComponent implements OnInit {
       this.initForm();
     }
   }
+  @Input() siData?: SI;
 
   user: User;
   company: Company;
@@ -71,6 +73,7 @@ export class AddScaffoldComponent implements OnInit {
       total: [0],
       type: [''],
       width: ['', [Validators.required, Validators.min(1)]],
+      location: [''],
     });
 
     this.attachmentsForms.push(attachment);
@@ -113,10 +116,25 @@ export class AddScaffoldComponent implements OnInit {
           this.scaffold = this.form.value;
           this.scaffold.code = code;
           this.scaffold.createdBy = this.user.id;
-
-          await this.masterSvc
+          this.scaffold.createdByName = this.user.name;
+          if (this.siData) {
+            this.scaffold.siIDS = [this.siData.id];
+          }
+          const doc = await this.masterSvc
             .edit()
             .addDocument(`company/${this.company.id}/scaffolds`, this.scaffold);
+          if (this.siData) {
+            await this.masterSvc
+              .edit()
+              .updateDoc(
+                `company/${this.company.id}/siteInstructions`,
+                this.siData.id,
+                {
+                  scaffoldIDs: arrayUnion(doc.id),
+                  status: 'scaffold created',
+                }
+              );
+          }
           await this.masterSvc
             .edit()
             .updateDoc(`company/${this.company.id}/sites`, this.site.id, {
@@ -177,6 +195,7 @@ export class AddScaffoldComponent implements OnInit {
         daysStanding: [''],
         hireTotal: [0],
         isWeeks: [''],
+        location: [''],
       }),
       attachments: this.masterSvc.fb().array([]),
       boards: this.masterSvc.fb().array([]),

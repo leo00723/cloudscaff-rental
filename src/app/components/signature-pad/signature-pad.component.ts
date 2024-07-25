@@ -34,6 +34,7 @@ export class SignaturePadComponent {
 
   clearSignature() {
     this.signaturePad.clear();
+    this.res.emit({ signature: null, name: this.name });
   }
 
   savePad() {

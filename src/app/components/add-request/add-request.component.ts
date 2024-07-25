@@ -192,7 +192,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
 
         shipment.code = this.masterSvc
           .edit()
-          .generateDocCode(this.company.totalShipments, 'SHI');
+          .generateDocCode(this.company.totalShipments, 'DEL');
         newRequest.status = hasDeficit ? 'partial shipment' : 'approved';
 
         await this.masterSvc
@@ -246,8 +246,10 @@ export class AddRequestComponent implements OnInit, OnDestroy {
     this.items = this.itemBackup.filter(
       (item) =>
         item?.code?.toString().toLowerCase().includes(val) ||
-        item.name.toLowerCase().includes(val) ||
-        item?.category?.toLowerCase().includes(val) ||
+        item?.name?.toString().toLowerCase().includes(val) ||
+        item?.category?.toString().toLowerCase().includes(val) ||
+        item?.size?.toString().toLowerCase().includes(val) ||
+        item?.location?.toString().toLowerCase().includes(val) ||
         !val
     );
     if (!val) {
@@ -274,8 +276,8 @@ export class AddRequestComponent implements OnInit, OnDestroy {
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.request.site, Validators.required],
-      startDate: [this.request.startDate, Validators.required],
-      endDate: [this.request.endDate, Validators.required],
+      startDate: [this.request.startDate, Validators.nullValidator],
+      endDate: [this.request.endDate, Validators.nullValidator],
       company: [this.company, Validators.required],
       status: [this.request.status, Validators.required],
       updatedBy: [this.user.id, Validators.required],
@@ -308,11 +310,12 @@ export class AddRequestComponent implements OnInit, OnDestroy {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.site, Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startDate: ['', Validators.nullValidator],
+      endDate: ['', Validators.nullValidator],
       company: [this.company, Validators.required],
       status: ['pending', Validators.required],
       createdBy: [this.user.id, Validators.required],
+      createdByName: [this.user.name, Validators.required],
       notes: [''],
     });
   }

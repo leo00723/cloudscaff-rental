@@ -15,8 +15,8 @@ import { InventoryEstimateComponent } from '../home/estimates/inventory-estimate
 import { BillableShipmentsTableComponent } from '../home/inventory/billable-shipments-table/billable-shipments-table.component';
 import { CompanyPage } from '../home/settings/company/company.page';
 import { AddSiteComponent } from '../home/sites/add-site/add-site.component';
-import { RequestsTableComponent } from '../home/view-site/requests-table/requests-table.component';
-import { ReturnsTableComponent } from '../home/view-site/returns-table/returns-table.component';
+import { RequestsTableComponent } from './requests-table/requests-table.component';
+import { ReturnsTableComponent } from './returns-table/returns-table.component';
 import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.component';
 import { AcceptModificationComponent } from './accept-modification/accept-modification.component';
 import { AddBillableShipmentComponent } from './add-billable-shipment/add-billable-shipment.component';
@@ -99,6 +99,11 @@ import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-l
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
 import { DismantleSummaryComponent } from './dismantle-summary/dismantle-summary.component';
+import { ShipmentTableComponent } from './shipment-table/shipment-table.component';
+import { AddInstructionComponent } from './add-instruction/add-instruction.component';
+import { SITableComponent } from './si-table/si-table.component';
+import { SignatureModalComponent } from './signature-modal/signature-modal.component';
+import { HandoverTableComponent } from './handover-table/handover-table.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -109,12 +114,14 @@ const COMPONENTS = [
   AddEstimatePage,
   AddHandoverComponent,
   AddInspectionComponent,
+  AddInstructionComponent,
   AddInvoiceComponent,
   AddModificationComponent,
   AddPaymentApplicationComponent,
   AddPaymentComponent,
   AddRequestComponent,
   AddReturnComponent,
+  AddScaffoldComponent,
   AddShipmentComponent,
   AddSiteComponent,
   AddStockitemComponent,
@@ -134,10 +141,13 @@ const COMPONENTS = [
   CustomerComponent,
   DashboardCardMiniComponent,
   DatepickerComponent,
+  DismantleSummaryComponent,
+  DropzoneDirective,
   DuplicateStockItemComponent,
   EditprofileComponent,
   EstimateSummaryComponent,
   EstimateTableComponent,
+  FileItemComponent,
   FileUploadComponent,
   GenerateStatementComponent,
   HandoverSummaryComponent,
@@ -156,21 +166,31 @@ const COMPONENTS = [
   InventoryEstimateTableComponent,
   InvoiceSummaryComponent,
   ModificationSummaryComponent,
+  MultiuploaderComponent,
   NotificationsComponent,
+  PagePlaceholderComponent,
   RepurposeInventoryComponent,
   RequestsTableComponent,
   ReturnsTableComponent,
+  SITableComponent,
   ScaffoldEditformComponent,
   ScaffoldOverviewTableComponent,
+  ScaffoldTableComponent,
   ShareDocumentComponent,
   ShipmentInvoiceSummaryComponent,
+  ShipmentTableComponent,
   ShowHidePasswordComponent,
+  SignatureModalComponent,
   SignaturePadComponent,
   SiteFormComponent,
   SkeletonTextComponent,
   StatementSummaryComponent,
   TitleBlockComponent,
+  TutorialGalleryComponent,
+  UploadTaskComponent,
+  UploaderComponent,
   UserPickerComponent,
+  VideoPlayerComponent,
   ViewBulkEstimateComponent,
   ViewEstimateComponent,
   ViewInventoryEstimateComponent,
@@ -179,31 +199,21 @@ const COMPONENTS = [
   ViewShipmentInvoiceComponent,
   ViewStockLocationsComponent,
   ViewTermsComponent,
-  TutorialGalleryComponent,
-  VideoPlayerComponent,
-  UploaderComponent,
-  MultiuploaderComponent,
-  DropzoneDirective,
-  UploadTaskComponent,
-  PagePlaceholderComponent,
-  FileItemComponent,
-  AddScaffoldComponent,
   WeightPipe,
-  ScaffoldTableComponent,
-  DismantleSummaryComponent,
+  HandoverTableComponent,
 ];
 const IMPORTS = [
   CommonModule,
   FormsModule,
-  ReactiveFormsModule,
-  IonicModule,
   HttpClientModule,
+  IonicModule,
   NgxDatatableModule,
-  SwiperModule,
-  ScrollingModule,
-  SignaturePadModule,
-  SearchableSelectComponent,
   PermissionsSelectComponent,
+  ReactiveFormsModule,
+  ScrollingModule,
+  SearchableSelectComponent,
+  SignaturePadModule,
+  SwiperModule,
 ];
 
 @NgModule({

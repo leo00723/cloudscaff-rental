@@ -103,7 +103,7 @@ export class RepurposeInventoryComponent implements OnInit {
       this.addYardQty(
         recipient,
         this.qty,
-        `Damaged items recieved from ${donar.category} - ${donar.size} - ${donar.name}`
+        `Damaged items received from ${donar.category} - ${donar.size} - ${donar.name}`
       );
       this.company = this.masterSvc
         .store()

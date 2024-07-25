@@ -24,6 +24,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { environment } from 'src/environments/environment';
 import * as Papa from 'papaparse';
+import { Company } from 'src/app/models/company.model';
 
 @Component({
   selector: 'app-inventory-table',
@@ -48,6 +49,8 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   isProd = environment.production;
   user: User;
 
+  company: Company;
+
   private subs = new Subscription();
 
   constructor(
@@ -61,6 +64,7 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.user = this.store.selectSnapshot(UserState.user);
+    this.company = this.store.selectSnapshot(CompanyState.company);
     this.subs.add(
       this.inventoryItems$.subscribe((items) => {
         this.itemsBackup = items;
@@ -98,12 +102,13 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
     this.temp$ = this.inventoryItems$.pipe(
       map((es) =>
         es.filter((d) => {
-          const code = d?.code.toString().toLowerCase().includes(val);
-          const category = d?.category?.toLowerCase().includes(val);
-          const name = d.name?.toLowerCase().includes(val);
-          const size = d?.size.toString().toLowerCase().includes(val);
+          const code = d?.code?.toString().toLowerCase().includes(val);
+          const category = d?.category?.toString().toLowerCase().includes(val);
+          const name = d?.name?.toString().toLowerCase().includes(val);
+          const size = d?.size?.toString().toLowerCase().includes(val);
+          const location = d?.location?.toString().toLowerCase().includes(val);
 
-          return code || category || name || size || !val;
+          return code || category || name || size || location || !val;
         })
       )
     );

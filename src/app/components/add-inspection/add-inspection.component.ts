@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ViewChild, inject } from '@angular/core';
-import { increment } from '@angular/fire/firestore';
+import { increment, serverTimestamp } from '@angular/fire/firestore';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
@@ -82,6 +82,8 @@ export class AddInspectionComponent implements OnInit {
         this.inspection.company = company;
         this.inspection.customer = customer;
         this.inspection.scaffold = this.scaffold;
+        this.inspection.date = new Date();
+
         await this.upload();
         const doc = await this.masterSvc
           .edit()
@@ -134,7 +136,11 @@ export class AddInspectionComponent implements OnInit {
   }
 
   async sign(ev: { signature: string; name: string }) {
-    this.blob = await (await fetch(ev.signature)).blob();
+    if (ev.signature) {
+      this.blob = await (await fetch(ev.signature)).blob();
+    } else {
+      this.blob = null;
+    }
     this.inspection.signedBy = ev.name;
   }
 

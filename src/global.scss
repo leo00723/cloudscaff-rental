@@ -120,6 +120,12 @@ th {
   border-color: var(--ion-color-medium-tint) !important;
 }
 
+@include media-breakpoint-only(xs) {
+  .datatable-footer-inner {
+    display: grid !important;
+    height: 100px !important;
+  }
+}
 @include media-breakpoint-up(xs) {
   .accordian-scroll {
     overflow: scroll;

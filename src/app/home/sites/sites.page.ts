@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { orderBy, where } from '@angular/fire/firestore';
 import { Select } from '@ngxs/store';
-import { Observable, first } from 'rxjs';
-import { BulkEstimate } from 'src/app/models/bulkEstimate.model';
+import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { UserState } from 'src/app/shared/user/user.state';
 import { CompanyState } from '../../shared/company/company.state';
 import { Navigate } from '../../shared/router.state';
 import { AddSiteComponent } from './add-site/add-site.component';
@@ -102,29 +103,50 @@ export class SitesPage implements OnInit {
 
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
-
+    const user = this.masterSvc.store().selectSnapshot(UserState.user);
     setTimeout(() => {
-      if (id) {
-        this.sites$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/sites`,
-            'status',
-            '==',
-            'active',
-            'code',
-            'desc'
-          );
-        this.closedSites$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/sites`,
-            'status',
-            '==',
-            'closed',
-            'code',
-            'desc'
-          );
+      if (id && user) {
+        if (
+          user.permissionsList.includes('Super Admin') ||
+          user.role === 'Owner'
+        ) {
+          this.sites$ = this.masterSvc
+            .edit()
+            .getCollectionWhereAndOrder(
+              `company/${id}/sites`,
+              'status',
+              '==',
+              'active',
+              'code',
+              'desc'
+            );
+          this.closedSites$ = this.masterSvc
+            .edit()
+            .getCollectionWhereAndOrder(
+              `company/${id}/sites`,
+              'status',
+              '==',
+              'closed',
+              'code',
+              'desc'
+            );
+        } else {
+          this.sites$ = this.masterSvc
+            .edit()
+            .getCollectionFiltered(`company/${id}/sites`, [
+              where('status', '==', 'active'),
+              where('userIDS', 'array-contains', user.id),
+              orderBy('code', 'desc'),
+            ]);
+          this.closedSites$ = this.masterSvc
+            .edit()
+            .getCollectionFiltered(`company/${id}/sites`, [
+              where('status', '==', 'closed'),
+              where('userIDS', 'array-contains', user.id),
+              orderBy('code', 'desc'),
+            ]);
+        }
+
         this.customers$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/customers`, 'name', 'desc');

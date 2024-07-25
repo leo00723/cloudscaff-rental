@@ -26,4 +26,5 @@ export interface Site {
   billable?: boolean;
   previousGross?: number;
   uploads?: UploadedFile[];
+  userIDS?: string[];
 }

@@ -20,10 +20,14 @@ export class InputDateComponent {
   @Input() form;
   @Input() controlName: string;
   @Input() min: string | undefined;
+  @Input() readonly: boolean;
   @Output() fieldChange = new EventEmitter<boolean>();
   constructor(private masterSvc: MasterService) {}
 
   async setDate(field: string) {
+    if (this.readonly) {
+      return;
+    }
     const modal = await this.masterSvc.modal().create({
       component: DatepickerComponent,
       id: field,

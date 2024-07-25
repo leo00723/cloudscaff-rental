@@ -1,7 +1,7 @@
 <ion-searchbar
   debounce="250"
   mode="ios"
-  placeholder="Search by code, site name or customer"
+  placeholder="Search by code or status"
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
@@ -11,7 +11,7 @@
     slot="start"
     placeholder="7"
     interface="popover"
-    [value]="7"
+    [value]="10"
   >
     <ion-select-option value="7">7</ion-select-option>
     <ion-select-option value="10">10</ion-select-option>
@@ -36,12 +36,12 @@
 >
   <ngx-datatable-column name="Code"></ngx-datatable-column>
   <ngx-datatable-column
-    name="Site Name"
-    prop="site.name"
+    name="Customer"
+    prop="customer.name"
   ></ngx-datatable-column>
   <ngx-datatable-column
-    name="Customer"
-    prop="site.customer.name"
+    name="Site"
+    prop="scaffold.siteName"
   ></ngx-datatable-column>
   <ngx-datatable-column
     name="Date"
@@ -52,6 +52,13 @@
       {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
+  <ngx-datatable-column name="Notes"></ngx-datatable-column>
+
+  <ngx-datatable-column
+    name="Created By"
+    prop="createdByName"
+  ></ngx-datatable-column>
+
   <ngx-datatable-column
     name="Uploads"
     cellClass="text-center my-auto"
@@ -65,13 +72,16 @@
       </div>
     </ng-template>
   </ngx-datatable-column>
+
   <ngx-datatable-column
     name="Status"
     cellClass="text-center"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      <ion-badge [color]="getStatus(value)" mode="ios">{{ value }}</ion-badge>
+      <ion-badge [color]="getStatus(value)" mode="ios">{{
+        value.split("-")[1] || value
+      }}</ion-badge>
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>

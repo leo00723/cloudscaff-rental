@@ -7,6 +7,7 @@ export interface Request {
   code?: string;
   company?: Company;
   createdBy?: string;
+  createdByName?: string;
   endDate?: any;
   items?: InventoryItem[];
   site?: Site;

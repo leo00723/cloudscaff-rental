@@ -44,4 +44,5 @@ export interface Item {
   previousGross?: number;
   currentTotal?: number;
   totalPaid?: number;
+  location?: string;
 }

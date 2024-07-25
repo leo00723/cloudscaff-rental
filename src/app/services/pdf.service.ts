@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
@@ -30,6 +30,7 @@ import { Statement } from '../models/statement.mode';
 import { TransportItem } from '../models/transport.model';
 import { UploadedFile } from '../models/uploadedFile.model';
 import { CompanyState } from '../shared/company/company.state';
+import { WeightPipe } from '../components/weight.pipe';
 const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388.58 26.87"><defs><style>.cls-1{fill:#fdb515;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><g id="Logo-Full-2" data-name="Logo-Full"><path class="cls-1" d="M151.2.19a2.08,2.08,0,0,1,2.09,2.09h0V20.57a6.24,6.24,0,0,1-6.24,6.24H123.93a6.24,6.24,0,0,1-6.24-6.24V2.22a2.1,2.1,0,0,1,2.09-2.1h0a2.1,2.1,0,0,1,2.1,2.1h0V20.55a2.1,2.1,0,0,0,2.09,2.1h23.09a2.11,2.11,0,0,0,2.1-2.1V2.28A2.09,2.09,0,0,1,151.24.19Z"/><path class="cls-1" d="M270.91,24.78a2.1,2.1,0,0,1-2.09,2.09H241.5a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,241.5.18h27.38A2.09,2.09,0,0,1,271,2.27h0a2.09,2.09,0,0,1-2.09,2.1H241.5a2.08,2.08,0,0,0-2.09,2.06h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.31a2.1,2.1,0,0,1,2.09,2.1Z"/><path class="cls-1" d="M156.89,0H186.3a6.24,6.24,0,0,1,6.24,6.24V20.45a6.24,6.24,0,0,1-6.19,6.29H156.83V22.55H186.3a2.1,2.1,0,0,0,2.09-2.1V6.28a2.1,2.1,0,0,0-2.06-2.13H156.89Z"/><path class="cls-1" d="M317.88,24.79V6.4A2.1,2.1,0,0,1,320,4.3h27.32a2.09,2.09,0,0,0,2.09-2.08h0A2.08,2.08,0,0,0,347.3.13H320a6.24,6.24,0,0,0-6.24,6.24V24.79a2.08,2.08,0,0,0,2.07,2.08h0a2.08,2.08,0,0,0,2.08-2.08Z"/><path class="cls-1" d="M276.6,26.74a2.11,2.11,0,0,1-2.09-2.09V6.36A6.24,6.24,0,0,1,280.75.12h23.14a6.24,6.24,0,0,1,6.23,6.24V24.71A2.09,2.09,0,0,1,308,26.8h0a2.09,2.09,0,0,1-2.09-2.09h0V6.38a2.09,2.09,0,0,0-2.1-2.09h-23a2.09,2.09,0,0,0-2.1,2.09h0V24.65a2.1,2.1,0,0,1-2.09,2.1h0Z"/><rect class="cls-1" x="278.47" y="11.22" width="27.72" height="4.15"/><path class="cls-1" d="M317.21,15.37V11.19h25.85a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.09H317.21Z"/><path class="cls-1" d="M357.09,24.79V6.4a2.11,2.11,0,0,1,2.09-2.1H386.5a2.08,2.08,0,0,0,2.08-2.08h0A2.08,2.08,0,0,0,386.51.13H359.17a6.24,6.24,0,0,0-6.24,6.24V24.79A2.08,2.08,0,0,0,355,26.87h0a2.08,2.08,0,0,0,2.07-2.08Z"/><path class="cls-1" d="M356.42,15.37V11.19h25.85a2.09,2.09,0,0,1,2.1,2.09h0a2.09,2.09,0,0,1-2.1,2.09Z"/><path class="cls-1" d="M208.33,11.19h17.16a6.23,6.23,0,0,1,6.24,6.23v3.12a6.24,6.24,0,0,1-6.19,6.29h-27.4a2.09,2.09,0,0,1-2.09-2.1h0a2.09,2.09,0,0,1,2.09-2.09h27.38a2.1,2.1,0,0,0,2.08-2.1V17.42a2.07,2.07,0,0,0-2.07-2.09h-17.2Z"/><path class="cls-1" d="M219.48,15.37H202.31a6.24,6.24,0,0,1-6.24-6.23V6.42A6.24,6.24,0,0,1,202.31.18h27.38a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.1H202.28a2.09,2.09,0,0,0-2.08,2.09V9.14a2.08,2.08,0,0,0,2.08,2.09h17.16Z"/><rect class="cls-1" x="156.89" y="4.19" width="4.16" height="18.36"/><path class="cls-1" d="M96.38,26.87H84.79a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,84.79.18H96.38V4.37H84.79a2.07,2.07,0,0,0-2.07,2.09h0V20.63a2.08,2.08,0,0,0,2.07,2.05H96.38Z"/><path class="cls-1" d="M96.25.13h11.59a6.24,6.24,0,0,1,6.24,6.24V20.59a6.24,6.24,0,0,1-6.2,6.28H96.25V22.68h11.59a2.1,2.1,0,0,0,2.09-2.09V6.42a2.1,2.1,0,0,0-2.09-2.1H96.25Z"/><path class="cls-1" d="M43.47,2.21v18.4a2.1,2.1,0,0,0,2.11,2.08H72.69a2.1,2.1,0,0,1,2.09,2.1h0a2.09,2.09,0,0,1-2.09,2.08H45.58a6.24,6.24,0,0,1-6.24-6.24V2.21A2.08,2.08,0,0,1,41.42.13h0A2.07,2.07,0,0,1,43.47,2.21Z"/><path class="cls-1" d="M35.65,24.78a2.09,2.09,0,0,1-2.09,2.09H6.24A6.24,6.24,0,0,1,0,20.63V6.42A6.24,6.24,0,0,1,6.24.18H33.62a2.1,2.1,0,0,1,2.09,2.09h0a2.1,2.1,0,0,1-2.09,2.1H6.24A2.08,2.08,0,0,0,4.16,6.44h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.3a2.1,2.1,0,0,1,2.09,2.1Z"/></g></g></g></svg>`;
 const hr = {
   table: {
@@ -154,6 +155,8 @@ export class PdfService {
   private store = inject(Store);
   constructor(
     private decimalPipe: DecimalPipe,
+    private datePipe: DatePipe,
+    private weightPipe: WeightPipe,
     private platformService: Platform,
     private fileOpenerService: FileOpener
   ) {}
@@ -1084,7 +1087,7 @@ export class PdfService {
     inventoryEstimate.estimates.forEach((e, i) => {
       const summary = this.createInventoryTable(e, company);
       shipments.push({
-        text: `Shipment ${i + 1} (${e.startDate} - ${e.endDate})`,
+        text: `Delivery ${i + 1} (${e.startDate} - ${e.endDate})`,
         style: ['h4b'],
       });
       shipments.push(summary);
@@ -1943,12 +1946,18 @@ export class PdfService {
           'Inspection',
           inspection.code,
           inspection.scaffold.siteCode,
-          inspection.date,
+          this.datePipe.transform(inspection.date, 'HH:mm dd MMM yyyy'),
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
           `https://app.cloudscaff.com/viewInspection/${company.id}-${inspection.id}`,
           [
+            [
+              { text: 'Site Name', style: 'h6b' },
+              `${inspection?.scaffold?.siteName || 'N/A'}`,
+              '',
+              '',
+            ],
             [
               { text: 'Scaffold:', style: 'h6b' },
               `${inspection.scaffold.code}`,
@@ -2008,7 +2017,7 @@ export class PdfService {
             body: [
               [
                 {
-                  text: 'Signature',
+                  text: `Signed by ${inspection.signedBy}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -2207,12 +2216,18 @@ export class PdfService {
           'Handover',
           handover.code,
           handover.scaffold.siteCode,
-          handover.date,
+          this.datePipe.transform(handover.date, 'HH:mm dd MMM yyyy'),
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
           `https://app.cloudscaff.com/viewHandover/${company.id}-${handover.id}`,
           [
+            [
+              { text: 'Site Name', style: 'h6b' },
+              `${handover?.scaffold?.siteName || 'N/A'}`,
+              '',
+              '',
+            ],
             [
               { text: 'Scaffold:', style: 'h6b' },
               `${handover.scaffold.code}`,
@@ -2312,7 +2327,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: 'Signature',
+                  text: `Signed by ${handover.signedBy}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -3431,25 +3446,122 @@ export class PdfService {
     terms: Term | null
   ) {
     const summary = this.createShipmentTable(shipment.items);
+    const signature1 = shipment.signature
+      ? {
+          image: await this.getBase64ImageFromURL(shipment.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
+    const signature2 = shipment.signature2
+      ? {
+          image: await this.getBase64ImageFromURL(shipment.signature2),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
     const data = {
       footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Shipment-${shipment.code}`),
+      info: this.getMetaData(`${company.name}-Delivery-${shipment.code}`),
       content: [
         await this.getHeader(
-          'Shipment',
+          'Delivery Note',
           shipment.code,
-          shipment.site.name,
+          shipment.site.code,
           shipment.date,
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
           null,
-          []
+          [
+            [
+              { text: 'Site Name', style: 'h6b' },
+              `${shipment?.site.name || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Driver:', style: 'h6b' },
+              `${shipment?.driverName || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Driver Contact:', style: 'h6b' },
+              `${shipment?.driverNo || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Vehicle Reg:', style: 'h6b' },
+              `${shipment?.vehicleReg || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
         ),
-        // hr,
-        // this.getSubHeader(shipment.site.customer, company),
+        hr,
+        this.getSubHeader(shipment.site.customer, company),
         hr,
         summary,
+        hr,
+        {
+          text: `Total Weight : ${this.weightPipe.transform(
+            shipment.items,
+            true
+          )}`,
+          style: 'h3',
+          alignment: 'right',
+        },
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Status',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: shipment.status,
+                  style: 'h4b',
+                  alignment: 'center',
+                },
+              ],
+              [
+                {
+                  text: `Sent By ${shipment?.signedBy || 'N/A'}`,
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature1,
+              ],
+              [
+                {
+                  text: `Received By ${shipment?.signedBy2 || 'N/A'}`,
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature2,
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
         await this.addUploads(shipment.uploads),
       ],
       styles: stylesCS,
@@ -3530,13 +3642,37 @@ export class PdfService {
     company: Company,
     terms: Term | null
   ) {
+    const signature1 = returnDoc.signature
+      ? {
+          image: await this.getBase64ImageFromURL(returnDoc.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
+    const signature2 = returnDoc.signature2
+      ? {
+          image: await this.getBase64ImageFromURL(returnDoc.signature2),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
     const summary = this.createShipmentTable(returnDoc.items);
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
       content: [
         await this.getHeader(
-          'Return',
+          'Return Note',
           returnDoc.code,
           returnDoc.site.name,
           returnDoc.date,
@@ -3544,12 +3680,85 @@ export class PdfService {
             ? company.logoUrl
             : 'assets/icon/favicon.png',
           null,
-          []
+          [
+            [
+              { text: 'Site Name', style: 'h6b' },
+              `${returnDoc?.site.name || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Driver:', style: 'h6b' },
+              `${returnDoc?.driverName || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Driver Contact:', style: 'h6b' },
+              `${returnDoc?.driverNo || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Vehicle Reg:', style: 'h6b' },
+              `${returnDoc?.vehicleReg || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
         ),
-        // hr,
-        // this.getSubHeader(shipment.site.customer, company),
+        hr,
+        this.getSubHeader(returnDoc.site.customer, company),
         hr,
         summary,
+        hr,
+        {
+          text: `Total Weight : ${this.weightPipe.transform(
+            returnDoc.items,
+            true
+          )}`,
+          style: 'h3',
+          alignment: 'right',
+        },
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Status',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: returnDoc.status,
+                  style: 'h4b',
+                  alignment: 'center',
+                },
+              ],
+              [
+                {
+                  text: `Sent By ${returnDoc?.signedBy || 'N/A'}`,
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature1,
+              ],
+              [
+                {
+                  text: `Received By ${returnDoc?.signedBy2 || 'N/A'}`,
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature2,
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
         await this.addUploads(returnDoc.uploads),
       ],
       styles: stylesCS,
@@ -3673,7 +3882,7 @@ export class PdfService {
           ],
           [
             { text: 'Representative:', style: 'h6b' },
-            customer.name,
+            customer?.rep || 'N/A',
             { text: 'Representative:', style: 'h6b' },
             'N/A',
           ],
@@ -4036,6 +4245,13 @@ export class PdfService {
         { text: item.size, style: 'h4b', alignment: 'center' },
         { text: item.name, style: 'h4b', alignment: 'left' },
         { text: item.shipmentQty, style: 'h4b', alignment: 'center' },
+        {
+          text: this.decimalPipe.transform(
+            (+item?.weight || 0) * (+item?.shipmentQty || 0)
+          ),
+          style: 'h4b',
+          alignment: 'center',
+        },
       ]);
     });
     const summary = {
@@ -4043,7 +4259,7 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', '*', 'auto', '*', 'auto'],
+        widths: ['auto', '*', 'auto', '*', 'auto', 'auto'],
 
         body: [
           [
@@ -4056,6 +4272,7 @@ export class PdfService {
             { text: 'Size', style: 'h4b', alignment: 'center' },
             { text: 'Name', style: 'h4b', alignment: 'left' },
             { text: 'Shipment Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Weight', style: 'h4b', alignment: 'center' },
           ],
           ...items,
         ],
@@ -4403,7 +4620,7 @@ export class PdfService {
           margin: [0, -10, 20, 0],
         },
       ]);
-    } else if (!removeBranding && !replaceBranding) {
+    } else if (!removeBranding && !replaceBranding && companyState) {
       footerCS.push([
         {
           svg: footerlogo,
@@ -4459,15 +4676,17 @@ export class PdfService {
   private toDate(date) {
     return new Date(date).toDateString();
   }
-  private getAddress(data: any) {
-    let address = '';
-    address = data.address !== null ? `${data.address}` : '';
-    address += data.suburb !== null ? `, ${data.suburb}` : '';
-    address += data.city !== null ? `, ${data.city}` : '';
-    address += data.zip !== null ? `, ${data.zip}` : '';
-    address += data.country !== null ? `, ${data.country}` : '';
-
-    return address;
+  private getAddress(data: any): string {
+    const components = [
+      data.address,
+      data.suburb,
+      data.city,
+      data.zip,
+      data.country,
+    ];
+    // Filter out null, undefined, and empty strings
+    const nonEmptyComponents = components.filter((component) => component);
+    return nonEmptyComponents.join(', ');
   }
 
   private createModificatonSummary(data, company: Company) {

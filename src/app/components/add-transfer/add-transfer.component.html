@@ -173,8 +173,9 @@
                   <th scope="col">Code</th>
                   <th scope="col">Category</th>
                   <th scope="col">Name</th>
+                  <th scope="col" class="text-center">Location</th>
                   <th scope="col" class="text-center">Available Qty</th>
-                  <th scope="col" class="text-center">Shipment Qty</th>
+                  <th scope="col" class="text-center">Delivery Qty</th>
                   <th scope="col" class="text-center">
                     Weight ({{ company.mass.symbol }})
                   </th>
@@ -186,6 +187,7 @@
                     <th scope="row">{{ item.code }}</th>
                     <td>{{ item.category }}</td>
                     <td>{{ item.name }}</td>
+                    <td class="text-center">{{ item?.location }}</td>
                     <td class="text-center">
                       {{ item.availableQty }}
                     </td>
@@ -214,6 +216,7 @@
                       <th scope="row">{{ item.code }}</th>
                       <td>{{ item.category }}</td>
                       <td>{{ item.name }}</td>
+                      <td class="text-center">{{ item?.location }}</td>
                       <td class="text-center">{{ item.availableQty }}</td>
                       <td class="text-center">
                         <ion-input

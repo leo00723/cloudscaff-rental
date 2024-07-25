@@ -178,7 +178,7 @@ export class AcceptInventoryEstimateComponent implements OnInit {
       e.estimateId = this.inventoryEstimate.id;
       e.nextInvoiceDate = site.nextInvoiceDate;
       e.consumablesCharged = false;
-      e.code = `SHI${new Date().toLocaleDateString('en', {
+      e.code = `DEL${new Date().toLocaleDateString('en', {
         year: '2-digit',
       })}${shipmentNumber.toString().padStart(6, '0')}`;
       this.data.push(e);
