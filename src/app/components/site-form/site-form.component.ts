@@ -176,21 +176,27 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     });
   }
   delete() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.masterSvc
-        .edit()
-        .deleteDocById(`company/${this.site.companyId}/sites`, this.site.id)
-        .then(() => {
+    this.masterSvc.notification().presentAlertConfirm(
+      async () => {
+        try {
+          this.loading = true;
+          this.site.updatedBy = this.user.name;
+          this.site.status = 'deleted';
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.site.companyId}/sites`,
+              this.site.id,
+              this.site
+            );
           this.loading = false;
           this.masterSvc
             .notification()
             .toast('Site deleted successfully!', 'success');
           this.masterSvc.modal().dismiss();
-        })
-        .catch((err) => {
+          this.masterSvc.router().navigateByUrl('/dashboard/sites');
+        } catch (err) {
           this.loading = false;
-          this.form.reset();
           this.masterSvc
             .notification()
             .toast(
@@ -198,8 +204,11 @@ export class SiteFormComponent implements OnInit, OnDestroy {
               'danger',
               2000
             );
-        });
-    });
+        }
+      },
+      'Delete Site',
+      'NB! A DELETED SITE CANNOT BE RECOVERED NOR CAN ANY INFORMATION BE ACCESSED'
+    );
   }
 
   updateAddress(address: Address) {

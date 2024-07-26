@@ -116,10 +116,10 @@
             </ion-col>
             <ion-col>
               <app-input-reactive
-                title="Level"
+                title="Level ({{ company.measurement.symbol }})"
                 type="number"
                 controlName="level"
-                placeholder="1"
+                placeholder="0"
                 [form]="attachment"
                 [optional]="true"
               >
@@ -318,7 +318,8 @@
               {{ company.terminology.scaffold }} - {{ scaffold.length
               }}{{ company.measurement.symbol }} x {{ scaffold.width
               }}{{ company.measurement.symbol }} x {{ scaffold.height
-              }}{{ company.measurement.symbol }} level {{ scaffold?.level }}
+              }}{{ company.measurement.symbol }} Level {{ scaffold?.level
+              }}{{ company.measurement.symbol }}
             </td>
             <td>
               {{ scaffold.description }}

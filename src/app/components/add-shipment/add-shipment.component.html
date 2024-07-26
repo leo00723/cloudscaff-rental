@@ -464,7 +464,7 @@
               *ngIf="isEdit && !loading && shipment.status === 'pending'"
               color="tertiary"
               [disabled]="!blob || !shipment.signedBy"
-              (click)="receiveDelivery()"
+              (click)="receiveDelivery(true)"
               >Send Immediately</ion-button
             >
           </ng-container>

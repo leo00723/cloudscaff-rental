@@ -169,7 +169,24 @@
   </ion-row>
   <ion-row class="mb-3">
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
-    <ion-col size="12" class="text-end">
+    <ion-col size="6" sizeMd="2">
+      <ion-button
+        *ngIf="
+          !loading &&
+          (user.role === 'Owner' ||
+            user.permissionsList.includes('Super Admin')) &&
+          site.status !== 'closed' &&
+          isUpdate
+        "
+        shape="round"
+        color="danger"
+        type="submit"
+        (click)="delete()"
+      >
+        Delete Site
+      </ion-button>
+    </ion-col>
+    <ion-col size="6" sizeMd="10" class="text-end">
       <ion-button
         *ngIf="
           !loading &&
@@ -199,21 +216,6 @@
         (click)="update('active')"
       >
         Open Site
-      </ion-button>
-      <ion-button
-        *ngIf="
-          !loading &&
-          (user.role === 'Owner' ||
-            user.permissionsList.includes('Super Admin')) &&
-          site.status !== 'closed' &&
-          isUpdate
-        "
-        shape="round"
-        color="danger"
-        type="submit"
-        (click)="delete()"
-      >
-        Delete Site
       </ion-button>
       <ion-button
         *ngIf="!loading && isUpdate && site.status !== 'closed'"

@@ -234,11 +234,11 @@
             </ion-col> -->
             <ion-col>
               <app-input-reactive
-                title="Level"
+                title="Level ({{ company.measurement.symbol }})"
                 [optional]="true"
                 type="number"
                 controlName="level"
-                placeholder="1"
+                placeholder="0"
                 [form]="attachment"
               >
               </app-input-reactive>
@@ -281,6 +281,16 @@
           >
             <ion-label>Delete</ion-label>
           </ion-chip>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Description"
+            controlName="description"
+            placeholder="Enter description"
+            [optional]="true"
+            [form]="board"
+          >
+          </app-input-reactive>
         </ion-col>
         <ion-col>
           <app-input-reactive

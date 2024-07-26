@@ -60,7 +60,7 @@ export class ScaffoldEditformComponent implements OnInit, OnDestroy {
           [Validators.required, Validators.min(0)],
         ],
         safe: [handover?.scaffold?.safe || '', [Validators.required]],
-        level: [1, [Validators.nullValidator]],
+        level: [0, [Validators.nullValidator]],
       }),
       attachments: this.fb.array([]),
       boards: this.fb.array([]),

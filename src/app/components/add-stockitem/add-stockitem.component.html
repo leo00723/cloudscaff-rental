@@ -100,7 +100,7 @@
         </ion-col>
         <ion-col size="12" *ngIf="!isEdit">
           <app-input-reactive
-            title="Yard Qty"
+            title="Total Qty"
             type="number"
             controlName="yardQty"
             [form]="form"
@@ -109,9 +109,9 @@
           </app-input-reactive>
         </ion-col>
         <ng-container *ngIf="isEdit">
-          <ion-col sizeMd="2" size="6">
+          <ion-col size="12">
             <app-input-reactive
-              title="Yard Qty"
+              title="Total Qty"
               type="number"
               controlName="yardQty"
               [form]="form"
@@ -160,6 +160,16 @@
             </app-input-reactive>
           </ion-col>
           <ion-col sizeMd="2" size="6">
+            <app-input-reactive
+              title="Reserved Qty"
+              type="number"
+              controlName="reservedQty"
+              [form]="form"
+              [readonly]="true"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col sizeMd="2" size="6">
             <app-input-text
               title="Available Qty"
               type="number"
@@ -168,7 +178,8 @@
                 field('inUseQty').value -
                 field('inMaintenanceQty').value -
                 field('lostQty').value -
-                field('damagedQty').value
+                field('damagedQty').value -
+                field('reservedQty').value
               "
               [readonly]="true"
             >
@@ -323,8 +334,7 @@
         <ion-row class="card-outline mb-3">
           <ion-col sizeMd="4" size="12">
             <app-input-text
-              title="Remove Yard Qty"
-              [optional]="true"
+              title="Remove from Total Qty"
               type="number"
               [value]="removeQty"
               (fieldChange)="removeQty = $event"
@@ -346,8 +356,7 @@
           </ion-col>
           <ion-col sizeMd="4" size="12">
             <app-input-text
-              title="Add Yard Qty"
-              [optional]="true"
+              title="Add to Total Qty"
               [value]="addQty"
               type="number"
               (fieldChange)="addQty = $event"
@@ -371,7 +380,6 @@
           <ion-col sizeMd="4" size="12">
             <app-input-text
               title="Move Maintenance to Available"
-              [optional]="true"
               type="number"
               [value]="moveQty"
               (fieldChange)="moveQty = $event"
@@ -394,7 +402,6 @@
           <ion-col sizeMd="4" size="12">
             <app-input-text
               title="Move Available to Maintenance"
-              [optional]="true"
               type="number"
               [value]="maintenanceQty"
               (fieldChange)="maintenanceQty = $event"
@@ -410,7 +417,12 @@
               color="warning"
               shape="round"
               (click)="
-                moveTo('maintenance', 'inMaintenanceQty', maintenanceQty)
+                moveTo(
+                  'Available',
+                  'Maintenance',
+                  'inMaintenanceQty',
+                  maintenanceQty
+                )
               "
             >
               Move
@@ -419,7 +431,6 @@
           <ion-col sizeMd="4" size="12">
             <app-input-text
               title="Move Available to Damaged"
-              [optional]="true"
               type="number"
               [value]="damagedQty"
               (fieldChange)="damagedQty = $event"
@@ -434,7 +445,7 @@
               size="small"
               color="warning"
               shape="round"
-              (click)="moveTo('damaged', 'damagedQty', damagedQty)"
+              (click)="moveTo('Available', 'Damaged', 'damagedQty', damagedQty)"
             >
               Move
             </ion-button>
@@ -461,7 +472,7 @@
               <thead>
                 <tr class="table-light align-middle text-center">
                   <th>#</th>
-                  <th class="text-start">Message</th>
+                  <th class="text-start">Status</th>
                   <th class="text-start">Comment</th>
                   <th>User</th>
                   <th>Date</th>

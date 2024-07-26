@@ -105,9 +105,7 @@ export class AddStockitemComponent implements OnInit {
       this.loading = true;
       try {
         const log = {
-          message: `${this.user.name} added ${
-            this.field('yardQty').value
-          } items to the yard.`,
+          message: `Added ${this.field('yardQty').value} items to Total Qty.`,
           user: this.user,
           date: new Date(),
           status: 'add',
@@ -145,7 +143,7 @@ export class AddStockitemComponent implements OnInit {
       this.field('yardQty').setValue(total);
       this.update();
       const log = {
-        message: `${this.user.name} added ${this.addQty} items to the yard.`,
+        message: `Added ${this.addQty} items to Total Qty.`,
         user: this.user,
         date: new Date(),
         status: 'add',
@@ -178,7 +176,7 @@ export class AddStockitemComponent implements OnInit {
         );
         this.update();
         const log = {
-          message: `${this.user.name} moved ${this.moveQty} items to the yard.`,
+          message: `Moved ${this.moveQty} items from Maintenance to Available Qty.`,
           user: this.user,
           date: new Date(),
           status: 'move',
@@ -195,14 +193,15 @@ export class AddStockitemComponent implements OnInit {
     }
   }
 
-  moveTo(category: string, field: string, moveQty: number) {
+  moveTo(category: string, category2: string, field: string, moveQty: number) {
     const currentQty = +this.field(field).value;
     const yardQty = this.field('yardQty').value;
     const totalInUse =
       this.field('inUseQty').value +
       this.field('inMaintenanceQty').value +
       this.field('lostQty').value +
-      this.field('damagedQty').value;
+      this.field('damagedQty').value +
+      this.field('reservedQty').value;
     const availableQty = yardQty - totalInUse;
     if (availableQty < moveQty) {
       this.masterSvc
@@ -217,7 +216,7 @@ export class AddStockitemComponent implements OnInit {
         this.field(field).setValue(currentQty + moveQty);
         this.update();
         const log = {
-          message: `${this.user.name} moved ${moveQty} items to the ${category}.`,
+          message: `Moved ${moveQty} items from ${category} to ${category2} Qty.`,
           user: this.user,
           date: new Date(),
           status: 'move',
@@ -242,7 +241,8 @@ export class AddStockitemComponent implements OnInit {
       this.field('inUseQty').value +
       this.field('inMaintenanceQty').value +
       this.field('lostQty').value +
-      this.field('damagedQty').value;
+      this.field('damagedQty').value +
+      this.field('reservedQty').value;
     const availableQty = yardQty - totalInUse;
     if (availableQty < this.removeQty) {
       this.masterSvc
@@ -257,7 +257,7 @@ export class AddStockitemComponent implements OnInit {
         this.field('yardQty').setValue(yardQty - this.removeQty);
         this.update();
         const log = {
-          message: `${this.user.name} removed ${this.removeQty} items from the yard.`,
+          message: `Removed ${this.removeQty} items from Total Qty.`,
           user: this.user,
           date: new Date(),
           status: 'remove',
@@ -357,6 +357,7 @@ export class AddStockitemComponent implements OnInit {
         [Validators.min(0)],
       ],
       damagedQty: [this.inventoryItem.damagedQty, [Validators.min(0)]],
+      reservedQty: [this.inventoryItem?.reservedQty, [Validators.min(0)]],
       lostQty: [this.inventoryItem.lostQty, [Validators.min(0)]],
       crossHire: this.masterSvc.fb().array([]),
     });

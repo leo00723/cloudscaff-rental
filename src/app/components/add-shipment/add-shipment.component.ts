@@ -233,7 +233,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  async receiveDelivery() {
+  async receiveDelivery(isAdmin?: boolean) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
@@ -252,8 +252,13 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           ''
         );
         if (res) {
-          this.shipment.signature2 = res.url2;
-          this.shipment.signatureRef2 = res.ref;
+          if (isAdmin) {
+            this.shipment.signature = res.url2;
+            this.shipment.signatureRef = res.ref;
+          } else {
+            this.shipment.signature2 = res.url2;
+            this.shipment.signatureRef2 = res.ref;
+          }
         }
 
         await this.masterSvc
@@ -267,6 +272,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .notification()
           .toast('Delivery updated successfully', 'success');
         this.loading = false;
+        this.close();
       } catch (e) {
         console.error(e);
         this.masterSvc
@@ -357,8 +363,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.shipment.signedBy = ev.name;
       } else if (this.shipment.status === 'on-route') {
         this.shipment.signedBy2 = ev.name;
-      } else {
-        this.shipment.signedBy = ev.name;
       }
     } else {
       this.blob = null;
