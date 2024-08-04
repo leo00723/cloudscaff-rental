@@ -39,6 +39,7 @@ export class PermissionsSelectComponent implements OnInit {
       title: 'Navigation',
       options: [
         { name: 'Enquiries', selected: false },
+        { name: 'Estimates', selected: false },
         { name: 'Instructions', selected: false },
         { name: 'Handover List', selected: false },
         { name: 'Inventory', selected: false },

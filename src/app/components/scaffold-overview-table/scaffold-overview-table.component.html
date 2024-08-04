@@ -21,7 +21,10 @@
     <!-- SCAFFOLD -->
     <tr class="small">
       <th class="text-center" scope="row"></th>
-      <td>{{ company.terminology.scaffold }} Level 0</td>
+      <td>
+        {{ company.terminology.scaffold }} Level
+        {{ scaffold.scaffold.level || 0 }}{{ company.measurement.symbol }}
+      </td>
       <td class="text-center">
         {{ scaffold.scaffold.length }}{{ company.measurement.symbol }} x
         {{ scaffold.scaffold.width }}{{ company.measurement.symbol }} x
@@ -33,7 +36,7 @@
     <!-- ATTACHMENTS -->
     <tr class="small" *ngFor="let item of scaffold.attachments; let i = index">
       <th class="text-center" scope="row"></th>
-      <td>Attachment Level {{ item.level }}</td>
+      <td>Attachment Level {{ item.level }}{{ company.measurement.symbol }}</td>
       <td class="text-center">
         {{ item.length }}{{ company.measurement.symbol }} x {{ item.width
         }}{{ company.measurement.symbol }} x {{ item.height

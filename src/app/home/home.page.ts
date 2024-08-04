@@ -156,7 +156,7 @@ export class HomePage implements OnDestroy {
   }
 
   removeBilling(company: Company, page: string): boolean {
-    const billingPages = ['Estimates', 'Statements'];
+    const billingPages = ['Statements'];
     return !billingPages.includes(page) || !company.removeBilling;
   }
 

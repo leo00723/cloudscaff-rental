@@ -1785,7 +1785,7 @@ export class PdfService {
       attachments.push([
         '',
         {
-          text: `${company.terminology.scaffold} Level ${a.level}`,
+          text: `${company.terminology.scaffold} Level ${a.level}${company.measurement.symbol}`,
           style: 'h6',
         },
         {
@@ -1858,7 +1858,9 @@ export class PdfService {
           [
             '',
             {
-              text: `${company.terminology.scaffold} Level 0`,
+              text: `${company.terminology.scaffold} Level ${
+                inspection.scaffold.scaffold.level || 0
+              }${company.measurement.symbol}`,
               style: 'h6',
             },
             {
@@ -1946,7 +1948,7 @@ export class PdfService {
           'Inspection',
           inspection.code,
           inspection.scaffold.siteCode,
-          this.datePipe.transform(inspection.date, 'HH:mm dd MMM yyyy'),
+          inspection.date,
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
@@ -1974,6 +1976,12 @@ export class PdfService {
                 style: 'h6b',
                 color: inspection.status === 'Passed' ? 'green' : 'red',
               },
+              '',
+              '',
+            ],
+            [
+              { text: 'Created By:', style: 'h6b' },
+              `${inspection?.createdByName}`,
               '',
               '',
             ],
@@ -2053,7 +2061,7 @@ export class PdfService {
       attachments.push([
         '',
         {
-          text: `${company.terminology.scaffold} Level ${a.level}`,
+          text: `${company.terminology.scaffold} Level ${a.level}${company.measurement.symbol}`,
           style: 'h6',
         },
         {
@@ -2126,7 +2134,9 @@ export class PdfService {
           [
             '',
             {
-              text: `${company.terminology.scaffold} Level 0`,
+              text: `${company.terminology.scaffold} Level ${
+                handover.scaffold.scaffold.level || 0
+              }${company.measurement.symbol}`,
               style: 'h6',
             },
             {
@@ -2216,7 +2226,7 @@ export class PdfService {
           'Handover',
           handover.code,
           handover.scaffold.siteCode,
-          this.datePipe.transform(handover.date, 'HH:mm dd MMM yyyy'),
+          handover.date,
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/favicon.png',
@@ -2244,6 +2254,12 @@ export class PdfService {
                 style: 'h6b',
                 color: handover.safe === 'Passed' ? 'green' : 'red',
               },
+              '',
+              '',
+            ],
+            [
+              { text: 'Created By:', style: 'h6b' },
+              `${handover?.createdByName}`,
               '',
               '',
             ],
@@ -4751,7 +4767,7 @@ export class PdfService {
     }`;
   }
   private toDate(date) {
-    return new Date(date).toDateString();
+    return this.datePipe.transform(new Date(date), 'dd MMM yyyy (HH:mm)');
   }
   private getAddress(data: any): string {
     const components = [
