@@ -26,6 +26,7 @@
         Picklist
       </ion-chip>
       <ion-chip
+        *ngIf="shipment.status !== 'pending' && shipment.status !== 'void'"
         (click)="downloadPdf()"
         mode="ios"
         shape="round"

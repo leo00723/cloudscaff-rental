@@ -39,7 +39,6 @@ export class PermissionsSelectComponent implements OnInit {
       title: 'Navigation',
       options: [
         { name: 'Enquiries', selected: false },
-        { name: 'Estimates', selected: false },
         { name: 'Instructions', selected: false },
         { name: 'Handover List', selected: false },
         { name: 'Inventory', selected: false },
@@ -97,6 +96,10 @@ export class PermissionsSelectComponent implements OnInit {
     {
       title: 'Estimates',
       options: [
+        { name: 'Basic Estimates', selected: false },
+        { name: 'Inventory Rent Estimates', selected: false },
+        { name: 'Inventory Sell Estimates', selected: false },
+        { name: 'Standard Estimates', selected: false },
         { name: 'Bulk Estimates', selected: false },
         { name: 'Inventory Estimates', selected: false },
       ],

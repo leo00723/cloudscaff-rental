@@ -216,6 +216,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
             this.shipment.id,
             this.shipment
           );
+        await this.downloadPdf();
         this.masterSvc
           .notification()
           .toast('Delivery updated successfully', 'success');
@@ -268,6 +269,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
             this.shipment.id,
             this.shipment
           );
+        await this.downloadPdf();
         this.masterSvc
           .notification()
           .toast('Delivery updated successfully', 'success');
@@ -344,7 +346,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     const pdf = await this.masterSvc
       .pdf()
       .generatePickList(this.shipment, this.shipment.items, this.company);
-    this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
+    this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.shipment.code}`);
   }
   async downloadPdf() {
     if (!this.shipment.date) {

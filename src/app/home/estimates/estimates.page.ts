@@ -19,6 +19,7 @@ import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { InventoryEstimateSellComponent } from './inventory-estimate-sell/inventory-estimate-sell.component';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { InventoryEstimateSell } from 'src/app/models/inventory-estimate-sell.model';
+import { UserState } from 'src/app/shared/user/user.state';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
@@ -39,6 +40,10 @@ export class EstimatesPage implements OnInit {
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit() {
+    const user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.active = user.permissionsList.includes('Standard Estimates')
+      ? 'standard'
+      : 'basic';
     this.init();
   }
   segmentChanged(ev: any) {

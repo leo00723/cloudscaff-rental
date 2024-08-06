@@ -8,29 +8,36 @@
       mode="md"
     >
       <ng-container *ngIf="company$ |async as company">
-        <ng-container *ngIf="company.removeBilling">
-          <ion-segment-button value="standard">
-            <ion-label>Basic Estimates</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="inventory">
-            <ion-label>Inventory Estimates</ion-label>
-          </ion-segment-button>
-        </ng-container>
         <ng-container *ngIf="!company.removeBilling">
-          <ion-segment-button value="standard">
-            <ion-label>Standard Estimates</ion-label>
+          <ion-segment-button
+            value="basic"
+            *ngIf="user.permissionsList.includes('basic') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label>Basic</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="inventory-sell"
+            *ngIf="user.permissionsList.includes('Inventory Sell Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label>Inventory Sell</ion-label>
+          </ion-segment-button>
+          <ion-segment-button
+            value="standard"
+            *ngIf="user.permissionsList.includes('Standard Estimates')"
+          >
+            <ion-label>Standard</ion-label>
           </ion-segment-button>
           <ion-segment-button
             value="bulk"
-            *ngIf="user.permissionsList.includes('Bulk Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+            *ngIf="user.permissionsList.includes('Bulk Estimates')"
           >
-            <ion-label>Bulk Estimates</ion-label>
+            <ion-label>Bulk Standard</ion-label>
           </ion-segment-button>
           <ion-segment-button
             value="inventory"
-            *ngIf="user.permissionsList.includes('Inventory Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+            *ngIf="user.permissionsList.includes('Inventory Estimates')"
           >
-            <ion-label>Inventory Estimates</ion-label>
+            <ion-label>Inventory</ion-label>
           </ion-segment-button>
         </ng-container>
       </ng-container>
@@ -39,8 +46,9 @@
 </app-header>
 <ion-content class="ion-padding">
   <ng-container [ngSwitch]="active" *ngIf="company$ | async as company">
-    <ng-container *ngIf="company.removeBilling">
-      <ng-container *ngSwitchCase="'standard'">
+    <ng-container *ngIf="!company.removeBilling">
+      <!-- BASIC ESTIMATE -->
+      <ng-container *ngSwitchCase="'basic'">
         <ng-container *ngIf="company.totalEstimates > 0">
           <app-estimate-v2-table
             [value]="estimatesV2$"
@@ -60,7 +68,8 @@
           (clicked)="addEstimateV2()"
         ></app-page-placeholder>
       </ng-container>
-      <ng-container *ngSwitchCase="'inventory'">
+      <!-- INVENTORY SELL ESTIMATE -->
+      <ng-container *ngSwitchCase="'inventory-sell'">
         <ng-container *ngIf="company.totalInventoryEstimates > 0">
           <app-estimate-v2-table
             [value]="inventoryEstimatesSell$"
@@ -81,8 +90,6 @@
           (clicked)="addInvSellEstimate()"
         ></app-page-placeholder>
       </ng-container>
-    </ng-container>
-    <ng-container *ngIf="!company.removeBilling">
       <!-- STANDARD ESTIMATE -->
       <ng-container *ngSwitchCase="'standard'">
         <ng-container *ngIf="company.totalEstimates > 0">

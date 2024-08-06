@@ -46,6 +46,7 @@ export class InventoryPage implements OnInit {
   pendingShipments$: Observable<Shipment[]>;
   outboundShipments$: Observable<Shipment[]>;
   reservedShipments$: Observable<Shipment[]>;
+  voidShipments$: Observable<Shipment[]>;
 
   billableShipments$: Observable<InventoryEstimate[]>;
 
@@ -59,6 +60,7 @@ export class InventoryPage implements OnInit {
   returns$: Observable<Return[]>;
   submittedReturns$: Observable<Return[]>;
   outboundReturns$: Observable<Return[]>;
+  voidReturns$: Observable<Return[]>;
 
   active = 1;
   importing = false;
@@ -376,6 +378,16 @@ export class InventoryPage implements OnInit {
             'code',
             'asc'
           );
+        this.voidShipments$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/shipments`,
+            'status',
+            '==',
+            'void',
+            'code',
+            'asc'
+          );
         this.billableShipments$ = this.masterSvc
           .edit()
           .getCollectionOrdered(
@@ -459,6 +471,16 @@ export class InventoryPage implements OnInit {
             where('status', 'in', ['on-route', 'collected']),
             orderBy('code', 'desc'),
           ]);
+        this.voidReturns$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/returns`,
+            'status',
+            '==',
+            'void',
+            'code',
+            'desc'
+          );
       } else {
         this.masterSvc.log(
           '-----------------------try inventory----------------------'

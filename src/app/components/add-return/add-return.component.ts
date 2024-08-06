@@ -226,7 +226,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
           this.return.id,
           this.return
         );
-
+      await this.downloadPdf();
       this.masterSvc
         .notification()
         .toast('Return updated successfully', 'success');
@@ -322,13 +322,25 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.masterSvc.pdf().handlePdf(pdf, this.return.code);
   }
   async downloadPicklist() {
-    if (!this.return.date) {
-      this.return.date = new Date();
+    if (this.isEdit) {
+      if (!this.return.date) {
+        this.return.date = new Date();
+      }
+      const pdf = await this.masterSvc
+        .pdf()
+        .generateReturnPickList(this.return, this.items, this.company);
+      this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.return.code}`);
+    } else {
+      const returnDoc: Return = {
+        ...this.form.value,
+        code: 'N/A',
+        date: new Date(),
+      };
+      const pdf = await this.masterSvc
+        .pdf()
+        .generateReturnPickList(returnDoc, this.items, this.company);
+      this.masterSvc.pdf().handlePdf(pdf, `Picklist-${returnDoc.site.name}`);
     }
-    const pdf = await this.masterSvc
-      .pdf()
-      .generatePickList(this.return, this.return.items, this.company);
-    this.masterSvc.pdf().handlePdf(pdf, this.return.code);
   }
 
   private initEditForm() {

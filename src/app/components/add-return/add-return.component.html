@@ -26,14 +26,16 @@
         Picklist
       </ion-chip>
       <ion-chip
-        *ngIf="isEdit"
+        *ngIf="
+          isEdit && return.status !== 'pending' && return.status !== 'void'
+        "
         (click)="downloadPdf()"
         mode="ios"
         shape="round"
         size="small"
         color="tertiary"
       >
-        Delivery Note
+        Return Note
       </ion-chip>
     </ion-buttons>
   </ion-toolbar>
@@ -59,6 +61,7 @@
           [form]="form"
           controlName="returnDate"
           title="Return Date"
+          [readonly]="return.status !== 'pending'"
         ></app-input-date>
       </ion-col>
       <ion-col size="12">
@@ -135,21 +138,22 @@
           <table class="table table-sm table-bordered table-fixed">
             <thead>
               <tr>
-                <!-- <th scope="col">Code</th> -->
+                <th scope="col">Code</th>
                 <!-- <th scope="col">Category</th> -->
                 <th scope="col">Name</th>
                 <th scope="col" class="text-center">Location</th>
                 <th scope="col" class="text-center">Site Qty</th>
                 <th scope="col" class="text-center">Return Qty</th>
-                <th scope="col" class="text-center">
+                <!-- <th scope="col" class="text-center">
                   Weight ({{ company.mass.symbol }})
-                </th>
+                </th> -->
                 <ng-container
                   *ngIf="
-                    (allowSend && return.status === 'collected') ||
-                    (allowSend &&
-                      user.permissionsList.includes('Inventory Admin')) ||
-                    return.status === 'received'
+                    return.status !== 'void' &&
+                    ((allowSend && return.status === 'collected') ||
+                      (allowSend &&
+                        user.permissionsList.includes('Inventory Admin')) ||
+                      return.status === 'received')
                   "
                 >
                   <th scope="col" class="text-center">Maintenance Qty</th>
@@ -161,7 +165,7 @@
             <tbody>
               <ng-container *ngFor="let item of items; let i = index">
                 <tr class="align-middle" *ngIf="viewAll; else viewShipment">
-                  <!-- <th scope="row">{{ item.code }}</th> -->
+                  <th scope="row">{{ item.code }}</th>
                   <!-- <td>{{ item.category }}</td> -->
                   <td>{{ item.name }}</td>
                   <td class="text-center">{{ item?.location }}</td>
@@ -192,15 +196,16 @@
                       you cannot exceed the available qty
                     </ion-label>
                   </td>
-                  <td class="text-end">
+                  <!-- <td class="text-end">
                     {{ item.shipmentQty * item.weight | number }}
-                  </td>
+                  </td> -->
                   <ng-container
                     *ngIf="
-                      (allowSend && return.status === 'collected') ||
-                      (allowSend &&
-                        user.permissionsList.includes('Inventory Admin')) ||
-                      return.status === 'received'
+                      return.status !== 'void' &&
+                      ((allowSend && return.status === 'collected') ||
+                        (allowSend &&
+                          user.permissionsList.includes('Inventory Admin')) ||
+                        return.status === 'received')
                     "
                   >
                     <td class="text-center">
@@ -267,7 +272,7 @@
                     class="align-middle"
                     *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
                   >
-                    <!-- <th scope="row">{{ item.code }}</th> -->
+                    <th scope="row">{{ item.code }}</th>
                     <!-- <td>{{ item.category }}</td> -->
                     <td>{{ item.name }}</td>
                     <td class="text-center">{{ item?.location }}</td>
@@ -289,9 +294,9 @@
                       >
                       </ion-input>
                     </td>
-                    <td class="text-end">
+                    <!-- <td class="text-end">
                       {{ item.shipmentQty * item.weight | number }}
-                    </td>
+                    </td> -->
                   </tr>
                 </ng-template>
               </ng-container>
@@ -376,7 +381,8 @@
           (return.status === 'collected' && allowSend) ||
           (user.permissionsList.includes('Inventory Admin') &&
             allowSend &&
-            return.status !== 'received')
+            return.status !== 'received' &&
+            return.status !== 'void')
         "
       >
         <app-title-block> Signature </app-title-block>
