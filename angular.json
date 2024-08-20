@@ -182,7 +182,7 @@
             "ssr": false,
             "browserTarget": "app:build:production",
             "firebaseProject": "cloudscaff-178c8",
-            "firebaseHostingSite": "cloudscaff-178c8"
+            "firebaseHostingSite": "hayakel-cloudscaff"
           }
         }
       }
