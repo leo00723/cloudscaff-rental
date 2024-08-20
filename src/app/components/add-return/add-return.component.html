@@ -291,6 +291,7 @@
                         [value]="item.shipmentQty"
                         (ionChange)="update($event, item, 'shipment')"
                         (ionBlur)="autoSave()"
+                        [readonly]="return.status !== 'pending' || allowSend"
                       >
                       </ion-input>
                     </td>

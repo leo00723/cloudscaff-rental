@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import * as Papa from 'papaparse';
 import { Observable, map } from 'rxjs';
+import { AddAdminReturnComponent } from 'src/app/components/add-admin-return/add-admin-return.component';
 import { AddBillableShipmentComponent } from 'src/app/components/add-billable-shipment/add-billable-shipment.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
@@ -184,6 +185,16 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async addReturn() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddAdminReturnComponent,
+      componentProps: {},
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addReturn',
+    });
+    return await modal.present();
+  }
   async addTransfer() {
     const modal = await this.masterSvc.modal().create({
       component: AddTransferComponent,
@@ -229,7 +240,7 @@ export class InventoryPage implements OnInit {
 
   async viewReturn(returnData: Return) {
     const modal = await this.masterSvc.modal().create({
-      component: AddReturnComponent,
+      component: AddAdminReturnComponent,
       componentProps: { allowSend: true, isEdit: true, value: returnData },
       showBackdrop: false,
       id: 'viewReturn',

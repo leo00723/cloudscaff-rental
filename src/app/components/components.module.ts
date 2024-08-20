@@ -108,6 +108,7 @@ import { ScaffoldOverviewTable2Component } from './scaffold-overview-table-2/sca
 import { EstimateV2TableComponent } from './estimate-v2-table/estimate-v2-table.component';
 import { EstimateSummaryV2Component } from './estimate-summary-v2/estimate-summary-v2.component';
 import { EstimateSummarySellComponent } from './estimate-summary-sell/estimate-summary-sell.component';
+import { AddAdminReturnComponent } from './add-admin-return/add-admin-return.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -209,6 +210,7 @@ const COMPONENTS = [
   ViewTermsComponent,
   WeightPipe,
   HandoverTableComponent,
+  AddAdminReturnComponent,
 ];
 const IMPORTS = [
   CommonModule,

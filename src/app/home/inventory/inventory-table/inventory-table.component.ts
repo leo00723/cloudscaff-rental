@@ -161,14 +161,8 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
               `company/${company}/stockItems`,
               item.id
             );
-            item.crossHireQty = 0;
-            item.inUseQty = 0;
-            item.inMaintenanceQty = 0;
-            item.damagedQty = 0;
-            item.lostQty = 0;
-            item.shipmentQty = 0;
-            item.reservedQty = 0;
-            item.crossHire = [];
+            item.yardQty = 0;
+            item.availableQty = 0;
             batch.update(doc, { ...item });
           }
           await batch.commit();
