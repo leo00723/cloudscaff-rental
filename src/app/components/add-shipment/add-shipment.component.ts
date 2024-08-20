@@ -20,6 +20,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 import { ImgService } from 'src/app/services/img.service';
+import * as Papa from 'papaparse';
 
 @Component({
   selector: 'app-add-shipment',
@@ -47,6 +48,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   error = false;
   sites$: Observable<Site[]>;
   blob: any;
+  uploading = false;
 
   private imgService = inject(ImgService);
   private subs = new Subscription();
@@ -247,18 +249,20 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.shipment.date = new Date();
         await this.upload();
 
-        const res = await this.imgService.uploadBlob(
-          this.blob,
-          `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature2`,
-          ''
-        );
-        if (res) {
-          if (isAdmin) {
-            this.shipment.signature = res.url2;
-            this.shipment.signatureRef = res.ref;
-          } else {
-            this.shipment.signature2 = res.url2;
-            this.shipment.signatureRef2 = res.ref;
+        if (this.blob) {
+          const res = await this.imgService.uploadBlob(
+            this.blob,
+            `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature2`,
+            ''
+          );
+          if (res) {
+            if (isAdmin) {
+              this.shipment.signature = res.url2;
+              this.shipment.signatureRef = res.ref;
+            } else {
+              this.shipment.signature2 = res.url2;
+              this.shipment.signatureRef2 = res.ref;
+            }
           }
         }
 
@@ -273,7 +277,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.masterSvc
           .notification()
           .toast('Delivery updated successfully', 'success');
-        this.loading = false;
         this.close();
       } catch (e) {
         console.error(e);
@@ -283,6 +286,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
             'Something went wrong updating the delivery. Please try again!',
             'danger'
           );
+      } finally {
         this.loading = false;
       }
     });
@@ -372,6 +376,62 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
 
+  protected onFileChanged(event) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      const file: File = event.target.files[0];
+
+      if (file) {
+        Papa.parse(file, {
+          header: true,
+          worker: true,
+          dynamicTyping: true,
+
+          complete: async (result) => {
+            this.uploading = true;
+            const data = result.data.map((item) => ({
+              code: item.code || '',
+              location: item.location || '',
+              shipmentQty: +item.totalQty || 0,
+            }));
+            const uploadTotal = data.length || 0;
+            let uploadCounter = 0;
+            for (const item of data) {
+              let index = null;
+              if (item.location) {
+                index = this.items.findIndex(
+                  (i) => i.code === item.code && i.location === item.location
+                );
+              } else {
+                index = this.items.findIndex(
+                  (i) => i.code === item.code && !i.location
+                );
+              }
+              if (index !== -1) {
+                this.items[index].shipmentQty = item.shipmentQty;
+              } else {
+                console.log('item not in master list', item);
+              }
+              uploadCounter++;
+            }
+            if (uploadCounter === uploadTotal) {
+              this.uploading = false;
+              this.masterSvc
+                .notification()
+                .toast('Import Successful', 'success');
+            }
+          },
+
+          error: () => {
+            this.uploading = false;
+            this.masterSvc
+              .notification()
+              .toast('Import Failed. Please try again.', 'danger');
+          },
+        });
+      }
+    });
+  }
+
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.shipment.site, Validators.required],
@@ -443,6 +503,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
 
   private async autoUpdate() {
+    if (this.loading) {
+      return;
+    }
     this.loading = true;
     try {
       this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
@@ -460,8 +523,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           this.shipment.id,
           this.shipment
         );
-
-      this.loading = false;
     } catch (e) {
       console.error(e);
       this.masterSvc
@@ -470,11 +531,15 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           'Something went wrong updating the delivery. Please try again!',
           'danger'
         );
+    } finally {
       this.loading = false;
     }
   }
 
   private async autoCreate() {
+    if (this.loading) {
+      return;
+    }
     this.loading = true;
     try {
       this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
@@ -498,8 +563,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       await this.masterSvc.edit().updateDoc('company', this.company.id, {
         totalShipments: increment(1),
       });
-
-      this.loading = false;
     } catch (e) {
       console.error(e);
       this.masterSvc
@@ -508,6 +571,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           'Something went wrong creating delivery. Please try again!',
           'danger'
         );
+    } finally {
       this.loading = false;
     }
   }

@@ -106,41 +106,45 @@ export class SiteFormComponent implements OnInit, OnDestroy {
   }
 
   create() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.site.companyId = this.company.id;
-      this.site.createdBy = this.user.name;
-      const code = `SITE${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${(this.company.totalSites ? this.company.totalSites + 1 : 1)
-        .toString()
-        .padStart(6, '0')}`;
-      Object.assign(this.site, { ...this.form.value, code, date: new Date() });
-      this.setUserIDs();
-      this.masterSvc
-        .edit()
-        .addDocument(`company/${this.site.companyId}/sites`, this.site)
-        .then((data) => {
-          this.loading = false;
-          this.masterSvc.edit().updateDoc('company', this.company.id, {
-            totalSites: increment(1),
-          });
-          this.masterSvc
-            .notification()
-            .toast('Site added successfully!', 'success');
-          this.newSite.emit({ ...this.site, id: data.id });
-          this.closeModal.emit();
-        })
-        .catch(() => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong creating your site, try again!',
-              'danger',
-              2000
-            );
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.site.companyId = this.company.id;
+        this.site.createdBy = this.user.name;
+        const code = this.masterSvc
+          .edit()
+          .generateDocCode(this.company.totalSites, 'SITE');
+
+        Object.assign(this.site, {
+          ...this.form.value,
+          code,
+          date: new Date(),
         });
+
+        this.setUserIDs();
+        const data = await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.site.companyId}/sites`, this.site);
+        this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalSites: increment(1),
+        });
+        this.masterSvc
+          .notification()
+          .toast('Site added successfully!', 'success');
+        this.newSite.emit({ ...this.site, id: data.id });
+        this.closeModal.emit();
+      } catch (error) {
+        console.log(error);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your site, try again!',
+            'danger',
+            2000
+          );
+      } finally {
+        this.loading = false;
+      }
     });
   }
 
