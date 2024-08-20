@@ -383,7 +383,7 @@ export class PdfService {
           estimate.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewEstimate/${company.id}-${estimate.id}`,
           []
         ),
@@ -588,7 +588,7 @@ export class PdfService {
           bulkEstimate.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewBulkEstimate/${company.id}-${bulkEstimate.id}`,
           []
         ),
@@ -915,7 +915,7 @@ export class PdfService {
           paymentApplication.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           null,
           [
             [
@@ -1107,7 +1107,7 @@ export class PdfService {
           inventoryEstimate.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewInventoryEstimate/${company.id}-${inventoryEstimate.id}`,
           []
         ),
@@ -1526,7 +1526,7 @@ export class PdfService {
           estimate.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           null,
           []
         ),
@@ -1611,7 +1611,7 @@ export class PdfService {
           modification.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewModification/${company.id}-${modification.id}`,
           []
         ),
@@ -1785,7 +1785,7 @@ export class PdfService {
       attachments.push([
         '',
         {
-          text: `${company.terminology.scaffold} Level ${a.level}`,
+          text: `${company.terminology.scaffold} Level ${a.level}${company.measurement.symbol}`,
           style: 'h6',
         },
         {
@@ -1858,7 +1858,9 @@ export class PdfService {
           [
             '',
             {
-              text: `${company.terminology.scaffold} Level 0`,
+              text: `${company.terminology.scaffold} Level ${
+                inspection.scaffold.scaffold.level || 0
+              }${company.measurement.symbol}`,
               style: 'h6',
             },
             {
@@ -1946,10 +1948,10 @@ export class PdfService {
           'Inspection',
           inspection.code,
           inspection.scaffold.siteCode,
-          this.datePipe.transform(inspection.date, 'HH:mm dd MMM yyyy'),
+          inspection.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewInspection/${company.id}-${inspection.id}`,
           [
             [
@@ -1974,6 +1976,12 @@ export class PdfService {
                 style: 'h6b',
                 color: inspection.status === 'Passed' ? 'green' : 'red',
               },
+              '',
+              '',
+            ],
+            [
+              { text: 'Created By:', style: 'h6b' },
+              `${inspection?.createdByName}`,
               '',
               '',
             ],
@@ -2053,7 +2061,7 @@ export class PdfService {
       attachments.push([
         '',
         {
-          text: `${company.terminology.scaffold} Level ${a.level}`,
+          text: `${company.terminology.scaffold} Level ${a.level}${company.measurement.symbol}`,
           style: 'h6',
         },
         {
@@ -2126,7 +2134,9 @@ export class PdfService {
           [
             '',
             {
-              text: `${company.terminology.scaffold} Level 0`,
+              text: `${company.terminology.scaffold} Level ${
+                handover.scaffold.scaffold.level || 0
+              }${company.measurement.symbol}`,
               style: 'h6',
             },
             {
@@ -2216,10 +2226,10 @@ export class PdfService {
           'Handover',
           handover.code,
           handover.scaffold.siteCode,
-          this.datePipe.transform(handover.date, 'HH:mm dd MMM yyyy'),
+          handover.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewHandover/${company.id}-${handover.id}`,
           [
             [
@@ -2244,6 +2254,12 @@ export class PdfService {
                 style: 'h6b',
                 color: handover.safe === 'Passed' ? 'green' : 'red',
               },
+              '',
+              '',
+            ],
+            [
+              { text: 'Created By:', style: 'h6b' },
+              `${handover?.createdByName}`,
               '',
               '',
             ],
@@ -2530,7 +2546,7 @@ export class PdfService {
           dismantle.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewDismantle/${company.id}-${dismantle.id}`,
           [
             [
@@ -2800,7 +2816,7 @@ export class PdfService {
           invoice.startDate,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewInvoice/${company.id}-${invoice.id}`,
           []
         ),
@@ -3075,7 +3091,7 @@ export class PdfService {
           credit.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           `https://app.cloudscaff.com/viewCredit/${company.id}-${credit.id}`,
           [
             [
@@ -3373,7 +3389,7 @@ export class PdfService {
                   image: await this.getBase64ImageFromURL(
                     company.logoUrl.length > 0
                       ? company.logoUrl
-                      : 'assets/icon/favicon.png'
+                      : 'assets/icon/default.webp'
                   ),
 
                   width: 150,
@@ -3481,7 +3497,7 @@ export class PdfService {
           shipment.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           null,
           [
             [
@@ -3623,9 +3639,160 @@ export class PdfService {
           new Date(),
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           null,
           []
+        ),
+        hr,
+        summary,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  // Picklist PDF
+  async generatePickList(
+    docData: Shipment | Return,
+    inventory: InventoryItem[],
+    company: Company
+  ) {
+    const items = [];
+    inventory.forEach((item) => {
+      items.push([
+        { text: item.code, style: 'h4b', alignment: 'left' },
+        {
+          text: item.category,
+          style: 'h4b',
+          alignment: 'left',
+        },
+        { text: item.name, style: 'h4b', alignment: 'left' },
+        { text: item.location, style: 'h4b', alignment: 'left' },
+        { text: item.shipmentQty, style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: 'Code', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Category',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Name', style: 'h4b', alignment: 'left' },
+            { text: 'Location', style: 'h4b', alignment: 'left' },
+            { text: 'Qty Needed', style: 'h4b', alignment: 'center' },
+            { text: 'Picked Qty', style: 'h4b', alignment: 'center' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+    const data = {
+      footer: await this.getFooter(),
+      // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
+      content: [
+        await this.getHeader(
+          'Picklist',
+          docData.code,
+          docData.site.name,
+          new Date(),
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          [
+            [
+              { text: 'Site Code', style: 'h6b' },
+              `${docData?.site.code || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        summary,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
+  async generateReturnPickList(
+    docData: Shipment | Return,
+    inventory: InventoryItem[],
+    company: Company
+  ) {
+    const items = [];
+    inventory.forEach((item) => {
+      items.push([
+        { text: item.code, style: 'h4b', alignment: 'left' },
+        {
+          text: item.category,
+          style: 'h4b',
+          alignment: 'left',
+        },
+        { text: item.name, style: 'h4b', alignment: 'left' },
+        { text: item.location, style: 'h4b', alignment: 'left' },
+        { text: '', style: 'h4b', alignment: 'center' },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: 'Code', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Category',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Name', style: 'h4b', alignment: 'left' },
+            { text: 'Location', style: 'h4b', alignment: 'left' },
+            { text: 'Picked Qty', style: 'h4b', alignment: 'center' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+    const data = {
+      footer: await this.getFooter(),
+      // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
+      content: [
+        await this.getHeader(
+          'Picklist',
+          docData.code,
+          docData.site.name,
+          new Date(),
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          [
+            [
+              { text: 'Site Code', style: 'h6b' },
+              `${docData?.site.code || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
         ),
         hr,
         summary,
@@ -3678,7 +3845,7 @@ export class PdfService {
           returnDoc.date,
           company.logoUrl.length > 0
             ? company.logoUrl
-            : 'assets/icon/favicon.png',
+            : 'assets/icon/default.webp',
           null,
           [
             [
@@ -4674,7 +4841,7 @@ export class PdfService {
     }`;
   }
   private toDate(date) {
-    return new Date(date).toDateString();
+    return this.datePipe.transform(new Date(date), 'dd MMM yyyy (HH:mm)');
   }
   private getAddress(data: any): string {
     const components = [

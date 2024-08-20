@@ -15,14 +15,28 @@
         <i class="text-muted fs-6">(Saving...)</i>
       </ion-text>
     </ion-title>
-    <ion-buttons slot="end" *ngIf="isEdit">
-      <ion-button (click)="downloadPdf()">
-        <ion-icon
-          slot="icon-only"
-          name="cloud-download-outline"
-          color="primary"
-        ></ion-icon>
-      </ion-button>
+    <ion-buttons slot="end">
+      <ion-chip
+        (click)="downloadPicklist()"
+        mode="ios"
+        shape="round"
+        size="small"
+        color="primary"
+      >
+        Picklist
+      </ion-chip>
+      <ion-chip
+        *ngIf="
+          isEdit && return.status !== 'pending' && return.status !== 'void'
+        "
+        (click)="downloadPdf()"
+        mode="ios"
+        shape="round"
+        size="small"
+        color="tertiary"
+      >
+        Return Note
+      </ion-chip>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -47,6 +61,7 @@
           [form]="form"
           controlName="returnDate"
           title="Return Date"
+          [readonly]="return.status !== 'pending'"
         ></app-input-date>
       </ion-col>
       <ion-col size="12">
@@ -123,51 +138,34 @@
           <table class="table table-sm table-bordered table-fixed">
             <thead>
               <tr>
-                <!-- <th scope="col">Code</th> -->
+                <th scope="col">Code</th>
                 <!-- <th scope="col">Category</th> -->
                 <th scope="col">Name</th>
                 <th scope="col" class="text-center">Location</th>
                 <th scope="col" class="text-center">Site Qty</th>
                 <th scope="col" class="text-center">Return Qty</th>
-                <th scope="col" class="text-center">
+                <!-- <th scope="col" class="text-center">
                   Weight ({{ company.mass.symbol }})
-                </th>
-                <th
-                  scope="col"
+                </th> -->
+                <ng-container
                   *ngIf="
-                    (allowSend && return.status === 'collected') ||
-                    return.status === 'received'
+                    return.status !== 'void' &&
+                    ((allowSend && return.status === 'collected') ||
+                      (allowSend &&
+                        user.permissionsList.includes('Inventory Admin')) ||
+                      return.status === 'received')
                   "
-                  class="text-center"
                 >
-                  Maintenance Qty
-                </th>
-                <th
-                  scope="col"
-                  *ngIf="
-                    (allowSend && return.status === 'collected') ||
-                    return.status === 'received'
-                  "
-                  class="text-center"
-                >
-                  Damaged Qty
-                </th>
-                <th
-                  scope="col"
-                  *ngIf="
-                    (allowSend && return.status === 'collected') ||
-                    return.status === 'received'
-                  "
-                  class="text-center"
-                >
-                  Lost Qty
-                </th>
+                  <th scope="col" class="text-center">Maintenance Qty</th>
+                  <th scope="col" class="text-center">Damaged Qty</th>
+                  <th scope="col" class="text-center">Lost Qty</th>
+                </ng-container>
               </tr>
             </thead>
             <tbody>
               <ng-container *ngFor="let item of items; let i = index">
                 <tr class="align-middle" *ngIf="viewAll; else viewShipment">
-                  <!-- <th scope="row">{{ item.code }}</th> -->
+                  <th scope="row">{{ item.code }}</th>
                   <!-- <td>{{ item.category }}</td> -->
                   <td>{{ item.name }}</td>
                   <td class="text-center">{{ item?.location }}</td>
@@ -198,91 +196,83 @@
                       you cannot exceed the available qty
                     </ion-label>
                   </td>
-                  <td class="text-end">
+                  <!-- <td class="text-end">
                     {{ item.shipmentQty * item.weight | number }}
-                  </td>
-                  <td
-                    class="text-center"
+                  </td> -->
+                  <ng-container
                     *ngIf="
-                      (allowSend && return.status === 'collected') ||
-                      return.status === 'received'
+                      return.status !== 'void' &&
+                      ((allowSend && return.status === 'collected') ||
+                        (allowSend &&
+                          user.permissionsList.includes('Inventory Admin')) ||
+                        return.status === 'received')
                     "
                   >
-                    <ion-input
-                      #MaintenanceQty
-                      debounce="200"
-                      type="number"
-                      [color]="item.error ? 'danger' : 'primary'"
-                      [clearOnEdit]="true"
-                      [value]="item.inMaintenanceQty"
-                      (ionChange)="update($event, item, 'maintenance')"
-                      [readonly]="
-                        (return.status !== 'collected' && !allowSend) ||
-                        return.status === 'received'
-                      "
-                    >
-                    </ion-input>
-                    <ion-label color="danger" *ngIf="item.error">
-                      you cannot exceed the shipment qty
-                    </ion-label>
-                  </td>
-                  <td
-                    class="text-center"
-                    *ngIf="
-                      (allowSend && return.status === 'collected') ||
-                      return.status === 'received'
-                    "
-                  >
-                    <ion-input
-                      #DamagedQty
-                      debounce="200"
-                      type="number"
-                      [color]="item.error ? 'danger' : 'warning'"
-                      [clearOnEdit]="true"
-                      [value]="item.damagedQty"
-                      (ionChange)="update($event, item, 'damaged')"
-                      [readonly]="
-                        (return.status !== 'collected' && !allowSend) ||
-                        return.status === 'received'
-                      "
-                    >
-                    </ion-input>
-                    <ion-label color="danger" *ngIf="item.error">
-                      you cannot exceed the shipment qty
-                    </ion-label>
-                  </td>
-                  <td
-                    class="text-center"
-                    *ngIf="
-                      (allowSend && return.status === 'collected') ||
-                      return.status === 'received'
-                    "
-                  >
-                    <ion-input
-                      #LostQty
-                      debounce="200"
-                      type="number"
-                      [color]="item.error ? 'danger' : 'danger'"
-                      [clearOnEdit]="true"
-                      [value]="item.lostQty"
-                      (ionChange)="update($event, item, 'lost')"
-                      [readonly]="
-                        (return.status !== 'collected' && !allowSend) ||
-                        return.status === 'received'
-                      "
-                    >
-                    </ion-input>
-                    <ion-label color="danger" *ngIf="item.error">
-                      you cannot exceed the shipment qty
-                    </ion-label>
-                  </td>
+                    <td class="text-center">
+                      <ion-input
+                        #MaintenanceQty
+                        debounce="200"
+                        type="number"
+                        [color]="item.error ? 'danger' : 'primary'"
+                        [clearOnEdit]="true"
+                        [value]="item.inMaintenanceQty"
+                        (ionChange)="update($event, item, 'maintenance')"
+                        [readonly]="
+                          (return.status !== 'collected' && !allowSend) ||
+                          return.status === 'received'
+                        "
+                      >
+                      </ion-input>
+                      <ion-label color="danger" *ngIf="item.error">
+                        you cannot exceed the shipment qty
+                      </ion-label>
+                    </td>
+                    <td class="text-center">
+                      <ion-input
+                        #DamagedQty
+                        debounce="200"
+                        type="number"
+                        [color]="item.error ? 'danger' : 'warning'"
+                        [clearOnEdit]="true"
+                        [value]="item.damagedQty"
+                        (ionChange)="update($event, item, 'damaged')"
+                        [readonly]="
+                          (return.status !== 'collected' && !allowSend) ||
+                          return.status === 'received'
+                        "
+                      >
+                      </ion-input>
+                      <ion-label color="danger" *ngIf="item.error">
+                        you cannot exceed the shipment qty
+                      </ion-label>
+                    </td>
+                    <td class="text-center">
+                      <ion-input
+                        #LostQty
+                        debounce="200"
+                        type="number"
+                        [color]="item.error ? 'danger' : 'danger'"
+                        [clearOnEdit]="true"
+                        [value]="item.lostQty"
+                        (ionChange)="update($event, item, 'lost')"
+                        [readonly]="
+                          (return.status !== 'collected' && !allowSend) ||
+                          return.status === 'received'
+                        "
+                      >
+                      </ion-input>
+                      <ion-label color="danger" *ngIf="item.error">
+                        you cannot exceed the shipment qty
+                      </ion-label>
+                    </td>
+                  </ng-container>
                 </tr>
                 <ng-template #viewShipment>
                   <tr
                     class="align-middle"
                     *ngIf="item.shipmentQty !== null && item.shipmentQty >= 0"
                   >
-                    <!-- <th scope="row">{{ item.code }}</th> -->
+                    <th scope="row">{{ item.code }}</th>
                     <!-- <td>{{ item.category }}</td> -->
                     <td>{{ item.name }}</td>
                     <td class="text-center">{{ item?.location }}</td>
@@ -301,12 +291,13 @@
                         [value]="item.shipmentQty"
                         (ionChange)="update($event, item, 'shipment')"
                         (ionBlur)="autoSave()"
+                        [readonly]="return.status !== 'pending' || allowSend"
                       >
                       </ion-input>
                     </td>
-                    <td class="text-end">
+                    <!-- <td class="text-end">
                       {{ item.shipmentQty * item.weight | number }}
-                    </td>
+                    </td> -->
                   </tr>
                 </ng-template>
               </ng-container>
@@ -388,7 +379,11 @@
         size="12"
         *ngIf="
           return.status === 'on-route' ||
-          (return.status === 'collected' && allowSend)
+          (return.status === 'collected' && allowSend) ||
+          (user.permissionsList.includes('Inventory Admin') &&
+            allowSend &&
+            return.status !== 'received' &&
+            return.status !== 'void')
         "
       >
         <app-title-block> Signature </app-title-block>
@@ -495,6 +490,17 @@
           (click)="approveReturn()"
           >Approve Return</ion-button
         >
+        <ng-container *ngIf="user.permissionsList.includes('Inventory Admin')">
+          <ion-button
+            shape="round"
+            fill="outline"
+            *ngIf="isEdit && !loading && allowSend"
+            color="tertiary"
+            [disabled]="!blob || !return.signedBy2"
+            (click)="approveReturn()"
+            >Approve Immediately</ion-button
+          >
+        </ng-container>
       </ion-col>
     </ion-row>
   </form>

@@ -71,7 +71,7 @@
           <h6>{{ inspection.code }}</h6>
           <h6>{{ inspection.scaffold.code }}</h6>
           <h6>{{ inspection.scaffold.siteCode }}</h6>
-          <h6>{{ inspection.date | date }}</h6>
+          <h6>{{ inspection.date | date : "dd MMM yyyy (HH:mm)" }}</h6>
         </ion-label>
       </ion-col>
     </ion-row>

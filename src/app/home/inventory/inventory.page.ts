@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import * as Papa from 'papaparse';
 import { Observable, map } from 'rxjs';
+import { AddAdminReturnComponent } from 'src/app/components/add-admin-return/add-admin-return.component';
 import { AddBillableShipmentComponent } from 'src/app/components/add-billable-shipment/add-billable-shipment.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
@@ -46,6 +47,7 @@ export class InventoryPage implements OnInit {
   pendingShipments$: Observable<Shipment[]>;
   outboundShipments$: Observable<Shipment[]>;
   reservedShipments$: Observable<Shipment[]>;
+  voidShipments$: Observable<Shipment[]>;
 
   billableShipments$: Observable<InventoryEstimate[]>;
 
@@ -59,6 +61,7 @@ export class InventoryPage implements OnInit {
   returns$: Observable<Return[]>;
   submittedReturns$: Observable<Return[]>;
   outboundReturns$: Observable<Return[]>;
+  voidReturns$: Observable<Return[]>;
 
   active = 1;
   importing = false;
@@ -182,6 +185,16 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async addReturn() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddAdminReturnComponent,
+      componentProps: {},
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addReturn',
+    });
+    return await modal.present();
+  }
   async addTransfer() {
     const modal = await this.masterSvc.modal().create({
       component: AddTransferComponent,
@@ -227,7 +240,7 @@ export class InventoryPage implements OnInit {
 
   async viewReturn(returnData: Return) {
     const modal = await this.masterSvc.modal().create({
-      component: AddReturnComponent,
+      component: AddAdminReturnComponent,
       componentProps: { allowSend: true, isEdit: true, value: returnData },
       showBackdrop: false,
       id: 'viewReturn',
@@ -267,6 +280,7 @@ export class InventoryPage implements OnInit {
               category: item.Category || '',
               size: item.Size || '',
               name: item.Description || '',
+              location: item.Location || '',
               yardQty: +item.Yard_Qty || 0,
               availableQty: +item.Yard_Qty || 0,
               weight: parseFloat(item.Weight) || 0,
@@ -375,6 +389,16 @@ export class InventoryPage implements OnInit {
             'code',
             'asc'
           );
+        this.voidShipments$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/shipments`,
+            'status',
+            '==',
+            'void',
+            'code',
+            'asc'
+          );
         this.billableShipments$ = this.masterSvc
           .edit()
           .getCollectionOrdered(
@@ -458,6 +482,16 @@ export class InventoryPage implements OnInit {
             where('status', 'in', ['on-route', 'collected']),
             orderBy('code', 'desc'),
           ]);
+        this.voidReturns$ = this.masterSvc
+          .edit()
+          .getCollectionWhereAndOrder(
+            `company/${id}/returns`,
+            'status',
+            '==',
+            'void',
+            'code',
+            'desc'
+          );
       } else {
         this.masterSvc.log(
           '-----------------------try inventory----------------------'

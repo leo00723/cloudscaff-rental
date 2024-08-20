@@ -165,7 +165,7 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
-                  title="Level"
+                  title="Level ({{ company.measurement.symbol }})"
                   type="number"
                   [readonly]="true"
                   controlName="level"
@@ -291,11 +291,11 @@
               </ion-col>
               <ion-col>
                 <app-input-reactive
-                  title="Level"
+                  title="Level ({{ company.measurement.symbol }})"
                   [optional]="true"
                   type="number"
                   controlName="level"
-                  placeholder="1"
+                  placeholder="0"
                   [form]="attachment"
                 >
                 </app-input-reactive>

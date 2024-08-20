@@ -156,7 +156,7 @@
       </div>
       <app-inventory-table
         [value]="inventoryItems$"
-        *ngIf="items.length > 0 && !importing"
+        *ngIf="items.length > 0 && !importing && !uploading"
         (selectedItem)="viewItem($event)"
         (editItem)="editItem($event)"
         (duplicateItem)="duplicateItem($event)"
@@ -164,7 +164,7 @@
       </app-inventory-table>
       <ion-row
         class="text-center"
-        *ngIf="items.length === 0 || importing"
+        *ngIf="items.length === 0 || importing || uploading"
         style="height: 100%"
       >
         <!-- <ion-col class="m-auto" *ngSwitchCase="0">
@@ -245,54 +245,81 @@
       [multiple]="true"
       [value]="['pending','outbound']"
     >
-      <ion-accordion value="pending">
-        <ion-item slot="header" color="light">
-          <ion-label color="primary">Pending Deliveries</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-shipment-table
-            [value]="pendingShipments$"
-            *ngIf="pendingShipments$ | async else loading"
-            (selectedItem)="viewShipment($event)"
-          ></app-shipment-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="outbound">
-        <ion-item slot="header" color="light">
-          <ion-label color="warning">Outbound Deliveries</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-shipment-table
-            [value]="outboundShipments$"
-            *ngIf="outboundShipments$ | async else loading"
-            (selectedItem)="viewShipment($event)"
-          ></app-shipment-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="reserved">
-        <ion-item slot="header" color="light">
-          <ion-label color="tertiary">Reserved Deliveries</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-shipment-table
-            [value]="reservedShipments$"
-            *ngIf="reservedShipments$ | async else loading"
-            (selectedItem)="viewShipment($event)"
-          ></app-shipment-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="sent">
-        <ion-item slot="header" color="light">
-          <ion-label color="success">Completed Deliveries</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-shipment-table
-            [value]="shipments$"
-            *ngIf="shipments$ | async else loading"
-            (selectedItem)="viewShipment($event)"
-          ></app-shipment-table>
-        </div>
-      </ion-accordion>
+      <ng-container *ngIf="pendingShipments$ | async as ps else loading">
+        <ion-accordion value="pending">
+          <ion-item slot="header" color="light">
+            <ion-label color="primary"
+              >Pending Deliveries ({{ps.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-shipment-table
+              [value]="pendingShipments$"
+              (selectedItem)="viewShipment($event)"
+            ></app-shipment-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="outboundShipments$ | async as os else loading">
+        <ion-accordion value="outbound">
+          <ion-item slot="header" color="light">
+            <ion-label color="warning"
+              >Outbound Deliveries ({{os.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-shipment-table
+              [value]="outboundShipments$"
+              (selectedItem)="viewShipment($event)"
+            ></app-shipment-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="reservedShipments$ | async as rs else loading">
+        <ion-accordion value="reserved">
+          <ion-item slot="header" color="light">
+            <ion-label color="tertiary"
+              >Reserved Deliveries ({{rs.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-shipment-table
+              [value]="reservedShipments$"
+              (selectedItem)="viewShipment($event)"
+            ></app-shipment-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="shipments$ | async as s else loading">
+        <ion-accordion value="sent">
+          <ion-item slot="header" color="light">
+            <ion-label color="success"
+              >Completed Deliveries ({{s.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-shipment-table
+              [value]="shipments$"
+              (selectedItem)="viewShipment($event)"
+            ></app-shipment-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="voidShipments$ | async as vs else loading">
+        <ion-accordion value="void">
+          <ion-item slot="header" color="light">
+            <ion-label color="danger"
+              >Voided Deliveries ({{vs.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-shipment-table
+              [value]="voidShipments$"
+              (selectedItem)="viewShipment($event)"
+            ></app-shipment-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
     </ion-accordion-group>
 
     <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
@@ -315,42 +342,51 @@
       [multiple]="true"
       [value]="['pending']"
     >
-      <ion-accordion value="pending">
-        <ion-item slot="header" color="light">
-          <ion-label color="primary">Pending Requests</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-requests-table
-            [value]="submittedRequests$"
-            *ngIf="submittedRequests$ | async else loading"
-            (selectedItem)="viewRequest($event)"
-          ></app-requests-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="partial">
-        <ion-item slot="header" color="light">
-          <ion-label color="tertiary">Partially Delivered Requests</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-requests-table
-            [value]="partialRequests$"
-            *ngIf="partialRequests$ | async else loading"
-            (selectedItem)="viewRequest($event)"
-          ></app-requests-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="approved">
-        <ion-item slot="header" color="light">
-          <ion-label color="success">Approved Requests</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-requests-table
-            [value]="requests$"
-            *ngIf="requests$ | async else loading"
-            (selectedItem)="viewRequest($event)"
-          ></app-requests-table>
-        </div>
-      </ion-accordion>
+      <ng-container *ngIf="submittedRequests$ | async as sr else loading">
+        <ion-accordion value="pending">
+          <ion-item slot="header" color="light">
+            <ion-label color="primary"
+              >Submitted Requests ({{sr.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-requests-table
+              [value]="submittedRequests$"
+              (selectedItem)="viewRequest($event)"
+            ></app-requests-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="partialRequests$ | async as pr else loading">
+        <ion-accordion value="partial">
+          <ion-item slot="header" color="light">
+            <ion-label color="tertiary"
+              >Partially Delivered Requests ({{pr.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-requests-table
+              [value]="partialRequests$"
+              (selectedItem)="viewRequest($event)"
+            ></app-requests-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="requests$ | async as r else loading">
+        <ion-accordion value="approved">
+          <ion-item slot="header" color="light">
+            <ion-label color="success"
+              >Approved Requests ({{r.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-requests-table
+              [value]="requests$"
+              (selectedItem)="viewRequest($event)"
+            ></app-requests-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
     </ion-accordion-group>
   </ng-container>
   <ng-container *ngSwitchCase="5">
@@ -360,43 +396,70 @@
       [multiple]="true"
       [value]="['pending','outbound']"
     >
-      <ion-accordion value="pending">
-        <ion-item slot="header" color="light">
-          <ion-label color="primary">Pending Returns</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-returns-table
-            [value]="submittedReturns$"
-            *ngIf="submittedReturns$ | async else loading"
-            (selectedItem)="viewReturn($event)"
-          ></app-returns-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="outbound">
-        <ion-item slot="header" color="light">
-          <ion-label color="warning">Outbound Returns</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-returns-table
-            [value]="outboundReturns$"
-            *ngIf="outboundReturns$ | async else loading"
-            (selectedItem)="viewReturn($event)"
-          ></app-returns-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="approved">
-        <ion-item slot="header" color="light">
-          <ion-label color="success">Completed Returns</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-returns-table
-            [value]="returns$"
-            *ngIf="returns$ | async else loading"
-            (selectedItem)="viewReturn($event)"
-          ></app-returns-table>
-        </div>
-      </ion-accordion>
+      <ng-container *ngIf="submittedReturns$ | async as sr else loading">
+        <ion-accordion value="pending">
+          <ion-item slot="header" color="light">
+            <ion-label color="primary"
+              >Submitted Returns ({{sr.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-returns-table
+              [value]="submittedReturns$"
+              (selectedItem)="viewReturn($event)"
+            ></app-returns-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="outboundReturns$ | async as or else loading">
+        <ion-accordion value="outbound">
+          <ion-item slot="header" color="light">
+            <ion-label color="warning"
+              >Outbound Returns ({{or.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-returns-table
+              [value]="outboundReturns$"
+              (selectedItem)="viewReturn($event)"
+            ></app-returns-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="returns$ | async as r else loading">
+        <ion-accordion value="approved">
+          <ion-item slot="header" color="light">
+            <ion-label color="success"
+              >Completed Returns ({{r.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-returns-table
+              [value]="returns$"
+              (selectedItem)="viewReturn($event)"
+            ></app-returns-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="voidReturns$ | async as vr else loading">
+        <ion-accordion value="void">
+          <ion-item slot="header" color="light">
+            <ion-label color="danger">Voided Returns ({{vr.length}})</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-returns-table
+              [value]="voidReturns$"
+              (selectedItem)="viewReturn($event)"
+            ></app-returns-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
     </ion-accordion-group>
+    <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addReturn()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
   </ng-container>
   <ng-container *ngSwitchCase="6">
     <ion-accordion-group
@@ -405,30 +468,36 @@
       [multiple]="true"
       [value]="['pending']"
     >
-      <ion-accordion value="pending">
-        <ion-item slot="header" color="light">
-          <ion-label color="primary">Pending Transfers</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-transfer-table
-            [value]="pendingTransfers$"
-            *ngIf="pendingTransfers$ | async else loading"
-            (selectedItem)="viewTransfer($event)"
-          ></app-transfer-table>
-        </div>
-      </ion-accordion>
-      <ion-accordion value="sent">
-        <ion-item slot="header" color="light">
-          <ion-label color="success">Completed Transfers</ion-label>
-        </ion-item>
-        <div class="ion-padding" slot="content">
-          <app-transfer-table
-            [value]="transfers$"
-            *ngIf="transfers$ | async else loading"
-            (selectedItem)="viewTransfer($event)"
-          ></app-transfer-table>
-        </div>
-      </ion-accordion>
+      <ng-container *ngIf="pendingTransfers$ | async as pt else loading">
+        <ion-accordion value="pending">
+          <ion-item slot="header" color="light">
+            <ion-label color="primary"
+              >Pending Transfers ({{pt.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-transfer-table
+              [value]="pendingTransfers$"
+              (selectedItem)="viewTransfer($event)"
+            ></app-transfer-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="transfers$ | async as t else loading">
+        <ion-accordion value="sent">
+          <ion-item slot="header" color="light">
+            <ion-label color="success"
+              >Completed Transfers ({{t.length}})</ion-label
+            >
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-transfer-table
+              [value]="transfers$"
+              (selectedItem)="viewTransfer($event)"
+            ></app-transfer-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
     </ion-accordion-group>
     <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button (click)="addTransfer()">

@@ -106,41 +106,45 @@ export class SiteFormComponent implements OnInit, OnDestroy {
   }
 
   create() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.site.companyId = this.company.id;
-      this.site.createdBy = this.user.name;
-      const code = `SITE${new Date().toLocaleDateString('en', {
-        year: '2-digit',
-      })}${(this.company.totalSites ? this.company.totalSites + 1 : 1)
-        .toString()
-        .padStart(6, '0')}`;
-      Object.assign(this.site, { ...this.form.value, code, date: new Date() });
-      this.setUserIDs();
-      this.masterSvc
-        .edit()
-        .addDocument(`company/${this.site.companyId}/sites`, this.site)
-        .then((data) => {
-          this.loading = false;
-          this.masterSvc.edit().updateDoc('company', this.company.id, {
-            totalSites: increment(1),
-          });
-          this.masterSvc
-            .notification()
-            .toast('Site added successfully!', 'success');
-          this.newSite.emit({ ...this.site, id: data.id });
-          this.closeModal.emit();
-        })
-        .catch(() => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong creating your site, try again!',
-              'danger',
-              2000
-            );
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.site.companyId = this.company.id;
+        this.site.createdBy = this.user.name;
+        const code = this.masterSvc
+          .edit()
+          .generateDocCode(this.company.totalSites, 'SITE');
+
+        Object.assign(this.site, {
+          ...this.form.value,
+          code,
+          date: new Date(),
         });
+
+        this.setUserIDs();
+        const data = await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.site.companyId}/sites`, this.site);
+        this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalSites: increment(1),
+        });
+        this.masterSvc
+          .notification()
+          .toast('Site added successfully!', 'success');
+        this.newSite.emit({ ...this.site, id: data.id });
+        this.closeModal.emit();
+      } catch (error) {
+        console.log(error);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your site, try again!',
+            'danger',
+            2000
+          );
+      } finally {
+        this.loading = false;
+      }
     });
   }
 
@@ -176,21 +180,27 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     });
   }
   delete() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.masterSvc
-        .edit()
-        .deleteDocById(`company/${this.site.companyId}/sites`, this.site.id)
-        .then(() => {
+    this.masterSvc.notification().presentAlertConfirm(
+      async () => {
+        try {
+          this.loading = true;
+          this.site.updatedBy = this.user.name;
+          this.site.status = 'deleted';
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.site.companyId}/sites`,
+              this.site.id,
+              this.site
+            );
           this.loading = false;
           this.masterSvc
             .notification()
             .toast('Site deleted successfully!', 'success');
           this.masterSvc.modal().dismiss();
-        })
-        .catch((err) => {
+          this.masterSvc.router().navigateByUrl('/dashboard/sites');
+        } catch (err) {
           this.loading = false;
-          this.form.reset();
           this.masterSvc
             .notification()
             .toast(
@@ -198,8 +208,11 @@ export class SiteFormComponent implements OnInit, OnDestroy {
               'danger',
               2000
             );
-        });
-    });
+        }
+      },
+      'Delete Site',
+      'NB! A DELETED SITE CANNOT BE RECOVERED NOR CAN ANY INFORMATION BE ACCESSED'
+    );
   }
 
   updateAddress(address: Address) {

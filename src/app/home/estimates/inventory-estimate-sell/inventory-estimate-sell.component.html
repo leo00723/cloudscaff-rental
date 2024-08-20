@@ -1,0 +1,328 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" color="primary" mode="md">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        slot="end"
+        fill="solid"
+        shape="round"
+        class="text-capitalize"
+        (click)="isEdit ? updateEstimate('pending') : createEstimate()"
+        color="primary"
+      >
+        Save
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment
+      scrollable
+      (ionChange)="segmentChanged($event)"
+      selectOnFocus="true"
+      [value]="active"
+      mode="md"
+    >
+      <ion-segment-button value="overview">
+        <ion-label>Overview</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="inventory">
+        <ion-label>Inventory</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="summary">
+        <ion-label>Summary</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="ion-padding">
+  <div class="container" *ngIf="company" [ngSwitch]="active">
+    <form name="estimate" [formGroup]="form" *ngIf="!isLoading">
+      <!-- OVERVIEW TAB -->
+      <ion-grid [hidden]="active !== 'overview'">
+        <app-title-block> Customer Information </app-title-block>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-searchable-select
+              (click)="select.open()"
+              *ngIf="customers$ | async as customers"
+              title="Select Customer"
+              [data]="customers"
+              itemTextField="name"
+              [add]="true"
+              (selectedChanged)="changeCustomer($event)"
+              #select
+            ></app-searchable-select>
+          </ion-col>
+          <ion-col size="12" *ngIf="show === 'editCustomer'">
+            <app-customer
+              [customer]="field('customer').value"
+              [isUpdate]="inventoryEstimate.status === 'pending'"
+              [isCreate]="false"
+              [companyId]="company.id"
+            >
+            </app-customer>
+          </ion-col>
+          <ion-col size="12" *ngIf="show === 'addCustomer'">
+            <app-customer
+              [companyId]="company.id"
+              (newCustomer)="newCustomer($event)"
+              [isCreate]="true"
+            >
+            </app-customer>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <ion-item
+              fill="solid"
+              lines="none"
+              class="rounded-3 my-3"
+              mode="md"
+            >
+              <ion-label position="stacked">Scope of works</ion-label>
+              <ion-textarea
+                formControlName="scope"
+                autoGrow="true"
+              ></ion-textarea>
+            </ion-item>
+          </ion-col>
+
+          <ion-col size="12">
+            <app-input-reactive
+              title="Discount %"
+              controlName="discountPercentage"
+              [form]="form"
+              placeholder="Enter a discount %"
+            >
+            </app-input-reactive>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12" *ngIf="inventoryEstimate.status === 'pending'">
+            <app-multiuploader></app-multiuploader>
+          </ion-col>
+          <ion-col size="12">
+            <app-title-block> Uploaded Files </app-title-block>
+          </ion-col>
+          <ion-col
+            sizeXl="2"
+            sizeLg="3"
+            sizeMd="4"
+            size="6"
+            *ngFor="let file of inventoryEstimate.uploads; let i = index"
+          >
+            <app-file-item [file]="file" [allowDelete]="false"></app-file-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- INVENTORY TAB -->
+
+      <ion-grid *ngSwitchCase="'inventory'">
+        <ion-row>
+          <ion-col size="6">
+            <ion-text color="medium">
+              <h4>Inventory Information</h4>
+            </ion-text>
+          </ion-col>
+          <ion-col size="6" class="text-end my-auto align-middle">
+            <ion-text color="medium"> <h6>Show all Items</h6> </ion-text>
+            <ion-toggle
+              [checked]="viewAll === true || searching === true ? true : false"
+              (ionChange)="viewAll = !viewAll"
+            ></ion-toggle>
+          </ion-col>
+          <ion-col size="12">
+            <ion-searchbar
+              debounce="250"
+              mode="ios"
+              placeholder="Search by code, category or name"
+              (ionChange)="search($event)"
+            >
+            </ion-searchbar
+          ></ion-col>
+          <ion-col size="12">
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered">
+                <thead>
+                  <tr class="align-middle">
+                    <th scope="col">Code</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Name</th>
+                    <th scope="col" class="text-center">Location</th>
+                    <th
+                      scope="col"
+                      class="text-center"
+                      *ngIf="inventoryEstimate.status === 'pending'"
+                    >
+                      Available Qty
+                    </th>
+                    <th scope="col" class="text-center">Sell Qty</th>
+                    <th scope="col" class="text-end">
+                      Weight ({{ company.mass.symbol }})
+                    </th>
+                    <th scope="col" class="text-end">
+                      Total ({{ company.currency.symbol }})
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let item of items; let i = index">
+                    <tr class="align-middle" *ngIf="viewAll; else viewList">
+                      <th scope="row">{{ item.code }}</th>
+                      <td>{{ item.category }}</td>
+                      <td>{{ item.size }}</td>
+                      <td>{{ item.name }}</td>
+                      <td class="text-center">{{ item?.location }}</td>
+                      <td
+                        class="text-center"
+                        *ngIf="inventoryEstimate.status === 'pending'"
+                      >
+                        {{ item | calculate | number }}
+                      </td>
+                      <td class="text-center">
+                        <ion-input
+                          #qty
+                          debounce="300"
+                          inputmode="numeric"
+                          [color]="item.error ? 'danger' : 'success'"
+                          [clearOnEdit]="true"
+                          [value]="item.sellQty"
+                          [readonly]="inventoryEstimate.status !== 'pending'"
+                          (ionChange)="updateQty($event, item)"
+                        >
+                        </ion-input>
+                        <ion-label color="danger" *ngIf="item.error">
+                          you cannot exceed the available qty
+                        </ion-label>
+                      </td>
+                      <td class="text-end">
+                        {{ item.sellQty * item.weight | number }}
+                      </td>
+                      <th class="text-end">
+                        {{ company.currency.symbol
+                        }}{{ item.totalCost | number : "0.2-2" }}
+                      </th>
+                    </tr>
+                    <ng-template #viewList>
+                      <tr
+                        class="align-middle"
+                        *ngIf="item.sellQty !== null && item.sellQty >= 0"
+                      >
+                        <th scope="row">{{ item.code }}</th>
+                        <td>{{ item.category }}</td>
+                        <td>{{ item.size }}</td>
+                        <td>{{ item.name }}</td>
+                        <td class="text-center">{{ item?.location }}</td>
+                        <td
+                          class="text-center"
+                          *ngIf="inventoryEstimate.status === 'pending'"
+                        >
+                          {{ item | calculate | number }}
+                        </td>
+                        <td class="text-center">
+                          <ion-input
+                            #qty
+                            debounce="200"
+                            type="number"
+                            [color]="item.error ? 'danger' : 'success'"
+                            [clearOnEdit]="true"
+                            [value]="item.sellQty"
+                            (ionChange)="updateQty($event, item)"
+                          >
+                          </ion-input>
+                          <ion-label color="danger" *ngIf="item.error">
+                            you cannot exceed the available qty
+                          </ion-label>
+                        </td>
+                        <td class="text-end">
+                          {{ item.sellQty * item.weight | number }}
+                        </td>
+                        <th class="text-end">
+                          {{ company.currency.symbol
+                          }}{{ item.totalCost | number : "0.2-2" }}
+                        </th>
+                      </tr>
+                    </ng-template>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid *ngSwitchCase="'summary'">
+        <app-estimate-summary-sell
+          [value]="inventoryEstimate"
+          [canDownload]="isEdit && form.valid"
+        ></app-estimate-summary-sell>
+        <ion-row>
+          <ion-col size="12">
+            <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
+              <ion-label
+                >Exclude {{ company?.gst ? "GST" : "VAT" }} on
+                Estimate</ion-label
+              >
+              <ion-checkbox
+                mode="ios"
+                slot="end"
+                [checked]="field('excludeVAT').value"
+                (ionChange)="excludeVAT($event)"
+                [disabled]="
+                  inventoryEstimate.status !== 'pending' &&
+                  inventoryEstimate.status !== 'revised'
+                "
+              ></ion-checkbox>
+            </ion-item>
+          </ion-col>
+          <ion-progress-bar
+            type="indeterminate"
+            *ngIf="loading"
+          ></ion-progress-bar>
+          <ion-col
+            size="6"
+            *ngIf="isEdit && inventoryEstimate.status === 'pending'"
+          >
+            <ion-button
+              shape="round"
+              color="danger"
+              [disabled]="form.invalid"
+              (click)="updateEstimate('rejected')"
+              >Rejected</ion-button
+            >
+          </ion-col>
+
+          <ion-col class="text-end" size="6">
+            <ion-button
+              shape="round"
+              [disabled]="form.invalid"
+              *ngIf="isEdit && inventoryEstimate.status === 'pending'"
+              (click)="updateEstimate('pending')"
+              >Update Estimate</ion-button
+            >
+            <ion-button
+              shape="round"
+              color="success"
+              [disabled]="form.invalid"
+              (click)="updateEstimate('accepted')"
+              *ngIf="isEdit && inventoryEstimate.status === 'pending'"
+            >
+              Accepted
+            </ion-button>
+            <ion-button shape="round" *ngIf="!isEdit" (click)="createEstimate()"
+              >Save Estimate</ion-button
+            >
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </div>
+</ion-content>

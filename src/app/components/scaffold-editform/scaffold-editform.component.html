@@ -40,10 +40,9 @@
           </ion-col>
           <ion-col>
             <app-input-reactive
-              title="Level"
+              title="Level ({{ company.measurement.symbol }})"
               [optional]="true"
               type="number"
-              [readonly]="true"
               controlName="level"
               [form]="field('scaffold')"
             >
@@ -110,10 +109,10 @@
           </ion-col>
           <ion-col>
             <app-input-reactive
-              title="Level"
+              title="Level ({{ company.measurement.symbol }})"
               type="number"
               controlName="level"
-              placeholder="1"
+              placeholder="0"
               [form]="attachment"
             >
             </app-input-reactive>

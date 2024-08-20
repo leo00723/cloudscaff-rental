@@ -29,7 +29,11 @@ export class PermissionsSelectComponent implements OnInit {
   permissionsNoBilling = [
     {
       title: 'Admin',
-      options: [{ name: 'Super Admin', selected: false }],
+      options: [
+        { name: 'Super Admin', selected: false },
+        { name: 'Site Admin', selected: false },
+        { name: 'Inventory Admin', selected: false },
+      ],
     },
     {
       title: 'Navigation',
@@ -71,7 +75,11 @@ export class PermissionsSelectComponent implements OnInit {
   permissionsBilling = [
     {
       title: 'Admin',
-      options: [{ name: 'Super Admin', selected: false }],
+      options: [
+        { name: 'Super Admin', selected: false },
+        { name: 'Site Admin', selected: false },
+        { name: 'Inventory Admin', selected: false },
+      ],
     },
     {
       title: 'Navigation',
@@ -88,6 +96,10 @@ export class PermissionsSelectComponent implements OnInit {
     {
       title: 'Estimates',
       options: [
+        { name: 'Basic Estimates', selected: false },
+        { name: 'Inventory Rent Estimates', selected: false },
+        { name: 'Inventory Sell Estimates', selected: false },
+        { name: 'Standard Estimates', selected: false },
         { name: 'Bulk Estimates', selected: false },
         { name: 'Inventory Estimates', selected: false },
       ],

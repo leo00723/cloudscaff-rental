@@ -13,6 +13,7 @@ export interface ItemChange {
 export interface Handover {
   id?: string;
   date?: any;
+  dateSigned?: any;
   code?: string;
   changes?: {
     scaffold: ItemChange[];

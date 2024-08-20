@@ -47,11 +47,11 @@ import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { NgxsModule } from '@ngxs/store';
 import { OAuthModule } from 'angular-oauth2-oidc';
-import { QRCodeModule } from 'angularx-qrcode';
 import { MasterService } from 'src/app/services/master.service';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { WeightPipe } from './components/weight.pipe';
 import { NotificationService } from './services/notification.service';
 import { AppState } from './shared/app/app.state';
 import { CompanyState } from './shared/company/company.state';
@@ -61,7 +61,6 @@ import { RouterState } from './shared/router.state';
 import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
-import { WeightPipe } from './components/weight.pipe';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {

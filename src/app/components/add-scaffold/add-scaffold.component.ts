@@ -86,6 +86,7 @@ export class AddScaffoldComponent implements OnInit {
       width: ['', [Validators.required, Validators.min(1)]],
       height: ['', [Validators.required, Validators.min(1)]],
       qty: ['', [Validators.required, Validators.min(1)]],
+      description: [''],
       extraHirePercentage: [''],
       extraHire: [''],
       total: [0],

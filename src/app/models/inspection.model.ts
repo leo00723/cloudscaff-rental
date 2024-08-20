@@ -7,6 +7,7 @@ import { UploadedFile } from './uploadedFile.model';
 export interface Inspection {
   id?: string;
   date?: any;
+  dateSigned?: any;
   code?: string;
   status?: string;
   notes?: string;

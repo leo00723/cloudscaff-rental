@@ -216,6 +216,19 @@
     cellClass="text-center my-auto"
     headerClass="text-center"
   >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | number : "0.2-2" }}{{ company?.mass?.symbol }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total Weight"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" ngx-datatable-cell-template>
+      {{ +row.yardQty * +row.weight | number : "0.2-2"
+      }}{{ company?.mass?.symbol }}
+    </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
     name="Hire Cost"

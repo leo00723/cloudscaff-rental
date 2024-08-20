@@ -555,6 +555,7 @@ const shipItems = async (
           name: item.name,
           weight: +item.weight,
           availableQty: +item.shipmentQty,
+          location: item?.location || '',
         }));
 
         const oldInventory = siteInventory.data()?.items;
@@ -601,6 +602,7 @@ const shipItems = async (
           name: item.name,
           weight: +item.weight,
           availableQty: +item.shipmentQty,
+          location: item?.location || 0,
         }));
         const itemIds = shipment.items.map((item: any) => item.id);
 

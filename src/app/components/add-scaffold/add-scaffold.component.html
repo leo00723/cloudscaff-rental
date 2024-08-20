@@ -107,7 +107,7 @@
               >
               </app-input-reactive>
             </ion-col>
-            <ion-col>
+            <!-- <ion-col>
               <app-input-reactive
                 title="Lifts"
                 type="number"
@@ -126,7 +126,7 @@
                 placeholder="No. Boarded Lifts"
               >
               </app-input-reactive>
-            </ion-col>
+            </ion-col> -->
           </ion-row>
           <ion-row
             formArrayName="attachments"
@@ -146,11 +146,21 @@
               </ion-chip>
             </ion-col>
 
-            <ion-col size="12">
+            <ion-col size="12" sizeMd="6">
               <app-input-reactive
                 title="Description"
                 controlName="description"
                 placeholder="Enter description"
+                [form]="attachment"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col size="12" sizeMd="6">
+              <app-input-reactive
+                title="Location"
+                [optional]="true"
+                controlName="location"
+                placeholder="Enter attachment location"
                 [form]="attachment"
               >
               </app-input-reactive>
@@ -202,7 +212,7 @@
               >
               </app-input-reactive>
             </ion-col>
-            <ion-col>
+            <!-- <ion-col>
               <app-input-reactive
                 title="Lifts"
                 type="number"
@@ -221,14 +231,14 @@
                 placeholder="No. Boarded Lifts"
               >
               </app-input-reactive>
-            </ion-col>
+            </ion-col> -->
             <ion-col>
               <app-input-reactive
-                title="Level"
+                title="Level ({{ company.measurement.symbol }})"
                 [optional]="true"
                 type="number"
                 controlName="level"
-                placeholder="1"
+                placeholder="0"
                 [form]="attachment"
               >
               </app-input-reactive>
@@ -271,6 +281,16 @@
           >
             <ion-label>Delete</ion-label>
           </ion-chip>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Description"
+            controlName="description"
+            placeholder="Enter description"
+            [optional]="true"
+            [form]="board"
+          >
+          </app-input-reactive>
         </ion-col>
         <ion-col>
           <app-input-reactive

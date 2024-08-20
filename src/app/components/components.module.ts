@@ -104,6 +104,11 @@ import { AddInstructionComponent } from './add-instruction/add-instruction.compo
 import { SITableComponent } from './si-table/si-table.component';
 import { SignatureModalComponent } from './signature-modal/signature-modal.component';
 import { HandoverTableComponent } from './handover-table/handover-table.component';
+import { ScaffoldOverviewTable2Component } from './scaffold-overview-table-2/scaffold-overview-table-2.component';
+import { EstimateV2TableComponent } from './estimate-v2-table/estimate-v2-table.component';
+import { EstimateSummaryV2Component } from './estimate-summary-v2/estimate-summary-v2.component';
+import { EstimateSummarySellComponent } from './estimate-summary-sell/estimate-summary-sell.component';
+import { AddAdminReturnComponent } from './add-admin-return/add-admin-return.component';
 
 const COMPONENTS = [
   AcceptBulkEstimateComponent,
@@ -146,7 +151,10 @@ const COMPONENTS = [
   DuplicateStockItemComponent,
   EditprofileComponent,
   EstimateSummaryComponent,
+  EstimateSummaryV2Component,
+  EstimateSummarySellComponent,
   EstimateTableComponent,
+  EstimateV2TableComponent,
   FileItemComponent,
   FileUploadComponent,
   GenerateStatementComponent,
@@ -175,6 +183,7 @@ const COMPONENTS = [
   SITableComponent,
   ScaffoldEditformComponent,
   ScaffoldOverviewTableComponent,
+  ScaffoldOverviewTable2Component,
   ScaffoldTableComponent,
   ShareDocumentComponent,
   ShipmentInvoiceSummaryComponent,
@@ -201,6 +210,7 @@ const COMPONENTS = [
   ViewTermsComponent,
   WeightPipe,
   HandoverTableComponent,
+  AddAdminReturnComponent,
 ];
 const IMPORTS = [
   CommonModule,
