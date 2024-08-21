@@ -444,6 +444,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       driverNo: [this.shipment?.driverNo, Validators.nullValidator],
       vehicleReg: [this.shipment?.vehicleReg, Validators.nullValidator],
       notes: [this.shipment?.notes, Validators.nullValidator],
+      poNumber: [this.shipment?.poNumber, Validators.required],
     });
     if (this.shipment.status === 'pending') {
       this.subs.add(
@@ -479,6 +480,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],
       notes: ['', Validators.nullValidator],
+      poNumber: ['', Validators.required],
     });
   }
 

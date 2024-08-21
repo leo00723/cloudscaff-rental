@@ -303,6 +303,35 @@
               ></ion-checkbox>
             </ion-item>
           </ion-col>
+          <ion-col size="12">
+            <ion-item
+              fill="solid"
+              lines="none"
+              class="rounded-3 my-3"
+              mode="md"
+            >
+              <ion-label position="stacked">Note: Rental Manpower</ion-label>
+              <ion-textarea
+                formControlName="note1"
+                autoGrow="true"
+              ></ion-textarea>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12">
+            <ion-item
+              fill="solid"
+              lines="none"
+              class="rounded-3 my-3"
+              mode="md"
+            >
+              <ion-label position="stacked">Note: Rental Material</ion-label>
+              <ion-textarea
+                formControlName="note2"
+                autoGrow="true"
+              ></ion-textarea>
+            </ion-item>
+          </ion-col>
+
           <ion-progress-bar
             type="indeterminate"
             *ngIf="loading"
@@ -342,7 +371,7 @@
                 (estimate.status === 'pending' || estimate.status === 'revised')
               "
               [disabled]="form.invalid"
-              (click)="updateEstimate('accepted')"
+              (click)="acceptEstimate()"
             >
               Accepted
             </ion-button>

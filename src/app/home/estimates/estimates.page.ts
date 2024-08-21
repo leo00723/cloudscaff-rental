@@ -40,10 +40,6 @@ export class EstimatesPage implements OnInit {
   constructor(private masterSvc: MasterService) {}
 
   ngOnInit() {
-    const user = this.masterSvc.store().selectSnapshot(UserState.user);
-    this.active = user.permissionsList.includes('Standard Estimates')
-      ? 'standard'
-      : 'basic';
     this.init();
   }
   segmentChanged(ev: any) {
@@ -84,7 +80,8 @@ export class EstimatesPage implements OnInit {
     if (
       estimate.status === 'pending' ||
       estimate.status === 'revised' ||
-      estimate.status === 'rejected'
+      estimate.status === 'rejected' ||
+      estimate.status === 'accepted'
     ) {
       const modal = await this.masterSvc.modal().create({
         component: AddEstimateV2Component,
@@ -257,6 +254,10 @@ export class EstimatesPage implements OnInit {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(() => {
       if (id) {
+        const user = this.masterSvc.store().selectSnapshot(UserState.user);
+        this.active = user.permissionsList.includes('Standard Estimates')
+          ? 'standard'
+          : 'basic';
         this.estimates$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/estimates`, 'code', 'desc');

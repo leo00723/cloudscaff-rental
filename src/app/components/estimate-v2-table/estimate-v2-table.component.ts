@@ -44,7 +44,7 @@ export class EstimateV2TableComponent {
 
   getStatus(status: string) {
     switch (status) {
-      case 'completed':
+      case 'accepted':
         return 'success';
       case 'pending':
         return 'primary';

@@ -97,12 +97,12 @@
         <ion-segment-button value="invoices" *ngIf="user.role !== 'Supervisor'">
           <ion-label>Shipment Invoices</ion-label>
         </ion-segment-button> -->
-          <ion-segment-button
+          <!-- <ion-segment-button
             value="paymentApplication"
             *ngIf="(user.permissionsList.includes('Payment Applications') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
           >
             <ion-label>Payment Application</ion-label>
-          </ion-segment-button>
+          </ion-segment-button> -->
           <ion-segment-button
             value="uploads"
             *ngIf="user.role !== 'Supervisor'"

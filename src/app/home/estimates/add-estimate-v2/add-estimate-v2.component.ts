@@ -13,6 +13,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MasterService } from '../../../services/master.service';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
+import { AcceptEstimateV2Component } from './accept-estimate-v2/accept-estimate-v2.component';
 
 @Component({
   selector: 'app-add-estimate-v2',
@@ -156,39 +157,55 @@ export class AddEstimateV2Component implements OnInit {
   }
 
   //update the estimate
-  updateEstimate(status: 'pending' | 'accepted' | 'rejected' | 'revised') {
-    if (status === 'accepted') {
-    } else {
-      this.masterSvc.notification().presentAlertConfirm(async () => {
-        try {
-          this.loading = true;
-          this.updateEstimateTotal();
-          this.estimate.status = status;
-          await this.upload();
-          await this.masterSvc
-            .edit()
-            .updateDoc(
-              `company/${this.company.id}/estimatesV2`,
-              this.estimate.id,
-              this.estimate
-            );
-          this.masterSvc
-            .notification()
-            .toast('Estimate updated successfully!', 'success');
-        } catch (error) {
-          console.error(error);
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong updating your estimate, try again!',
-              'danger',
-              2000
-            );
-        } finally {
-          this.loading = false;
-        }
+  updateEstimate(status: 'pending' | 'rejected' | 'revised') {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        this.loading = true;
+        this.updateEstimateTotal();
+        this.estimate.status = status;
+        await this.upload();
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/estimatesV2`,
+            this.estimate.id,
+            this.estimate
+          );
+        this.masterSvc
+          .notification()
+          .toast('Estimate updated successfully!', 'success');
+      } catch (error) {
+        console.error(error);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating your estimate, try again!',
+            'danger',
+            2000
+          );
+      } finally {
+        this.loading = false;
+      }
+    });
+  }
+
+  //accept estimate
+  acceptEstimate() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      //start the acceptance process
+      const modal = await this.masterSvc.modal().create({
+        component: AcceptEstimateV2Component,
+        componentProps: {
+          company: this.company,
+          user: this.user,
+          estimate: this.estimate,
+          form: this.form,
+        },
+        id: 'acceptEstimate',
+        cssClass: 'fullscreen',
       });
-    }
+      return await modal.present();
+    });
   }
 
   excludeVAT(args) {
@@ -311,6 +328,10 @@ export class AddEstimateV2Component implements OnInit {
       siteName: [this.estimate.siteName, Validators.required],
       customer: [this.estimate.customer, Validators.required],
       scope: [this.estimate.scope, Validators.nullValidator],
+      note1: [this.estimate.note1, Validators.nullValidator],
+      note2: [this.estimate.note2, Validators.nullValidator],
+      poNumber: [this.estimate.poNumber, Validators.nullValidator],
+
       discountPercentage: [
         this.estimate.discountPercentage || 0,
         [Validators.nullValidator, Validators.min(0), Validators.max(100)],
@@ -341,6 +362,9 @@ export class AddEstimateV2Component implements OnInit {
       siteName: ['', Validators.required],
       customer: ['', Validators.required],
       scope: ['', Validators.nullValidator],
+      note1: ['', Validators.nullValidator],
+      note2: ['', Validators.nullValidator],
+      poNumber: ['', Validators.nullValidator],
       discountPercentage: [
         0,
         [Validators.nullValidator, Validators.min(0), Validators.max(100)],

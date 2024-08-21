@@ -58,12 +58,12 @@ export class HomePage implements OnDestroy {
       url: '/dashboard/inventory',
       icon: 'bar-chart-outline',
     },
-    {
-      title: 'Statements',
-      permission: 'Statements',
-      url: '/dashboard/statements',
-      icon: 'document-text-outline',
-    },
+    // {
+    //   title: 'Statements',
+    //   permission: 'Statements',
+    //   url: '/dashboard/statements',
+    //   icon: 'document-text-outline',
+    // },
   ];
   loading = false;
   version = environment.version;

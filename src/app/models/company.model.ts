@@ -49,6 +49,7 @@ export interface Company {
   totalSites?: number;
   totalSIs?: number;
   totalTransfers?: number;
+  totalPOs?: number;
   trialEnded?: boolean;
   tokens?: {
     accessToken?: string;

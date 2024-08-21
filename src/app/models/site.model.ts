@@ -27,4 +27,5 @@ export interface Site {
   previousGross?: number;
   uploads?: UploadedFile[];
   userIDS?: string[];
+  poList?: string[];
 }

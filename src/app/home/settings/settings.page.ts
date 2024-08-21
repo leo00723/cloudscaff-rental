@@ -20,16 +20,16 @@ export class SettingsPage {
       description: 'Here you can manage your customer profiles.',
       path: '/dashboard/settings/customers',
     },
-    {
-      title: 'Labor Profiles',
-      description: 'Here you can manage your labor profiles.',
-      path: '/dashboard/settings/labor',
-    },
-    {
-      title: 'Rate Profiles',
-      description: 'Here you can manage your rate profiles.',
-      path: '/dashboard/settings/rates',
-    },
+    // {
+    //   title: 'Labor Profiles',
+    //   description: 'Here you can manage your labor profiles.',
+    //   path: '/dashboard/settings/labor',
+    // },
+    // {
+    //   title: 'Rate Profiles',
+    //   description: 'Here you can manage your rate profiles.',
+    //   path: '/dashboard/settings/rates',
+    // },
     {
       title: 'Templates',
       description: 'Here you edit Templates for your documents.',
@@ -41,11 +41,11 @@ export class SettingsPage {
       description: "Here you add T's & C's for your documents.",
       path: '/dashboard/settings/terms',
     },
-    {
-      title: 'Transport Profiles',
-      description: 'Here you manage your transport profiles.',
-      path: '/dashboard/settings/transport',
-    },
+    // {
+    //   title: 'Transport Profiles',
+    //   description: 'Here you manage your transport profiles.',
+    //   path: '/dashboard/settings/transport',
+    // },
     {
       title: 'User Profiles',
       description: 'Here you manage users.',

@@ -13,14 +13,14 @@
           <ion-label>Overview</ion-label>
         </ion-segment-button>
 
-        <ng-container *ngIf="company$ |async as company">
+        <!-- <ng-container *ngIf="company$ |async as company">
           <ion-segment-button
             value="3"
             *ngIf="(user.permissionsList.includes('Billable Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
           >
             <ion-label>Billable Shipments</ion-label>
           </ion-segment-button>
-        </ng-container>
+        </ng-container> -->
         <ion-segment-button
           value="4"
           *ngIf="user.permissionsList.includes('Inventory Requests') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"

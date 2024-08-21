@@ -28,4 +28,5 @@ export interface Shipment {
   signedBy2?: string;
   signature2?: string;
   signatureRef2?: string;
+  poNumber?: string;
 }

@@ -17,6 +17,8 @@ export interface EstimateV2 {
   discount?: number;
   discountPercentage?: number;
   items?: any[];
+  note1?: string;
+  note2?: string;
   scope?: string;
   siteName?: string;
   status?: string;
@@ -26,6 +28,9 @@ export interface EstimateV2 {
   vat?: number;
   createdBy?: string;
   createdByName?: string;
+  acceptedBy?: string;
+  poNumber?: string;
+  siteId?: string;
   acceptedTerms?: boolean;
   comments?: Comment[];
   excludeVAT?: boolean;
