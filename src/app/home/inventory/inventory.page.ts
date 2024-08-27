@@ -5,16 +5,13 @@ import { Select } from '@ngxs/store';
 import * as Papa from 'papaparse';
 import { Observable, map } from 'rxjs';
 import { AddAdminReturnComponent } from 'src/app/components/add-admin-return/add-admin-return.component';
-import { AddBillableShipmentComponent } from 'src/app/components/add-billable-shipment/add-billable-shipment.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
-import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
 import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
 import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-item/duplicate-stock-item.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
-import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
@@ -48,8 +45,6 @@ export class InventoryPage implements OnInit {
   outboundShipments$: Observable<Shipment[]>;
   reservedShipments$: Observable<Shipment[]>;
   voidShipments$: Observable<Shipment[]>;
-
-  billableShipments$: Observable<InventoryEstimate[]>;
 
   transfers$: Observable<Transfer[]>;
   pendingTransfers$: Observable<Transfer[]>;
@@ -171,19 +166,6 @@ export class InventoryPage implements OnInit {
     });
     return await modal.present();
   }
-  async viewBillableShipment(inventoryEstimate: InventoryEstimate) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddBillableShipmentComponent,
-      componentProps: {
-        isEdit: true,
-        value: inventoryEstimate,
-      },
-      cssClass: 'fullscreen',
-      showBackdrop: false,
-      id: 'editShipment',
-    });
-    return await modal.present();
-  }
 
   async addReturn() {
     const modal = await this.masterSvc.modal().create({
@@ -194,6 +176,33 @@ export class InventoryPage implements OnInit {
       id: 'addReturn',
     });
     return await modal.present();
+  }
+  async viewReturn(returnData: Return) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddAdminReturnComponent,
+      componentProps: { allowSend: true, isEdit: true, value: returnData },
+      showBackdrop: false,
+      id: 'viewReturn',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewRequest(requestData: Return) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddRequestComponent,
+      componentProps: { allowSend: true, isEdit: true, value: requestData },
+      showBackdrop: false,
+      id: 'viewRequest',
+      cssClass: 'fullscreen',
+    });
+    await modal.present();
+    const { role } = await modal.onDidDismiss();
+    role === 'approved'
+      ? this.masterSvc
+          .store()
+          .dispatch(new Navigate('/dashboard/inventory?page=2'))
+      : null;
+    return true;
   }
   async addTransfer() {
     const modal = await this.masterSvc.modal().create({
@@ -216,35 +225,6 @@ export class InventoryPage implements OnInit {
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'viewTransfer',
-    });
-    return await modal.present();
-  }
-
-  async viewRequest(requestData: Return) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddRequestComponent,
-      componentProps: { allowSend: true, isEdit: true, value: requestData },
-      showBackdrop: false,
-      id: 'viewRequest',
-      cssClass: 'fullscreen',
-    });
-    await modal.present();
-    const { role } = await modal.onDidDismiss();
-    role === 'approved'
-      ? this.masterSvc
-          .store()
-          .dispatch(new Navigate('/dashboard/inventory?page=2'))
-      : null;
-    return true;
-  }
-
-  async viewReturn(returnData: Return) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddAdminReturnComponent,
-      componentProps: { allowSend: true, isEdit: true, value: returnData },
-      showBackdrop: false,
-      id: 'viewReturn',
-      cssClass: 'fullscreen',
     });
     return await modal.present();
   }
@@ -398,13 +378,6 @@ export class InventoryPage implements OnInit {
             'void',
             'code',
             'asc'
-          );
-        this.billableShipments$ = this.masterSvc
-          .edit()
-          .getCollectionOrdered(
-            `company/${id}/billableShipments`,
-            'code',
-            'desc'
           );
 
         // transfers

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { IonReorderGroup, ItemReorderEventDetail } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { InspectionTemplate } from 'src/app/models/invoiceTemplate.model';
+import { InspectionTemplate } from 'src/app/models/inspectionTemplate.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';

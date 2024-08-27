@@ -120,7 +120,7 @@
             </app-input-reactive>
           </ion-col>
         </ion-col>
-        <ng-container *ngIf="allowSend || returnDoc.status === 'on-route'">
+        <ng-container>
           <ion-col size="12">
             <ion-text color="medium">
               <h4>Driver Information</h4>
@@ -203,9 +203,8 @@
                   <ng-container
                     *ngIf="
                       returnDoc.status !== 'void' &&
-                      ((allowSend && returnDoc.status === 'collected') ||
-                        (allowSend &&
-                          user.permissionsList.includes('Inventory Admin')) ||
+                      (returnDoc.status === 'collected' ||
+                        user.permissionsList.includes('Inventory Admin') ||
                         returnDoc.status === 'received')
                     "
                   >
@@ -244,9 +243,8 @@
                     <ng-container
                       *ngIf="
                         returnDoc.status !== 'void' &&
-                        ((allowSend && returnDoc.status === 'collected') ||
-                          (allowSend &&
-                            user.permissionsList.includes('Inventory Admin')) ||
+                        (returnDoc.status === 'collected' ||
+                          user.permissionsList.includes('Inventory Admin') ||
                           returnDoc.status === 'received')
                       "
                     >
@@ -259,10 +257,7 @@
                           [clearOnEdit]="true"
                           [value]="item.inMaintenanceQty"
                           (ionChange)="update($event, item, 'maintenance')"
-                          [readonly]="
-                            (returnDoc.status !== 'collected' && !allowSend) ||
-                            returnDoc.status === 'received'
-                          "
+                          [readonly]="returnDoc.status === 'received'"
                         >
                         </ion-input>
                         <ion-label color="danger" *ngIf="item.error">
@@ -278,10 +273,7 @@
                           [clearOnEdit]="true"
                           [value]="item.damagedQty"
                           (ionChange)="update($event, item, 'damaged')"
-                          [readonly]="
-                            (returnDoc.status !== 'collected' && !allowSend) ||
-                            returnDoc.status === 'received'
-                          "
+                          [readonly]="returnDoc.status === 'received'"
                         >
                         </ion-input>
                         <ion-label color="danger" *ngIf="item.error">
@@ -297,10 +289,7 @@
                           [clearOnEdit]="true"
                           [value]="item.lostQty"
                           (ionChange)="update($event, item, 'lost')"
-                          [readonly]="
-                            (returnDoc.status !== 'collected' && !allowSend) ||
-                            returnDoc.status === 'received'
-                          "
+                          [readonly]="returnDoc.status === 'received'"
                         >
                         </ion-input>
                         <ion-label color="danger" *ngIf="item.error">
@@ -341,11 +330,8 @@
                       <ng-container
                         *ngIf="
                           returnDoc.status !== 'void' &&
-                          ((allowSend && returnDoc.status === 'collected') ||
-                            (allowSend &&
-                              user.permissionsList.includes(
-                                'Inventory Admin'
-                              )) ||
+                          (returnDoc.status === 'collected' ||
+                            user.permissionsList.includes('Inventory Admin') ||
                             returnDoc.status === 'received')
                         "
                       >
@@ -358,11 +344,7 @@
                             [clearOnEdit]="true"
                             [value]="item.inMaintenanceQty"
                             (ionChange)="update($event, item, 'maintenance')"
-                            [readonly]="
-                              (returnDoc.status !== 'collected' &&
-                                !allowSend) ||
-                              returnDoc.status === 'received'
-                            "
+                            [readonly]="returnDoc.status === 'received'"
                           >
                           </ion-input>
                           <ion-label color="danger" *ngIf="item.error">
@@ -378,11 +360,7 @@
                             [clearOnEdit]="true"
                             [value]="item.damagedQty"
                             (ionChange)="update($event, item, 'damaged')"
-                            [readonly]="
-                              (returnDoc.status !== 'collected' &&
-                                !allowSend) ||
-                              returnDoc.status === 'received'
-                            "
+                            [readonly]="returnDoc.status === 'received'"
                           >
                           </ion-input>
                           <ion-label color="danger" *ngIf="item.error">
@@ -398,11 +376,7 @@
                             [clearOnEdit]="true"
                             [value]="item.lostQty"
                             (ionChange)="update($event, item, 'lost')"
-                            [readonly]="
-                              (returnDoc.status !== 'collected' &&
-                                !allowSend) ||
-                              returnDoc.status === 'received'
-                            "
+                            [readonly]="returnDoc.status === 'received'"
                           >
                           </ion-input>
                           <ion-label color="danger" *ngIf="item.error">
@@ -500,10 +474,9 @@
           size="12"
           *ngIf="
             returnDoc.status === 'on-route' ||
-            (returnDoc.status === 'collected' && allowSend) ||
-            (user.permissionsList.includes('Inventory Admin') &&
-              allowSend &&
-              isEdit &&
+            returnDoc.status === 'collected' ||
+            (isEdit &&
+              returnDoc.status !== 'submitted' &&
               returnDoc.status !== 'received' &&
               returnDoc.status !== 'void')
           "
@@ -555,15 +528,10 @@
 
           <ion-button
             shape="round"
-            *ngIf="
-              isEdit &&
-              returnDoc.status === 'submitted' &&
-              !loading &&
-              allowSend
-            "
+            *ngIf="isEdit && returnDoc.status === 'submitted' && !loading"
             color="success"
             [disabled]="form.invalid || error"
-            (click)="updateReturn('on-route')"
+            (click)="updateReturn('on-route', true)"
             >Schedule Collection</ion-button
           >
 
@@ -578,27 +546,24 @@
 
           <ion-button
             shape="round"
-            *ngIf="
-              isEdit &&
-              !loading &&
-              returnDoc.status === 'collected' &&
-              allowSend
-            "
+            *ngIf="isEdit && !loading && returnDoc.status === 'collected'"
             color="success"
             [disabled]="!blob || !returnDoc.signedBy2"
             (click)="approveReturn()"
             >Approve Return</ion-button
           >
           <ng-container
-            *ngIf="user.permissionsList.includes('Inventory Admin')"
+            *ngIf="
+              user.permissionsList.includes('Inventory Admin') &&
+              returnDoc.status === 'submitted'
+            "
           >
             <ion-button
               shape="round"
               fill="outline"
-              *ngIf="isEdit && !loading && allowSend"
+              *ngIf="isEdit && !loading"
               color="tertiary"
-              [disabled]="!blob || !returnDoc.signedBy2"
-              (click)="approveReturn()"
+              (click)="approveReturn(true)"
               >Approve Immediately</ion-button
             >
           </ng-container>

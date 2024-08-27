@@ -11,11 +11,7 @@
       <ion-row>
         <ng-container *ngIf="company$|async as company">
           <ng-container *ngFor="let term of terms">
-            <ion-col
-              sizeXl="6"
-              size="12"
-              *ngIf="removeBilling(company, term.path)"
-            >
+            <ion-col sizeXl="6" size="12">
               <ion-row class="card-outline">
                 <ion-col sizeMd="10" size="9">
                   <ion-item color="none">

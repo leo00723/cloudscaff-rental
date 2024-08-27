@@ -1,15 +1,10 @@
-import { AdditionalItem } from './additionalItem.model';
 import { Handover } from './handover.model';
-import { HireItem } from './hireItem.model';
 import { Inspection } from './inspection.model';
 import { Item } from './item.model';
-import { LabourItem } from './labourItem.model';
-import { TransportItem } from './transport.model';
 import { User } from './user.model';
 
 export interface Scaffold {
   id?: string;
-  additionals?: AdditionalItem[];
   attachments?: Item[];
   boards?: Item[];
   code?: string;
@@ -19,8 +14,6 @@ export interface Scaffold {
   customerId?: string;
   date?: any;
   endDate?: any;
-  hire?: HireItem;
-  labour?: LabourItem[];
   latestHandover?: Handover;
   latestInspection?: Inspection;
   poNumber?: string;
@@ -34,7 +27,6 @@ export interface Scaffold {
   totalArea?: number;
   totalModifications?: number;
   totalPlatforms?: number;
-  transport?: TransportItem[];
   updatedBy?: string;
   users?: User[];
   woNumber?: string;

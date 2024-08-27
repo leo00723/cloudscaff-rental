@@ -1,18 +1,17 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { IonTextarea } from '@ionic/angular';
 import cloneDeep from 'lodash/cloneDeep';
 import { Observable, Subscription } from 'rxjs';
 import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiuploader.component';
+import { Comment } from 'src/app/models/comment.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
-import { Comment, Estimate } from 'src/app/models/estimate.model';
+import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { User } from 'src/app/models/user.model';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MasterService } from '../../../services/master.service';
-import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { AcceptEstimateV2Component } from './accept-estimate-v2/accept-estimate-v2.component';
 
 @Component({
@@ -21,7 +20,7 @@ import { AcceptEstimateV2Component } from './accept-estimate-v2/accept-estimate-
 })
 export class AddEstimateV2Component implements OnInit {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
-  @Input() set value(val: Estimate) {
+  @Input() set value(val: EstimateV2) {
     if (val) {
       this.estimate = cloneDeep(val);
       this.initEditForm();
@@ -273,7 +272,6 @@ export class AddEstimateV2Component implements OnInit {
       this.estimate.status !== 'pending' &&
       this.estimate.status !== 'revised'
     ) {
-      console.log(this.estimate.status);
       return;
     }
 

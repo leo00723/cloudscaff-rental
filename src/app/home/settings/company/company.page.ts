@@ -17,10 +17,8 @@ import { Observable, Subscription } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Currencies } from 'src/app/models/currencies.model';
-import { XeroService } from 'src/app/services/xero.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { MasterService } from '../../../services/master.service';
-import { SearchableSelectComponent } from 'src/app/components/searchable-select/searchable-select.component';
 
 @Component({
   selector: 'app-company',
@@ -80,8 +78,7 @@ export class CompanyPage implements OnDestroy {
   constructor(
     private fb: FormBuilder,
     private masterSvc: MasterService,
-    private activatedRoute: ActivatedRoute,
-    private xeroService: XeroService
+    private activatedRoute: ActivatedRoute
   ) {
     this.init();
   }
@@ -146,40 +143,7 @@ export class CompanyPage implements OnDestroy {
         );
     }
   }
-  async connect() {
-    this.loading = true;
-    const tokens = await this.xeroService.connect();
-    if (tokens) {
-      // console.log(tokens);
-    }
-    this.loading = false;
-  }
-  async getTenants() {
-    this.loading = true;
-    this.connections = (await this.xeroService.getConnections(
-      this.company
-    )) as [];
-    this.loading = false;
-  }
-  async connectTenant(connection) {
-    this.loading = true;
-    try {
-      if (connection) {
-        this.company.tokens = {
-          ...this.company.tokens,
-          tenantID: connection.tenantId,
-          tenantName: connection.tenantName,
-        };
-        await this.masterSvc
-          .edit()
-          .updateDoc('company', this.company.id, this.company);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.loading = false;
-    }
-  }
+
   init() {
     const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
     setTimeout(async () => {
@@ -188,19 +152,6 @@ export class CompanyPage implements OnDestroy {
           this.company,
           this.masterSvc.store().selectSnapshot(CompanyState.company)
         );
-        const code = this.activatedRoute.snapshot.queryParamMap.get('code');
-        if (code) {
-          const tokens = await this.xeroService.connect();
-          if (tokens) {
-            this.company.tokens = tokens;
-            await this.masterSvc
-              .edit()
-              .updateDoc('company', this.company.id, this.company);
-            this.masterSvc
-              .notification()
-              .toast('Xero connected successfully', 'success');
-          }
-        }
         this.form = this.fb.group({
           name: [this.company.name, Validators.required],
           email: [this.company.email, [Validators.required, Validators.email]],

@@ -74,7 +74,7 @@
             lines="none"
             detail="false"
             routerLinkActive="selected"
-            *ngIf="(user.permissionsList.includes(p.permission) || user.permissionsList.includes('Super Admin') || user.role === 'Owner' || p.title==='Sites') && removeBilling(company,p.title)"
+            *ngIf="(user.permissionsList.includes(p.permission) || user.permissionsList.includes('Super Admin') || user.role === 'Owner' || p.title==='Sites')"
           >
             <ion-icon slot="start" [name]="p.icon"></ion-icon>
             <ion-label>{{ p.title }}</ion-label>
@@ -145,25 +145,8 @@
         </ion-item>
       </ion-menu-toggle>
     </ion-list>
-    <!-- <ion-item lines="none" detail="false">
-      <ion-label class="ion-text-center">
-        <ion-button
-          color="dark"
-          size="block"
-          shape="round"
-          href="javascript:;"
-          onclick="tidioChatApi.show();tidioChatApi.open()"
-        >
-          Chat to us live
-        </ion-button>
-      </ion-label>
-    </ion-item> -->
+
     <div class="mt-5" id="settings-list">
-      <!-- <ion-item lines="none" detail="false">
-        <ion-button fill="clear" expand="block" shape="round" (click)="call()">
-          Remove Cloudscaff Branding
-        </ion-button>
-      </ion-item> -->
       <ion-button mode="ios" expand="block" shape="round" (click)="call()">
         Need Help?
       </ion-button>

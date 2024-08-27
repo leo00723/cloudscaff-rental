@@ -70,61 +70,61 @@ export class OnboardingPage implements OnInit {
         },
       ],
     },
-    {
-      name: 'Estimate / Quote Management',
-      challenges: [
-        {
-          problem: 'Incomplete or Inaccurate Information',
-          solution:
-            'Standardized templates, automated data entry and real-time collaboration.',
-          selected: false,
-        },
-        {
-          problem: 'Changing Project Requirements',
-          solution:
-            'Manage evolving needs with flexibility, consistency and enhanced revision processes.',
-          selected: false,
-        },
-        {
-          problem: 'Complex Pricing Structures',
-          solution:
-            'Tools to adapt to pricing structures based on project requirements, ensuring clarity and accuracy in pricing.',
-          selected: false,
-        },
-        {
-          problem: 'Communication and Collaboration',
-          solution:
-            'Simultaneous document editing by multiple users for efficient collaboration',
-          selected: false,
-        },
-      ],
-      impacts: [
-        {
-          effect: 'Delayed Timelines',
-          benefit:
-            'Efficient change management processes and tools for quick adjustment of project timelines',
-          selected: false,
-        },
-        {
-          effect: 'Time-consuming Revisions',
-          benefit:
-            'Automated revision process and streamlining approval processes for faster turnaround times',
-          selected: false,
-        },
-        {
-          effect: 'Longer Processing Times',
-          benefit:
-            'Automating estimate generation, real-time collaboration and streamlined approval process',
-          selected: false,
-        },
-        {
-          effect: 'Loss of Sales',
-          benefit:
-            'Provide accurate and timely estimates, quick follow-ups and enabling customization and personalization to meet customer needs',
-          selected: false,
-        },
-      ],
-    },
+    // {
+    //   name: 'Estimate / Quote Management',
+    //   challenges: [
+    //     {
+    //       problem: 'Incomplete or Inaccurate Information',
+    //       solution:
+    //         'Standardized templates, automated data entry and real-time collaboration.',
+    //       selected: false,
+    //     },
+    //     {
+    //       problem: 'Changing Project Requirements',
+    //       solution:
+    //         'Manage evolving needs with flexibility, consistency and enhanced revision processes.',
+    //       selected: false,
+    //     },
+    //     {
+    //       problem: 'Complex Pricing Structures',
+    //       solution:
+    //         'Tools to adapt to pricing structures based on project requirements, ensuring clarity and accuracy in pricing.',
+    //       selected: false,
+    //     },
+    //     {
+    //       problem: 'Communication and Collaboration',
+    //       solution:
+    //         'Simultaneous document editing by multiple users for efficient collaboration',
+    //       selected: false,
+    //     },
+    //   ],
+    //   impacts: [
+    //     {
+    //       effect: 'Delayed Timelines',
+    //       benefit:
+    //         'Efficient change management processes and tools for quick adjustment of project timelines',
+    //       selected: false,
+    //     },
+    //     {
+    //       effect: 'Time-consuming Revisions',
+    //       benefit:
+    //         'Automated revision process and streamlining approval processes for faster turnaround times',
+    //       selected: false,
+    //     },
+    //     {
+    //       effect: 'Longer Processing Times',
+    //       benefit:
+    //         'Automating estimate generation, real-time collaboration and streamlined approval process',
+    //       selected: false,
+    //     },
+    //     {
+    //       effect: 'Loss of Sales',
+    //       benefit:
+    //         'Provide accurate and timely estimates, quick follow-ups and enabling customization and personalization to meet customer needs',
+    //       selected: false,
+    //     },
+    //   ],
+    // },
     {
       name: 'Site / Job Management',
       challenges: [

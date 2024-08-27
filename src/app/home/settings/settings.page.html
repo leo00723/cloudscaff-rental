@@ -5,11 +5,7 @@
     <ion-row>
       <ng-container *ngIf="company$ |async as company">
         <ng-container *ngFor="let setting of settings">
-          <ion-col
-            sizeXl="6"
-            size="12"
-            *ngIf="removeBilling(company,setting.title)"
-          >
+          <ion-col sizeXl="6" size="12">
             <ion-row class="card-outline">
               <ion-col sizeMd="10" size="9">
                 <ion-item color="none">

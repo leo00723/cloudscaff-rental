@@ -6,8 +6,6 @@ import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
-import { XeroService } from 'src/app/services/xero.service';
-import { CompanyState } from 'src/app/shared/company/company.state';
 import { AddCustomerComponent } from './add-customer/add-customer.component';
 
 @Component({
@@ -21,7 +19,6 @@ export class CustomersPage implements OnInit {
   isLoading = true;
   constructor(
     private masterSvc: MasterService,
-    private xero: XeroService,
     private change: ChangeDetectorRef
   ) {}
 

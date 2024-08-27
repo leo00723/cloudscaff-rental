@@ -47,16 +47,6 @@ export class TermsPage {
       description: `Here you update T's & C's for your invoices.`,
       path: 'Invoice',
     },
-    // {
-    //   title: `Credit Note T's & C's`,
-    //   description: `Here you update T's & C's for your credit notes.`,
-    //   path: 'Credit',
-    // },
-    // {
-    //   title: `Payment Application T's & C's`,
-    //   description: `Here you update T's & C's for your payment applications.`,
-    //   path: 'Payment',
-    // },
   ];
   terms$: Observable<Term[] | any>;
   isLoading = true;
@@ -84,11 +74,6 @@ export class TermsPage {
       cssClass: 'fullscreen',
     });
     return await modal.present();
-  }
-
-  removeBilling(company: Company, page: string): boolean {
-    const billingPages = ['Estimate', 'Invoice', 'Credit', 'Payment'];
-    return !billingPages.includes(page) || !company.removeBilling;
   }
 
   init() {

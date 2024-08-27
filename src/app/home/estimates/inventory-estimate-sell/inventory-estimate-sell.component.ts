@@ -29,6 +29,7 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
   @Input() inventoryItems$: Observable<InventoryItem[]>;
 
   inventoryEstimate: InventoryEstimateSell = {
+    status: 'pending',
     comments: [],
     uploads: [],
   };

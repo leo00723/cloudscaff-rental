@@ -13,7 +13,6 @@ import {
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
-import { SI } from 'src/app/models/si.model';
 
 @Component({
   selector: 'app-estimate-v2-table',
@@ -22,14 +21,14 @@ import { SI } from 'src/app/models/si.model';
 })
 export class EstimateV2TableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<EstimateV2>();
-  @Input() set value(requests: Observable<EstimateV2[]>) {
+  @Output() selectedItem = new EventEmitter<EstimateV2 | any>();
+  @Input() set value(requests: Observable<EstimateV2[] | any>) {
     this.temp$ = requests;
     this.estimates$ = requests;
   }
   @Input() showSite = true;
-  estimates$: Observable<EstimateV2[]>;
-  temp$: Observable<EstimateV2[]>;
+  estimates$: Observable<EstimateV2[] | any>;
+  temp$: Observable<EstimateV2[] | any>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];

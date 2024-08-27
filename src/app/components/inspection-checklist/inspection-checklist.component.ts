@@ -7,7 +7,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { HandoverTemplate } from 'src/app/models/handoverTemplate.model';
-import { InspectionTemplate } from 'src/app/models/invoiceTemplate.model';
+import { InspectionTemplate } from 'src/app/models/inspectionTemplate.model';
 
 @Component({
   selector: 'app-inspection-checklist',

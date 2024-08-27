@@ -14,16 +14,6 @@ const routes: Routes = [
       import('./company/company.module').then((m) => m.CompanyPageModule),
   },
   {
-    path: 'rates',
-    loadChildren: () =>
-      import('./rates/rates.module').then((m) => m.RatesPageModule),
-  },
-  {
-    path: 'labor',
-    loadChildren: () =>
-      import('./labour/labour.module').then((m) => m.LabourPageModule),
-  },
-  {
     path: 'customers',
     loadChildren: () =>
       import('./customers/customers.module').then((m) => m.CustomersPageModule),
@@ -43,11 +33,6 @@ const routes: Routes = [
     path: 'users',
     loadChildren: () =>
       import('./users/users.module').then((m) => m.UsersPageModule),
-  },
-  {
-    path: 'transport',
-    loadChildren: () =>
-      import('./transport/transport.module').then((m) => m.TransportPageModule),
   },
   {
     path: 'tutorial',

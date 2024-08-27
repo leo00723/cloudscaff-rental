@@ -8,7 +8,6 @@ import { MasterService } from 'src/app/services/master.service';
 import { environment } from 'src/environments/environment';
 import { EditprofileComponent } from '../components/editprofile/editprofile.component';
 import { Company } from '../models/company.model';
-import { InventoryEstimate } from '../models/inventoryEstimate.model';
 import { AppState } from '../shared/app/app.state';
 
 @Component({
@@ -58,12 +57,6 @@ export class HomePage implements OnDestroy {
       url: '/dashboard/inventory',
       icon: 'bar-chart-outline',
     },
-    // {
-    //   title: 'Statements',
-    //   permission: 'Statements',
-    //   url: '/dashboard/statements',
-    //   icon: 'document-text-outline',
-    // },
   ];
   loading = false;
   version = environment.version;
@@ -153,11 +146,6 @@ export class HomePage implements OnDestroy {
           .toast('Something went wrong, please try again!', 'danger');
       }
     });
-  }
-
-  removeBilling(company: Company, page: string): boolean {
-    const billingPages = ['Estimates', 'Statements'];
-    return !billingPages.includes(page) || !company.removeBilling;
   }
 
   call() {

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Inspection } from 'src/app/models/inspection.model';
-import { InspectionTemplate } from 'src/app/models/invoiceTemplate.model';
+import { InspectionTemplate } from 'src/app/models/inspectionTemplate.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';

@@ -1,20 +1,16 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiuploader.component';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Enquiry } from 'src/app/models/enquiry.model';
-import { UploadedFile } from 'src/app/models/uploadedFile.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
-import { AddEstimatePage } from '../../estimates/add-estimate/add-estimate.component';
-import { BulkEstimateComponent } from '../../estimates/bulk-estimate/bulk-estimate.component';
-import { InventoryEstimateComponent } from '../../estimates/inventory-estimate/inventory-estimate.component';
-import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-enquiry',
@@ -192,68 +188,6 @@ export class AddEnquiryComponent implements OnInit {
         this.isLoading = false;
       }, 1);
     }
-  }
-
-  async addEstimate() {
-    this.close();
-
-    const modal = await this.masterSvc.modal().create({
-      component: AddEstimatePage,
-      componentProps: {
-        enquiryId: this.enquiry.id,
-        siteName: this.enquiry.siteName,
-        customer: this.enquiry.customer,
-      },
-      cssClass: 'fullscreen',
-      showBackdrop: false,
-      id: 'addEstimate',
-    });
-    return await modal.present();
-  }
-
-  async addBulkEstimate() {
-    this.close();
-    const modal = await this.masterSvc.modal().create({
-      component: BulkEstimateComponent,
-      componentProps: {
-        enquiryId: this.enquiry.id,
-        siteName: this.enquiry.siteName,
-        customer: this.enquiry.customer,
-      },
-      cssClass: 'fullscreen',
-      showBackdrop: false,
-      id: 'addBulkEstimate',
-    });
-    return await modal.present();
-  }
-  async addInventoryEstimate() {
-    this.close();
-    const modal = await this.masterSvc.modal().create({
-      component: InventoryEstimateComponent,
-      componentProps: {
-        enquiryId: this.enquiry.id,
-        siteName: this.enquiry.siteName,
-        customer: this.enquiry.customer,
-      },
-      cssClass: 'fullscreen',
-      showBackdrop: false,
-      id: 'addInventoryEstimate',
-    });
-    return await modal.present();
-  }
-
-  async viewEstimate() {
-    const modal = await this.masterSvc.modal().create({
-      component: AddEstimatePage,
-      componentProps: {
-        value: this.enquiry.estimate,
-        isEdit: true,
-      },
-      showBackdrop: false,
-      id: 'editEstimate',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
   }
 
   private updateEnquiryData() {

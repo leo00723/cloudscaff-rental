@@ -93,26 +93,7 @@
           [readonly]="readOnly"
         ></app-input-reactive>
       </ion-col>
-      <ng-container *ngIf="company.tokens">
-        <ion-col size="12" *ngIf="xeroCustomers.length > 0">
-          <app-searchable-select
-            (click)="select.open()"
-            title="Select Customer"
-            [data]="xeroCustomers"
-            itemTextField="Name"
-            (selectedChanged)="changeCustomer($event)"
-            #select
-          ></app-searchable-select>
-        </ion-col>
-        <ion-col size="12">
-          <app-input-reactive
-            title="Xero ID"
-            [form]="form"
-            controlName="xeroID"
-            [readonly]="true"
-          ></app-input-reactive>
-        </ion-col>
-      </ng-container>
+
       <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
       <ion-col size="12" class="text-end">
         <ion-button
@@ -139,18 +120,6 @@
           (click)="update()"
         >
           Update Customer
-        </ion-button>
-        <ion-button
-          *ngIf="
-            !loading && isUpdate && company.tokens && !field('xeroID').value
-          "
-          shape="round"
-          color="tertiary"
-          type="submit"
-          [disabled]="form.invalid"
-          (click)="xero(company)"
-        >
-          Sync with Xero
         </ion-button>
         <ion-button
           *ngIf="!loading && isCreate"

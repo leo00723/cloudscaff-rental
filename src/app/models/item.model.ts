@@ -1,5 +1,3 @@
-import { RateProfile } from './rate-profiles.model';
-
 export interface Item {
   type?: string;
   description?: string;
@@ -7,7 +5,7 @@ export interface Item {
   qty?: string;
   total?: number;
   length?: string;
-  rate?: RateProfile | any;
+  rate?: any;
   height?: string;
   safe?: string;
   level?: number;
@@ -24,7 +22,7 @@ export interface Item {
     }[];
     erection: { length: number; width: number; height: number; type: string }[];
   };
-  hireRate?: RateProfile | any;
+  hireRate?: any;
   daysStanding?: number;
   hireTotal?: number;
   isWeeks?: boolean;

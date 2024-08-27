@@ -21,19 +21,7 @@
             value="SI"
             *ngIf="user.permissionsList.includes('Site Instructions') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
           >
-            <ion-label
-              >Site Instructions
-              <!-- <ng-container *ngIf="instructions$ | async as instructions">
-                <ion-badge
-                  shape="round"
-                  mode="ios"
-                  color="danger"
-                  *ngIf="instructions.length > 0"
-                >
-                  {{instructions.length}}
-                </ion-badge>
-              </ng-container> -->
-            </ion-label>
+            <ion-label>Site Instructions </ion-label>
           </ion-segment-button>
           <ion-segment-button
             value="handovers"
@@ -53,27 +41,6 @@
           >
             <ion-label>Dismantles</ion-label>
           </ion-segment-button>
-          <!-- <ion-segment-button value="modifications">
-            <ion-label>Modifications</ion-label>
-          </ion-segment-button> -->
-          <!-- <ion-segment-button
-            value="invoices"
-            *ngIf="(user.permissionsList.includes('Invoices') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
-          >
-            <ion-label>Invoices</ion-label>
-          </ion-segment-button>
-          <ion-segment-button
-            value="payments"
-            *ngIf="(user.permissionsList.includes('Payments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
-          >
-            <ion-label>Payments</ion-label>
-          </ion-segment-button>
-          <ion-segment-button
-            value="credit"
-            *ngIf="(user.permissionsList.includes('Credit Notes') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
-          >
-            <ion-label>Credit Notes</ion-label>
-          </ion-segment-button> -->
         </ion-segment>
       </ion-toolbar>
     </ng-container>
@@ -107,12 +74,7 @@
             </ion-label>
           </ion-col>
 
-          <ion-col size="12" class="mt-3" *ngIf="!company.removeBilling">
-            <app-scaffold-overview-table
-              [scaffold]="scaffold"
-            ></app-scaffold-overview-table>
-          </ion-col>
-          <ion-col size="12" class="mt-3" *ngIf="company.removeBilling">
+          <ion-col size="12" class="mt-3">
             <app-scaffold-overview-table-2
               [scaffold]="scaffold"
             ></app-scaffold-overview-table-2>
@@ -199,82 +161,6 @@
           *ngIf="scaffold.status!== 'Dismantled' && scaffold?.latestHandover"
         >
           <ion-fab-button (click)="addDismantle(scaffold)">
-            <ion-icon name="add"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <ng-template #loading>
-          <div class="ion-padding">
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-          </div>
-        </ng-template>
-      </div>
-      <div *ngSwitchCase="'modifications'">
-        <app-modification-table
-          [value]="modifications$"
-          *ngIf="modifications$ | async else loading"
-          (selectedItem)="viewModification($event,scaffold)"
-        ></app-modification-table>
-        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addModification(scaffold)">
-            <ion-icon name="add"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-        <ng-template #loading>
-          <div class="ion-padding">
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-          </div>
-        </ng-template>
-      </div>
-      <div *ngSwitchCase="'invoices'">
-        <app-invoice-table
-          [value]="invoices$"
-          *ngIf="invoices$ | async else loading"
-          (selectedItem)="viewInvoice($event,scaffold)"
-        ></app-invoice-table>
-        <!-- <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addInvoice(scaffold)">
-            <ion-icon name="add"></ion-icon>
-          </ion-fab-button>
-        </ion-fab> -->
-        <ng-template #loading>
-          <div class="ion-padding">
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-          </div>
-        </ng-template>
-      </div>
-      <div *ngSwitchCase="'payments'">
-        <app-payments-table
-          [value]="payments$"
-          *ngIf="payments$ | async else loading"
-          (selectedItem)="viewPayment($event)"
-        ></app-payments-table>
-
-        <ng-template #loading>
-          <div class="ion-padding">
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-            <app-skeleton-text></app-skeleton-text>
-          </div>
-        </ng-template>
-      </div>
-      <div *ngSwitchCase="'credit'">
-        <app-credit-table
-          [value]="credits$"
-          *ngIf="credits$ | async else loading"
-          (selectedItem)="viewCredit($event)"
-        ></app-credit-table>
-        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addCredit(scaffold)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
         </ion-fab>

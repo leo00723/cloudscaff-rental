@@ -1,14 +1,9 @@
+import { Comment } from './comment.model';
 import { Company } from './company.model';
 import { Customer } from './customer.model';
 import { InventoryItem } from './inventoryItem.model';
 import { UploadedFile } from './uploadedFile.model';
 
-export interface Comment {
-  name?: string;
-  date?: any;
-  message?: string;
-  image?: string;
-}
 export interface InventoryEstimateSell {
   id?: string;
   code?: string;

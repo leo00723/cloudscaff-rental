@@ -6,37 +6,27 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 import { Select } from '@ngxs/store';
+import cloneDeep from 'lodash/cloneDeep';
 import { Observable, tap } from 'rxjs';
-import { AddCreditComponent } from 'src/app/components/add-credit/add-credit.component';
 import { AddHandoverComponent } from 'src/app/components/add-handover/add-handover.component';
 import { AddInspectionComponent } from 'src/app/components/add-inspection/add-inspection.component';
-import { AddInvoiceComponent } from 'src/app/components/add-invoice/add-invoice.component';
-import { AddModificationComponent } from 'src/app/components/add-modification/add-modification.component';
-import { AddPaymentComponent } from 'src/app/components/add-payment/add-payment.component';
+import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
 import { DismantleSummaryComponent } from 'src/app/components/dismantle-summary/dismantle-summary.component';
 import { HandoverSummaryComponent } from 'src/app/components/handover-summary/handover-summary.component';
 import { InspectionSummaryComponent } from 'src/app/components/inspection-summary/inspection-summary.component';
-import { ViewInvoiceComponent } from 'src/app/components/view-invoice/view-invoice.component';
-import { ViewModificationComponent } from 'src/app/components/view-modification/view-modification.component';
 import { Company } from 'src/app/models/company.model';
-import { Credit } from 'src/app/models/credit.model';
 import { Handover } from 'src/app/models/handover.model';
 import { Inspection } from 'src/app/models/inspection.model';
-import { Invoice } from 'src/app/models/invoice.model';
-import { Modification } from 'src/app/models/modification.model';
-import { Payment } from 'src/app/models/payment.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
+import { SI } from 'src/app/models/si.model';
+import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { UserState } from 'src/app/shared/user/user.state';
-import cloneDeep from 'lodash/cloneDeep';
-import { LoadingController } from '@ionic/angular';
-import { SI } from 'src/app/models/si.model';
-import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
-import { Site } from 'src/app/models/site.model';
 
 @Component({
   selector: 'app-view-scaffold',
@@ -61,10 +51,6 @@ export class ViewScaffoldPage implements OnInit {
   inspections$: Observable<Inspection[]>;
   handovers$: Observable<Handover[]>;
   dismantles$: Observable<Handover[]>;
-  modifications$: Observable<Modification[]>;
-  invoices$: Observable<Invoice[]>;
-  payments$: Observable<Payment[]>;
-  credits$: Observable<Credit[]>;
   site$: Observable<Site>;
   active = 'overview';
   ids = [];
@@ -111,30 +97,7 @@ export class ViewScaffoldPage implements OnInit {
         where('scaffold.id', '==', this.ids[2]),
         orderBy('date', 'desc'),
       ]) as Observable<Handover[]>;
-    this.modifications$ = this.masterSvc
-      .edit()
-      .getCollectionFiltered(`company/${this.ids[0]}/modifications`, [
-        where('scaffold.id', '==', this.ids[2]),
-        orderBy('date', 'desc'),
-      ]) as Observable<Modification[]>;
-    this.invoices$ = this.masterSvc
-      .edit()
-      .getCollectionFiltered(`company/${this.ids[0]}/invoices`, [
-        where('scaffold.id', '==', this.ids[2]),
-        orderBy('date', 'desc'),
-      ]) as Observable<Invoice[]>;
-    this.payments$ = this.masterSvc
-      .edit()
-      .getCollectionFiltered(`company/${this.ids[0]}/payments`, [
-        where('scaffold.id', '==', this.ids[2]),
-        orderBy('date', 'desc'),
-      ]) as Observable<Payment[]>;
-    this.credits$ = this.masterSvc
-      .edit()
-      .getCollectionFiltered(`company/${this.ids[0]}/credits`, [
-        where('scaffold.id', '==', this.ids[2]),
-        orderBy('date', 'desc'),
-      ]) as Observable<Credit[]>;
+
     this.site$ = this.masterSvc
       .edit()
       .getDocById(
@@ -254,42 +217,6 @@ export class ViewScaffoldPage implements OnInit {
       }
     });
   }
-  async addModification(scaffold: Scaffold) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddModificationComponent,
-      componentProps: {
-        value: scaffold,
-      },
-      showBackdrop: false,
-      id: 'addModification',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
-  }
-  async addInvoice(scaffold: Scaffold) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddInvoiceComponent,
-      componentProps: {
-        value: scaffold,
-      },
-      showBackdrop: false,
-      id: 'addInvoice',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
-  }
-  async addCredit(scaffold: Scaffold) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddCreditComponent,
-      componentProps: {
-        scaffoldValue: scaffold,
-      },
-      showBackdrop: false,
-      id: 'addCredit',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
-  }
 
   async viewInspection(inspection: Inspection) {
     const modal = await this.masterSvc.modal().create({
@@ -323,88 +250,6 @@ export class ViewScaffoldPage implements OnInit {
       },
       showBackdrop: false,
       id: 'viewDismantle',
-      cssClass: 'fullscreen',
-    });
-    return await modal.present();
-  }
-  async viewModification(modification: Modification, scaffold: Scaffold) {
-    if (modification.status === 'pending') {
-      const modal = await this.masterSvc.modal().create({
-        component: AddModificationComponent,
-        componentProps: {
-          value: scaffold,
-          modification,
-          isEdit: true,
-        },
-        showBackdrop: false,
-        id: 'editModification',
-        cssClass: 'fullscreen',
-      });
-      return await modal.present();
-    } else {
-      const modal = await this.masterSvc.modal().create({
-        component: ViewModificationComponent,
-        componentProps: {
-          modification,
-        },
-        showBackdrop: false,
-        id: 'viewModification',
-        cssClass: 'fullscreen',
-      });
-      return await modal.present();
-    }
-  }
-  async viewInvoice(invoice: Invoice, scaffold: Scaffold) {
-    if (
-      invoice.status.startsWith('pending') ||
-      invoice.status.startsWith('updated')
-    ) {
-      const modal = await this.masterSvc.modal().create({
-        component: AddInvoiceComponent,
-        componentProps: {
-          value: invoice,
-          isEdit: true,
-        },
-        showBackdrop: false,
-        id: 'addInvoice',
-        cssClass: 'fullscreen',
-      });
-      return await modal.present();
-    } else {
-      const modal = await this.masterSvc.modal().create({
-        component: ViewInvoiceComponent,
-        componentProps: {
-          invoice,
-        },
-        showBackdrop: false,
-        id: 'viewInvoice',
-        cssClass: 'fullscreen',
-      });
-      return await modal.present();
-    }
-  }
-  async viewPayment(payment: Payment) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddPaymentComponent,
-      componentProps: {
-        payment,
-        isEdit: true,
-      },
-      showBackdrop: false,
-      id: 'viewPayment',
-      cssClass: 'accent',
-    });
-    return await modal.present();
-  }
-  async viewCredit(credit: Credit) {
-    const modal = await this.masterSvc.modal().create({
-      component: AddCreditComponent,
-      componentProps: {
-        value: credit,
-        isEdit: true,
-      },
-      showBackdrop: false,
-      id: 'viewCredit',
       cssClass: 'fullscreen',
     });
     return await modal.present();

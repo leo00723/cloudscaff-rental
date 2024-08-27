@@ -8,18 +8,18 @@ import {
 } from '@angular/core';
 import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import cloneDeep from 'lodash/cloneDeep';
 import { Observable, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Return } from 'src/app/models/return.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
+import { ImgService } from 'src/app/services/img.service';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
-import { ImgService } from 'src/app/services/img.service';
-
 @Component({
   selector: 'app-add-admin-return',
   templateUrl: './add-admin-return.component.html',
@@ -27,7 +27,6 @@ import { ImgService } from 'src/app/services/img.service';
 export class AddAdminReturnComponent implements OnInit, OnDestroy {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
-  @Input() allowSend = true;
   @Input() set value(val: Return) {
     if (val) {
       Object.assign(this.returnDoc, val);
@@ -84,10 +83,10 @@ export class AddAdminReturnComponent implements OnInit, OnDestroy {
         await this.upload();
         returnDoc.uploads = this.returnDoc.uploads;
         returnDoc.status = 'submitted';
-        await this.masterSvc
+        const doc = await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/returns`, returnDoc);
-
+        returnDoc.id = doc.id;
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalReturns: increment(1),
         });
@@ -95,6 +94,7 @@ export class AddAdminReturnComponent implements OnInit, OnDestroy {
         this.masterSvc
           .notification()
           .toast('Return created successfully', 'success');
+        this.returnDoc = cloneDeep(returnDoc);
         this.isEdit = true;
       } catch (e) {
         console.error(e);
@@ -109,7 +109,7 @@ export class AddAdminReturnComponent implements OnInit, OnDestroy {
       }
     });
   }
-  updateReturn(status: string) {
+  updateReturn(status: string, closeDoc?: boolean) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
@@ -132,6 +132,9 @@ export class AddAdminReturnComponent implements OnInit, OnDestroy {
         this.masterSvc
           .notification()
           .toast('Return updated successfully', 'success');
+        if (closeDoc) {
+          this.close();
+        }
       } catch (e) {
         console.error(e);
         this.masterSvc
@@ -146,7 +149,7 @@ export class AddAdminReturnComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected async approveReturn() {
+  protected async approveReturn(isAdmin?: boolean) {
     try {
       this.loading = true;
       this.itemBackup ||= [...this.items];
@@ -157,14 +160,16 @@ export class AddAdminReturnComponent implements OnInit, OnDestroy {
       });
       await this.upload();
 
-      const res = await this.imgService.uploadBlob(
-        this.blob,
-        `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature2`,
-        ''
-      );
-      if (res) {
-        this.returnDoc.signature2 = res.url2;
-        this.returnDoc.signatureRef2 = res.ref;
+      if (isAdmin) {
+        const res = await this.imgService.uploadBlob(
+          this.blob,
+          `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature2`,
+          ''
+        );
+        if (res) {
+          this.returnDoc.signature2 = res.url2;
+          this.returnDoc.signatureRef2 = res.ref;
+        }
       }
 
       await this.masterSvc

@@ -13,14 +13,6 @@
           <ion-label>Overview</ion-label>
         </ion-segment-button>
 
-        <!-- <ng-container *ngIf="company$ |async as company">
-          <ion-segment-button
-            value="3"
-            *ngIf="(user.permissionsList.includes('Billable Shipments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner') && !company?.removeBilling"
-          >
-            <ion-label>Billable Shipments</ion-label>
-          </ion-segment-button>
-        </ng-container> -->
         <ion-segment-button
           value="4"
           *ngIf="user.permissionsList.includes('Inventory Requests') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
@@ -327,13 +319,6 @@
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-  </ng-container>
-  <ng-container *ngSwitchCase="3">
-    <app-billable-shipments-table
-      [value]="billableShipments$"
-      *ngIf="billableShipments$ | async else loading"
-      (selectedItem)="viewBillableShipment($event)"
-    ></app-billable-shipments-table>
   </ng-container>
   <ng-container *ngSwitchCase="4">
     <ion-accordion-group

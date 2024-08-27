@@ -4,7 +4,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnInit,
   Output,
 } from '@angular/core';
@@ -26,53 +25,7 @@ export class PermissionsSelectComponent implements OnInit {
   @Input() showInput = true;
   @Output() selectedChanged: EventEmitter<any> = new EventEmitter();
 
-  permissionsNoBilling = [
-    {
-      title: 'Admin',
-      options: [
-        { name: 'Super Admin', selected: false },
-        { name: 'Site Admin', selected: false },
-        { name: 'Inventory Admin', selected: false },
-      ],
-    },
-    {
-      title: 'Navigation',
-      options: [
-        { name: 'Enquiries', selected: false },
-        { name: 'Instructions', selected: false },
-        { name: 'Handover List', selected: false },
-        { name: 'Inventory', selected: false },
-        { name: 'Settings', selected: false },
-      ],
-    },
-    {
-      title: 'Sites',
-      options: [
-        { name: 'Site Deliveries', selected: false },
-        { name: 'Site Requests', selected: false },
-        { name: 'Site Returns', selected: false },
-        { name: 'Site Instructions', selected: false },
-      ],
-    },
-    {
-      title: 'Scaffolds',
-      options: [
-        { name: 'Handovers', selected: false },
-        { name: 'Inspections', selected: false },
-        { name: 'Dismantles', selected: false },
-      ],
-    },
-    {
-      title: 'Inventory',
-      options: [
-        { name: 'Deliveries', selected: false },
-        { name: 'Inventory Requests', selected: false },
-        { name: 'Inventory Returns', selected: false },
-        { name: 'Transfers', selected: false },
-      ],
-    },
-  ];
-  permissionsBilling = [
+  permissions = [
     {
       title: 'Admin',
       options: [
@@ -89,7 +42,6 @@ export class PermissionsSelectComponent implements OnInit {
         { name: 'Instructions', selected: false },
         { name: 'Handovers', selected: false },
         { name: 'Inventory', selected: false },
-        // { name: 'Statements', selected: false },
         { name: 'Settings', selected: false },
       ],
     },
@@ -99,9 +51,6 @@ export class PermissionsSelectComponent implements OnInit {
         { name: 'Basic Estimates', selected: false },
         { name: 'Inventory Rent Estimates', selected: false },
         { name: 'Inventory Sell Estimates', selected: false },
-        // { name: 'Standard Estimates', selected: false },
-        // { name: 'Bulk Estimates', selected: false },
-        // { name: 'Inventory Estimates', selected: false },
       ],
     },
     {
@@ -111,7 +60,6 @@ export class PermissionsSelectComponent implements OnInit {
         { name: 'Site Requests', selected: false },
         { name: 'Site Returns', selected: false },
         { name: 'Site Instructions', selected: false },
-        // { name: 'Payment Applications', selected: false },
       ],
     },
     {
@@ -120,24 +68,18 @@ export class PermissionsSelectComponent implements OnInit {
         { name: 'Handovers', selected: false },
         { name: 'Inspections', selected: false },
         { name: 'Dismantles', selected: false },
-        // { name: 'Invoices', selected: false },
-        // { name: 'Payments', selected: false },
-        // { name: 'Credit Notes', selected: false },
       ],
     },
     {
       title: 'Inventory',
       options: [
         { name: 'Deliveries', selected: false },
-        // { name: 'Billable Shipments', selected: false },
         { name: 'Inventory Requests', selected: false },
         { name: 'Inventory Returns', selected: false },
         { name: 'Transfers', selected: false },
       ],
     },
   ];
-
-  permissions = [];
 
   data: any[];
 
@@ -148,9 +90,6 @@ export class PermissionsSelectComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    this.permissions = this.company?.removeBilling
-      ? this.permissionsNoBilling
-      : this.permissionsBilling;
     if (this.user.permissions) {
       for (const category of this.permissions) {
         for (const option of category.options) {

@@ -8,150 +8,66 @@
       mode="md"
     >
       <ng-container *ngIf="company$ |async as company">
-        <ng-container *ngIf="!company.removeBilling">
-          <ion-segment-button
-            value="basic"
-            *ngIf="user.permissionsList.includes('basic') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-          >
-            <ion-label>Basic</ion-label>
-          </ion-segment-button>
-          <ion-segment-button
-            value="inventory-sell"
-            *ngIf="user.permissionsList.includes('Inventory Sell Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
-          >
-            <ion-label>Inventory Sell</ion-label>
-          </ion-segment-button>
-          <ion-segment-button
-            value="standard"
-            *ngIf="user.permissionsList.includes('Standard Estimates')"
-          >
-            <ion-label>Standard</ion-label>
-          </ion-segment-button>
-          <ion-segment-button
-            value="bulk"
-            *ngIf="user.permissionsList.includes('Bulk Estimates')"
-          >
-            <ion-label>Bulk Standard</ion-label>
-          </ion-segment-button>
-          <ion-segment-button
-            value="inventory"
-            *ngIf="user.permissionsList.includes('Inventory Estimates')"
-          >
-            <ion-label>Inventory</ion-label>
-          </ion-segment-button>
-        </ng-container>
+        <ion-segment-button
+          value="basic"
+          *ngIf="user.permissionsList.includes('basic') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+        >
+          <ion-label>Basic</ion-label>
+        </ion-segment-button>
+        <ion-segment-button
+          value="inventory-sell"
+          *ngIf="user.permissionsList.includes('Inventory Sell Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+        >
+          <ion-label>Inventory Sell</ion-label>
+        </ion-segment-button>
       </ng-container>
     </ion-segment>
   </ion-toolbar>
 </app-header>
 <ion-content class="ion-padding">
   <ng-container [ngSwitch]="active" *ngIf="company$ | async as company">
-    <ng-container *ngIf="!company.removeBilling">
-      <!-- BASIC ESTIMATE -->
-      <ng-container *ngSwitchCase="'basic'">
-        <ng-container *ngIf="company.totalEstimates > 0">
-          <app-estimate-v2-table
-            [value]="estimatesV2$"
-            *ngIf="estimatesV2$ | async else loading"
-            (selectedItem)="editEstimateV2($event)"
-          ></app-estimate-v2-table>
-          <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button (click)="addEstimateV2()">
-              <ion-icon name="add"></ion-icon>
-            </ion-fab-button>
-          </ion-fab>
-        </ng-container>
-        <app-page-placeholder
-          *ngIf="company.totalEstimates === 0 || !company.totalEstimates"
-          title="No Estimates?"
-          subtitle=" Lets get started setting up your first estimate."
-          (clicked)="addEstimateV2()"
-        ></app-page-placeholder>
+    <!-- BASIC ESTIMATE -->
+    <ng-container *ngSwitchCase="'basic'">
+      <ng-container *ngIf="company.totalEstimates > 0">
+        <app-estimate-v2-table
+          [value]="estimatesV2$"
+          *ngIf="estimatesV2$ | async else loading"
+          (selectedItem)="editEstimateV2($event)"
+        ></app-estimate-v2-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addEstimateV2()">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
       </ng-container>
-      <!-- INVENTORY SELL ESTIMATE -->
-      <ng-container *ngSwitchCase="'inventory-sell'">
-        <ng-container *ngIf="company.totalInventoryEstimates > 0">
-          <app-estimate-v2-table
-            [value]="inventoryEstimatesSell$"
-            [showSite]="false"
-            *ngIf="inventoryEstimatesSell$ | async else loading"
-            (selectedItem)="editInvSellEstimate($event)"
-          ></app-estimate-v2-table>
-          <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button (click)="addInvSellEstimate()">
-              <ion-icon name="add"></ion-icon>
-            </ion-fab-button>
-          </ion-fab>
-        </ng-container>
-        <app-page-placeholder
-          *ngIf="company.totalInventoryEstimates === 0 || !company.totalInventoryEstimates"
-          title="No Estimates?"
-          subtitle=" Lets get started setting up your first estimate."
-          (clicked)="addInvSellEstimate()"
-        ></app-page-placeholder>
+      <app-page-placeholder
+        *ngIf="company.totalEstimates === 0 || !company.totalEstimates"
+        title="No Estimates?"
+        subtitle=" Lets get started setting up your first estimate."
+        (clicked)="addEstimateV2()"
+      ></app-page-placeholder>
+    </ng-container>
+    <!-- INVENTORY SELL ESTIMATE -->
+    <ng-container *ngSwitchCase="'inventory-sell'">
+      <ng-container *ngIf="company.totalInventoryEstimates > 0">
+        <app-estimate-v2-table
+          [value]="inventoryEstimatesSell$"
+          [showSite]="false"
+          *ngIf="inventoryEstimatesSell$ | async else loading"
+          (selectedItem)="editInvSellEstimate($event)"
+        ></app-estimate-v2-table>
+        <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addInvSellEstimate()">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
       </ng-container>
-      <!-- STANDARD ESTIMATE -->
-      <ng-container *ngSwitchCase="'standard'">
-        <ng-container *ngIf="company.totalEstimates > 0">
-          <app-estimate-table
-            [value]="estimates$"
-            *ngIf="estimates$ | async else loading"
-            (selectedItem)="editEstimate($event)"
-          ></app-estimate-table>
-          <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button (click)="addEstimate()">
-              <ion-icon name="add"></ion-icon>
-            </ion-fab-button>
-          </ion-fab>
-        </ng-container>
-        <app-page-placeholder
-          *ngIf="company.totalEstimates === 0 || !company.totalEstimates"
-          title="No Standard Estimates?"
-          subtitle=" Lets get started setting up your first Standard estimate."
-          (clicked)="addEstimate()"
-        ></app-page-placeholder>
-      </ng-container>
-      <!-- BULK ESTIMATE -->
-      <ng-container *ngSwitchCase="'bulk'">
-        <ng-container *ngIf="company.totalBulkEstimates > 0">
-          <app-bulk-estimate-table
-            [value]="bulkEstimates$"
-            *ngIf="bulkEstimates$ | async else loading"
-            (selectedItem)="editBulkEstimate($event)"
-          ></app-bulk-estimate-table>
-          <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button (click)="addBulkEstimate()">
-              <ion-icon name="add"></ion-icon>
-            </ion-fab-button>
-          </ion-fab>
-        </ng-container>
-        <app-page-placeholder
-          *ngIf="company.totalBulkEstimates === 0 || !company.totalBulkEstimates"
-          title="No Bulk Estimates?"
-          subtitle=" Lets get started setting up your first Bulk estimate."
-          (clicked)="addBulkEstimate()"
-        ></app-page-placeholder>
-      </ng-container>
-      <!-- INVENTORY ESTIMATE -->
-      <ng-container *ngSwitchCase="'inventory'">
-        <ng-container *ngIf="company.totalInventoryEstimates > 0">
-          <app-inventory-estimate-table
-            [value]="inventoryEstimates$"
-            *ngIf="inventoryEstimates$ | async else loading"
-            (selectedItem)="editInventoryEstimate($event)"
-          ></app-inventory-estimate-table>
-          <ion-fab class="m-2" vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button (click)="addInventoryEstimate()">
-              <ion-icon name="add"></ion-icon>
-            </ion-fab-button> </ion-fab
-        ></ng-container>
-        <app-page-placeholder
-          *ngIf="company.totalInventoryEstimates === 0 || !company.totalInventoryEstimates"
-          title="No Inventory Estimates?"
-          subtitle=" Lets get started setting up your first Inventory estimate."
-          (clicked)="addInventoryEstimate()"
-        ></app-page-placeholder>
-      </ng-container>
+      <app-page-placeholder
+        *ngIf="company.totalInventoryEstimates === 0 || !company.totalInventoryEstimates"
+        title="No Estimates?"
+        subtitle=" Lets get started setting up your first estimate."
+        (clicked)="addInvSellEstimate()"
+      ></app-page-placeholder>
     </ng-container>
     <ng-template #loading>
       <div class="ion-padding">

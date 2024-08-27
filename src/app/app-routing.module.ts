@@ -54,48 +54,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { authGuardPipe: redirectUnauthorized },
   },
-  {
-    path: 'viewEstimate/:id',
-    loadChildren: () =>
-      import('./customer-estimate/customer-estimate.module').then(
-        (m) => m.CustomerEstimatePageModule
-      ),
-  },
-  {
-    path: 'viewBulkEstimate/:id',
-    loadChildren: () =>
-      import('./customer-bulk-estimate/customer-bulk-estimate.module').then(
-        (m) => m.CustomerBulkEstimatePageModule
-      ),
-  },
-  {
-    path: 'viewInventoryEstimate/:id',
-    loadChildren: () =>
-      import(
-        './customer-inventory-estimate/customer-inventory-estimate.module'
-      ).then((m) => m.CustomerInventoryEstimatePageModule),
-  },
-  {
-    path: 'viewInvoice/:id',
-    loadChildren: () =>
-      import('./customer-invoice/customer-invoice.module').then(
-        (m) => m.CustomerInvoicePageModule
-      ),
-  },
-  {
-    path: 'viewCredit/:id',
-    loadChildren: () =>
-      import('./customer-credit/customer-credit.module').then(
-        (m) => m.CustomerCreditPageModule
-      ),
-  },
-  {
-    path: 'viewModification/:id',
-    loadChildren: () =>
-      import('./customer-modification/customer-modification.module').then(
-        (m) => m.CustomerModificationPageModule
-      ),
-  },
+
   {
     path: 'viewInspection/:id',
     loadChildren: () =>
@@ -115,13 +74,6 @@ const routes: Routes = [
     loadChildren: () =>
       import('./customer-dismantle/customer-dismantle.module').then(
         (m) => m.CustomerDismantlePageModule
-      ),
-  },
-  {
-    path: 'viewStatement/:id',
-    loadChildren: () =>
-      import('./customer-statement/customer-statement.module').then(
-        (m) => m.CustomerStatementPageModule
       ),
   },
   {
