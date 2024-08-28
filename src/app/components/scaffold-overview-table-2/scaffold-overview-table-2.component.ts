@@ -19,6 +19,7 @@ export class ScaffoldOverviewTable2Component implements OnInit {
   @Input() scaffold: Scaffold;
   @Input() detailed = true;
   @Input() showSafe = false;
+  @Input() simplified = false;
   @Select() company$: Observable<Company>;
   constructor() {}
 

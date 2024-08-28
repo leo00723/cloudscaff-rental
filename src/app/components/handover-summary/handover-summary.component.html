@@ -84,11 +84,12 @@
     <ion-item-divider mode="md"></ion-item-divider>
     <ion-row class="py-2">
       <ion-col>
-        <app-scaffold-overview-table
+        <app-scaffold-overview-table-2
           [detailed]="false"
           [scaffold]="handover.scaffold"
           [showSafe]="true"
-        ></app-scaffold-overview-table>
+          [simplified]="true"
+        ></app-scaffold-overview-table-2>
         <table class="table table-bordered" *ngIf="handover?.changes">
           <thead>
             <tr>
