@@ -4,10 +4,11 @@ import { ComponentsModule } from 'src/app/components/components.module';
 import { SiteInventoryTableComponent } from './site-inventory-table/site-inventory-table.component';
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
+import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
 
 @NgModule({
   imports: [ComponentsModule, ViewSitePageRoutingModule, QRCodeModule],
-  declarations: [ViewSitePage, SiteInventoryTableComponent],
+  declarations: [ViewSitePage, SiteInventoryTableComponent, PurchaseOrderComponent],
   exports: [],
 })
 export class ViewSitePageModule {}

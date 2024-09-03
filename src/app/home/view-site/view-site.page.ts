@@ -22,6 +22,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
+import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
 
 @Component({
   selector: 'app-view-site',
@@ -61,6 +62,8 @@ export class ViewSitePage implements OnInit {
   pendingInstructions$: Observable<SI[]>;
   signedInstructions$: Observable<SI[]>;
   instructions$: Observable<SI[]>;
+
+  purchaseOrders$: Observable<any[]>;
 
   inventoryItems$: Observable<any>;
   active = 'scaffolds';
@@ -204,6 +207,13 @@ export class ViewSitePage implements OnInit {
         where('status', 'in', ['sent', 'received']),
         orderBy('code', 'desc'),
       ]) as Observable<Shipment[]>;
+
+    this.purchaseOrders$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/pos`, [
+        where('site.id', '==', this.ids[1]),
+        orderBy('code', 'desc'),
+      ]) as Observable<any[]>;
   }
   ngOnInit() {}
 
@@ -315,6 +325,17 @@ export class ViewSitePage implements OnInit {
     });
 
     return modal.present();
+  }
+
+  async viewPO(poData: any, site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: PurchaseOrderComponent,
+      componentProps: { value: poData, siteData: site },
+      showBackdrop: false,
+      id: 'viewPO',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
   }
 
   viewScaffold(scaffold: Scaffold) {
