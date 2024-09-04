@@ -74,6 +74,9 @@ import { UserPickerComponent } from './user-picker/user-picker.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
+import { POTableComponent } from './po-table/po-table.component';
+import { POSummaryComponent } from './po-summary/po-summary.component';
+import { DateDiffPipe } from './dateDiff.pipe';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -141,6 +144,9 @@ const COMPONENTS = [
   WeightPipe,
   HandoverTableComponent,
   AddAdminReturnComponent,
+  POTableComponent,
+  POSummaryComponent,
+  DateDiffPipe,
 ];
 const IMPORTS = [
   CommonModule,

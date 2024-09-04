@@ -1,1 +1,115 @@
-<p>purchase-order works!</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Purchase Order - {{ po?.code }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <app-po-summary [value]="po.estimate"></app-po-summary>
+  <ion-row>
+    <ion-col size="12">
+      <ion-text color="medium">
+        <h4>Billing Period</h4>
+      </ion-text>
+    </ion-col>
+
+    <ion-col size="12">
+      <form [formGroup]="form">
+        <app-input-date
+          [form]="form"
+          controlName="endDate"
+          title="End Date"
+        ></app-input-date>
+      </form>
+    </ion-col>
+  </ion-row>
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered">
+      <thead>
+        <tr class="text-center align-middle">
+          <th rowspan="2">Item code</th>
+          <th class="text-start" rowspan="2">Description</th>
+          <th rowspan="2">Unit</th>
+          <th rowspan="2">Qty for Invoice</th>
+          <th colspan="3">Actual Qty</th>
+          <th colspan="2">Hire Period</th>
+          <th rowspan="2">Days</th>
+          <th rowspan="2">Months</th>
+          <th rowspan="1">Daily</th>
+          <th class="text-end" rowspan="2">Amount</th>
+        </tr>
+        <tr class="text-center align-middle">
+          <th>Delivered</th>
+          <th>Returned</th>
+          <th>Balance</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Rent Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let delivery of deliveries$ | async">
+          <tr class="bg-success">
+            <th colspan="13">
+              {{ delivery.code }}
+            </th>
+          </tr>
+          <ng-container *ngFor="let item of delivery.items">
+            <tr class="text-center align-middle">
+              <td>{{ item.code }}</td>
+              <td class="text-start">{{ item.name }}</td>
+              <td>EA</td>
+              <td class="fw-bold">{{ item.shipmentQty }}</td>
+              <td class="text-success fw-bold">{{ item.shipmentQty }}</td>
+              <td class="text-danger fw-bold">0</td>
+              <td class="text-warning fw-bold">{{ item.shipmentQty }}</td>
+              <td>
+                {{ delivery.date | date : "dd MMM yy" }}
+              </td>
+              <td>{{ field("endDate").value | date : "dd MMM yy" }}</td>
+              <td>
+                {{ delivery.date | dateDiff : field("endDate").value }}
+              </td>
+              <td>
+                {{
+                  (delivery.date | dateDiff : field("endDate").value) / 30
+                    | number : "0.2-2"
+                }}
+              </td>
+              <td>
+                <ion-input
+                  debounce="300"
+                  inputmode="numeric"
+                  [color]="item.error ? 'danger' : 'default'"
+                  [value]="item.hireCost"
+                  (ionChange)="updateRate($event, item)"
+                >
+                </ion-input>
+                <ion-label color="danger" *ngIf="item.error">
+                  Enter a valid rate
+                </ion-label>
+              </td>
+              <td class="text-end">
+                {{ company.currency.symbol
+                }}{{
+                  item.shipmentQty *
+                    item.hireCost *
+                    (delivery.date | dateDiff : field("endDate").value)
+                    | number : "0.2-2"
+                }}
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</ion-content>

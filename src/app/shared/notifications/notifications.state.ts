@@ -10,6 +10,7 @@ import {
   SetNotifications,
 } from './notifications.actions';
 import { NotificationService } from 'src/app/services/notification.service';
+import { environment } from 'src/environments/environment';
 
 @State<Notification[]>({
   name: 'notifications',
@@ -51,7 +52,7 @@ export class NotificationsState {
               counter++;
             }
           }
-          if (counter > 0) {
+          if (counter > 0 && environment.production) {
             this.store.dispatch(new SetNotificationFlag(counter));
             this.audio = new Audio();
             this.audio.src = 'assets/notification.wav';

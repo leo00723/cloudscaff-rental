@@ -23,6 +23,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
+import { PO } from 'src/app/models/po.model';
 
 @Component({
   selector: 'app-view-site',
@@ -327,10 +328,10 @@ export class ViewSitePage implements OnInit {
     return modal.present();
   }
 
-  async viewPO(poData: any, site: Site) {
+  async viewPO(poData: PO, site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: PurchaseOrderComponent,
-      componentProps: { value: poData, siteData: site },
+      componentProps: { value: poData, site },
       showBackdrop: false,
       id: 'viewPO',
       cssClass: 'fullscreen',

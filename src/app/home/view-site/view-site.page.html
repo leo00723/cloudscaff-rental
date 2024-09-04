@@ -566,24 +566,13 @@
               >
             </ion-item>
             <div class="ion-padding" slot="content">
-              <app-si-table
+              <app-po-table
                 [value]="purchaseOrders$"
                 (selectedItem)="viewPO($event,site)"
-              ></app-si-table>
+              ></app-po-table>
             </div>
           </ion-accordion>
         </ion-accordion-group>
-        <ion-fab
-          class="m-2"
-          vertical="bottom"
-          horizontal="end"
-          slot="fixed"
-          *ngIf="site.status !== 'closed'"
-        >
-          <ion-fab-button (click)="addInstruction(site)">
-            <ion-icon name="add"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
       </ng-container>
       <ng-container *ngSwitchCase="'uploads'">
         <ion-row>
