@@ -24,6 +24,7 @@ import { Navigate } from 'src/app/shared/router.state';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
 import { PO } from 'src/app/models/po.model';
+import { MaterialTrackingComponent } from './material-tracking/material-tracking.component';
 
 @Component({
   selector: 'app-view-site',
@@ -330,7 +331,7 @@ export class ViewSitePage implements OnInit {
 
   async viewPO(poData: PO, site: Site) {
     const modal = await this.masterSvc.modal().create({
-      component: PurchaseOrderComponent,
+      component: MaterialTrackingComponent,
       componentProps: { value: poData, site },
       showBackdrop: false,
       id: 'viewPO',
