@@ -1,16 +1,18 @@
 import { Company } from './company.model';
 import { InventoryItem } from './inventoryItem.model';
 import { Site } from './site.model';
+import { TransactionItem } from './TransactionItem.model';
 import { UploadedFile } from './uploadedFile.model';
 
-export interface Return {
+export interface TransactionReturn {
   id?: string;
+  itemId?: string;
   code?: string;
   company?: Company;
   createdBy?: string;
   createdByName?: string;
   date?: any;
-  items?: InventoryItem[];
+  items?: TransactionItem[];
   notes?: string;
   returnDate?: any;
   site?: Site;

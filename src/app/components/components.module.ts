@@ -77,6 +77,7 @@ import { WeightPipe } from './weight.pipe';
 import { POTableComponent } from './po-table/po-table.component';
 import { POSummaryComponent } from './po-summary/po-summary.component';
 import { DateDiffPipe } from './dateDiff.pipe';
+import { TransactionReturnComponent } from './transaction-return/transaction-return.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -147,6 +148,7 @@ const COMPONENTS = [
   POTableComponent,
   POSummaryComponent,
   DateDiffPipe,
+  TransactionReturnComponent,
 ];
 const IMPORTS = [
   CommonModule,

@@ -10,6 +10,7 @@ import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipme
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
 import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
 import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-item/duplicate-stock-item.component';
+import { TransactionReturnComponent } from 'src/app/components/transaction-return/transaction-return.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
@@ -169,7 +170,7 @@ export class InventoryPage implements OnInit {
 
   async addReturn() {
     const modal = await this.masterSvc.modal().create({
-      component: AddAdminReturnComponent,
+      component: TransactionReturnComponent,
       componentProps: {},
       cssClass: 'fullscreen',
       showBackdrop: false,
