@@ -246,7 +246,7 @@
                           [color]="item.error ? 'danger' : 'success'"
                           [clearOnEdit]="true"
                           [value]="item.returnQty"
-                          (ionChange)="update($event, item, 'shipment')"
+                          (ionChange)="update($event, item, 'returnQty')"
                           [readonly]="returnDoc.status !== 'submitted'"
                         >
                         </ion-input>
@@ -311,9 +311,6 @@
                           </ion-label>
                         </td>
                       </ng-container>
-                      <!-- <td class="text-end">
-                      {{ item.shipmentQty * item.weight | number }}
-                    </td> -->
                     </tr>
                     <ng-template #viewShipment>
                       <tr class="align-middle" *ngIf="item.returnQty > 0">
@@ -330,7 +327,7 @@
                             [color]="item.error ? 'danger' : 'success'"
                             [clearOnEdit]="true"
                             [value]="item.returnQty"
-                            (ionChange)="update($event, item, 'shipment')"
+                            (ionChange)="update($event, item, 'returnQty')"
                             [readonly]="returnDoc.status !== 'submitted'"
                           >
                           </ion-input>
@@ -338,9 +335,7 @@
                             you cannot exceed the available qty
                           </ion-label>
                         </td>
-                        <!-- <td class="text-end">
-                        {{ item.shipmentQty * item.weight | number }}
-                      </td> -->
+
                         <ng-container
                           *ngIf="
                             returnDoc.status !== 'void' &&

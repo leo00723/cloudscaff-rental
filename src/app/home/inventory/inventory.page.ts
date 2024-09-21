@@ -180,7 +180,7 @@ export class InventoryPage implements OnInit {
   }
   async viewReturn(returnData: Return) {
     const modal = await this.masterSvc.modal().create({
-      component: AddAdminReturnComponent,
+      component: TransactionReturnComponent,
       componentProps: { allowSend: true, isEdit: true, value: returnData },
       showBackdrop: false,
       id: 'viewReturn',

@@ -334,12 +334,13 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
 
   update(val, item: TransactionItem, type: string) {
     switch (type) {
-      case 'return':
+      case 'returnQty':
         {
           item.returnQty = +val.detail.value;
           item.returnQty > item.balanceQty || item.returnQty < 0
             ? (this.error = true)
             : (this.error = false);
+          console.log(item);
         }
         break;
       case 'damaged':
@@ -423,7 +424,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           ])
           .subscribe((data) => {
             this.returnDoc.items.forEach((item) => {
-              const inventoryItem = data.find((i) => i.itemID === item.itemId);
+              const inventoryItem = data.find((i) => i.itemId === item.itemId);
               if (inventoryItem) {
                 inventoryItem.returnQty = +item.returnQty;
               }

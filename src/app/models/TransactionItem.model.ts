@@ -24,5 +24,5 @@ export interface TransactionItem {
   invoiceEnd?: any;
   hireRate?: number;
   poNumber?: string;
-  type?: string;
+  transactionType?: string;
 }

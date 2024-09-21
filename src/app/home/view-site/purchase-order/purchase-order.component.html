@@ -59,7 +59,7 @@
         <ng-container *ngFor="let transaction of transactions$ | async">
           <tr class="text-center align-middle">
             <!-- Type (Delivery or Return) -->
-            <td>{{ transaction.type }}</td>
+            <td>{{ transaction.transactionType }}</td>
 
             <!-- Item Code -->
             <td>{{ transaction.code }}</td>
