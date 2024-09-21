@@ -9,7 +9,7 @@ import {
 import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import cloneDeep from 'lodash/cloneDeep';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Site } from 'src/app/models/site.model';
 import { TransactionItem } from 'src/app/models/TransactionItem.model';
@@ -156,10 +156,11 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       this.masterSvc
         .edit()
         .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
-          where('poNumber', '==', poNumber),
-          where('type', '==', 'Delivery'),
           where('status', '==', 'active'),
+          where('transactionType', '==', 'Delivery'),
+          where('poNumber', '==', poNumber),
         ])
+        .pipe(take(1))
         .subscribe((data) => {
           this.items = data;
         })
@@ -416,9 +417,9 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         this.masterSvc
           .edit()
           .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
-            where('poNumber', '==', this.returnDoc?.poNumber),
-            where('type', '==', 'Delivery'),
             where('status', '==', 'active'),
+            where('transactionType', '==', 'Delivery'),
+            where('poNumber', '==', this.returnDoc?.poNumber),
           ])
           .subscribe((data) => {
             this.returnDoc.items.forEach((item) => {

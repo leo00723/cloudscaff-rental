@@ -71,26 +71,26 @@
             <td>EA</td>
 
             <!-- Qty for Invoice -->
-            <td class="fw-bold">{{ transaction.availableQty }}</td>
+            <td class="fw-bold">{{ transaction.invoiceQty }}</td>
 
             <!-- Delivered Qty  -->
             <td class="text-success fw-bold">
-              {{ transaction.availableQty }}
+              {{ transaction.deliveredQty }}
             </td>
 
             <!-- Returned Qty  -->
             <td class="text-danger fw-bold">
-              {{ transaction.availableQty }}
+              {{ transaction.returnTotal }}
             </td>
 
             <!-- Balance Qty (assuming it's the available quantity after deliveries and returns) -->
             <td class="text-warning fw-bold">
-              {{ transaction.availableQty }}
+              {{ transaction.balanceQty }}
             </td>
 
             <!-- Start Date (delivery or return date) -->
             <td>
-              {{ transaction.deliveryDate.toDate() | date : "dd MMM yy" }}
+              {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
@@ -99,7 +99,7 @@
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
             <td>
               {{
-                transaction.deliveryDate.toDate()
+                transaction.invoiceStart.toDate()
                   | dateDiff : field("endDate").value
               }}
             </td>
@@ -107,7 +107,7 @@
             <!-- Months (converting days to months, assuming 30 days per month) -->
             <td>
               {{
-                (transaction.deliveryDate.toDate()
+                (transaction.invoiceStart.toDate()
                   | dateDiff : field("endDate").value) / 30 | number : "0.2-2"
               }}
             </td>
@@ -118,7 +118,7 @@
                 debounce="300"
                 inputmode="numeric"
                 [color]="transaction.error ? 'danger' : 'default'"
-                [value]="transaction.hireCost"
+                [value]="transaction.hireRate"
                 (ionChange)="updateRate($event, transaction)"
               ></ion-input>
               <ion-label color="danger" *ngIf="transaction.error">
@@ -130,10 +130,10 @@
             <td class="text-end">
               {{ company.currency.symbol }}
               {{
-                transaction.availableQty *
-                  transaction.hireCost *
-                  (transaction.deliveryDate | dateDiff : field("endDate").value)
-                  | number : "0.2-2"
+                transaction.invoiceQty *
+                  transaction.hireRate *
+                  (transaction.invoiceStart.toDate()
+                    | dateDiff : field("endDate").value) | number : "0.2-2"
               }}
             </td>
           </tr>

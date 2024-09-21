@@ -13,6 +13,7 @@ import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { PO } from 'src/app/models/po.model';
 import { Site } from 'src/app/models/site.model';
+import { TransactionItem } from 'src/app/models/TransactionItem.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
@@ -36,7 +37,7 @@ export class PurchaseOrderComponent implements OnInit {
   protected company: Company;
   protected form: FormGroup;
 
-  protected transactions$: Observable<any[]>;
+  protected transactions$: Observable<TransactionItem[]>;
 
   private modalSvc = inject(ModalController);
   private editSvc = inject(EditService);
@@ -67,12 +68,12 @@ export class PurchaseOrderComponent implements OnInit {
     this.field('endDate').value;
   }
 
-  updateRate(val, item: InventoryItem) {
+  updateRate(val, item: TransactionItem) {
     if (isNaN(+val.detail.value)) {
       return (item.error = true);
     } else {
       item.error = false;
-      item.hireCost = +val.detail.value;
+      item.hireRate = +val.detail.value;
     }
   }
 
