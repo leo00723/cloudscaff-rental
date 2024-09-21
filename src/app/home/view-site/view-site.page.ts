@@ -11,6 +11,7 @@ import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffo
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
+import { PO } from 'src/app/models/po.model';
 import { Request } from 'src/app/models/request.model';
 import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
@@ -23,8 +24,6 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
-import { PO } from 'src/app/models/po.model';
-import { MaterialTrackingComponent } from './material-tracking/material-tracking.component';
 
 @Component({
   selector: 'app-view-site',
@@ -331,7 +330,7 @@ export class ViewSitePage implements OnInit {
 
   async viewPO(poData: PO, site: Site) {
     const modal = await this.masterSvc.modal().create({
-      component: MaterialTrackingComponent,
+      component: PurchaseOrderComponent,
       componentProps: { value: poData, site },
       showBackdrop: false,
       id: 'viewPO',

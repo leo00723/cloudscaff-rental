@@ -35,7 +35,8 @@
     <table class="table table-sm table-bordered">
       <thead>
         <tr class="text-center align-middle">
-          <th rowspan="2">Item code</th>
+          <th rowspan="2">Type</th>
+          <th rowspan="2">Item Code</th>
           <th class="text-start" rowspan="2">Description</th>
           <th rowspan="2">Unit</th>
           <th rowspan="2">Qty for Invoice</th>
@@ -43,7 +44,7 @@
           <th colspan="2">Hire Period</th>
           <th rowspan="2">Days</th>
           <th rowspan="2">Months</th>
-          <th rowspan="1">Daily</th>
+          <th rowspan="2">Daily Rent Rate</th>
           <th class="text-end" rowspan="2">Amount</th>
         </tr>
         <tr class="text-center align-middle">
@@ -52,62 +53,90 @@
           <th>Balance</th>
           <th>Start Date</th>
           <th>End Date</th>
-          <th>Rent Rate</th>
         </tr>
       </thead>
       <tbody>
-        <ng-container *ngFor="let delivery of deliveries$ | async">
-          <tr class="bg-success">
-            <th colspan="13">
-              {{ delivery.code }}
-            </th>
+        <ng-container *ngFor="let transaction of transactions$ | async">
+          <tr class="text-center align-middle">
+            <!-- Type (Delivery or Return) -->
+            <td>{{ transaction.type }}</td>
+
+            <!-- Item Code -->
+            <td>{{ transaction.code }}</td>
+
+            <!-- Description -->
+            <td class="text-start">{{ transaction.name }}</td>
+
+            <!-- Unit -->
+            <td>EA</td>
+
+            <!-- Qty for Invoice -->
+            <td class="fw-bold">{{ transaction.availableQty }}</td>
+
+            <!-- Delivered Qty  -->
+            <td class="text-success fw-bold">
+              {{ transaction.availableQty }}
+            </td>
+
+            <!-- Returned Qty  -->
+            <td class="text-danger fw-bold">
+              {{ transaction.availableQty }}
+            </td>
+
+            <!-- Balance Qty (assuming it's the available quantity after deliveries and returns) -->
+            <td class="text-warning fw-bold">
+              {{ transaction.availableQty }}
+            </td>
+
+            <!-- Start Date (delivery or return date) -->
+            <td>
+              {{ transaction.deliveryDate.toDate() | date : "dd MMM yy" }}
+            </td>
+
+            <!-- End Date (assuming you have endDate field in the transaction) -->
+            <td>{{ field("endDate").value | date : "dd MMM yy" }}</td>
+
+            <!-- Days (calculating date difference between deliveryDate and endDate) -->
+            <td>
+              {{
+                transaction.deliveryDate.toDate()
+                  | dateDiff : field("endDate").value
+              }}
+            </td>
+
+            <!-- Months (converting days to months, assuming 30 days per month) -->
+            <td>
+              {{
+                (transaction.deliveryDate.toDate()
+                  | dateDiff : field("endDate").value) / 30 | number : "0.2-2"
+              }}
+            </td>
+
+            <!-- Daily Rent Rate -->
+            <td>
+              <ion-input
+                debounce="300"
+                inputmode="numeric"
+                [color]="transaction.error ? 'danger' : 'default'"
+                [value]="transaction.hireCost"
+                (ionChange)="updateRate($event, transaction)"
+              ></ion-input>
+              <ion-label color="danger" *ngIf="transaction.error">
+                Enter a valid rate
+              </ion-label>
+            </td>
+
+            <!-- Total Amount (qty * rate * days) -->
+            <td class="text-end">
+              {{ company.currency.symbol }}
+              {{
+                transaction.availableQty *
+                  transaction.hireCost *
+                  (transaction.deliveryDate | dateDiff : field("endDate").value)
+                  | number : "0.2-2"
+              }}
+            </td>
           </tr>
-          <ng-container *ngFor="let item of delivery.items">
-            <tr class="text-center align-middle">
-              <td>{{ item.code }}</td>
-              <td class="text-start">{{ item.name }}</td>
-              <td>EA</td>
-              <td class="fw-bold">{{ item.shipmentQty }}</td>
-              <td class="text-success fw-bold">{{ item.shipmentQty }}</td>
-              <td class="text-danger fw-bold">0</td>
-              <td class="text-warning fw-bold">{{ item.shipmentQty }}</td>
-              <td>
-                {{ delivery.date | date : "dd MMM yy" }}
-              </td>
-              <td>{{ field("endDate").value | date : "dd MMM yy" }}</td>
-              <td>
-                {{ delivery.date | dateDiff : field("endDate").value }}
-              </td>
-              <td>
-                {{
-                  (delivery.date | dateDiff : field("endDate").value) / 30
-                    | number : "0.2-2"
-                }}
-              </td>
-              <td>
-                <ion-input
-                  debounce="300"
-                  inputmode="numeric"
-                  [color]="item.error ? 'danger' : 'default'"
-                  [value]="item.hireCost"
-                  (ionChange)="updateRate($event, item)"
-                >
-                </ion-input>
-                <ion-label color="danger" *ngIf="item.error">
-                  Enter a valid rate
-                </ion-label>
-              </td>
-              <td class="text-end">
-                {{ company.currency.symbol
-                }}{{
-                  item.shipmentQty *
-                    item.hireCost *
-                    (delivery.date | dateDiff : field("endDate").value)
-                    | number : "0.2-2"
-                }}
-              </td>
-            </tr>
-          </ng-container>
         </ng-container>
       </tbody>
     </table>

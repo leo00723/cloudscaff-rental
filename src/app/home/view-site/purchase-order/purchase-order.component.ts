@@ -12,7 +12,6 @@ import { Observable, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { PO } from 'src/app/models/po.model';
-import { Shipment } from 'src/app/models/shipment.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
@@ -37,7 +36,7 @@ export class PurchaseOrderComponent implements OnInit {
   protected company: Company;
   protected form: FormGroup;
 
-  protected deliveries$: Observable<Shipment[]>;
+  protected transactions$: Observable<any[]>;
 
   private modalSvc = inject(ModalController);
   private editSvc = inject(EditService);
@@ -79,8 +78,8 @@ export class PurchaseOrderComponent implements OnInit {
 
   private init() {
     this.po.poNumber;
-    this.deliveries$ = this.editSvc
-      .getCollectionFiltered(`company/${this.company.id}/shipments`, [
+    this.transactions$ = this.editSvc
+      .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
         where('poNumber', '==', this.po.poNumber),
       ])
       .pipe(take(1));
