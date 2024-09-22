@@ -166,12 +166,9 @@
     <div class="text-center mt-5">
       <p>{{version}}</p>
 
-      <ion-text
-        class="small text-muted text-center"
-        *ngIf="company$ |async as company"
-      >
+      <ion-text class="small text-center" *ngIf="company$ |async as company">
         <ion-label class="ion-text-center">
-          <small class="text-muted">{{company.id}}</small>
+          <small>{{company.id}}</small>
         </ion-label>
       </ion-text>
     </div>

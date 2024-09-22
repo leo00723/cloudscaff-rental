@@ -177,7 +177,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       });
       await this.upload();
 
-      if (isAdmin) {
+      if (!isAdmin) {
         const res = await this.imgService.uploadBlob(
           this.blob,
           `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature2`,
