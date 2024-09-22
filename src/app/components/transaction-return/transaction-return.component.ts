@@ -425,6 +425,9 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
               const inventoryItem = data.find((i) => i.itemId === item.itemId);
               if (inventoryItem) {
                 inventoryItem.returnQty = +item.returnQty;
+                inventoryItem.inMaintenanceQty = +item.inMaintenanceQty;
+                inventoryItem.damagedQty = +item.damagedQty;
+                inventoryItem.lostQty = +item.lostQty;
               }
             });
             this.items = data;

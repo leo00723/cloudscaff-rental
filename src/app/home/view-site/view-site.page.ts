@@ -67,6 +67,8 @@ export class ViewSitePage implements OnInit {
   purchaseOrders$: Observable<any[]>;
 
   inventoryItems$: Observable<any>;
+
+
   active = 'scaffolds';
   ids = [];
   constructor(

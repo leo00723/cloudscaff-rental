@@ -7,7 +7,7 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
 })
 export class CalculatePipe implements PipeTransform {
   transform(item: InventoryItem, isD?: boolean) {
-    const totalQty = item.availableQty || 0;
+    const totalQty = item.yardQty || 0;
     const inUseQty = item.inUseQty || 0;
     const reservedQty = item.reservedQty || 0;
     const damaged = item.damagedQty || 0;
