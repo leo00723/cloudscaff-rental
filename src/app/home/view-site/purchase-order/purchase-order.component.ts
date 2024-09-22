@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { where } from '@angular/fire/firestore';
+import { orderBy, where } from '@angular/fire/firestore';
 import {
   FormBuilder,
   FormControl,
@@ -10,12 +10,12 @@ import { ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { Observable, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
-import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { PO } from 'src/app/models/po.model';
 import { Site } from 'src/app/models/site.model';
 import { TransactionItem } from 'src/app/models/TransactionItem.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
@@ -32,17 +32,20 @@ export class PurchaseOrderComponent implements OnInit {
   }
   @Input() site: Site;
 
-  protected po: PO = {};
-  protected user: User;
+  protected saving = false;
+
   protected company: Company;
   protected form: FormGroup;
+  protected po: PO = {};
+  protected user: User;
 
   protected transactions$: Observable<TransactionItem[]>;
 
-  private modalSvc = inject(ModalController);
   private editSvc = inject(EditService);
-  private store = inject(Store);
   private fb = inject(FormBuilder);
+  private modalSvc = inject(ModalController);
+  private notificationSvc = inject(NotificationService);
+  private store = inject(Store);
 
   constructor() {
     this.user = this.store.selectSnapshot(UserState.user);
@@ -68,12 +71,30 @@ export class PurchaseOrderComponent implements OnInit {
     this.field('endDate').value;
   }
 
-  updateRate(val, item: TransactionItem) {
-    if (isNaN(+val.detail.value)) {
+  async updateRate(val, item: TransactionItem) {
+    if (isNaN(+val.detail.target.value)) {
       return (item.error = true);
     } else {
       item.error = false;
-      item.hireRate = +val.detail.value;
+      item.hireRate = +val.detail.target.value;
+      try {
+        this.saving = true;
+        await this.editSvc.updateDoc(
+          `company/${this.company.id}/transactionLog`,
+          item.id,
+          {
+            hireRate: item.hireRate,
+          }
+        );
+      } catch (e) {
+        console.log(e);
+        this.notificationSvc.toast(
+          'Something went wrong saving rate, please try again',
+          'danger'
+        );
+      } finally {
+        this.saving = false;
+      }
     }
   }
 
@@ -82,6 +103,10 @@ export class PurchaseOrderComponent implements OnInit {
     this.transactions$ = this.editSvc
       .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
         where('poNumber', '==', this.po.poNumber),
+        where('status', '==', 'active'),
+        orderBy('transactionType', 'asc'),
+        orderBy('invoiceStart', 'asc'),
+        orderBy('code', 'asc'),
       ])
       .pipe(take(1));
   }

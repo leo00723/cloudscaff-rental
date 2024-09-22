@@ -7,10 +7,12 @@ import parseISO from 'date-fns/parseISO';
   pure: true,
 })
 export class DateDiffPipe implements PipeTransform {
-  transform(date1: any, date2: any) {
+  transform(date1: any, date2: any, noIso?: boolean) {
     if (!date1 || !date2) {
       return 0;
     }
-    return differenceInDays(parseISO(date2), date1);
+    return noIso
+      ? differenceInDays(date2, date1) + 1
+      : differenceInDays(parseISO(date2), date1) + 1;
   }
 }

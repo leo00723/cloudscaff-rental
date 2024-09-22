@@ -340,7 +340,6 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           item.returnQty > item.balanceQty || item.returnQty < 0
             ? (this.error = true)
             : (this.error = false);
-          console.log(item);
         }
         break;
       case 'damaged':
@@ -357,7 +356,6 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
   }
 
   search(event) {
-    console.log('searching');
     this.searching = true;
     const val = event.detail.value.toLowerCase() as string;
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];

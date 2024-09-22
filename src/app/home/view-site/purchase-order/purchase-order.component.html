@@ -9,7 +9,12 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Purchase Order - {{ po?.code }}</ion-title>
+    <ion-title
+      >Purchase Order - {{ po?.code }}
+      <ion-text *ngIf="saving">
+        <i class="text-muted fs-6">(Saving...)</i>
+      </ion-text></ion-title
+    >
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -57,9 +62,16 @@
       </thead>
       <tbody>
         <ng-container *ngFor="let transaction of transactions$ | async">
-          <tr class="text-center align-middle">
+          <tr
+            class="text-center align-middle"
+            *ngIf="transaction.transactionType === 'Delivery'"
+          >
             <!-- Type (Delivery or Return) -->
-            <td>{{ transaction.transactionType }}</td>
+            <td>
+              <ion-chip color="success" mode="ios">
+                <ion-label>{{ transaction.transactionType }}</ion-label>
+              </ion-chip>
+            </td>
 
             <!-- Item Code -->
             <td>{{ transaction.code }}</td>
@@ -108,7 +120,7 @@
             <td>
               {{
                 (transaction.invoiceStart.toDate()
-                  | dateDiff : field("endDate").value) / 30 | number : "0.2-2"
+                  | dateDiff : field("endDate").value) / 31 | number : "0.2-2"
               }}
             </td>
 
@@ -119,7 +131,7 @@
                 inputmode="numeric"
                 [color]="transaction.error ? 'danger' : 'default'"
                 [value]="transaction.hireRate"
-                (ionChange)="updateRate($event, transaction)"
+                (ionBlur)="updateRate($event, transaction)"
               ></ion-input>
               <ion-label color="danger" *ngIf="transaction.error">
                 Enter a valid rate
@@ -134,6 +146,95 @@
                   transaction.hireRate *
                   (transaction.invoiceStart.toDate()
                     | dateDiff : field("endDate").value) | number : "0.2-2"
+              }}
+            </td>
+          </tr>
+          <tr
+            class="text-center align-middle"
+            *ngIf="transaction.transactionType === 'Return'"
+          >
+            <!-- Type (Delivery or Return) -->
+            <td>
+              <ion-chip color="danger" mode="ios">
+                <ion-label>{{ transaction.transactionType }}</ion-label>
+              </ion-chip>
+            </td>
+
+            <!-- Item Code -->
+            <td>{{ transaction.code }}</td>
+
+            <!-- Description -->
+            <td class="text-start">{{ transaction.name }}</td>
+
+            <!-- Unit -->
+            <td>EA</td>
+
+            <!-- Qty for Invoice -->
+            <td class="fw-bold">{{ transaction.invoiceQty }}</td>
+
+            <!-- Delivered Qty  -->
+            <td class="text-success fw-bold">
+              {{ transaction.deliveredQty }}
+            </td>
+
+            <!-- Returned Qty  -->
+            <td class="text-danger fw-bold">
+              {{ transaction.returnTotal }}
+            </td>
+
+            <!-- Balance Qty (assuming it's the available quantity after deliveries and returns) -->
+            <td class="text-warning fw-bold">
+              {{ transaction.balanceQty }}
+            </td>
+
+            <!-- Start Date (delivery or return date) -->
+            <td>
+              {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
+            </td>
+
+            <!-- End Date (assuming you have endDate field in the transaction) -->
+            <td>{{ transaction.returnDate.toDate() | date : "dd MMM yy" }}</td>
+
+            <!-- Days (calculating date difference between deliveryDate and endDate) -->
+            <td>
+              {{
+                transaction.invoiceStart.toDate()
+                  | dateDiff : transaction.returnDate.toDate() : true
+              }}
+            </td>
+
+            <!-- Months (converting days to months, assuming 30 days per month) -->
+            <td>
+              {{
+                (transaction.invoiceStart.toDate()
+                  | dateDiff : transaction.returnDate.toDate() : true) / 31
+                  | number : "0.2-2"
+              }}
+            </td>
+
+            <!-- Daily Rent Rate -->
+            <td>
+              <ion-input
+                debounce="300"
+                inputmode="numeric"
+                [color]="transaction.error ? 'danger' : 'default'"
+                [value]="transaction.hireRate"
+                (ionBlur)="updateRate($event, transaction)"
+              ></ion-input>
+              <ion-label color="danger" *ngIf="transaction.error">
+                Enter a valid rate
+              </ion-label>
+            </td>
+
+            <!-- Total Amount (qty * rate * days) -->
+            <td class="text-end">
+              {{ company.currency.symbol }}
+              {{
+                transaction.invoiceQty *
+                  transaction.hireRate *
+                  (transaction.invoiceStart.toDate()
+                    | dateDiff : transaction.returnDate.toDate() : true)
+                  | number : "0.2-2"
               }}
             </td>
           </tr>
