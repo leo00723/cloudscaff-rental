@@ -22,6 +22,7 @@ import { UserState } from 'src/app/shared/user/user.state';
 @Component({
   selector: 'app-purchase-order',
   templateUrl: './purchase-order.component.html',
+  styles: [],
 })
 export class PurchaseOrderComponent implements OnInit {
   @Input() set value(val: PO) {
