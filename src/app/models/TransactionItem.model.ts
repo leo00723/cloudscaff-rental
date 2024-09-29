@@ -11,6 +11,7 @@ export interface TransactionItem {
   category?: string;
   name?: string;
   weight?: string;
+  deliveryCode?: string;
   deliveredQty?: number;
   invoiceQty?: number;
   balanceQty?: number;

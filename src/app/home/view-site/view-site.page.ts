@@ -24,6 +24,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
+import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
 
 @Component({
   selector: 'app-view-site',
@@ -64,10 +65,10 @@ export class ViewSitePage implements OnInit {
   signedInstructions$: Observable<SI[]>;
   instructions$: Observable<SI[]>;
 
-  purchaseOrders$: Observable<any[]>;
+  purchaseOrders$: Observable<PO[]>;
+  transactionInvoices$: Observable<TransactionInvoice[]>;
 
   inventoryItems$: Observable<any>;
-
 
   active = 'scaffolds';
   ids = [];
@@ -217,6 +218,12 @@ export class ViewSitePage implements OnInit {
         where('site.id', '==', this.ids[1]),
         orderBy('code', 'desc'),
       ]) as Observable<any[]>;
+    this.transactionInvoices$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/transactionInvoices`, [
+        where('site.id', '==', this.ids[1]),
+        orderBy('code', 'desc'),
+      ]) as Observable<any[]>;
   }
   ngOnInit() {}
 
@@ -336,6 +343,17 @@ export class ViewSitePage implements OnInit {
       componentProps: { value: poData, site },
       showBackdrop: false,
       id: 'viewPO',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async viewInvoice(invoiceData: TransactionInvoice, site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: PurchaseOrderComponent,
+      componentProps: { value: invoiceData, site },
+      showBackdrop: false,
+      id: 'viewInvoice',
       cssClass: 'fullscreen',
     });
     return await modal.present();

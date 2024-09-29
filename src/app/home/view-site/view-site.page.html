@@ -107,6 +107,24 @@
             </ion-label>
           </ion-segment-button>
           <ion-segment-button
+            value="invoices"
+            *ngIf="user.permissionsList.includes('Invoices') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          >
+            <ion-label
+              >Invoices
+              <ng-container *ngIf="transactionInvoices$ | async as invoices">
+                <ion-badge
+                  shape="round"
+                  mode="ios"
+                  color="danger"
+                  *ngIf="invoices.length > 0"
+                >
+                  {{invoices.length}}
+                </ion-badge>
+              </ng-container>
+            </ion-label>
+          </ion-segment-button>
+          <ion-segment-button
             value="uploads"
             *ngIf="user.role !== 'Supervisor'"
           >
@@ -569,6 +587,31 @@
               <app-po-table
                 [value]="purchaseOrders$"
                 (selectedItem)="viewPO($event,site)"
+              ></app-po-table>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </ng-container>
+      <ng-container *ngSwitchCase="'invoices'">
+        <ion-accordion-group
+          mode="ios"
+          class="rounded-lg overflow-hidden mb-5"
+          [multiple]="true"
+          [value]="['pending']"
+        >
+          <ion-accordion
+            value="pending"
+            *ngIf="transactionInvoices$ | async as invoices else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="success"
+                >Invoices ({{invoices.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-po-table
+                [value]="transactionInvoices$"
+                (selectedItem)="viewInvoice($event,site)"
               ></app-po-table>
             </div>
           </ion-accordion>

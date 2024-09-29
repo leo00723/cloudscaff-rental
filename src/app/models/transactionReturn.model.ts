@@ -1,7 +1,7 @@
 import { Company } from './company.model';
 import { InventoryItem } from './inventoryItem.model';
 import { Site } from './site.model';
-import { TransactionItem } from './TransactionItem.model';
+import { TransactionItem } from './transactionItem.model';
 import { UploadedFile } from './uploadedFile.model';
 
 export interface TransactionReturn {

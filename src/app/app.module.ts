@@ -61,6 +61,7 @@ import { RouterState } from './shared/router.state';
 import { UserState } from './shared/user/user.state';
 import { SplashPage } from './splash/splash.page';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
+import { DateDiffPipe } from './components/dateDiff.pipe';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -152,6 +153,7 @@ import { TrialEndedPage } from './trial-ended/trial-ended.page';
     DatePipe,
     FileOpener,
     WeightPipe,
+    DateDiffPipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],

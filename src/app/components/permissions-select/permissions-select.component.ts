@@ -60,6 +60,8 @@ export class PermissionsSelectComponent implements OnInit {
         { name: 'Site Requests', selected: false },
         { name: 'Site Returns', selected: false },
         { name: 'Site Instructions', selected: false },
+        { name: 'Purchase Orders', selected: false },
+        { name: 'Invoices', selected: false },
       ],
     },
     {

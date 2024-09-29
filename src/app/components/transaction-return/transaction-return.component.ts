@@ -12,7 +12,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { Observable, Subscription, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Site } from 'src/app/models/site.model';
-import { TransactionItem } from 'src/app/models/TransactionItem.model';
+import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { User } from 'src/app/models/user.model';
 import { ImgService } from 'src/app/services/img.service';

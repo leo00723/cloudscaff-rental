@@ -32,6 +32,7 @@
           [form]="form"
           controlName="endDate"
           title="End Date"
+          (fieldChange)="updateDate()"
         ></app-input-date>
       </form>
     </ion-col>
@@ -40,7 +41,7 @@
     <table class="table table-sm table-bordered">
       <thead>
         <tr class="text-center align-middle">
-          <th rowspan="2">Type</th>
+          <th rowspan="2">Docket</th>
           <th rowspan="2">Item Code</th>
           <th class="text-start" rowspan="2">Description</th>
           <th rowspan="2">Unit</th>
@@ -61,7 +62,7 @@
         </tr>
       </thead>
       <tbody>
-        <ng-container *ngFor="let transaction of transactions$ | async">
+        <ng-container *ngFor="let transaction of transactions">
           <tr
             class="text-center align-middle"
             *ngIf="transaction.transactionType === 'Delivery'"
@@ -69,7 +70,7 @@
             <!-- Type (Delivery or Return) -->
             <td>
               <ion-chip color="success" mode="ios">
-                <ion-label>{{ transaction.transactionType }}</ion-label>
+                <ion-label>{{ transaction.deliveryCode }}</ion-label>
               </ion-chip>
             </td>
 
@@ -156,7 +157,7 @@
             <!-- Type (Delivery or Return) -->
             <td>
               <ion-chip color="danger" mode="ios">
-                <ion-label>{{ transaction.transactionType }}</ion-label>
+                <ion-label>{{ transaction.returnCode }}</ion-label>
               </ion-chip>
             </td>
 
@@ -240,6 +241,96 @@
           </tr>
         </ng-container>
       </tbody>
+      <!-- FOOTER TOTALS -->
+      <tfoot>
+        <tr>
+          <th colspan="14">
+            <div class="m-3">
+              <form [formGroup]="form">
+                <app-input-reactive
+                  [form]="form"
+                  controlName="discount"
+                  title="Discount amount ({{ company.currency.symbol }})"
+                  type="number"
+                  (fieldChange)="updateDate()"
+                ></app-input-reactive>
+              </form>
+              <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
+                <ion-label
+                  >Exclude {{ company?.gst ? "GST" : "VAT" }} on
+                  Estimate</ion-label
+                >
+                <ion-checkbox
+                  mode="ios"
+                  slot="end"
+                  [checked]="field('excludeVAT').value"
+                  (ionChange)="excludeVAT($event)"
+                ></ion-checkbox>
+              </ion-item>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="11" scope="col">Subtotal</th>
+          <th class="text-end" colspan="3" scope="col">
+            {{ company.currency.symbol }}
+            {{ po.subtotal | number : "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="11" scope="col">Discount</th>
+          <th class="text-end text-danger" colspan="3" scope="col">
+            - {{ company.currency.symbol }}
+            {{ po.discount | number : "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="11" scope="col">Invoice Total</th>
+          <th class="text-end" colspan="3" scope="col">
+            {{ company.currency.symbol }}
+            {{ po.subtotal - po.discount | number : "0.2-2" }}
+          </th>
+        </tr>
+        <tr *ngIf="company.salesTax > 0">
+          <th class="text-end" colspan="11" scope="col">
+            Sales Tax ({{ company.salesTax }}%)
+          </th>
+          <th class="text-end" colspan="3" scope="col">
+            {{ company.currency.symbol }} {{ po.tax | number : "0.2-2" }}
+          </th>
+        </tr>
+        <tr *ngIf="company.vat > 0">
+          <th class="text-end" colspan="11" scope="col">
+            {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
+          </th>
+          <th class="text-end" colspan="3" scope="col">
+            {{ company.currency.symbol }} {{ po.vat | number : "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="11" scope="col">Grand Total</th>
+          <th class="text-end" colspan="3" scope="col">
+            {{ company.currency.symbol }}
+            {{ po.total | number : "0.2-2" }}
+          </th>
+        </tr>
+      </tfoot>
     </table>
   </div>
+
+  <ion-row>
+    <ion-col size="12" *ngIf="saving">
+      <ion-progress-bar type="indeterminate"></ion-progress-bar>
+    </ion-col>
+    <ion-col size="12" class="text-end" *ngIf="!saving">
+      <ion-button
+        (click)="createInvoice()"
+        shape="round"
+        [disabled]="form.invalid"
+        color="success"
+      >
+        Create Invoice
+      </ion-button>
+    </ion-col>
+  </ion-row>
 </ion-content>

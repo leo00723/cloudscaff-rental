@@ -14,5 +14,6 @@ import { ViewSitePage } from './view-site.page';
     PurchaseOrderComponent,
   ],
   exports: [],
+  providers: [],
 })
 export class ViewSitePageModule {}
