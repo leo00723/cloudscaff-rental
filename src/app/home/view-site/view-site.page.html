@@ -579,13 +579,29 @@
             *ngIf="purchaseOrders$ | async as pos else loading"
           >
             <ion-item slot="header" color="light">
-              <ion-label color="success"
+              <ion-label color="primary"
                 >Pending PO's ({{pos.length}})</ion-label
               >
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-po-table
                 [value]="purchaseOrders$"
+                (selectedItem)="viewPO($event,site)"
+              ></app-po-table>
+            </div>
+          </ion-accordion>
+          <ion-accordion
+            value="completed"
+            *ngIf="completedPO$ | async as cpos else loading"
+          >
+            <ion-item slot="header" color="light">
+              <ion-label color="success"
+                >Completed PO's ({{cpos.length}})</ion-label
+              >
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              <app-po-table
+                [value]="completedPO$"
                 (selectedItem)="viewPO($event,site)"
               ></app-po-table>
             </div>

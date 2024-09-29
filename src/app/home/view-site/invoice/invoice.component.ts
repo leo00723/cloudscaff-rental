@@ -1,0 +1,108 @@
+import { Component, inject, Input, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { ModalController } from '@ionic/angular';
+import { Store } from '@ngxs/store';
+import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
+import { Company } from 'src/app/models/company.model';
+import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
+import { TransactionItem } from 'src/app/models/transactionItem.model';
+import { User } from 'src/app/models/user.model';
+import { EditService } from 'src/app/services/edit.service';
+import { NotificationService } from 'src/app/services/notification.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
+
+@Component({
+  selector: 'app-invoice',
+  templateUrl: './invoice.component.html',
+})
+export class InvoiceComponent implements OnInit {
+  @Input() set value(val: TransactionInvoice) {
+    if (val) {
+      Object.assign(this.invoice, val);
+    }
+  }
+
+  protected company: Company;
+  protected form: FormGroup;
+  protected invoice: TransactionInvoice = {};
+  protected saving = false;
+  protected user: User;
+
+  private editSvc = inject(EditService);
+  private modalSvc = inject(ModalController);
+  private notificationSvc = inject(NotificationService);
+  private store = inject(Store);
+  private dateDiff = inject(DateDiffPipe);
+
+  constructor() {
+    this.user = this.store.selectSnapshot(UserState.user);
+    this.company = this.store.selectSnapshot(CompanyState.company);
+  }
+
+  ngOnInit(): void {}
+
+  close() {
+    this.modalSvc.dismiss();
+  }
+
+  async updateRate(val, item: TransactionItem) {
+    // if (isNaN(+val.detail.target.value)) {
+    //   return (item.error = true);
+    // } else {
+    //   item.error = false;
+    //   item.hireRate = +val.detail.target.value;
+    //   try {
+    //     this.saving = true;
+    //     await this.editSvc.updateDoc(
+    //       `company/${this.company.id}/transactionLog`,
+    //       item.id,
+    //       {
+    //         hireRate: item.hireRate,
+    //       }
+    //     );
+    //     this.calcTotal();
+    //   } catch (e) {
+    //     console.log(e);
+    //     this.notificationSvc.toast(
+    //       'Something went wrong saving rate, please try again',
+    //       'danger'
+    //     );
+    //   } finally {
+    //     this.saving = false;
+    //   }
+    // }
+  }
+
+  private calcTotal() {
+    // this.invoice.subtotal = 0;
+    // this.invoice.items.forEach((item) => {
+    //   this.invoice.subtotal +=
+    //     +item.invoiceQty *
+    //     +item.hireRate *
+    //     (item.transactionType === 'Return'
+    //       ? +this.dateDiff.transform(
+    //           item.invoiceStart.toDate(),
+    //           item.returnDate.toDate(),
+    //           true
+    //         )
+    //       : +this.dateDiff.transform(
+    //           item.invoiceStart.toDate(),
+    //           this.invoice.endDate
+    //         ));
+    // });
+    // const totalAfterDiscount = this.invoice.subtotal - this.invoice.discount;
+    // this.invoice.tax = 0;
+    // this.invoice.vat = 0;
+    // this.invoice.total = 0;
+    // if (this.invoice.excludeVAT || this.invoice.site.customer.excludeVAT) {
+    //   this.invoice.total =
+    //     totalAfterDiscount + this.invoice.tax + this.invoice.vat;
+    // } else {
+    //   this.invoice.tax = totalAfterDiscount * (this.company.salesTax / 100);
+    //   this.invoice.vat = totalAfterDiscount * (this.company.vat / 100);
+    //   this.invoice.total =
+    //     totalAfterDiscount + this.invoice.tax + this.invoice.vat;
+    // }
+  }
+}

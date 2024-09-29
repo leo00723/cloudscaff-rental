@@ -10,7 +10,7 @@
       </ion-button>
     </ion-buttons>
     <ion-title
-      >Purchase Order - {{ po?.code }}
+      >Invoice - {{ invoice?.code }}
       <ion-text *ngIf="saving">
         <i class="text-muted fs-6">(Saving...)</i>
       </ion-text></ion-title
@@ -18,23 +18,20 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <app-po-summary [value]="po.estimate"></app-po-summary>
+  <app-po-summary [value]="invoice.estimate"></app-po-summary>
   <ion-row>
     <ion-col size="12">
       <ion-text color="medium">
-        <h4>Billing Period</h4>
+        <h4>Billing Date</h4>
       </ion-text>
     </ion-col>
 
     <ion-col size="12">
-      <form [formGroup]="form">
-        <app-input-date
-          [form]="form"
-          controlName="endDate"
-          title="End Date"
-          (fieldChange)="updateDate()"
-        ></app-input-date>
-      </form>
+      <app-input-text
+        title="End Date"
+        [value]="invoice.endDate"
+        [readonly]="true"
+      ></app-input-text>
     </ion-col>
   </ion-row>
   <div class="table-responsive">
@@ -62,7 +59,7 @@
         </tr>
       </thead>
       <tbody>
-        <ng-container *ngFor="let transaction of transactions">
+        <ng-container *ngFor="let transaction of invoice.items">
           <tr
             class="text-center align-middle"
             *ngIf="transaction.transactionType === 'Delivery'"
@@ -107,13 +104,12 @@
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
-            <td>{{ field("endDate").value | date : "dd MMM yy" }}</td>
+            <td>{{ invoice.endDate | date : "dd MMM yy" }}</td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
             <td>
               {{
-                transaction.invoiceStart.toDate()
-                  | dateDiff : field("endDate").value
+                transaction.invoiceStart.toDate() | dateDiff : invoice.endDate
               }}
             </td>
 
@@ -121,7 +117,7 @@
             <td>
               {{
                 (transaction.invoiceStart.toDate()
-                  | dateDiff : field("endDate").value) / 31 | number : "0.2-2"
+                  | dateDiff : invoice.endDate) / 31 | number : "0.2-2"
               }}
             </td>
 
@@ -133,6 +129,7 @@
                 [color]="transaction.error ? 'danger' : 'default'"
                 [value]="transaction.hireRate"
                 (ionBlur)="updateRate($event, transaction)"
+                disabled="true"
               ></ion-input>
               <ion-label color="danger" *ngIf="transaction.error">
                 Enter a valid rate
@@ -146,7 +143,7 @@
                 transaction.invoiceQty *
                   transaction.hireRate *
                   (transaction.invoiceStart.toDate()
-                    | dateDiff : field("endDate").value) | number : "0.2-2"
+                    | dateDiff : invoice.endDate) | number : "0.2-2"
               }}
             </td>
           </tr>
@@ -221,6 +218,7 @@
                 [color]="transaction.error ? 'danger' : 'default'"
                 [value]="transaction.hireRate"
                 (ionBlur)="updateRate($event, transaction)"
+                disabled="true"
               ></ion-input>
               <ion-label color="danger" *ngIf="transaction.error">
                 Enter a valid rate
@@ -244,51 +242,24 @@
       <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
-          <th colspan="14">
-            <div class="m-3">
-              <form [formGroup]="form">
-                <app-input-reactive
-                  [form]="form"
-                  controlName="discount"
-                  title="Discount amount ({{ company.currency.symbol }})"
-                  type="number"
-                  (fieldChange)="updateDate()"
-                ></app-input-reactive>
-              </form>
-              <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
-                <ion-label
-                  >Exclude {{ company?.gst ? "GST" : "VAT" }} on
-                  Estimate</ion-label
-                >
-                <ion-checkbox
-                  mode="ios"
-                  slot="end"
-                  [checked]="field('excludeVAT').value"
-                  (ionChange)="excludeVAT($event)"
-                ></ion-checkbox>
-              </ion-item>
-            </div>
-          </th>
-        </tr>
-        <tr>
           <th class="text-end" colspan="11" scope="col">Subtotal</th>
           <th class="text-end" colspan="3" scope="col">
             {{ company.currency.symbol }}
-            {{ po.subtotal | number : "0.2-2" }}
+            {{ invoice.subtotal | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="11" scope="col">Discount</th>
           <th class="text-end text-danger" colspan="3" scope="col">
             - {{ company.currency.symbol }}
-            {{ po.discount | number : "0.2-2" }}
+            {{ invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="11" scope="col">Invoice Total</th>
           <th class="text-end" colspan="3" scope="col">
             {{ company.currency.symbol }}
-            {{ po.subtotal - po.discount | number : "0.2-2" }}
+            {{ invoice.subtotal - invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
@@ -296,7 +267,7 @@
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th class="text-end" colspan="3" scope="col">
-            {{ company.currency.symbol }} {{ po.tax | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.tax | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
@@ -304,50 +275,17 @@
             {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
           </th>
           <th class="text-end" colspan="3" scope="col">
-            {{ company.currency.symbol }} {{ po.vat | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.vat | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th class="text-end" colspan="11" scope="col">Grand Total</th>
           <th class="text-end" colspan="3" scope="col">
             {{ company.currency.symbol }}
-            {{ po.total | number : "0.2-2" }}
+            {{ invoice.total | number : "0.2-2" }}
           </th>
         </tr>
       </tfoot>
     </table>
   </div>
-
-  <ion-row>
-    <ion-col size="12" *ngIf="saving">
-      <ion-progress-bar type="indeterminate"></ion-progress-bar>
-    </ion-col>
-    <ion-col size="12" class="text-end">
-      <ion-button
-        (click)="closePO()"
-        shape="round"
-        color="danger"
-        *ngIf="!saving && transactions.length <= 0 && po.status !== 'completed'"
-      >
-        Close PO
-      </ion-button>
-      <ion-button
-        (click)="openPO()"
-        shape="round"
-        color="success"
-        *ngIf="!saving && transactions.length <= 0 && po.status === 'completed'"
-      >
-        Open PO
-      </ion-button>
-      <ion-button
-        *ngIf="!saving && transactions.length > 0"
-        (click)="createInvoice()"
-        shape="round"
-        [disabled]="form.invalid"
-        color="success"
-      >
-        Create Invoice
-      </ion-button>
-    </ion-col>
-  </ion-row>
 </ion-content>

@@ -1,5 +1,10 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { orderBy, where } from '@angular/fire/firestore';
+import {
+  arrayRemove,
+  arrayUnion,
+  orderBy,
+  where,
+} from '@angular/fire/firestore';
 import {
   FormBuilder,
   FormControl,
@@ -8,11 +13,10 @@ import {
 } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
-import { Observable, take } from 'rxjs';
+import { take } from 'rxjs';
 import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
 import { Company } from 'src/app/models/company.model';
 import { PO } from 'src/app/models/po.model';
-import { Site } from 'src/app/models/site.model';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { User } from 'src/app/models/user.model';
@@ -38,7 +42,7 @@ export class PurchaseOrderComponent implements OnInit {
   protected form: FormGroup;
   protected po: PO = { subtotal: 0, discount: 0, total: 0, tax: 0, vat: 0 };
   protected saving = false;
-  protected transactions: TransactionItem[];
+  protected transactions: TransactionItem[] = [];
   protected user: User;
 
   private editSvc = inject(EditService);
@@ -114,9 +118,13 @@ export class PurchaseOrderComponent implements OnInit {
         this.saving = true;
         const invoice: TransactionInvoice = {
           ...this.po,
-          ...this.form,
+          ...this.form.value,
           status: 'pending',
           items: this.transactions,
+          createdBy: this.user.id,
+          createdByName: this.user.name,
+          date: new Date(),
+          poId: this.po.id,
         };
 
         invoice.code = this.editSvc.generateDocCode(
@@ -138,6 +146,74 @@ export class PurchaseOrderComponent implements OnInit {
         );
 
         this.notificationSvc.toast('Invoice created successfully.', 'success');
+        this.close();
+      } catch (e) {
+        console.log(e);
+        this.notificationSvc.toast(
+          'Something went wrong. Please try again.',
+          'danger'
+        );
+      } finally {
+        this.saving = false;
+      }
+    });
+  }
+  closePO() {
+    this.notificationSvc.presentAlertConfirm(async () => {
+      try {
+        this.saving = true;
+
+        await this.editSvc.updateDoc(
+          `company/${this.company.id}/pos`,
+          this.po.id,
+          {
+            status: 'completed',
+          }
+        );
+
+        await this.editSvc.updateDoc(
+          `company/${this.company.id}/sites`,
+          this.po.site.id,
+          {
+            poList: arrayRemove(this.po.poNumber),
+          }
+        );
+
+        this.notificationSvc.toast('PO closed successfully.', 'success');
+        this.close();
+      } catch (e) {
+        console.log(e);
+        this.notificationSvc.toast(
+          'Something went wrong. Please try again.',
+          'danger'
+        );
+      } finally {
+        this.saving = false;
+      }
+    });
+  }
+  openPO() {
+    this.notificationSvc.presentAlertConfirm(async () => {
+      try {
+        this.saving = true;
+
+        await this.editSvc.updateDoc(
+          `company/${this.company.id}/pos`,
+          this.po.id,
+          {
+            status: 'pending',
+          }
+        );
+
+        await this.editSvc.updateDoc(
+          `company/${this.company.id}/sites`,
+          this.po.site.id,
+          {
+            poList: arrayUnion(this.po.poNumber),
+          }
+        );
+
+        this.notificationSvc.toast('PO open successfully.', 'success');
         this.close();
       } catch (e) {
         console.log(e);
@@ -195,8 +271,10 @@ export class PurchaseOrderComponent implements OnInit {
       ])
       .pipe(take(1))
       .subscribe((data) => {
-        this.transactions = data;
-        this.calcTotal();
+        if (data) {
+          this.transactions = data;
+          this.calcTotal();
+        }
       });
   }
 }

@@ -25,6 +25,7 @@ import { Navigate } from 'src/app/shared/router.state';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
+import { InvoiceComponent } from './invoice/invoice.component';
 
 @Component({
   selector: 'app-view-site',
@@ -66,6 +67,8 @@ export class ViewSitePage implements OnInit {
   instructions$: Observable<SI[]>;
 
   purchaseOrders$: Observable<PO[]>;
+  completedPO$: Observable<PO[]>;
+
   transactionInvoices$: Observable<TransactionInvoice[]>;
 
   inventoryItems$: Observable<any>;
@@ -216,6 +219,14 @@ export class ViewSitePage implements OnInit {
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/pos`, [
         where('site.id', '==', this.ids[1]),
+        where('status', '==', 'pending'),
+        orderBy('code', 'desc'),
+      ]) as Observable<any[]>;
+    this.completedPO$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/pos`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', '==', 'completed'),
         orderBy('code', 'desc'),
       ]) as Observable<any[]>;
     this.transactionInvoices$ = this.masterSvc
@@ -350,7 +361,7 @@ export class ViewSitePage implements OnInit {
 
   async viewInvoice(invoiceData: TransactionInvoice, site: Site) {
     const modal = await this.masterSvc.modal().create({
-      component: PurchaseOrderComponent,
+      component: InvoiceComponent,
       componentProps: { value: invoiceData, site },
       showBackdrop: false,
       id: 'viewInvoice',

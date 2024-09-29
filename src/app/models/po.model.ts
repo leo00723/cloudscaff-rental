@@ -15,4 +15,5 @@ export interface PO {
   tax?: number;
   total?: number;
   vat?: number;
+  status?: string;
 }
