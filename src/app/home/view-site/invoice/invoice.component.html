@@ -239,6 +239,64 @@
           </tr>
         </ng-container>
       </tbody>
+      <tbody>
+        <tr>
+          <td colspan="14">
+            <app-title-block>Credit notes</app-title-block>
+            <form [formGroup]="form">
+              <ion-grid>
+                <ion-row
+                  formArrayName="creditItems"
+                  class="mb-3 card-outline"
+                  *ngFor="let item of creditForms.controls; let i = index"
+                >
+                  <ion-col size="12">
+                    <ion-note> Item {{ i + 1 }} </ion-note>
+                    <ion-chip
+                      outline
+                      color="danger"
+                      class="ion-float-end"
+                      (click)="deleteItem(i)"
+                    >
+                      <ion-label>Delete</ion-label>
+                    </ion-chip>
+                  </ion-col>
+                  <ion-col sizeMd="8" size="12">
+                    <app-input-reactive
+                      title="Description"
+                      controlName="description"
+                      [form]="item"
+                    >
+                    </app-input-reactive>
+                  </ion-col>
+                  <ion-col>
+                    <app-input-reactive
+                      title="Total ({{ company.currency.symbol }})"
+                      type="number"
+                      controlName="total"
+                      [form]="item"
+                      (fieldChange)="calcTotal()"
+                    >
+                    </app-input-reactive>
+                  </ion-col>
+                </ion-row>
+                <ion-row class="mb-3">
+                  <ion-col>
+                    <ion-fab-button
+                      size="small"
+                      class="m-auto"
+                      color="success"
+                      (click)="addItem()"
+                    >
+                      <ion-icon name="add"></ion-icon>
+                    </ion-fab-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </form>
+          </td>
+        </tr>
+      </tbody>
       <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
@@ -246,6 +304,13 @@
           <th class="text-end" colspan="3" scope="col">
             {{ company.currency.symbol }}
             {{ invoice.subtotal | number : "0.2-2" }}
+          </th>
+        </tr>
+        <tr>
+          <th class="text-end" colspan="11" scope="col">Credit</th>
+          <th class="text-end text-danger" colspan="3" scope="col">
+            - {{ company.currency.symbol }}
+            {{ invoice.creditTotal || 0 | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -259,7 +324,10 @@
           <th class="text-end" colspan="11" scope="col">Invoice Total</th>
           <th class="text-end" colspan="3" scope="col">
             {{ company.currency.symbol }}
-            {{ invoice.subtotal - invoice.discount | number : "0.2-2" }}
+            {{
+              invoice.subtotal - invoice.discount - invoice.creditTotal
+                | number : "0.2-2"
+            }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">

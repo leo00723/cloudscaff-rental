@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
@@ -25,11 +25,13 @@ export class InvoiceComponent implements OnInit {
 
   protected company: Company;
   protected form: FormGroup;
-  protected invoice: TransactionInvoice = {};
+  protected invoice: TransactionInvoice = { creditTotal: 0, creditItems: [] };
   protected saving = false;
   protected user: User;
 
   private editSvc = inject(EditService);
+  private fb = inject(FormBuilder);
+
   private modalSvc = inject(ModalController);
   private notificationSvc = inject(NotificationService);
   private store = inject(Store);
@@ -40,11 +42,45 @@ export class InvoiceComponent implements OnInit {
     this.company = this.store.selectSnapshot(CompanyState.company);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      creditItems: this.fb.array([]),
+    });
+    this.invoice?.creditItems?.forEach((a) => {
+      const item = this.fb.group({
+        description: [a.description || '', Validators.required],
+        total: [a.total || 0, Validators.required],
+      });
+      this.creditForms.push(item);
+    });
+  }
 
   close() {
     this.modalSvc.dismiss();
   }
+
+  // START: FORM CRUD
+
+  get creditForms() {
+    return this.form.get('creditItems') as FormArray;
+  }
+
+  addItem() {
+    const item = this.fb.group({
+      description: ['', Validators.required],
+      total: [0, Validators.required],
+    });
+    this.creditForms.push(item);
+  }
+
+  deleteItem(i: number) {
+    this.notificationSvc.presentAlertConfirm(() => {
+      this.creditForms.removeAt(i);
+      this.calcTotal();
+    });
+  }
+
+  // END: FORM CRUD
 
   async updateRate(val, item: TransactionItem) {
     // if (isNaN(+val.detail.target.value)) {
@@ -74,35 +110,59 @@ export class InvoiceComponent implements OnInit {
     // }
   }
 
-  private calcTotal() {
-    // this.invoice.subtotal = 0;
-    // this.invoice.items.forEach((item) => {
-    //   this.invoice.subtotal +=
-    //     +item.invoiceQty *
-    //     +item.hireRate *
-    //     (item.transactionType === 'Return'
-    //       ? +this.dateDiff.transform(
-    //           item.invoiceStart.toDate(),
-    //           item.invoiceEnd.toDate(),
-    //           true
-    //         )
-    //       : +this.dateDiff.transform(
-    //           item.invoiceStart.toDate(),
-    //           this.invoice.endDate
-    //         ));
-    // });
-    // const totalAfterDiscount = this.invoice.subtotal - this.invoice.discount;
-    // this.invoice.tax = 0;
-    // this.invoice.vat = 0;
-    // this.invoice.total = 0;
-    // if (this.invoice.excludeVAT || this.invoice.site.customer.excludeVAT) {
-    //   this.invoice.total =
-    //     totalAfterDiscount + this.invoice.tax + this.invoice.vat;
-    // } else {
-    //   this.invoice.tax = totalAfterDiscount * (this.company.salesTax / 100);
-    //   this.invoice.vat = totalAfterDiscount * (this.company.vat / 100);
-    //   this.invoice.total =
-    //     totalAfterDiscount + this.invoice.tax + this.invoice.vat;
-    // }
+  protected async calcTotal() {
+    try {
+      this.saving = true;
+      this.invoice.subtotal = 0;
+      this.invoice.items.forEach((item) => {
+        this.invoice.subtotal +=
+          +item.invoiceQty *
+          +item.hireRate *
+          (item.transactionType === 'Return'
+            ? +this.dateDiff.transform(
+                item.invoiceStart.toDate(),
+                item.invoiceEnd.toDate(),
+                true
+              )
+            : +this.dateDiff.transform(
+                item.invoiceStart.toDate(),
+                this.invoice.endDate
+              ));
+      });
+      this.invoice.creditTotal = 0;
+      this.invoice.creditItems = this.form.value.creditItems;
+      this.invoice.creditItems.forEach((item) => {
+        this.invoice.creditTotal += +item.total;
+      });
+      const totalAfterDiscount =
+        this.invoice.subtotal -
+        this.invoice.discount -
+        this.invoice.creditTotal;
+      this.invoice.tax = 0;
+      this.invoice.vat = 0;
+      this.invoice.total = 0;
+      if (this.invoice.excludeVAT || this.invoice.site.customer.excludeVAT) {
+        this.invoice.total =
+          totalAfterDiscount + this.invoice.tax + this.invoice.vat;
+      } else {
+        this.invoice.tax = totalAfterDiscount * (this.company.salesTax / 100);
+        this.invoice.vat = totalAfterDiscount * (this.company.vat / 100);
+        this.invoice.total =
+          totalAfterDiscount + this.invoice.tax + this.invoice.vat;
+      }
+      await this.editSvc.updateDoc(
+        `company/${this.company.id}/transactionInvoices`,
+        this.invoice.id,
+        this.invoice
+      );
+    } catch (error) {
+      console.log(error);
+      this.notificationSvc.toast(
+        'something went wrong saving the invoice, Please check internet connection.',
+        'danger'
+      );
+    } finally {
+      this.saving = false;
+    }
   }
 }

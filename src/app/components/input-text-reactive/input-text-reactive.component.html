@@ -11,7 +11,7 @@
   </ion-label>
   <ion-input
     *ngIf="!textarea"
-    debounce="200"
+    debounce="500"
     placeholder="{{ placeholder }}"
     type="{{ type }}"
     id="{{ controlName }}"
@@ -24,7 +24,7 @@
   </ion-input>
   <ion-textarea
     *ngIf="textarea"
-    debounce="200"
+    debounce="500"
     placeholder="{{ placeholder }}"
     id="{{ controlName }}"
     name="{{ controlName }}"
