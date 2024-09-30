@@ -83,7 +83,7 @@ export class InvoiceComponent implements OnInit {
     //     (item.transactionType === 'Return'
     //       ? +this.dateDiff.transform(
     //           item.invoiceStart.toDate(),
-    //           item.returnDate.toDate(),
+    //           item.invoiceEnd.toDate(),
     //           true
     //         )
     //       : +this.dateDiff.transform(

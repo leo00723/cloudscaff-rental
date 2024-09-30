@@ -43,20 +43,17 @@
           </ion-text>
         </ion-col>
         <ion-col size="12" *ngIf="!isEdit">
-          <app-input-select-reactive
-            title="Site"
-            placeholder="Select Site"
-            controlName="site"
-            [form]="form"
-            [selectedText]="field('site').value.name"
-            (fieldChange)="updateItems()"
-          >
-            <ng-container *ngIf="sites$ | async as sites">
-              <ion-select-option [value]="site" *ngFor="let site of sites"
-                >{{ site.name }}
-              </ion-select-option>
-            </ng-container>
-          </app-input-select-reactive>
+          <ng-container *ngIf="sites$ | async as sites">
+            <app-searchable-select
+              (click)="select.open()"
+              title="Select Site"
+              [data]="sites"
+              itemTextField="name"
+              [add]="false"
+              (selectedChanged)="updateItems()"
+              #select
+            ></app-searchable-select>
+          </ng-container>
         </ion-col>
         <ion-col *ngIf="field('site').value as site">
           <app-input-text

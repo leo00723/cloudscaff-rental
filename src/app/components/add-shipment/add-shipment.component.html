@@ -480,7 +480,7 @@
             shape="round"
             *ngIf="isEdit && !loading && shipment.status === 'pending'"
             color="success"
-            [disabled]="!blob || !shipment.signedBy"
+            [disabled]="!blob || (!shipment.signedBy && form.invalid)"
             (click)="sendDelivery()"
             >Send Delivery</ion-button
           >
@@ -489,7 +489,7 @@
             shape="round"
             *ngIf="isEdit && !loading && shipment.status === 'on-route'"
             color="success"
-            [disabled]="!blob || !shipment.signedBy2"
+            [disabled]="!blob || (!shipment.signedBy2 && form.invalid)"
             (click)="receiveDelivery()"
             >Receive Delivery</ion-button
           >
@@ -502,7 +502,7 @@
               fill="outline"
               *ngIf="isEdit && !loading && shipment.status === 'pending'"
               color="tertiary"
-              [disabled]="!blob || !shipment.signedBy"
+              [disabled]="!blob || (!shipment.signedBy && form.invalid)"
               (click)="receiveDelivery(true)"
               >Send Immediately</ion-button
             >
