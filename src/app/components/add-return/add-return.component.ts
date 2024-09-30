@@ -1,24 +1,25 @@
 import {
   Component,
+  inject,
   Input,
   OnDestroy,
   OnInit,
   ViewChild,
-  inject,
 } from '@angular/core';
-import { increment } from '@angular/fire/firestore';
+import { increment, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import cloneDeep from 'lodash/cloneDeep';
+import { Subscription, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
-import { InventoryItem } from 'src/app/models/inventoryItem.model';
-import { Return } from 'src/app/models/return.model';
 import { Site } from 'src/app/models/site.model';
+import { TransactionItem } from 'src/app/models/transactionItem.model';
+import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { User } from 'src/app/models/user.model';
+import { ImgService } from 'src/app/services/img.service';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
-import { ImgService } from 'src/app/services/img.service';
-
 @Component({
   selector: 'app-add-return',
   templateUrl: './add-return.component.html',
@@ -26,22 +27,21 @@ import { ImgService } from 'src/app/services/img.service';
 export class AddReturnComponent implements OnInit, OnDestroy {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
-  @Input() allowSend = false;
   @Input() siteData: Site;
-  @Input() set value(val: Return) {
+  @Input() set value(val: TransactionReturn) {
     if (val) {
-      Object.assign(this.return, val);
+      Object.assign(this.returnDoc, val);
       this.initEditForm();
     }
   }
-  return: Return = { status: 'pending', items: [], uploads: [] };
+  returnDoc: TransactionReturn = { status: 'pending', uploads: [] };
   form: FormGroup;
   user: User;
   company: Company;
+  items: TransactionItem[];
+  itemBackup: TransactionItem[];
   loading = false;
   viewAll = true;
-  items: InventoryItem[];
-  itemBackup: InventoryItem[];
   searching = false;
   error = false;
 
@@ -51,136 +51,151 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
 
   constructor(private masterSvc: MasterService) {
-    this.user = this.masterSvc.auth().getUser();
-    this.company = this.masterSvc.auth().getCompany();
+    this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
-
-  ngOnInit(): void {
-    if (
-      this.return.status !== 'sent' &&
-      this.return.status !== 'received' &&
-      this.return.status !== 'on-route' &&
-      this.return.status !== 'collected' &&
-      !this.allowSend
-    ) {
-      this.subs.add(
-        this.masterSvc
-          .edit()
-          .getDocById(`company/${this.company.id}/siteStock`, this.siteData.id)
-          .subscribe((data) => {
-            this.return.items.forEach((item) => {
-              const inventoryItem = data.items.find((i) => i.id === item.id);
-              if (inventoryItem) {
-                inventoryItem.shipmentQty = +item.shipmentQty;
-              }
-            });
-            this.items = data.items;
-          })
-      );
-    } else {
-      this.items = this.return.items;
-    }
+  ngOnInit() {
     if (!this.isEdit) {
       this.initForm();
     }
   }
-  async createReturn() {
-    await this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.createDoc(false);
-    });
-  }
-  async updateReturn(status: string) {
-    await this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.updateDoc(status, false);
-    });
-  }
-  async uploadFiles() {
-    await this.masterSvc.notification().presentAlertConfirm(async () => {
-      await this.upload();
-      await this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.company.id}/returns`,
-          this.return.id,
-          this.return
-        );
-      this.masterSvc
-        .notification()
-        .toast('Files uploaded successfully', 'success');
-    });
-  }
 
-  update(val, item: InventoryItem, type: string) {
-    switch (type) {
-      case 'shipment':
-        {
-          item.shipmentQty = +val.detail.value;
-          item.shipmentQty > item.availableQty || item.shipmentQty < 0
-            ? (this.error = true)
-            : (this.error = false);
-        }
-        break;
-      case 'damaged':
-        item.damagedQty = +val.detail.value;
-        break;
-      case 'maintenance':
-        item.inMaintenanceQty = +val.detail.value;
-        break;
-      case 'lost':
-        item.lostQty = +val.detail.value;
-        break;
-    }
-    this.checkError(item);
-  }
+  createReturn() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        const returnDoc: TransactionReturn = { ...this.form.value };
+        this.itemBackup ||= [...this.items];
+        returnDoc.items = this.itemBackup.filter((item) => item.returnQty > 0);
+        this.company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
 
-  async sign(ev: { signature: string; name: string }) {
-    if (ev.signature) {
-      this.blob = await (await fetch(ev.signature)).blob();
-      if (this.return.status === 'on-route') {
-        this.return.signedBy = ev.name;
-      } else if (this.return.status === 'collected') {
-        this.return.signedBy2 = ev.name;
-      } else {
-        this.return.signedBy2 = ev.name;
+        returnDoc.code = this.masterSvc
+          .edit()
+          .generateDocCode(this.company.totalReturns, 'RET');
+        await this.upload();
+        returnDoc.uploads = this.returnDoc.uploads;
+        returnDoc.status = 'pending';
+        const doc = await this.masterSvc
+          .edit()
+          .addDocument(`company/${this.company.id}/returns`, returnDoc);
+        returnDoc.id = doc.id;
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalReturns: increment(1),
+        });
+
+        this.masterSvc
+          .notification()
+          .toast('Return created successfully', 'success');
+        this.returnDoc = cloneDeep(returnDoc);
+        this.isEdit = true;
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating return. Please try again!',
+            'danger'
+          );
+      } finally {
+        this.loading = false;
       }
-    } else {
-      this.blob = null;
+    });
+  }
+  updateReturn(status: string, closeDoc?: boolean) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      this.loading = true;
+      try {
+        Object.assign(this.returnDoc, this.form.value);
+        this.itemBackup ||= [...this.items];
+        this.returnDoc.items = this.itemBackup.filter(
+          (item) => item.returnQty > 0
+        );
+        this.returnDoc.status = status;
+        await this.upload();
+
+        await this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/returns`,
+            this.returnDoc.id,
+            this.returnDoc
+          );
+
+        this.masterSvc
+          .notification()
+          .toast('Return updated successfully', 'success');
+        if (closeDoc) {
+          this.close();
+        }
+      } catch (e) {
+        console.error(e);
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong updating return. Please try again!',
+            'danger'
+          );
+      } finally {
+        this.loading = false;
+      }
+    });
+  }
+
+  protected getTransactions(value: any) {
+    const poNumber = this.field('poNumber').value;
+    if (!poNumber) {
       return;
     }
+    this.subs.add(
+      this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
+          where('status', '==', 'active'),
+          where('transactionType', '==', 'Delivery'),
+          where('poNumber', '==', poNumber),
+        ])
+        .pipe(take(1))
+        .subscribe((data) => {
+          this.items = data;
+        })
+    );
   }
-
-  protected async logCollection() {
+  protected async approveReturn(isAdmin?: boolean) {
     try {
       this.loading = true;
       this.itemBackup ||= [...this.items];
-      Object.assign(this.return, {
+      Object.assign(this.returnDoc, {
         ...this.form.value,
-        items: this.itemBackup.filter((item) => item.shipmentQty > 0),
-        status: 'collected',
+        items: this.itemBackup.filter((item) => item.returnQty > 0),
+        status: 'received',
       });
       await this.upload();
 
-      const res = await this.imgService.uploadBlob(
-        this.blob,
-        `company/${this.return.company.id}/shipments/${this.return.id}/signature`,
-        ''
-      );
-      if (res) {
-        this.return.signature = res.url2;
-        this.return.signatureRef = res.ref;
+      if (!isAdmin) {
+        const res = await this.imgService.uploadBlob(
+          this.blob,
+          `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature2`,
+          ''
+        );
+        if (res) {
+          this.returnDoc.signature2 = res.url2;
+          this.returnDoc.signatureRef2 = res.ref;
+        }
       }
 
       await this.masterSvc
         .edit()
         .updateDoc(
           `company/${this.company.id}/returns`,
-          this.return.id,
-          this.return
+          this.returnDoc.id,
+          this.returnDoc
         );
-
+      await this.downloadPdf();
       this.masterSvc
         .notification()
         .toast('Return updated successfully', 'success');
@@ -198,35 +213,35 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected async approveReturn() {
+  protected async logCollection() {
     try {
       this.loading = true;
       this.itemBackup ||= [...this.items];
-      Object.assign(this.return, {
+      Object.assign(this.returnDoc, {
         ...this.form.value,
-        items: this.itemBackup.filter((item) => item.shipmentQty > 0),
-        status: 'received',
+        items: this.itemBackup.filter((item) => item.returnQty > 0),
+        status: 'collected',
       });
       await this.upload();
 
       const res = await this.imgService.uploadBlob(
         this.blob,
-        `company/${this.return.company.id}/shipments/${this.return.id}/signature2`,
+        `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature`,
         ''
       );
       if (res) {
-        this.return.signature2 = res.url2;
-        this.return.signatureRef2 = res.ref;
+        this.returnDoc.signature = res.url2;
+        this.returnDoc.signatureRef = res.ref;
       }
 
       await this.masterSvc
         .edit()
         .updateDoc(
           `company/${this.company.id}/returns`,
-          this.return.id,
-          this.return
+          this.returnDoc.id,
+          this.returnDoc
         );
-      await this.downloadPdf();
+
       this.masterSvc
         .notification()
         .toast('Return updated successfully', 'success');
@@ -247,22 +262,96 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   returnAll() {
     this.masterSvc.notification().presentAlertConfirm(() => {
       for (const item of this.items) {
-        item.shipmentQty = item.availableQty;
+        item.returnQty = item.balanceQty;
       }
-      this.autoSave();
     }, 'Are you sure you want to return all items?');
   }
 
-  autoSave() {
-    if (this.loading) {
-      return;
-    } else if (this.isEdit) {
-      if (this.return.status === 'pending') {
-        this.updateDoc('pending', true);
+  async sign(ev: { signature: string; name: string }) {
+    if (ev.signature) {
+      this.blob = await (await fetch(ev.signature)).blob();
+      if (this.returnDoc.status === 'on-route') {
+        this.returnDoc.signedBy = ev.name;
+      } else if (this.returnDoc.status === 'collected') {
+        this.returnDoc.signedBy2 = ev.name;
+      } else {
+        this.returnDoc.signedBy2 = ev.name;
       }
     } else {
-      this.createDoc(true);
+      this.blob = null;
+      return;
     }
+  }
+
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.returnDoc.uploads.push(...newFiles);
+  }
+
+  delete() {
+    // this.masterSvc.notification().presentAlertConfirm(async () => {
+    //   await this.masterSvc
+    //     .edit()
+    //     .deleteDocById(
+    //       `company/${this.company.id}/returns`,
+    //       this.returnDoc.id
+    //     );
+    //   this.close();
+    // });
+  }
+
+  async downloadPdf() {
+    if (!this.returnDoc.date) {
+      this.returnDoc.date = new Date();
+    }
+    // const pdf = await this.masterSvc
+    //   .pdf()
+    //   .generateReturn(this.returnDoc, this.company, null);
+    // this.masterSvc.pdf().handlePdf(pdf, this.returnDoc.code);
+  }
+  async downloadPicklist() {
+    if (this.isEdit) {
+      if (!this.returnDoc.date) {
+        this.returnDoc.date = new Date();
+      }
+      // const pdf = await this.masterSvc
+      //   .pdf()
+      //   .generateReturnPickList(this.returnDoc, this.items, this.company);
+      // this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.returnDoc.code}`);
+    } else {
+      const returnDoc: TransactionReturn = {
+        ...this.form.value,
+        code: 'N/A',
+        date: new Date(),
+      };
+      // const pdf = await this.masterSvc
+      //   .pdf()
+      //   .generateReturnPickList(returnDoc, this.items, this.company);
+      // this.masterSvc.pdf().handlePdf(pdf, `Picklist-${returnDoc.site.name}`);
+    }
+  }
+
+  update(val, item: TransactionItem, type: string) {
+    switch (type) {
+      case 'returnQty':
+        {
+          item.returnQty = +val.detail.value;
+          item.returnQty > item.balanceQty || item.returnQty < 0
+            ? (this.error = true)
+            : (this.error = false);
+        }
+        break;
+      case 'damaged':
+        item.damagedQty = +val.detail.value;
+        break;
+      case 'maintenance':
+        item.inMaintenanceQty = +val.detail.value;
+        break;
+      case 'lost':
+        item.lostQty = +val.detail.value;
+        break;
+    }
+    this.checkError(item);
   }
 
   search(event) {
@@ -283,12 +372,12 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkError(item: InventoryItem) {
+  checkError(item: TransactionItem) {
     const damaged = item.damagedQty ? item.damagedQty : 0;
     const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
     const lost = item.lostQty ? item.lostQty : 0;
     if (
-      damaged + maintenance + lost > item.shipmentQty ||
+      damaged + maintenance + lost > item.returnQty ||
       damaged < 0 ||
       maintenance < 0 ||
       lost < 0
@@ -306,63 +395,54 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   field(field: string) {
     return this.form.get(field) as FormControl;
   }
-
-  async upload() {
-    const newFiles = await this.uploader.startUpload();
-    this.return.uploads.push(...newFiles);
-  }
-
-  async downloadPdf() {
-    if (!this.return.date) {
-      this.return.date = new Date();
-    }
-    const pdf = await this.masterSvc
-      .pdf()
-      .generateReturn(this.return, this.company, null);
-    this.masterSvc.pdf().handlePdf(pdf, this.return.code);
-  }
-  async downloadPicklist() {
-    if (this.isEdit) {
-      if (!this.return.date) {
-        this.return.date = new Date();
-      }
-      const pdf = await this.masterSvc
-        .pdf()
-        .generateReturnPickList(this.return, this.items, this.company);
-      this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.return.code}`);
-    } else {
-      const returnDoc: Return = {
-        ...this.form.value,
-        code: 'N/A',
-        date: new Date(),
-      };
-      const pdf = await this.masterSvc
-        .pdf()
-        .generateReturnPickList(returnDoc, this.items, this.company);
-      this.masterSvc.pdf().handlePdf(pdf, `Picklist-${returnDoc.site.name}`);
-    }
-  }
-
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
-      site: [this.return.site, Validators.required],
-      returnDate: [this.return?.returnDate, Validators.required],
-      notes: [this.return?.notes, Validators.nullValidator],
+      site: [this.returnDoc.site, Validators.required],
+      returnDate: [this.returnDoc?.returnDate, Validators.required],
+      notes: [this.returnDoc?.notes, Validators.nullValidator],
       updatedBy: [this.user.id],
-      status: [this.return?.status, Validators.required],
+      status: [this.returnDoc?.status, Validators.required],
       company: [this.company],
       date: [new Date()],
-      driverName: [this.return?.driverName, Validators.nullValidator],
-      driverNo: [this.return?.driverNo, Validators.nullValidator],
-      vehicleReg: [this.return?.vehicleReg, Validators.nullValidator],
-      createdByName: [this.return?.createdByName || ''],
+      driverName: [this.returnDoc?.driverName, Validators.nullValidator],
+      driverNo: [this.returnDoc?.driverNo, Validators.nullValidator],
+      vehicleReg: [this.returnDoc?.vehicleReg, Validators.nullValidator],
+      createdByName: [this.returnDoc?.createdByName || ''],
+      poNumber: [this.returnDoc?.poNumber, Validators.required],
     });
+    if (
+      this.returnDoc.status === 'submitted' ||
+      this.returnDoc.status === 'pending'
+    ) {
+      this.subs.add(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
+            where('status', '==', 'active'),
+            where('transactionType', '==', 'Delivery'),
+            where('poNumber', '==', this.returnDoc?.poNumber),
+          ])
+          .subscribe((data) => {
+            this.returnDoc.items.forEach((item) => {
+              const inventoryItem = data.find((i) => i.itemId === item.itemId);
+              if (inventoryItem) {
+                inventoryItem.returnQty = +item.returnQty;
+                inventoryItem.inMaintenanceQty = +item.inMaintenanceQty;
+                inventoryItem.damagedQty = +item.damagedQty;
+                inventoryItem.lostQty = +item.lostQty;
+              }
+            });
+            this.items = data;
+          })
+      );
+    } else {
+      this.items = this.returnDoc.items;
+    }
   }
-
   private initForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.siteData, Validators.required],
-      returnDate: ['', Validators.required],
+      returnDate: [undefined, Validators.required],
       notes: ['', Validators.nullValidator],
       createdBy: [this.user.id],
       createdByName: [this.user.name],
@@ -372,88 +452,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       driverName: ['', Validators.nullValidator],
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],
+      poNumber: ['', Validators.required],
     });
-  }
-
-  private async createDoc(isAutoUpdate?: boolean) {
-    try {
-      this.loading = true;
-      this.itemBackup ||= [...this.items];
-      this.company = this.masterSvc.auth().getCompany();
-
-      const returnItems: Return = {
-        ...this.form.value,
-        items: this.items.filter((item) => item.shipmentQty > 0),
-        code: this.masterSvc
-          .edit()
-          .generateDocCode(this.company.totalReturns, 'RET'),
-      };
-      await this.upload();
-      returnItems.uploads = this.return.uploads;
-      const doc = await this.masterSvc
-        .edit()
-        .addDocument(`company/${this.company.id}/returns`, returnItems);
-
-      await this.masterSvc.edit().updateDoc('company', this.company.id, {
-        totalReturns: increment(1),
-      });
-
-      if (!isAutoUpdate) {
-        this.masterSvc
-          .notification()
-          .toast('Return created successfully', 'success');
-        this.close();
-      } else {
-        this.return.id = doc.id;
-        this.isEdit = true;
-      }
-    } catch (e) {
-      console.error(e);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong creating return. Please try again!',
-          'danger'
-        );
-    } finally {
-      this.loading = false;
-    }
-  }
-
-  private async updateDoc(status: string, isAutoUpdate?: boolean) {
-    try {
-      this.loading = true;
-      this.itemBackup ||= [...this.items];
-      Object.assign(this.return, {
-        ...this.form.value,
-        items: this.itemBackup.filter((item) => item.shipmentQty > 0),
-        status,
-      });
-      await this.upload();
-      await this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.company.id}/returns`,
-          this.return.id,
-          this.return
-        );
-
-      if (!isAutoUpdate) {
-        this.masterSvc
-          .notification()
-          .toast('Return updated successfully', 'success');
-        this.close();
-      }
-    } catch (e) {
-      console.error(e);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong updating return. Please try again!',
-          'danger'
-        );
-    } finally {
-      this.loading = false;
-    }
   }
 }

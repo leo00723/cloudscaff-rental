@@ -9,7 +9,6 @@ import { SignaturePadModule } from 'angular2-signaturepad';
 import { SwiperModule } from 'swiper/angular';
 import { CompanyPage } from '../home/settings/company/company.page';
 import { AddSiteComponent } from '../home/sites/add-site/add-site.component';
-import { AddAdminReturnComponent } from './add-admin-return/add-admin-return.component';
 import { AddHandoverComponent } from './add-handover/add-handover.component';
 import { AddInspectionComponent } from './add-inspection/add-inspection.component';
 import { AddInstructionComponent } from './add-instruction/add-instruction.component';
@@ -144,7 +143,6 @@ const COMPONENTS = [
   ViewTermsComponent,
   WeightPipe,
   HandoverTableComponent,
-  AddAdminReturnComponent,
   POTableComponent,
   POSummaryComponent,
   DateDiffPipe,
