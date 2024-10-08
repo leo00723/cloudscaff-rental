@@ -6,7 +6,7 @@
       </ion-button>
     </ion-buttons>
     <ion-title
-      >{{ isEdit ? "Update Sale Estimate" : "Create Sale Estimate" }}
+      >{{ isEdit ? "Update Rental Estimate" : "Create Rental Estimate" }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button
@@ -166,7 +166,7 @@
                     >
                       Available Qty
                     </th>
-                    <th scope="col" class="text-center">Sell Qty</th>
+                    <th scope="col" class="text-center">Rental Qty</th>
                     <th scope="col" class="text-end">
                       Weight ({{ company.mass.symbol }})
                     </th>
@@ -262,10 +262,10 @@
       </ion-grid>
 
       <ion-grid *ngSwitchCase="'summary'">
-        <app-estimate-summary-sell
+        <app-estimate-summary-rent
           [value]="inventoryEstimate"
           [canDownload]="isEdit && form.valid"
-        ></app-estimate-summary-sell>
+        ></app-estimate-summary-rent>
         <ion-row>
           <ion-col size="12">
             <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
@@ -290,7 +290,7 @@
             *ngIf="loading"
           ></ion-progress-bar>
           <ion-col
-            size="6"
+            size="6 "
             *ngIf="isEdit && inventoryEstimate.status === 'pending'"
           >
             <ion-button
@@ -314,7 +314,7 @@
               shape="round"
               color="success"
               [disabled]="form.invalid"
-              (click)="acceptEstimate()"
+              (click)="updateEstimate('accepted')"
               *ngIf="isEdit && inventoryEstimate.status === 'pending'"
             >
               Accepted

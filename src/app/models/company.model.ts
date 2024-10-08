@@ -40,7 +40,9 @@ export interface Company {
   totalHandovers?: number;
   totalInspections?: number;
   totalInventoryEstimates?: number;
+  totalInventoryRentEstimates?: number;
   totalInvoices?: number;
+  totalSaleInvoices?: number;
   totalOperationApplications?: number;
   totalPaymentApplications?: number;
   totalRequests?: number;

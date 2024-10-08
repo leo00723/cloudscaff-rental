@@ -24,11 +24,13 @@ import { CallbackPipe } from './callback.pipe';
 import { CompanyInfoDetailComponent } from './company-info-detail/company-info-detail.component';
 import { CustomerComponent } from './customer/customer.component';
 import { DashboardCardMiniComponent } from './dashboard-card-mini/dashboard-card-mini.component';
+import { DateDiffPipe } from './dateDiff.pipe';
 import { DatepickerComponent } from './datepicker/datepicker.component';
 import { DismantleSummaryComponent } from './dismantle-summary/dismantle-summary.component';
 import { DropzoneDirective } from './dropzone.directive';
 import { DuplicateStockItemComponent } from './duplicate-stock-item/duplicate-stock-item.component';
 import { EditprofileComponent } from './editprofile/editprofile.component';
+import { EstimateSummaryRentComponent } from './estimate-summary-rent/estimate-summary-rent.component';
 import { EstimateSummarySellComponent } from './estimate-summary-sell/estimate-summary-sell.component';
 import { EstimateSummaryV2Component } from './estimate-summary-v2/estimate-summary-v2.component';
 import { EstimateV2TableComponent } from './estimate-v2-table/estimate-v2-table.component';
@@ -50,6 +52,8 @@ import { UploadTaskComponent } from './multiuploader/upload-task/upload-task.com
 import { NotificationsComponent } from './notifications/notifications.component';
 import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
 import { PermissionsSelectComponent } from './permissions-select/permissions-select.component';
+import { POSummaryComponent } from './po-summary/po-summary.component';
+import { POTableComponent } from './po-table/po-table.component';
 import { RepurposeInventoryComponent } from './repurpose-inventory/repurpose-inventory.component';
 import { RequestsTableComponent } from './requests-table/requests-table.component';
 import { ReturnsTableComponent } from './returns-table/returns-table.component';
@@ -66,6 +70,7 @@ import { SignaturePadComponent } from './signature-pad/signature-pad.component';
 import { SiteFormComponent } from './site-form/site-form.component';
 import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 import { TitleBlockComponent } from './title-block/title-block.component';
+import { TransactionReturnComponent } from './transaction-return/transaction-return.component';
 import { TutorialGalleryComponent } from './tutorial-gallery/tutorial-gallery.component';
 import { VideoPlayerComponent } from './tutorial-gallery/video-player/video-player.component';
 import { UploaderComponent } from './uploader/uploader.component';
@@ -73,10 +78,6 @@ import { UserPickerComponent } from './user-picker/user-picker.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
-import { POTableComponent } from './po-table/po-table.component';
-import { POSummaryComponent } from './po-summary/po-summary.component';
-import { DateDiffPipe } from './dateDiff.pipe';
-import { TransactionReturnComponent } from './transaction-return/transaction-return.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -103,6 +104,7 @@ const COMPONENTS = [
   EditprofileComponent,
   EstimateSummaryV2Component,
   EstimateSummarySellComponent,
+  EstimateSummaryRentComponent,
   EstimateV2TableComponent,
   FileItemComponent,
   FileUploadComponent,

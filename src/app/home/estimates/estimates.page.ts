@@ -11,6 +11,8 @@ import { UserState } from 'src/app/shared/user/user.state';
 import { CompanyState } from '../../shared/company/company.state';
 import { AddEstimateV2Component } from './add-estimate-v2/add-estimate-v2.component';
 import { InventoryEstimateSellComponent } from './inventory-estimate-sell/inventory-estimate-sell.component';
+import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
+import { InventoryEstimateRentComponent } from './inventory-estimate-rent/inventory-estimate-rent.component';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
@@ -20,6 +22,7 @@ export class EstimatesPage implements OnInit {
   @Select() company$: Observable<Company>;
 
   estimatesV2$: Observable<EstimateV2[]>;
+  inventoryEstimatesRent$: Observable<InventoryEstimateRent[]>;
   inventoryEstimatesSell$: Observable<InventoryEstimateSell[]>;
 
   inventoryItems$: Observable<InventoryItem[]>;
@@ -34,7 +37,15 @@ export class EstimatesPage implements OnInit {
   segmentChanged(ev: any) {
     this.active = ev.detail.value;
   }
-
+  async addEstimateV2() {
+    const modal = await this.masterSvc.modal().create({
+      component: AddEstimateV2Component,
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addEstimate',
+    });
+    return await modal.present();
+  }
   async editEstimateV2(estimate: EstimateV2) {
     if (
       estimate.status === 'pending' ||
@@ -66,6 +77,17 @@ export class EstimatesPage implements OnInit {
       // return await modal.present();
     }
   }
+
+  async addInvSellEstimate() {
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryEstimateSellComponent,
+      componentProps: { inventoryItems$: this.inventoryItems$ },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addInvSellEstimate',
+    });
+    return await modal.present();
+  }
   async editInvSellEstimate(estimate: InventoryEstimateSell) {
     if (
       estimate.status === 'pending' ||
@@ -80,7 +102,48 @@ export class EstimatesPage implements OnInit {
           isEdit: true,
         },
         showBackdrop: false,
-        id: 'editEstimate',
+        id: 'editSellEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    } else {
+      // const modal = await this.masterSvc.modal().create({
+      //   component: ViewEstimateComponent,
+      //   componentProps: {
+      //     estimate,
+      //   },
+      //   showBackdrop: false,
+      //   id: 'viewEstimate',
+      //   cssClass: 'fullscreen',
+      // });
+      // return await modal.present();
+    }
+  }
+  async addInvRentEstimate() {
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryEstimateRentComponent,
+      componentProps: { inventoryItems$: this.inventoryItems$ },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addInvRentEstimate',
+    });
+    return await modal.present();
+  }
+  async editInvRentEstimate(estimate: InventoryEstimateRent) {
+    if (
+      estimate.status === 'pending' ||
+      estimate.status === 'revised' ||
+      estimate.status === 'rejected'
+    ) {
+      const modal = await this.masterSvc.modal().create({
+        component: InventoryEstimateRentComponent,
+        componentProps: {
+          value: estimate,
+          inventoryItems$: this.inventoryItems$,
+          isEdit: true,
+        },
+        showBackdrop: false,
+        id: 'editRentEstimate',
         cssClass: 'fullscreen',
       });
       return await modal.present();
@@ -98,26 +161,6 @@ export class EstimatesPage implements OnInit {
     }
   }
 
-  async addEstimateV2() {
-    const modal = await this.masterSvc.modal().create({
-      component: AddEstimateV2Component,
-      cssClass: 'fullscreen',
-      showBackdrop: false,
-      id: 'addEstimate',
-    });
-    return await modal.present();
-  }
-  async addInvSellEstimate() {
-    const modal = await this.masterSvc.modal().create({
-      component: InventoryEstimateSellComponent,
-      componentProps: { inventoryItems$: this.inventoryItems$ },
-      cssClass: 'fullscreen',
-      showBackdrop: false,
-      id: 'addInvSellEstimate',
-    });
-    return await modal.present();
-  }
-
   help() {
     this.masterSvc
       .router()
@@ -132,6 +175,13 @@ export class EstimatesPage implements OnInit {
         this.estimatesV2$ = this.masterSvc
           .edit()
           .getCollectionOrdered(`company/${id}/estimatesV2`, 'code', 'desc');
+        this.inventoryEstimatesRent$ = this.masterSvc
+          .edit()
+          .getCollectionOrdered(
+            `company/${id}/inventoryEstimatesRent`,
+            'code',
+            'desc'
+          );
         this.inventoryEstimatesSell$ = this.masterSvc
           .edit()
           .getCollectionOrdered(

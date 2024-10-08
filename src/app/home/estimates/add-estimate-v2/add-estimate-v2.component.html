@@ -5,7 +5,9 @@
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ isEdit ? "Update Estimate" : "Create Estimate" }} </ion-title>
+    <ion-title
+      >{{ isEdit ? "Update Basic Estimate" : "Create Basic Estimate" }}
+    </ion-title>
     <ion-buttons slot="end">
       <ion-button
         *ngIf="estimate.status === 'pending'"

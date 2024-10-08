@@ -4,7 +4,7 @@ import { Customer } from './customer.model';
 import { InventoryItem } from './inventoryItem.model';
 import { UploadedFile } from './uploadedFile.model';
 
-export interface InventoryEstimateSell {
+export interface InventoryEstimateRent {
   id?: string;
   code?: string;
   company?: Company;
@@ -27,5 +27,4 @@ export interface InventoryEstimateSell {
   excludeVAT?: boolean;
   uploads?: UploadedFile[];
   poNumber?: string;
-  acceptedBy?: string;
 }

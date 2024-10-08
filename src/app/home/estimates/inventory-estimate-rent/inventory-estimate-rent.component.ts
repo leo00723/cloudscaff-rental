@@ -6,22 +6,22 @@ import { Observable, Subscription } from 'rxjs';
 import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiuploader.component';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
+import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
 import { InventoryEstimateSell } from 'src/app/models/inventory-estimate-sell.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
-import { AcceptEstimateSellComponent } from './accept-estimate-sell/accept-estimate-sell.component';
 
 @Component({
-  selector: 'app-inventory-estimate-sell',
-  templateUrl: './inventory-estimate-sell.component.html',
+  selector: 'app-inventory-estimate-rent',
+  templateUrl: './inventory-estimate-rent.component.html',
   styles: [],
 })
-export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
+export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
-  @Input() set value(val: InventoryEstimateSell) {
+  @Input() set value(val: InventoryEstimateRent) {
     if (val) {
       this.inventoryEstimate = cloneDeep(val);
     }
@@ -29,7 +29,7 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
   @Input() isEdit = false;
   @Input() inventoryItems$: Observable<InventoryItem[]>;
 
-  inventoryEstimate: InventoryEstimateSell = {
+  inventoryEstimate: InventoryEstimateRent = {
     status: 'pending',
     comments: [],
     uploads: [],
@@ -122,11 +122,11 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
         await this.masterSvc
           .edit()
           .addDocument(
-            `company/${this.inventoryEstimate.company.id}/inventoryEstimatesSell`,
+            `company/${this.inventoryEstimate.company.id}/inventoryEstimatesRent`,
             this.inventoryEstimate
           );
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalInventoryEstimates: increment(1),
+          totalInventoryRentEstimates: increment(1),
         });
         this.masterSvc
           .notification()
@@ -147,53 +147,37 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
 
   //update the estimate
   updateEstimate(status: 'pending' | 'accepted' | 'rejected') {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      try {
-        this.loading = true;
-        this.updateEstimateTotal();
-        this.inventoryEstimate.status = status;
-        await this.upload();
-        await this.masterSvc
-          .edit()
-          .updateDoc(
-            `company/${this.company.id}/inventoryEstimatesSell`,
-            this.inventoryEstimate.id,
-            this.inventoryEstimate
-          );
-        this.masterSvc
-          .notification()
-          .toast('Estimate updated successfully!', 'success');
-      } catch (error) {
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating your estimate, try again!',
-            'danger',
-            2000
-          );
-      } finally {
-        this.loading = false;
-      }
-    });
-  }
-
-  //accept estimate
-  acceptEstimate() {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      //start the acceptance process
-      const modal = await this.masterSvc.modal().create({
-        component: AcceptEstimateSellComponent,
-        componentProps: {
-          company: this.company,
-          user: this.user,
-          estimate: this.inventoryEstimate,
-          form: this.form,
-        },
-        id: 'acceptSellEstimate',
-        cssClass: 'fullscreen',
+    if (status === 'accepted') {
+    } else {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
+        try {
+          this.loading = true;
+          this.updateEstimateTotal();
+          this.inventoryEstimate.status = status;
+          await this.upload();
+          await this.masterSvc
+            .edit()
+            .updateDoc(
+              `company/${this.company.id}/inventoryEstimatesRent`,
+              this.inventoryEstimate.id,
+              this.inventoryEstimate
+            );
+          this.masterSvc
+            .notification()
+            .toast('Estimate updated successfully!', 'success');
+        } catch (error) {
+          this.masterSvc
+            .notification()
+            .toast(
+              'Something went wrong updating your estimate, try again!',
+              'danger',
+              2000
+            );
+        } finally {
+          this.loading = false;
+        }
       });
-      return await modal.present();
-    });
+    }
   }
 
   updateQty(val, item: InventoryItem) {
@@ -267,7 +251,7 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
 
     const code = this.masterSvc
       .edit()
-      .generateDocCode(this.company.totalInventoryEstimates, 'IEST');
+      .generateDocCode(this.company.totalInventoryRentEstimates, 'IREST');
 
     let estimateCopy = cloneDeep(this.inventoryEstimate);
     estimateCopy = Object.assign(estimateCopy, {
@@ -302,7 +286,6 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
       ],
       code: [this.inventoryEstimate.code],
       excludeVAT: [this.inventoryEstimate.excludeVAT],
-      poNumber: [this.inventoryEstimate.poNumber, Validators.nullValidator],
     });
     if (this.inventoryEstimate.status === 'pending') {
       this.subs.add(
@@ -337,7 +320,6 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       excludeVAT: [false],
-      poNumber: ['', Validators.nullValidator],
     });
   }
 
