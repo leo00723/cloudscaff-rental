@@ -10,7 +10,7 @@
       <ng-container *ngIf="company$ |async as company">
         <ion-segment-button
           value="basic"
-          *ngIf="user.permissionsList.includes('basic') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+          *ngIf="user.permissionsList.includes('Basic Estimates') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-label>Basic</ion-label>
         </ion-segment-button>
