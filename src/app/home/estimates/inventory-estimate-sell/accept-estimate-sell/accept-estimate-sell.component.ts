@@ -1,15 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { arrayUnion, increment, where } from '@angular/fire/firestore';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { increment } from '@angular/fire/firestore';
+import { FormControl } from '@angular/forms';
 import { Company } from 'src/app/models/company.model';
 import { InventoryEstimateSell } from 'src/app/models/inventory-estimate-sell.model';
-import { PO } from 'src/app/models/po.model';
-import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
-import { Navigate } from 'src/app/shared/router.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
@@ -67,7 +63,7 @@ export class AcceptEstimateSellComponent implements OnInit {
         await this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.company.id}/estimatesV2`,
+            `company/${this.company.id}/inventoryEstimatesSell`,
             this.estimate.id,
             this.estimate
           );
