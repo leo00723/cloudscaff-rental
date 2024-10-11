@@ -47,35 +47,17 @@ export class EstimatesPage implements OnInit {
     return await modal.present();
   }
   async editEstimateV2(estimate: EstimateV2) {
-    if (
-      estimate.status === 'pending' ||
-      estimate.status === 'revised' ||
-      estimate.status === 'rejected' ||
-      estimate.status === 'accepted'
-    ) {
-      const modal = await this.masterSvc.modal().create({
-        component: AddEstimateV2Component,
-        componentProps: {
-          value: estimate,
-          isEdit: true,
-        },
-        showBackdrop: false,
-        id: 'editEstimate',
-        cssClass: 'fullscreen',
-      });
-      return await modal.present();
-    } else {
-      // const modal = await this.masterSvc.modal().create({
-      //   component: ViewEstimateComponent,
-      //   componentProps: {
-      //     estimate,
-      //   },
-      //   showBackdrop: false,
-      //   id: 'viewEstimate',
-      //   cssClass: 'fullscreen',
-      // });
-      // return await modal.present();
-    }
+    const modal = await this.masterSvc.modal().create({
+      component: AddEstimateV2Component,
+      componentProps: {
+        value: estimate,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'editEstimate',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
   }
 
   async addInvSellEstimate() {
@@ -89,35 +71,18 @@ export class EstimatesPage implements OnInit {
     return await modal.present();
   }
   async editInvSellEstimate(estimate: InventoryEstimateSell) {
-    if (
-      estimate.status === 'pending' ||
-      estimate.status === 'revised' ||
-      estimate.status === 'rejected'
-    ) {
-      const modal = await this.masterSvc.modal().create({
-        component: InventoryEstimateSellComponent,
-        componentProps: {
-          value: estimate,
-          inventoryItems$: this.inventoryItems$,
-          isEdit: true,
-        },
-        showBackdrop: false,
-        id: 'editSellEstimate',
-        cssClass: 'fullscreen',
-      });
-      return await modal.present();
-    } else {
-      // const modal = await this.masterSvc.modal().create({
-      //   component: ViewEstimateComponent,
-      //   componentProps: {
-      //     estimate,
-      //   },
-      //   showBackdrop: false,
-      //   id: 'viewEstimate',
-      //   cssClass: 'fullscreen',
-      // });
-      // return await modal.present();
-    }
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryEstimateSellComponent,
+      componentProps: {
+        value: estimate,
+        inventoryItems$: this.inventoryItems$,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'editSellEstimate',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
   }
   async addInvRentEstimate() {
     const modal = await this.masterSvc.modal().create({
@@ -130,35 +95,18 @@ export class EstimatesPage implements OnInit {
     return await modal.present();
   }
   async editInvRentEstimate(estimate: InventoryEstimateRent) {
-    if (
-      estimate.status === 'pending' ||
-      estimate.status === 'revised' ||
-      estimate.status === 'rejected'
-    ) {
-      const modal = await this.masterSvc.modal().create({
-        component: InventoryEstimateRentComponent,
-        componentProps: {
-          value: estimate,
-          inventoryItems$: this.inventoryItems$,
-          isEdit: true,
-        },
-        showBackdrop: false,
-        id: 'editRentEstimate',
-        cssClass: 'fullscreen',
-      });
-      return await modal.present();
-    } else {
-      // const modal = await this.masterSvc.modal().create({
-      //   component: ViewEstimateComponent,
-      //   componentProps: {
-      //     estimate,
-      //   },
-      //   showBackdrop: false,
-      //   id: 'viewEstimate',
-      //   cssClass: 'fullscreen',
-      // });
-      // return await modal.present();
-    }
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryEstimateRentComponent,
+      componentProps: {
+        value: estimate,
+        inventoryItems$: this.inventoryItems$,
+        isEdit: true,
+      },
+      showBackdrop: false,
+      id: 'editRentEstimate',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
   }
 
   help() {

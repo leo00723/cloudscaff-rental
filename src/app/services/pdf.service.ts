@@ -19,6 +19,9 @@ import { TransactionReturn } from '../models/transactionReturn.model';
 import { UploadedFile } from '../models/uploadedFile.model';
 import { CompanyState } from '../shared/company/company.state';
 import { TransactionItem } from '../models/transactionItem.model';
+import { EstimateV2 } from '../models/estimate-v2.model';
+import { InventoryEstimateRent } from '../models/inventory-estimate-rent.model';
+import { InventoryEstimateSell } from '../models/inventory-estimate-sell.model';
 const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388.58 26.87"><defs><style>.cls-1{fill:#fdb515;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><g id="Logo-Full-2" data-name="Logo-Full"><path class="cls-1" d="M151.2.19a2.08,2.08,0,0,1,2.09,2.09h0V20.57a6.24,6.24,0,0,1-6.24,6.24H123.93a6.24,6.24,0,0,1-6.24-6.24V2.22a2.1,2.1,0,0,1,2.09-2.1h0a2.1,2.1,0,0,1,2.1,2.1h0V20.55a2.1,2.1,0,0,0,2.09,2.1h23.09a2.11,2.11,0,0,0,2.1-2.1V2.28A2.09,2.09,0,0,1,151.24.19Z"/><path class="cls-1" d="M270.91,24.78a2.1,2.1,0,0,1-2.09,2.09H241.5a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,241.5.18h27.38A2.09,2.09,0,0,1,271,2.27h0a2.09,2.09,0,0,1-2.09,2.1H241.5a2.08,2.08,0,0,0-2.09,2.06h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.31a2.1,2.1,0,0,1,2.09,2.1Z"/><path class="cls-1" d="M156.89,0H186.3a6.24,6.24,0,0,1,6.24,6.24V20.45a6.24,6.24,0,0,1-6.19,6.29H156.83V22.55H186.3a2.1,2.1,0,0,0,2.09-2.1V6.28a2.1,2.1,0,0,0-2.06-2.13H156.89Z"/><path class="cls-1" d="M317.88,24.79V6.4A2.1,2.1,0,0,1,320,4.3h27.32a2.09,2.09,0,0,0,2.09-2.08h0A2.08,2.08,0,0,0,347.3.13H320a6.24,6.24,0,0,0-6.24,6.24V24.79a2.08,2.08,0,0,0,2.07,2.08h0a2.08,2.08,0,0,0,2.08-2.08Z"/><path class="cls-1" d="M276.6,26.74a2.11,2.11,0,0,1-2.09-2.09V6.36A6.24,6.24,0,0,1,280.75.12h23.14a6.24,6.24,0,0,1,6.23,6.24V24.71A2.09,2.09,0,0,1,308,26.8h0a2.09,2.09,0,0,1-2.09-2.09h0V6.38a2.09,2.09,0,0,0-2.1-2.09h-23a2.09,2.09,0,0,0-2.1,2.09h0V24.65a2.1,2.1,0,0,1-2.09,2.1h0Z"/><rect class="cls-1" x="278.47" y="11.22" width="27.72" height="4.15"/><path class="cls-1" d="M317.21,15.37V11.19h25.85a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.09H317.21Z"/><path class="cls-1" d="M357.09,24.79V6.4a2.11,2.11,0,0,1,2.09-2.1H386.5a2.08,2.08,0,0,0,2.08-2.08h0A2.08,2.08,0,0,0,386.51.13H359.17a6.24,6.24,0,0,0-6.24,6.24V24.79A2.08,2.08,0,0,0,355,26.87h0a2.08,2.08,0,0,0,2.07-2.08Z"/><path class="cls-1" d="M356.42,15.37V11.19h25.85a2.09,2.09,0,0,1,2.1,2.09h0a2.09,2.09,0,0,1-2.1,2.09Z"/><path class="cls-1" d="M208.33,11.19h17.16a6.23,6.23,0,0,1,6.24,6.23v3.12a6.24,6.24,0,0,1-6.19,6.29h-27.4a2.09,2.09,0,0,1-2.09-2.1h0a2.09,2.09,0,0,1,2.09-2.09h27.38a2.1,2.1,0,0,0,2.08-2.1V17.42a2.07,2.07,0,0,0-2.07-2.09h-17.2Z"/><path class="cls-1" d="M219.48,15.37H202.31a6.24,6.24,0,0,1-6.24-6.23V6.42A6.24,6.24,0,0,1,202.31.18h27.38a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.1H202.28a2.09,2.09,0,0,0-2.08,2.09V9.14a2.08,2.08,0,0,0,2.08,2.09h17.16Z"/><rect class="cls-1" x="156.89" y="4.19" width="4.16" height="18.36"/><path class="cls-1" d="M96.38,26.87H84.79a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,84.79.18H96.38V4.37H84.79a2.07,2.07,0,0,0-2.07,2.09h0V20.63a2.08,2.08,0,0,0,2.07,2.05H96.38Z"/><path class="cls-1" d="M96.25.13h11.59a6.24,6.24,0,0,1,6.24,6.24V20.59a6.24,6.24,0,0,1-6.2,6.28H96.25V22.68h11.59a2.1,2.1,0,0,0,2.09-2.09V6.42a2.1,2.1,0,0,0-2.09-2.1H96.25Z"/><path class="cls-1" d="M43.47,2.21v18.4a2.1,2.1,0,0,0,2.11,2.08H72.69a2.1,2.1,0,0,1,2.09,2.1h0a2.09,2.09,0,0,1-2.09,2.08H45.58a6.24,6.24,0,0,1-6.24-6.24V2.21A2.08,2.08,0,0,1,41.42.13h0A2.07,2.07,0,0,1,43.47,2.21Z"/><path class="cls-1" d="M35.65,24.78a2.09,2.09,0,0,1-2.09,2.09H6.24A6.24,6.24,0,0,1,0,20.63V6.42A6.24,6.24,0,0,1,6.24.18H33.62a2.1,2.1,0,0,1,2.09,2.09h0a2.1,2.1,0,0,1-2.09,2.1H6.24A2.08,2.08,0,0,0,4.16,6.44h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.3a2.1,2.1,0,0,1,2.09,2.1Z"/></g></g></g></svg>`;
 const hr = {
   table: {
@@ -179,6 +182,640 @@ export class PdfService {
     } else {
       return false;
     }
+  }
+
+  // ESTIMATE STANDARD PDF
+  async generateBasicEstimate(
+    estimate: EstimateV2,
+    company: Company,
+    terms: Term | null
+  ) {
+    const items = [];
+    estimate.items.forEach((item, i) => {
+      items.push(this.addEstimateItem(i, company, item));
+    });
+
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Item Code',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Duration / Months', style: 'h4b', alignment: 'center' },
+            { text: 'Rent / Months', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Estimate-${estimate.code}`),
+      content: [
+        await this.getHeader(
+          'Estimate',
+          estimate.code,
+          estimate.siteName,
+          estimate.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          '',
+          []
+        ),
+        hr,
+        this.getSubHeader(estimate.customer, company),
+        hr,
+        { text: estimate.scope },
+        hr,
+        summary,
+        hr,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount (${estimate.discountPercentage}%):`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    estimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
+                { text: company.accountNum, alignment: 'left' },
+                {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.subtotal - estimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.vat
+                        )}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.tax
+                        )}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        await this.addUploads(estimate.uploads),
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+    return this.generatePdf(data);
+  }
+
+  // ESTIMATE RENTAL PDF
+  async generateRentalEstimate(
+    estimate: InventoryEstimateRent,
+    company: Company,
+    terms: Term | null
+  ) {
+    const items = [];
+    estimate.items.forEach((item, i) => {
+      items.push(this.addInventoryItem(i, company, item, true));
+    });
+
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Item Code',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Rate', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Estimate-${estimate.code}`),
+      content: [
+        await this.getHeader(
+          'Rental Estimate',
+          estimate.code,
+          estimate.siteName,
+          estimate.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          '',
+          []
+        ),
+        hr,
+        this.getSubHeader(estimate.customer, company),
+        hr,
+        { text: estimate.scope },
+        hr,
+        summary,
+        hr,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount (${estimate.discountPercentage}%):`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    estimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
+                { text: company.accountNum, alignment: 'left' },
+                {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.subtotal - estimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.vat
+                        )}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.tax
+                        )}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        await this.addUploads(estimate.uploads),
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+    return this.generatePdf(data);
+  }
+
+  // ESTIMATE RENTAL PDF
+  async generateSaleEstimate(
+    estimate: InventoryEstimateSell,
+    company: Company,
+    terms: Term | null
+  ) {
+    const items = [];
+    estimate.items.forEach((item, i) => {
+      items.push(this.addInventoryItem(i, company, item, false));
+    });
+
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Item Code',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Rate', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Estimate-${estimate.code}`),
+      content: [
+        await this.getHeader(
+          'Sale Estimate',
+          estimate.code,
+          'N/A',
+          estimate.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          '',
+          []
+        ),
+        hr,
+        this.getSubHeader(estimate.customer, company),
+        hr,
+        { text: estimate.scope },
+        hr,
+        summary,
+        hr,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount (${estimate.discountPercentage}%):`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    estimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
+                { text: company.accountNum, alignment: 'left' },
+                {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.subtotal - estimate.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.vat
+                        )}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(
+                          estimate.tax
+                        )}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    estimate.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        await this.addUploads(estimate.uploads),
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+    return this.generatePdf(data);
   }
 
   // INSPECTION PDF
@@ -1722,6 +2359,96 @@ export class PdfService {
       }
     }
     return data;
+  }
+
+  private addEstimateItem(index: number, company: Company, item: any) {
+    return [
+      {
+        text: index++,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.description,
+        style: 'h6',
+      },
+      {
+        text: 'EA',
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.qty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.duration,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.rate)}`,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.total)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
+  }
+
+  private addInventoryItem(
+    index: number,
+    company: Company,
+    item: any,
+    isRental: boolean
+  ) {
+    return [
+      {
+        text: index++,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.name,
+        style: 'h6',
+      },
+      {
+        text: 'EA',
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(
+          isRental ? item.hireCost : item.sellingCost
+        )}`,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: isRental ? item.shipmentQty : item.sellQty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.totalCost)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
   }
 
   private createShipmentTable(shipmentItems: InventoryItem[]) {

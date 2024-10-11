@@ -29,11 +29,11 @@ export class EstimateSummaryV2Component {
       .getDocById(`company/${this.company.id}/terms`, 'Estimate');
   }
   async download(terms: Term | null) {
-    const sharedEstimate = {
-      estimate: this.estimate,
-      company: this.company,
-      terms,
-    };
+    // const sharedEstimate = {
+    //   estimate: this.estimate,
+    //   company: this.company,
+    //   terms,
+    // };
     // await this.masterSvc
     //   .edit()
     //   .updateDoc(
@@ -45,10 +45,10 @@ export class EstimateSummaryV2Component {
     //       email: [this.estimate.company.email],
     //     }
     //   );
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateEstimate(this.estimate, this.company, terms);
-    // this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateBasicEstimate(this.estimate, this.company, terms);
+    this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
   }
   async share(terms: Term | null) {
     const sharedEstimate = {
