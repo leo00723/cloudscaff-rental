@@ -34,6 +34,23 @@ export class EstimateSummarySellComponent {
       .generateSaleEstimate(this.estimate, this.company, terms);
     this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
   }
+
+  async downloadDraft() {
+    const invoice = {
+      estimate: this.estimate,
+      createdBy: this.estimate.createdBy,
+      createdByName: this.estimate.createdByName,
+      poNumber: this.estimate.poNumber,
+      id: '',
+      date: new Date(),
+      status: 'pending',
+    };
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateSaleInvoice(invoice, this.company, null, true);
+    this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
+  }
+
   async share(terms: Term | null) {
     const sharedEstimate = {
       estimate: this.estimate,

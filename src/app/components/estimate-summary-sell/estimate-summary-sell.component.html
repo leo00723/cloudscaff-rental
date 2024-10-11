@@ -6,14 +6,17 @@
   </ion-col>
   <ion-col sizeMd="6" size="8" class="text-end">
     <ng-container *ngIf="terms$ | async as terms; else noTerms">
-      <ion-button
+      <ion-chip size="small" (click)="download(terms)" color="primary">
+        Download Estimate
+      </ion-chip>
+      <ion-chip
         size="small"
-        (click)="download(terms)"
-        fill="clear"
-        color="primary"
+        (click)="downloadDraft()"
+        color="tertiary"
+        *ngIf="estimate.status !== 'accepted'"
       >
-        <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
-      </ion-button>
+        Invoice Draft
+      </ion-chip>
       <!-- <ion-button
         size="small"
         (click)="share(terms)"
@@ -24,14 +27,17 @@
       </ion-button> -->
     </ng-container>
     <ng-template #noTerms>
-      <ion-button
+      <ion-chip size="small" (click)="download(null)" color="primary">
+        Download Estimate
+      </ion-chip>
+      <ion-chip
         size="small"
-        (click)="download(null)"
-        fill="clear"
-        color="primary"
+        (click)="downloadDraft()"
+        color="tertiary"
+        *ngIf="estimate.status !== 'accepted'"
       >
-        <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
-      </ion-button>
+        Invoice Draft
+      </ion-chip>
       <!-- <ion-button
         size="small"
         (click)="share(null)"

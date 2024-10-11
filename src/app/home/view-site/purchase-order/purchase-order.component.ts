@@ -22,6 +22,7 @@ import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
 import { NotificationService } from 'src/app/services/notification.service';
+import { PdfService } from 'src/app/services/pdf.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
@@ -51,6 +52,7 @@ export class PurchaseOrderComponent implements OnInit {
   private notificationSvc = inject(NotificationService);
   private store = inject(Store);
   private dateDiff = inject(DateDiffPipe);
+  private pdfSvc = inject(PdfService);
 
   constructor() {
     this.user = this.store.selectSnapshot(UserState.user);
@@ -225,6 +227,26 @@ export class PurchaseOrderComponent implements OnInit {
         this.saving = false;
       }
     });
+  }
+
+  async downloadDraft() {
+    const invoice: TransactionInvoice = {
+      ...this.po,
+      ...this.form.value,
+      status: 'pending',
+      items: this.transactions,
+      createdBy: this.user.id,
+      createdByName: this.user.name,
+      date: new Date(),
+      poId: this.po.id,
+    };
+    const pdf = await this.pdfSvc.generateRentalInvoice(
+      invoice,
+      this.company,
+      null,
+      true
+    );
+    this.pdfSvc.handlePdf(pdf, this.po.code);
   }
 
   private calcTotal() {

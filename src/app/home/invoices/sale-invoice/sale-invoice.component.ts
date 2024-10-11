@@ -98,7 +98,7 @@ export class SaleInvoiceComponent {
 
   async download(terms: Term | null) {
     const pdf = await this.pdfSvc.generateSaleInvoice(
-      this.invoice.estimate,
+      this.invoice,
       this.company,
       terms
     );
