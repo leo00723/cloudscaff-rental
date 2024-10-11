@@ -24,4 +24,5 @@ export interface TransactionInvoice {
   items?: TransactionItem[];
   creditItems?: { description: string; total: number }[];
   creditTotal?: number;
+  type?: string;
 }

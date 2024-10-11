@@ -1,0 +1,244 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title
+      >Invoice - {{ invoice?.code }}
+      <ion-text *ngIf="saving">
+        <i class="text-muted fs-6">(Saving...)</i>
+      </ion-text></ion-title
+    >
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row class="py-2">
+      <ion-col sizeMd="6" size="4">
+        <ion-text>
+          <h4>Sale Invoice</h4>
+        </ion-text>
+      </ion-col>
+      <ion-col sizeMd="6" size="8" class="text-end">
+        <ng-container *ngIf="terms$ | async as terms; else noTerms">
+          <ion-button
+            size="small"
+            (click)="download(terms)"
+            fill="clear"
+            color="primary"
+          >
+            <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+          </ion-button>
+          <!-- <ion-button
+        size="small"
+        (click)="share(terms)"
+        fill="clear"
+        color="primary"
+      >
+        <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
+      </ion-button> -->
+        </ng-container>
+        <ng-template #noTerms>
+          <ion-button
+            size="small"
+            (click)="download(null)"
+            fill="clear"
+            color="primary"
+          >
+            <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+          </ion-button>
+          <!-- <ion-button
+        size="small"
+        (click)="share(null)"
+        fill="clear"
+        color="primary"
+      >
+        <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
+      </ion-button> -->
+        </ng-template>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>Code:</h6>
+          <h6>Site name:</h6>
+          <h6>Date Issued:</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="6">
+        <ion-label>
+          <h6>
+            {{ invoice.code }}
+          </h6>
+          <h6>
+            {{ invoice.date | date }}
+          </h6>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <app-company-info-detail
+      [customer]="invoice.estimate.customer"
+    ></app-company-info-detail>
+
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <ion-row class="py-2">
+      <ion-col size="12">
+        <ion-label color="medium">
+          <h6>Scope of works</h6>
+        </ion-label>
+      </ion-col>
+      <ion-col size="12">
+        <p [innerText]="invoice.estimate.scope"></p>
+      </ion-col>
+    </ion-row>
+    <ion-item-divider mode="md"></ion-item-divider>
+
+    <ion-row>
+      <ion-col>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col">#</th>
+              <th class="text-center" scope="col">Item Code</th>
+              <th scope="col">Description</th>
+              <th class="text-center" scope="col">Unit</th>
+              <th class="text-center" scope="col">Qty</th>
+              <th class="text-center" scope="col">Sell Price</th>
+              <th class="text-end" scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- ITEMS -->
+            <ng-container
+              *ngFor="let item of invoice.estimate.items; let i = index"
+            >
+              <tr class="small align-middle">
+                <th class="text-center" scope="row">{{ i + 1 }}</th>
+                <td class="text-center">
+                  {{ item.code }}
+                </td>
+                <td>
+                  {{ item.name }}
+                </td>
+                <td class="text-center">EA</td>
+                <td class="text-center">
+                  {{ item.sellQty }}
+                </td>
+                <td class="text-center">
+                  {{ item.sellingCost | number : "0.2-2" }}
+                </td>
+
+                <td class="text-end">
+                  {{ company.currency.symbol }}
+                  {{ item.totalCost | number : "0.2-2" }}
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+          <!-- FOOTER TOTALS -->
+          <tfoot>
+            <tr>
+              <th class="text-end" colspan="6" scope="col">Subtotal</th>
+              <th class="text-end" scope="col">
+                {{ company.currency.symbol }}
+                {{ invoice.estimate.subtotal | number : "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="6" scope="col">
+                Discount ({{ invoice.estimate.discountPercentage }}%)
+              </th>
+              <th class="text-end text-danger" scope="col">
+                - {{ company.currency.symbol }}
+                {{ invoice.estimate.discount | number : "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="6" scope="col">Contract Total</th>
+              <th class="text-end" scope="col">
+                {{ company.currency.symbol }}
+                {{
+                  invoice.estimate.subtotal - invoice.estimate.discount
+                    | number : "0.2-2"
+                }}
+              </th>
+            </tr>
+            <tr *ngIf="company.salesTax > 0">
+              <th class="text-end" colspan="6" scope="col">
+                Sales Tax ({{ company.salesTax }}%)
+              </th>
+              <th class="text-end" scope="col">
+                {{ company.currency.symbol }}
+                {{ invoice.estimate.tax | number : "0.2-2" }}
+              </th>
+            </tr>
+            <tr *ngIf="company.vat > 0">
+              <th class="text-end" colspan="6" scope="col">
+                {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
+              </th>
+              <th class="text-end" scope="col">
+                {{ company.currency.symbol }}
+                {{ invoice.estimate.vat | number : "0.2-2" }}
+              </th>
+            </tr>
+            <tr>
+              <th class="text-end" colspan="6" scope="col">Total</th>
+              <th class="text-end" scope="col">
+                {{ company.currency.symbol }}
+                {{ invoice.estimate.total | number : "0.2-2" }}
+              </th>
+            </tr>
+          </tfoot>
+        </table>
+      </ion-col>
+      <ng-container *ngIf="showUploads">
+        <ion-col size="12">
+          <app-title-block> Uploaded Files </app-title-block>
+        </ion-col>
+        <ion-col
+          sizeXl="2"
+          sizeLg="3"
+          sizeMd="4"
+          size="6"
+          *ngFor="let file of invoice.estimate.uploads; let i = index"
+        >
+          <app-file-item
+            [file]="file"
+            [allowDelete]="false"
+          ></app-file-item> </ion-col
+      ></ng-container>
+    </ion-row>
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+
+    <ion-row *ngIf="!loading">
+      <ion-col size="6">
+        <ion-button
+          (click)="voidEstimate()"
+          fill="solid"
+          shape="round"
+          color="danger"
+        >
+          Void
+        </ion-button>
+      </ion-col>
+      <ion-col size="6" class="text-end">
+        <ion-button
+          (click)="accept()"
+          fill="solid"
+          shape="round"
+          color="success"
+        >
+          Accept
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

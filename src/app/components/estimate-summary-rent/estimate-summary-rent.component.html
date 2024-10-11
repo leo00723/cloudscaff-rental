@@ -92,8 +92,8 @@
           <th class="text-center" scope="col">Item Code</th>
           <th scope="col">Description</th>
           <th class="text-center" scope="col">Unit</th>
-          <th class="text-center" scope="col">Qty</th>
           <th class="text-center" scope="col">Rental Rate</th>
+          <th class="text-center" scope="col">Qty</th>
           <th class="text-end" scope="col">Total</th>
         </tr>
       </thead>
@@ -110,10 +110,10 @@
             </td>
             <td class="text-center">EA</td>
             <td class="text-center">
-              {{ item.sellQty }}
+              {{ item.hireCost | number : "0.2-2" }}
             </td>
             <td class="text-center">
-              {{ item.sellingCost | number : "0.2-2" }}
+              {{ item.shipmentQty }}
             </td>
 
             <td class="text-end">

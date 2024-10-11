@@ -18,7 +18,13 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <app-po-summary [value]="po.estimate"></app-po-summary>
+  <app-po-rental-summary
+    [value]="po.estimate"
+    *ngIf="po.type === 'Rental'; else default"
+  ></app-po-rental-summary>
+  <ng-template #default>
+    <app-po-summary [value]="po.estimate"></app-po-summary>
+  </ng-template>
   <ion-row>
     <ion-col size="12">
       <ion-text color="medium">

@@ -125,7 +125,7 @@ export class EstimatesPage implements OnInit {
       componentProps: { inventoryItems$: this.inventoryItems$ },
       cssClass: 'fullscreen',
       showBackdrop: false,
-      id: 'addInvRentEstimate',
+      id: 'addRentEstimate',
     });
     return await modal.present();
   }

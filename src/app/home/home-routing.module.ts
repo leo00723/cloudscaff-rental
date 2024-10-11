@@ -62,6 +62,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'invoices',
+        loadChildren: () =>
+          import('./invoices/invoices.module').then(
+            (m) => m.InvoicesPageModule
+          ),
+      },
+      {
         path: 'sites',
         loadChildren: () =>
           import('./sites/sites.module').then((m) => m.SitesPageModule),

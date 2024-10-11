@@ -1,10 +1,11 @@
 import { EstimateV2 } from './estimate-v2.model';
+import { InventoryEstimateRent } from './inventory-estimate-rent.model';
 import { Site } from './site.model';
 
 export interface PO {
   id?: string;
   site?: Site;
-  estimate?: EstimateV2;
+  estimate?: EstimateV2 | InventoryEstimateRent;
   date?: any;
   createdBy?: string;
   createdByName?: string;
@@ -16,4 +17,5 @@ export interface PO {
   total?: number;
   vat?: number;
   status?: string;
+  type?: string;
 }

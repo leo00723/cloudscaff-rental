@@ -166,6 +166,7 @@
                     >
                       Available Qty
                     </th>
+                    <th scope="col" class="text-center">Rental Rate</th>
                     <th scope="col" class="text-center">Rental Qty</th>
                     <th scope="col" class="text-end">
                       Weight ({{ company.mass.symbol }})
@@ -194,9 +195,25 @@
                           #qty
                           debounce="300"
                           inputmode="numeric"
+                          [color]="item.error ? 'danger' : undefined"
+                          [clearOnEdit]="true"
+                          [value]="item.hireCost"
+                          [readonly]="inventoryEstimate.status !== 'pending'"
+                          (ionChange)="updateRate($event, item)"
+                        >
+                        </ion-input>
+                        <ion-label color="danger" *ngIf="item.error">
+                          you cannot set negative rate
+                        </ion-label>
+                      </td>
+                      <td class="text-center">
+                        <ion-input
+                          #qty
+                          debounce="300"
+                          inputmode="number"
                           [color]="item.error ? 'danger' : 'success'"
                           [clearOnEdit]="true"
-                          [value]="item.sellQty"
+                          [value]="item.shipmentQty"
                           [readonly]="inventoryEstimate.status !== 'pending'"
                           (ionChange)="updateQty($event, item)"
                         >
@@ -206,7 +223,7 @@
                         </ion-label>
                       </td>
                       <td class="text-end">
-                        {{ item.sellQty * item.weight | number }}
+                        {{ item.shipmentQty * item.weight | number }}
                       </td>
                       <th class="text-end">
                         {{ company.currency.symbol
@@ -216,7 +233,9 @@
                     <ng-template #viewList>
                       <tr
                         class="align-middle"
-                        *ngIf="item.sellQty !== null && item.sellQty >= 0"
+                        *ngIf="
+                          item.shipmentQty !== null && item.shipmentQty >= 0
+                        "
                       >
                         <th scope="row">{{ item.code }}</th>
                         <td>{{ item.category }}</td>
@@ -232,11 +251,27 @@
                         <td class="text-center">
                           <ion-input
                             #qty
+                            debounce="300"
+                            inputmode="numeric"
+                            [color]="item.error ? 'danger' : 'success'"
+                            [clearOnEdit]="true"
+                            [value]="item.hireCost"
+                            [readonly]="inventoryEstimate.status !== 'pending'"
+                            (ionChange)="updateRate($event, item)"
+                          >
+                          </ion-input>
+                          <ion-label color="danger" *ngIf="item.error">
+                            you cannot set negative rate
+                          </ion-label>
+                        </td>
+                        <td class="text-center">
+                          <ion-input
+                            #qty
                             debounce="200"
                             type="number"
                             [color]="item.error ? 'danger' : 'success'"
                             [clearOnEdit]="true"
-                            [value]="item.sellQty"
+                            [value]="item.shipmentQty"
                             (ionChange)="updateQty($event, item)"
                           >
                           </ion-input>
@@ -245,7 +280,7 @@
                           </ion-label>
                         </td>
                         <td class="text-end">
-                          {{ item.sellQty * item.weight | number }}
+                          {{ item.shipmentQty * item.weight | number }}
                         </td>
                         <th class="text-end">
                           {{ company.currency.symbol
@@ -314,7 +349,7 @@
               shape="round"
               color="success"
               [disabled]="form.invalid"
-              (click)="updateEstimate('accepted')"
+              (click)="acceptEstimate()"
               *ngIf="isEdit && inventoryEstimate.status === 'pending'"
             >
               Accepted

@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
-import { EstimateV2 } from 'src/app/models/estimate-v2.model';
+import { InventoryEstimateSell } from 'src/app/models/inventory-estimate-sell.model';
 import { Term } from 'src/app/models/term.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { ShareDocumentComponent } from '../share-document/share-document.component';
-import { InventoryEstimateSell } from 'src/app/models/inventory-estimate-sell.model';
 @Component({
   selector: 'app-estimate-summary-sell',
   templateUrl: './estimate-summary-sell.component.html',

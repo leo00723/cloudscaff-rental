@@ -35,6 +35,12 @@ export class HomePage implements OnDestroy {
       icon: 'options-outline',
     },
     {
+      title: 'Invoices',
+      permission: 'Invoices',
+      url: '/dashboard/invoices',
+      icon: 'receipt-outline',
+    },
+    {
       title: 'Instructions',
       permission: 'Instructions',
       url: '/dashboard/site-instructions',
@@ -44,7 +50,7 @@ export class HomePage implements OnDestroy {
       title: 'Handovers',
       permission: 'Handover List',
       url: '/dashboard/handovers',
-      icon: 'receipt-outline',
+      icon: 'document-text-outline',
     },
     {
       title: 'Sites',

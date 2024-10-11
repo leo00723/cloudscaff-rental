@@ -78,6 +78,8 @@ import { UserPickerComponent } from './user-picker/user-picker.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
+import { PORentalSummaryComponent } from './po-rental-summary/po-rental-summary.component';
+import { InvoiceComponent } from '../home/invoices/invoice/invoice.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -97,18 +99,20 @@ const COMPONENTS = [
   CompanyPage,
   CustomerComponent,
   DashboardCardMiniComponent,
+  DateDiffPipe,
   DatepickerComponent,
   DismantleSummaryComponent,
   DropzoneDirective,
   DuplicateStockItemComponent,
   EditprofileComponent,
-  EstimateSummaryV2Component,
-  EstimateSummarySellComponent,
   EstimateSummaryRentComponent,
+  EstimateSummarySellComponent,
+  EstimateSummaryV2Component,
   EstimateV2TableComponent,
   FileItemComponent,
   FileUploadComponent,
   HandoverSummaryComponent,
+  HandoverTableComponent,
   HeaderComponent,
   HeaderCondensedComponent,
   ImgUploadComponent,
@@ -118,8 +122,12 @@ const COMPONENTS = [
   InputTextReactiveComponent,
   InspectionChecklistComponent,
   InspectionSummaryComponent,
+  InvoiceComponent,
   MultiuploaderComponent,
   NotificationsComponent,
+  POSummaryComponent,
+  PORentalSummaryComponent,
+  POTableComponent,
   PagePlaceholderComponent,
   RepurposeInventoryComponent,
   RequestsTableComponent,
@@ -136,6 +144,7 @@ const COMPONENTS = [
   SiteFormComponent,
   SkeletonTextComponent,
   TitleBlockComponent,
+  TransactionReturnComponent,
   TutorialGalleryComponent,
   UploadTaskComponent,
   UploaderComponent,
@@ -144,11 +153,6 @@ const COMPONENTS = [
   ViewStockLocationsComponent,
   ViewTermsComponent,
   WeightPipe,
-  HandoverTableComponent,
-  POTableComponent,
-  POSummaryComponent,
-  DateDiffPipe,
-  TransactionReturnComponent,
 ];
 const IMPORTS = [
   CommonModule,

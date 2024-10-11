@@ -1,0 +1,53 @@
+<app-header title="Invoices">
+  <ion-toolbar *ngIf="user$ | async as user">
+    <ion-segment
+      scrollable
+      selectOnFocus="true"
+      (ionChange)="segmentChanged($event)"
+      [value]="active"
+      mode="md"
+    >
+      <ng-container *ngIf="company$ |async as company">
+        <ion-segment-button
+          value="rental"
+          *ngIf="user.permissionsList.includes('Inventory Rent Invoices') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+        >
+          <ion-label>Rental Invoices</ion-label>
+        </ion-segment-button>
+        <ion-segment-button
+          value="sale"
+          *ngIf="user.permissionsList.includes('Inventory Sale Invoices') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+        >
+          <ion-label>Sale Invoices</ion-label>
+        </ion-segment-button>
+      </ng-container>
+    </ion-segment>
+  </ion-toolbar>
+</app-header>
+<ion-content class="ion-padding">
+  <ng-container [ngSwitch]="active" *ngIf="company$ | async as company">
+    <ng-container *ngSwitchCase="'rental'">
+      <app-po-table
+        [value]="rentalInvoices$"
+        *ngIf="rentalInvoices$ | async else loading"
+        (selectedItem)="viewRentalInvoice($event)"
+      ></app-po-table>
+    </ng-container>
+    <ng-container *ngSwitchCase="'sale'">
+      <app-invoice-table
+        [value]="saleInvoices$"
+        *ngIf="saleInvoices$ | async else loading"
+        (selectedItem)="viewSaleInvoice($event)"
+      ></app-invoice-table>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

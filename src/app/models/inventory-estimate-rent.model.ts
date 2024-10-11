@@ -14,6 +14,7 @@ export interface InventoryEstimateRent {
   discountPercentage?: number;
   items?: InventoryItem[];
   scope?: string;
+  siteId?: string;
   siteName?: string;
   status?: string;
   subtotal?: number;
@@ -22,6 +23,7 @@ export interface InventoryEstimateRent {
   vat?: number;
   createdBy?: string;
   createdByName?: string;
+  acceptedBy?: string;
   acceptedTerms?: boolean;
   comments?: Comment[];
   excludeVAT?: boolean;

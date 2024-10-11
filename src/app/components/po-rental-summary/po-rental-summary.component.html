@@ -7,12 +7,11 @@
     <thead>
       <tr>
         <th class="text-center" scope="col">#</th>
-        <th scope="col">Item Code</th>
+        <th class="text-center" scope="col">Item Code</th>
         <th scope="col">Description</th>
         <th class="text-center" scope="col">Unit</th>
+        <th class="text-center" scope="col">Rental Rate</th>
         <th class="text-center" scope="col">Qty</th>
-        <th class="text-center" scope="col">Duration / Months</th>
-        <th class="text-center" scope="col">Rent / Month</th>
         <th class="text-end" scope="col">Total</th>
       </tr>
     </thead>
@@ -25,27 +24,19 @@
             {{ item.code }}
           </td>
           <td>
-            {{ item.description }}
-            <br />
-            <span class="text-danger" *ngIf="item.note"
-              >Note: {{ item.note }}</span
-            >
+            {{ item.name }}
+          </td>
+          <td class="text-center">EA</td>
+          <td class="text-center">
+            {{ item.hireCost | number : "0.2-2" }}
           </td>
           <td class="text-center">
-            {{ item.unit }}
+            {{ item.shipmentQty }}
           </td>
-          <td class="text-center">
-            {{ item.qty }}
-          </td>
-          <td class="text-center">
-            {{ item.duration }}
-          </td>
-          <td class="text-center">
-            {{ item.rate }}
-          </td>
+
           <td class="text-end">
             {{ company.currency.symbol }}
-            {{ item.total | number : "0.2-2" }}
+            {{ item.totalCost | number : "0.2-2" }}
           </td>
         </tr>
       </ng-container>

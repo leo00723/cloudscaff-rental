@@ -6,23 +6,24 @@ import {
 } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { Company } from 'src/app/models/company.model';
-import { EstimateV2 } from 'src/app/models/estimate-v2.model';
+import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
 import { CompanyState } from 'src/app/shared/company/company.state';
 @Component({
-  selector: 'app-po-summary',
-  templateUrl: './po-summary.component.html',
+  selector: 'app-po-rental-summary',
+  templateUrl: './po-rental-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class POSummaryComponent {
-  @Input() set value(val: EstimateV2) {
+export class PORentalSummaryComponent {
+  @Input() set value(val: InventoryEstimateRent) {
     if (val) {
       this.estimate = val;
     }
   }
   @Input() canDownload = false;
   @Input() showUploads = false;
-  estimate: EstimateV2;
+  estimate: InventoryEstimateRent;
   company: Company;
+
   private store = inject(Store);
   constructor() {
     this.company = this.store.selectSnapshot(CompanyState.company);

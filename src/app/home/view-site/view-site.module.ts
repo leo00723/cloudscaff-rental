@@ -5,7 +5,6 @@ import { PurchaseOrderComponent } from './purchase-order/purchase-order.componen
 import { SiteInventoryTableComponent } from './site-inventory-table/site-inventory-table.component';
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
-import { InvoiceComponent } from './invoice/invoice.component';
 
 @NgModule({
   imports: [ComponentsModule, ViewSitePageRoutingModule, QRCodeModule],
@@ -13,7 +12,6 @@ import { InvoiceComponent } from './invoice/invoice.component';
     ViewSitePage,
     SiteInventoryTableComponent,
     PurchaseOrderComponent,
-    InvoiceComponent,
   ],
   exports: [],
   providers: [],

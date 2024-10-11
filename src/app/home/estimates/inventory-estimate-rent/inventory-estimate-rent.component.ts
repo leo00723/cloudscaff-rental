@@ -7,12 +7,12 @@ import { MultiuploaderComponent } from 'src/app/components/multiuploader/multiup
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
-import { InventoryEstimateSell } from 'src/app/models/inventory-estimate-sell.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { AcceptEstimateRentComponent } from './accept-estimate-rent/accept-estimate-rent.component';
 
 @Component({
   selector: 'app-inventory-estimate-rent',
@@ -180,13 +180,42 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
     }
   }
 
+  //accept estimate
+  acceptEstimate() {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      //start the acceptance process
+      const modal = await this.masterSvc.modal().create({
+        component: AcceptEstimateRentComponent,
+        componentProps: {
+          company: this.company,
+          user: this.user,
+          estimate: this.inventoryEstimate,
+          form: this.form,
+        },
+        id: 'acceptRentalEstimate',
+        cssClass: 'fullscreen',
+      });
+      return await modal.present();
+    });
+  }
+
   updateQty(val, item: InventoryItem) {
     if (isNaN(+val.detail.value)) {
       return (item.error = true);
     } else {
       item.error = false;
-      item.sellQty = +val.detail.value;
-      item.totalCost = +item.sellQty * +item.sellingCost;
+      item.shipmentQty = +val.detail.value;
+      item.totalCost = +item.shipmentQty * +item.hireCost;
+    }
+  }
+
+  updateRate(val, item: InventoryItem) {
+    if (isNaN(+val.detail.value) || +val.detail.value < 0) {
+      return (item.error = true);
+    } else {
+      item.error = false;
+      item.hireCost = +val.detail.value;
+      item.totalCost = +item.shipmentQty * +item.hireCost;
     }
   }
 
@@ -225,7 +254,7 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
     }
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
     this.inventoryEstimate.items = this.itemBackup.filter(
-      (item) => item.sellQty > 0
+      (item) => item.shipmentQty > 0
     );
     let subtotal = 0;
     this.inventoryEstimate.items.forEach((item) => {
@@ -286,20 +315,22 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
       ],
       code: [this.inventoryEstimate.code],
       excludeVAT: [this.inventoryEstimate.excludeVAT],
+      poNumber: [this.inventoryEstimate.poNumber],
     });
     if (this.inventoryEstimate.status === 'pending') {
       this.subs.add(
         this.inventoryItems$.subscribe((items) => {
           items.forEach((dbItem) => {
-            dbItem.sellQty = null;
+            dbItem.shipmentQty = null;
             delete dbItem.log;
             delete dbItem.crossHire;
           });
           this.inventoryEstimate.items.forEach((item) => {
             const inventoryItem = items.find((i) => i.id === item.id);
             if (inventoryItem) {
-              inventoryItem.sellQty = +item.sellQty;
-              inventoryItem.totalCost = +item.sellQty * +item.sellingCost;
+              inventoryItem.shipmentQty = +item.shipmentQty;
+              inventoryItem.hireCost = +item.hireCost;
+              inventoryItem.totalCost = +item.shipmentQty * +item.hireCost;
             }
           });
           this.items = items;
@@ -320,6 +351,7 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       excludeVAT: [false],
+      poNumber: [''],
     });
   }
 

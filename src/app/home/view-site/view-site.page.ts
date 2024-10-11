@@ -25,7 +25,7 @@ import { Navigate } from 'src/app/shared/router.state';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
-import { InvoiceComponent } from './invoice/invoice.component';
+import { InvoiceComponent } from '../invoices/invoice/invoice.component';
 
 @Component({
   selector: 'app-view-site',
@@ -359,10 +359,10 @@ export class ViewSitePage implements OnInit {
     return await modal.present();
   }
 
-  async viewInvoice(invoiceData: TransactionInvoice, site: Site) {
+  async viewInvoice(invoiceData: TransactionInvoice) {
     const modal = await this.masterSvc.modal().create({
       component: InvoiceComponent,
-      componentProps: { value: invoiceData, site },
+      componentProps: { value: invoiceData },
       showBackdrop: false,
       id: 'viewInvoice',
       cssClass: 'fullscreen',
