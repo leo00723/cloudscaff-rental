@@ -304,10 +304,10 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     if (!this.returnDoc.date) {
       this.returnDoc.date = new Date();
     }
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateReturn(this.returnDoc, this.company, null);
-    // this.masterSvc.pdf().handlePdf(pdf, this.returnDoc.code);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateReturn(this.returnDoc, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.returnDoc.code);
   }
   async downloadPicklist() {
     if (this.isEdit) {

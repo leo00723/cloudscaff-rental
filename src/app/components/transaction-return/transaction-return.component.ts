@@ -308,30 +308,30 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
     if (!this.returnDoc.date) {
       this.returnDoc.date = new Date();
     }
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateReturn(this.returnDoc, this.company, null);
-    // this.masterSvc.pdf().handlePdf(pdf, this.returnDoc.code);
+    const pdf = await this.masterSvc
+      .pdf()
+      .generateReturn(this.returnDoc, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.returnDoc.code);
   }
   async downloadPicklist() {
     if (this.isEdit) {
       if (!this.returnDoc.date) {
         this.returnDoc.date = new Date();
       }
-      // const pdf = await this.masterSvc
-      //   .pdf()
-      //   .generateReturnPickList(this.returnDoc, this.items, this.company);
-      // this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.returnDoc.code}`);
+      const pdf = await this.masterSvc
+        .pdf()
+        .generateReturnPickList(this.returnDoc, this.items, this.company);
+      this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.returnDoc.code}`);
     } else {
       const returnDoc: TransactionReturn = {
         ...this.form.value,
         code: 'N/A',
         date: new Date(),
       };
-      // const pdf = await this.masterSvc
-      //   .pdf()
-      //   .generateReturnPickList(returnDoc, this.items, this.company);
-      // this.masterSvc.pdf().handlePdf(pdf, `Picklist-${returnDoc.site.name}`);
+      const pdf = await this.masterSvc
+        .pdf()
+        .generateReturnPickList(returnDoc, this.items, this.company);
+      this.masterSvc.pdf().handlePdf(pdf, `Picklist-${returnDoc.site.name}`);
     }
   }
 

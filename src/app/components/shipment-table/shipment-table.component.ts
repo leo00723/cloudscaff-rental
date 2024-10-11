@@ -59,18 +59,23 @@ export class ShipmentTableComponent {
 
   updateFilter(event) {
     const val = event.detail.value.toLowerCase() as string;
+
     this.temp$ = this.shipments$.pipe(
-      map((site) =>
-        site.filter(
-          (s) =>
-            s.code.toLowerCase().indexOf(val) !== -1 ||
-            s.site.name.toLowerCase().indexOf(val) !== -1 ||
-            s.site.customer.name.toLowerCase().indexOf(val) !== -1 ||
-            s.status.toLowerCase().indexOf(val) !== -1 ||
-            !val
-        )
+      map((shipments) =>
+        shipments.filter((s) => {
+          const searchTerm = val;
+          return (
+            s?.code?.toLowerCase().includes(searchTerm) ||
+            s?.site?.name?.toLowerCase().includes(searchTerm) ||
+            s?.site?.customer?.name?.toLowerCase().includes(searchTerm) ||
+            s?.status?.toLowerCase().includes(searchTerm) ||
+            (s?.poNumber?.toLowerCase()?.includes(searchTerm) ?? false) ||
+            !searchTerm
+          );
+        })
       )
     );
+
     this.table.offset = 0;
   }
 }

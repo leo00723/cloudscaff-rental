@@ -3,17 +3,16 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
 import {
   DatatableComponent,
-  SortType,
   SelectionType,
+  SortType,
 } from '@swimlane/ngx-datatable';
 import { Observable, map } from 'rxjs';
-import { Return } from 'src/app/models/return.model';
+import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 
 @Component({
   selector: 'app-returns-table',
@@ -22,10 +21,10 @@ import { Return } from 'src/app/models/return.model';
 })
 export class ReturnsTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<Return>();
-  returns$: Observable<Return[]>;
-  temp$: Observable<Return[]>;
-  @Input() set value(returns: Observable<Return[]>) {
+  @Output() selectedItem = new EventEmitter<TransactionReturn>();
+  returns$: Observable<TransactionReturn[]>;
+  temp$: Observable<TransactionReturn[]>;
+  @Input() set value(returns: Observable<TransactionReturn[]>) {
     this.temp$ = returns;
     this.returns$ = returns;
   }
@@ -64,18 +63,23 @@ export class ReturnsTableComponent {
 
   updateFilter(event) {
     const val = event.detail.value.toLowerCase() as string;
+
     this.temp$ = this.returns$.pipe(
-      map((site) =>
-        site.filter(
-          (s) =>
-            s.code.toLowerCase().indexOf(val) !== -1 ||
-            s.site.name.toLowerCase().indexOf(val) !== -1 ||
-            s.site.customer.name.toLowerCase().indexOf(val) !== -1 ||
-            s.status.toLowerCase().indexOf(val) !== -1 ||
-            !val
-        )
+      map((returns) =>
+        returns.filter((s) => {
+          const searchTerm = val;
+          return (
+            s?.code?.toLowerCase().includes(searchTerm) ||
+            s?.site?.name?.toLowerCase().includes(searchTerm) ||
+            s?.site?.customer?.name?.toLowerCase().includes(searchTerm) ||
+            s?.status?.toLowerCase().includes(searchTerm) ||
+            (s?.poNumber?.toLowerCase()?.includes(searchTerm) ?? false) ||
+            !searchTerm
+          );
+        })
       )
     );
+
     this.table.offset = 0;
   }
 }

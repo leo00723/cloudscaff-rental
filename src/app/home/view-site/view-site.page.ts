@@ -13,19 +13,19 @@ import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { PO } from 'src/app/models/po.model';
 import { Request } from 'src/app/models/request.model';
-import { Return } from 'src/app/models/return.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Shipment } from 'src/app/models/shipment.model';
 import { SI } from 'src/app/models/si.model';
 import { Site } from 'src/app/models/site.model';
+import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
+import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
+import { InvoiceComponent } from '../invoices/invoice/invoice.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
-import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
-import { InvoiceComponent } from '../invoices/invoice/invoice.component';
 
 @Component({
   selector: 'app-view-site',
@@ -55,9 +55,9 @@ export class ViewSitePage implements OnInit {
   submittedRequests$: Observable<Request[]>;
   approvedRequests$: Observable<Request[]>;
 
-  pendingReturns$: Observable<Return[]>;
-  outboundReturns$: Observable<Return[]>;
-  returns$: Observable<Return[]>;
+  pendingReturns$: Observable<TransactionReturn[]>;
+  outboundReturns$: Observable<TransactionReturn[]>;
+  returns$: Observable<TransactionReturn[]>;
 
   outboundDeliveries$: Observable<Shipment[]>;
   deliveries$: Observable<Shipment[]>;
@@ -199,21 +199,21 @@ export class ViewSitePage implements OnInit {
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['pending', 'submitted']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<TransactionReturn[]>;
     this.outboundReturns$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['on-route', 'collected']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<TransactionReturn[]>;
     this.returns$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['sent', 'received']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<TransactionReturn[]>;
 
     this.purchaseOrders$ = this.masterSvc
       .edit()
@@ -282,7 +282,7 @@ export class ViewSitePage implements OnInit {
     });
     return await modal.present();
   }
-  async viewReturn(returnData: Return, site: Site) {
+  async viewReturn(returnData: TransactionReturn, site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: AddReturnComponent,
       componentProps: { isEdit: true, value: returnData, siteData: site },

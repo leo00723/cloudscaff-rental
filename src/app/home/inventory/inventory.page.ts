@@ -14,8 +14,8 @@ import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locat
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Request } from 'src/app/models/request.model';
-import { Return } from 'src/app/models/return.model';
 import { Shipment } from 'src/app/models/shipment.model';
+import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { Transfer } from 'src/app/models/transfer.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -53,10 +53,10 @@ export class InventoryPage implements OnInit {
   submittedRequests$: Observable<Request[]>;
   partialRequests$: Observable<Request[]>;
 
-  returns$: Observable<Return[]>;
-  submittedReturns$: Observable<Return[]>;
-  outboundReturns$: Observable<Return[]>;
-  voidReturns$: Observable<Return[]>;
+  returns$: Observable<TransactionReturn[]>;
+  submittedReturns$: Observable<TransactionReturn[]>;
+  outboundReturns$: Observable<TransactionReturn[]>;
+  voidReturns$: Observable<TransactionReturn[]>;
 
   active = 1;
   importing = false;
@@ -177,7 +177,7 @@ export class InventoryPage implements OnInit {
     });
     return await modal.present();
   }
-  async viewReturn(returnData: Return) {
+  async viewReturn(returnData: TransactionReturn) {
     const modal = await this.masterSvc.modal().create({
       component: TransactionReturnComponent,
       componentProps: { allowSend: true, isEdit: true, value: returnData },
@@ -187,7 +187,7 @@ export class InventoryPage implements OnInit {
     });
     return await modal.present();
   }
-  async viewRequest(requestData: Return) {
+  async viewRequest(requestData: Request) {
     const modal = await this.masterSvc.modal().create({
       component: AddRequestComponent,
       componentProps: { allowSend: true, isEdit: true, value: requestData },

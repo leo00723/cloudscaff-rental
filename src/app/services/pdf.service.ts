@@ -13,11 +13,12 @@ import { WeightPipe } from '../components/weight.pipe';
 import { Handover } from '../models/handover.model';
 import { Inspection } from '../models/inspection.model';
 import { InventoryItem } from '../models/inventoryItem.model';
-import { Return } from '../models/return.model';
 import { Shipment } from '../models/shipment.model';
 import { Site } from '../models/site.model';
+import { TransactionReturn } from '../models/transactionReturn.model';
 import { UploadedFile } from '../models/uploadedFile.model';
 import { CompanyState } from '../shared/company/company.state';
+import { TransactionItem } from '../models/transactionItem.model';
 const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388.58 26.87"><defs><style>.cls-1{fill:#fdb515;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><g id="Logo-Full-2" data-name="Logo-Full"><path class="cls-1" d="M151.2.19a2.08,2.08,0,0,1,2.09,2.09h0V20.57a6.24,6.24,0,0,1-6.24,6.24H123.93a6.24,6.24,0,0,1-6.24-6.24V2.22a2.1,2.1,0,0,1,2.09-2.1h0a2.1,2.1,0,0,1,2.1,2.1h0V20.55a2.1,2.1,0,0,0,2.09,2.1h23.09a2.11,2.11,0,0,0,2.1-2.1V2.28A2.09,2.09,0,0,1,151.24.19Z"/><path class="cls-1" d="M270.91,24.78a2.1,2.1,0,0,1-2.09,2.09H241.5a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,241.5.18h27.38A2.09,2.09,0,0,1,271,2.27h0a2.09,2.09,0,0,1-2.09,2.1H241.5a2.08,2.08,0,0,0-2.09,2.06h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.31a2.1,2.1,0,0,1,2.09,2.1Z"/><path class="cls-1" d="M156.89,0H186.3a6.24,6.24,0,0,1,6.24,6.24V20.45a6.24,6.24,0,0,1-6.19,6.29H156.83V22.55H186.3a2.1,2.1,0,0,0,2.09-2.1V6.28a2.1,2.1,0,0,0-2.06-2.13H156.89Z"/><path class="cls-1" d="M317.88,24.79V6.4A2.1,2.1,0,0,1,320,4.3h27.32a2.09,2.09,0,0,0,2.09-2.08h0A2.08,2.08,0,0,0,347.3.13H320a6.24,6.24,0,0,0-6.24,6.24V24.79a2.08,2.08,0,0,0,2.07,2.08h0a2.08,2.08,0,0,0,2.08-2.08Z"/><path class="cls-1" d="M276.6,26.74a2.11,2.11,0,0,1-2.09-2.09V6.36A6.24,6.24,0,0,1,280.75.12h23.14a6.24,6.24,0,0,1,6.23,6.24V24.71A2.09,2.09,0,0,1,308,26.8h0a2.09,2.09,0,0,1-2.09-2.09h0V6.38a2.09,2.09,0,0,0-2.1-2.09h-23a2.09,2.09,0,0,0-2.1,2.09h0V24.65a2.1,2.1,0,0,1-2.09,2.1h0Z"/><rect class="cls-1" x="278.47" y="11.22" width="27.72" height="4.15"/><path class="cls-1" d="M317.21,15.37V11.19h25.85a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.09H317.21Z"/><path class="cls-1" d="M357.09,24.79V6.4a2.11,2.11,0,0,1,2.09-2.1H386.5a2.08,2.08,0,0,0,2.08-2.08h0A2.08,2.08,0,0,0,386.51.13H359.17a6.24,6.24,0,0,0-6.24,6.24V24.79A2.08,2.08,0,0,0,355,26.87h0a2.08,2.08,0,0,0,2.07-2.08Z"/><path class="cls-1" d="M356.42,15.37V11.19h25.85a2.09,2.09,0,0,1,2.1,2.09h0a2.09,2.09,0,0,1-2.1,2.09Z"/><path class="cls-1" d="M208.33,11.19h17.16a6.23,6.23,0,0,1,6.24,6.23v3.12a6.24,6.24,0,0,1-6.19,6.29h-27.4a2.09,2.09,0,0,1-2.09-2.1h0a2.09,2.09,0,0,1,2.09-2.09h27.38a2.1,2.1,0,0,0,2.08-2.1V17.42a2.07,2.07,0,0,0-2.07-2.09h-17.2Z"/><path class="cls-1" d="M219.48,15.37H202.31a6.24,6.24,0,0,1-6.24-6.23V6.42A6.24,6.24,0,0,1,202.31.18h27.38a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.1H202.28a2.09,2.09,0,0,0-2.08,2.09V9.14a2.08,2.08,0,0,0,2.08,2.09h17.16Z"/><rect class="cls-1" x="156.89" y="4.19" width="4.16" height="18.36"/><path class="cls-1" d="M96.38,26.87H84.79a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,84.79.18H96.38V4.37H84.79a2.07,2.07,0,0,0-2.07,2.09h0V20.63a2.08,2.08,0,0,0,2.07,2.05H96.38Z"/><path class="cls-1" d="M96.25.13h11.59a6.24,6.24,0,0,1,6.24,6.24V20.59a6.24,6.24,0,0,1-6.2,6.28H96.25V22.68h11.59a2.1,2.1,0,0,0,2.09-2.09V6.42a2.1,2.1,0,0,0-2.09-2.1H96.25Z"/><path class="cls-1" d="M43.47,2.21v18.4a2.1,2.1,0,0,0,2.11,2.08H72.69a2.1,2.1,0,0,1,2.09,2.1h0a2.09,2.09,0,0,1-2.09,2.08H45.58a6.24,6.24,0,0,1-6.24-6.24V2.21A2.08,2.08,0,0,1,41.42.13h0A2.07,2.07,0,0,1,43.47,2.21Z"/><path class="cls-1" d="M35.65,24.78a2.09,2.09,0,0,1-2.09,2.09H6.24A6.24,6.24,0,0,1,0,20.63V6.42A6.24,6.24,0,0,1,6.24.18H33.62a2.1,2.1,0,0,1,2.09,2.09h0a2.1,2.1,0,0,1-2.09,2.1H6.24A2.08,2.08,0,0,0,4.16,6.44h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.3a2.1,2.1,0,0,1,2.09,2.1Z"/></g></g></g></svg>`;
 const hr = {
   table: {
@@ -1256,7 +1257,7 @@ export class PdfService {
 
   // DELIVERY PICKLIST PDF
   async generatePickList(
-    docData: Shipment | Return,
+    docData: Shipment | TransactionReturn,
     inventory: InventoryItem[],
     company: Company
   ) {
@@ -1334,8 +1335,8 @@ export class PdfService {
   // RETURN PICKLIST PDF
 
   async generateReturnPickList(
-    docData: Shipment | Return,
-    inventory: InventoryItem[],
+    docData: Shipment | TransactionReturn,
+    inventory: InventoryItem[] | TransactionItem[],
     company: Company
   ) {
     const items = [];
@@ -1409,7 +1410,7 @@ export class PdfService {
 
   // RETURN INVENTORY PDF
   async generateReturn(
-    returnDoc: Return,
+    returnDoc: TransactionReturn,
     company: Company,
     terms: Term | null
   ) {
@@ -1437,7 +1438,7 @@ export class PdfService {
           alignment: 'Right',
           color: 'red',
         };
-    const summary = this.createShipmentTable(returnDoc.items);
+    const summary = this.createTransactionReturnTable(returnDoc.items);
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
@@ -1486,6 +1487,9 @@ export class PdfService {
         {
           text: `Total Weight : ${this.weightPipe.transform(
             returnDoc.items,
+            false,
+            false,
+            false,
             true
           )}`,
           style: 'h3',
@@ -1760,6 +1764,107 @@ export class PdfService {
             { text: 'Size', style: 'h4b', alignment: 'center' },
             { text: 'Name', style: 'h4b', alignment: 'left' },
             { text: 'Shipment Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Weight', style: 'h4b', alignment: 'center' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    return summary;
+  }
+
+  private createTransactionDeliveryTable(transactionItems: TransactionItem[]) {
+    const items = [];
+    transactionItems.forEach((item) => {
+      items.push([
+        { text: item.code, style: 'h4b', alignment: 'left' },
+        {
+          text: item.category,
+          style: 'h4b',
+          alignment: 'left',
+        },
+        { text: item.size, style: 'h4b', alignment: 'center' },
+        { text: item.name, style: 'h4b', alignment: 'left' },
+        { text: item.deliveredQty, style: 'h4b', alignment: 'center' },
+        {
+          text: this.decimalPipe.transform(
+            (+item?.weight || 0) * (+item?.deliveredQty || 0)
+          ),
+          style: 'h4b',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', 'auto', '*', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Category',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Size', style: 'h4b', alignment: 'center' },
+            { text: 'Name', style: 'h4b', alignment: 'left' },
+            { text: 'Delivered Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Weight', style: 'h4b', alignment: 'center' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    return summary;
+  }
+  private createTransactionReturnTable(transactionItems: TransactionItem[]) {
+    const items = [];
+    transactionItems.forEach((item) => {
+      items.push([
+        { text: item.code, style: 'h4b', alignment: 'left' },
+        {
+          text: item.category,
+          style: 'h4b',
+          alignment: 'left',
+        },
+        { text: item.size, style: 'h4b', alignment: 'center' },
+        { text: item.name, style: 'h4b', alignment: 'left' },
+        { text: item.returnQty, style: 'h4b', alignment: 'center' },
+        {
+          text: this.decimalPipe.transform(
+            (+item?.weight || 0) * (+item?.returnQty || 0)
+          ),
+          style: 'h4b',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', 'auto', '*', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Category',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Size', style: 'h4b', alignment: 'center' },
+            { text: 'Name', style: 'h4b', alignment: 'left' },
+            { text: 'Delivered Qty', style: 'h4b', alignment: 'center' },
             { text: 'Weight', style: 'h4b', alignment: 'center' },
           ],
           ...items,
