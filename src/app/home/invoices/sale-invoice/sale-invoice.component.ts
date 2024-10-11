@@ -13,6 +13,7 @@ import { SaleInvoice } from 'src/app/models/sale-invoice.model';
 import { Term } from 'src/app/models/term.model';
 import { EditService } from 'src/app/services/edit.service';
 import { NotificationService } from 'src/app/services/notification.service';
+import { PdfService } from 'src/app/services/pdf.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 
 @Component({
@@ -37,6 +38,8 @@ export class SaleInvoiceComponent {
   private store = inject(Store);
   private editSvc = inject(EditService);
   private notification = inject(NotificationService);
+  private pdfSvc = inject(PdfService);
+
   constructor() {
     this.company = this.store.selectSnapshot(CompanyState.company);
     this.terms$ = this.editSvc.getDocById(
@@ -94,45 +97,31 @@ export class SaleInvoiceComponent {
   }
 
   async download(terms: Term | null) {
-    const sharedEstimate = {
-      estimate: this.invoice,
-      company: this.company,
-      terms,
-    };
-    // await this.masterSvc
-    //   .edit()
-    //   .updateDoc(
-    //     'sharedEstimatesV2',
-    //     `${this.company.id}-${this.estimate.id}`,
-    //     {
-    //       ...sharedEstimate,
-    //       cc: [],
-    //       email: [this.estimate.company.email],
-    //     }
-    //   );
-    // const pdf = await this.masterSvc
-    //   .pdf()
-    //   .generateEstimate(this.estimate, this.company, terms);
-    // this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
+    const pdf = await this.pdfSvc.generateSaleInvoice(
+      this.invoice.estimate,
+      this.company,
+      terms
+    );
+    this.pdfSvc.handlePdf(pdf, this.invoice.code);
   }
   async share(terms: Term | null) {
-    const sharedEstimate = {
-      estimate: this.invoice,
-      company: this.company,
-      terms,
-    };
-    const modal = await this.modalSvc.create({
-      component: ShareDocumentComponent,
-      componentProps: {
-        data: {
-          type: 'estimate',
-          doc: sharedEstimate,
-        },
-      },
-      showBackdrop: true,
-      id: 'shareDocument',
-      cssClass: 'accept',
-    });
-    return await modal.present();
+    // const sharedEstimate = {
+    //   estimate: this.invoice,
+    //   company: this.company,
+    //   terms,
+    // };
+    // const modal = await this.modalSvc.create({
+    //   component: ShareDocumentComponent,
+    //   componentProps: {
+    //     data: {
+    //       type: 'estimate',
+    //       doc: sharedEstimate,
+    //     },
+    //   },
+    //   showBackdrop: true,
+    //   id: 'shareDocument',
+    //   cssClass: 'accept',
+    // });
+    // return await modal.present();
   }
 }

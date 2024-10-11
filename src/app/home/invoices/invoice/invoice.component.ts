@@ -2,13 +2,16 @@ import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
+import { Observable } from 'rxjs';
 import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
 import { Company } from 'src/app/models/company.model';
+import { Term } from 'src/app/models/term.model';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
 import { NotificationService } from 'src/app/services/notification.service';
+import { PdfService } from 'src/app/services/pdf.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
@@ -22,6 +25,7 @@ export class InvoiceComponent implements OnInit {
       Object.assign(this.invoice, val);
     }
   }
+  terms$: Observable<Term>;
 
   protected company: Company;
   protected form: FormGroup;
@@ -36,10 +40,15 @@ export class InvoiceComponent implements OnInit {
   private notificationSvc = inject(NotificationService);
   private store = inject(Store);
   private dateDiff = inject(DateDiffPipe);
+  private pdfSvc = inject(PdfService);
 
   constructor() {
     this.user = this.store.selectSnapshot(UserState.user);
     this.company = this.store.selectSnapshot(CompanyState.company);
+    this.terms$ = this.editSvc.getDocById(
+      `company/${this.company.id}/terms`,
+      'Invoice'
+    );
   }
 
   ngOnInit(): void {
@@ -53,6 +62,15 @@ export class InvoiceComponent implements OnInit {
       });
       this.creditForms.push(item);
     });
+  }
+
+  async download(terms: Term | null) {
+    const pdf = await this.pdfSvc.generateRentalInvoice(
+      this.invoice,
+      this.company,
+      terms
+    );
+    this.pdfSvc.handlePdf(pdf, this.invoice.code);
   }
 
   close() {

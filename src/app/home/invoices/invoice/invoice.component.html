@@ -18,6 +18,69 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  <ion-row class="py-2">
+    <ion-col sizeMd="6" size="4">
+      <ion-text>
+        <h4>Sale Invoice</h4>
+      </ion-text>
+    </ion-col>
+    <ion-col sizeMd="6" size="8" class="text-end">
+      <ng-container *ngIf="terms$ | async as terms; else noTerms">
+        <ion-button
+          size="small"
+          (click)="download(terms)"
+          fill="clear"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+        <!-- <ion-button
+      size="small"
+      (click)="share(terms)"
+      fill="clear"
+      color="primary"
+    >
+      <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
+    </ion-button> -->
+      </ng-container>
+      <ng-template #noTerms>
+        <ion-button
+          size="small"
+          (click)="download(null)"
+          fill="clear"
+          color="primary"
+        >
+          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
+        </ion-button>
+        <!-- <ion-button
+      size="small"
+      (click)="share(null)"
+      fill="clear"
+      color="primary"
+    >
+      <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
+    </ion-button> -->
+      </ng-template>
+    </ion-col>
+    <ion-col size="6">
+      <ion-label>
+        <h6>Code:</h6>
+        <h6>Site name:</h6>
+        <h6>Date Issued:</h6>
+      </ion-label>
+    </ion-col>
+    <ion-col size="6">
+      <ion-label>
+        <h6>
+          {{ invoice.code }}
+        </h6>
+        <h6>
+          {{ invoice.date | date }}
+        </h6>
+      </ion-label>
+    </ion-col>
+  </ion-row>
+  <ion-item-divider mode="md"></ion-item-divider>
   <app-po-rental-summary
     [value]="invoice.estimate"
     *ngIf="invoice.type === 'Rental'; else default"
