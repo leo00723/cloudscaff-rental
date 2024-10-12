@@ -39,6 +39,7 @@ export class PermissionsSelectComponent implements OnInit {
       options: [
         { name: 'Enquiries', selected: false },
         { name: 'Estimates', selected: false },
+        { name: 'Invoices', selected: false },
         { name: 'Instructions', selected: false },
         { name: 'Handovers', selected: false },
         { name: 'Inventory', selected: false },
@@ -61,7 +62,7 @@ export class PermissionsSelectComponent implements OnInit {
         { name: 'Site Returns', selected: false },
         { name: 'Site Instructions', selected: false },
         { name: 'Purchase Orders', selected: false },
-        { name: 'Invoices', selected: false },
+        { name: 'Site Invoices', selected: false },
       ],
     },
     {
