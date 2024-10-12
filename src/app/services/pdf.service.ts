@@ -1108,7 +1108,53 @@ export class PdfService {
       layout: tLayout,
     };
 
-    const credits = {};
+    const credit = [];
+    invoice.creditItems.forEach((item, i) => {
+      credit.push([
+        {
+          text: i++,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: item.description,
+          style: 'h6',
+          alignment: 'left',
+        },
+        {
+          text: `-${company.currency.symbol} ${this.format(item.total)}`,
+          style: 'h6',
+          alignment: 'right',
+        },
+      ]);
+    });
+
+    const creditSummary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', '*'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'center' },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Total',
+              style: 'h4b',
+              alignment: 'left',
+            },
+          ],
+          ...credit,
+        ],
+      },
+      layout: tLayout,
+    };
 
     const data = {
       footer: await this.getFooter(),
@@ -1137,7 +1183,11 @@ export class PdfService {
         hr,
         { text: invoice.estimate.scope },
         hr,
+        { text: 'Invoice Items', style: 'h4b' },
         summary,
+        hr,
+        { text: 'Credit Items', style: 'h4b' },
+        creditSummary,
         hr,
         {
           table: {
@@ -1159,8 +1209,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Bank:', style: 'h6b', alignment: 'left' },
-                { text: company.bankName, alignment: 'left' },
+                '',
+                '',
                 {
                   text: 'Subtotal:',
                   style: 'h6b',
@@ -1169,6 +1219,22 @@ export class PdfService {
                 {
                   text: `${company.currency.symbol} ${this.format(
                     invoice.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Credit:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `-${company.currency.symbol} ${this.format(
+                    invoice.creditTotal
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -1200,7 +1266,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal - invoice.discount
+                    invoice.subtotal - invoice.discount - invoice.creditTotal
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -2923,12 +2989,14 @@ export class PdfService {
     let start = null;
     let end = null;
     let days = null;
-
+    let code = null;
     if (item.transactionType === 'Delivery') {
+      code = item.deliveryCode;
       start = item.invoiceStart.toDate();
       end = endDate;
       days = +this.dateDiffPipe.transform(start, end);
     } else {
+      code = item.returnCode;
       start = item.invoiceStart.toDate();
       end = item.invoiceEnd.toDate();
       days = +this.dateDiffPipe.transform(start, end, true);
@@ -2937,7 +3005,7 @@ export class PdfService {
     const total = +item.invoiceQty * +item.hireRate * days;
     return [
       {
-        text: item.deliveryCode,
+        text: code,
         style: 'h6',
         alignment: 'center',
       },
@@ -3000,7 +3068,6 @@ export class PdfService {
         style: 'h6',
         alignment: 'center',
       },
-
       {
         text: `${company.currency.symbol} ${this.format(total)}`,
         style: 'h6',
