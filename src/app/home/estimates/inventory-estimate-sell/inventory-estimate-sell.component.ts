@@ -287,6 +287,12 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
     });
 
     this.inventoryEstimate = cloneDeep(estimateCopy);
+    if (this.inventoryEstimate.customer) {
+      this.inventoryEstimate.customer.rep = this.inventoryEstimate?.repName;
+      this.inventoryEstimate.customer.email = this.inventoryEstimate?.repEmail;
+      this.inventoryEstimate.customer.phone =
+        this.inventoryEstimate?.repContact;
+    }
   }
 
   // END: Calculations
@@ -294,6 +300,10 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
   // START: Functions to initialise the form
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
+      siteName: [this.inventoryEstimate.siteName, Validators.required],
+      repName: [this.inventoryEstimate.repName],
+      repEmail: [this.inventoryEstimate.repEmail],
+      repContact: [this.inventoryEstimate.repContact],
       customer: [this.inventoryEstimate.customer, Validators.required],
       scope: [this.inventoryEstimate.scope],
       discountPercentage: [
@@ -330,6 +340,10 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
 
   private initFrom() {
     this.form = this.masterSvc.fb().group({
+      siteName: [, Validators.required],
+      repName: [''],
+      repEmail: [''],
+      repContact: [''],
       customer: ['', Validators.required],
       scope: ['', Validators.required],
       discountPercentage: [

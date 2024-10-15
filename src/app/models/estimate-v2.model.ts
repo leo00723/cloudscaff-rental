@@ -30,4 +30,7 @@ export interface EstimateV2 {
   comments?: Comment[];
   excludeVAT?: boolean;
   uploads?: UploadedFile[];
+  repName?: string;
+  repEmail?: string;
+  repContact?: string;
 }

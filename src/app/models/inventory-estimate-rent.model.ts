@@ -29,4 +29,7 @@ export interface InventoryEstimateRent {
   excludeVAT?: boolean;
   uploads?: UploadedFile[];
   poNumber?: string;
+  repName?: string;
+  repEmail?: string;
+  repContact?: string;
 }

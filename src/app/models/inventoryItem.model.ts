@@ -34,4 +34,5 @@ export interface InventoryItem {
   log?: any[];
   checked?: boolean;
   deficit?: number;
+  duration?: number;
 }

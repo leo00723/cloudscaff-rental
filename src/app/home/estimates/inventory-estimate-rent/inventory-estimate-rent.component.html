@@ -50,6 +50,45 @@
         <app-title-block> Customer Information </app-title-block>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
+            <app-input-reactive
+              title="Site Name"
+              controlName="siteName"
+              [form]="form"
+              placeholder="Enter Site Name"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col size="12">
+            <app-input-reactive
+              title="Representative Name"
+              controlName="repName"
+              [form]="form"
+              placeholder="Enter Representative Name"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col size="12">
+            <app-input-reactive
+              title="Representative Email"
+              controlName="repEmail"
+              type="email"
+              [form]="form"
+              placeholder="Enter Representative Rmail"
+            >
+            </app-input-reactive>
+          </ion-col>
+          <ion-col size="12">
+            <app-input-reactive
+              title="Representative Contact"
+              controlName="repContact"
+              [form]="form"
+              placeholder="Enter Representative Contact"
+            >
+            </app-input-reactive>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
             <app-searchable-select
               (click)="select.open()"
               *ngIf="customers$ | async as customers"
@@ -168,6 +207,7 @@
                     </th>
                     <th scope="col" class="text-center">Rental Rate</th>
                     <th scope="col" class="text-center">Rental Qty</th>
+                    <th scope="col" class="text-center">Duration / Months</th>
                     <th scope="col" class="text-end">
                       Weight ({{ company.mass.symbol }})
                     </th>
@@ -220,6 +260,23 @@
                         </ion-input>
                         <ion-label color="danger" *ngIf="item.error">
                           you cannot exceed the available qty
+                        </ion-label>
+                      </td>
+                      <td class="text-center">
+                        <ion-input
+                          #qty
+                          debounce="300"
+                          inputmode="number"
+                          [color]="item.error ? 'danger' : 'success'"
+                          [clearOnEdit]="true"
+                          [value]="item.duration"
+                          [readonly]="inventoryEstimate.status !== 'pending'"
+                          (ionChange)="updateDuration($event, item)"
+                          [min]="1"
+                        >
+                        </ion-input>
+                        <ion-label color="danger" *ngIf="item.error">
+                          Enter a valid duration
                         </ion-label>
                       </td>
                       <td class="text-end">
@@ -277,6 +334,23 @@
                           </ion-input>
                           <ion-label color="danger" *ngIf="item.error">
                             you cannot exceed the available qty
+                          </ion-label>
+                        </td>
+                        <td class="text-center">
+                          <ion-input
+                            #qty
+                            debounce="300"
+                            inputmode="number"
+                            [color]="item.error ? 'danger' : 'success'"
+                            [clearOnEdit]="true"
+                            [value]="item.duration"
+                            [readonly]="inventoryEstimate.status !== 'pending'"
+                            (ionChange)="updateDuration($event, item)"
+                            [min]="1"
+                          >
+                          </ion-input>
+                          <ion-label color="danger" *ngIf="item.error">
+                            Enter a valid duration
                           </ion-label>
                         </td>
                         <td class="text-end">

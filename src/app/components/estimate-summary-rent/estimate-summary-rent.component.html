@@ -94,6 +94,7 @@
           <th class="text-center" scope="col">Unit</th>
           <th class="text-center" scope="col">Rental Rate</th>
           <th class="text-center" scope="col">Qty</th>
+          <th class="text-center" scope="col">Duration / Months</th>
           <th class="text-end" scope="col">Total</th>
         </tr>
       </thead>
@@ -115,6 +116,9 @@
             <td class="text-center">
               {{ item.shipmentQty }}
             </td>
+            <td class="text-center">
+              {{ item.duration }}
+            </td>
 
             <td class="text-end">
               {{ company.currency.symbol }}
@@ -126,14 +130,14 @@
       <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
-          <th class="text-end" colspan="6" scope="col">Subtotal</th>
+          <th class="text-end" colspan="7" scope="col">Subtotal</th>
           <th class="text-end" scope="col">
             {{ company.currency.symbol }}
             {{ estimate.subtotal | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="6" scope="col">
+          <th class="text-end" colspan="7" scope="col">
             Discount ({{ estimate.discountPercentage }}%)
           </th>
           <th class="text-end text-danger" scope="col">
@@ -142,14 +146,14 @@
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="6" scope="col">Contract Total</th>
+          <th class="text-end" colspan="7" scope="col">Contract Total</th>
           <th class="text-end" scope="col">
             {{ company.currency.symbol }}
             {{ estimate.subtotal - estimate.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
-          <th class="text-end" colspan="6" scope="col">
+          <th class="text-end" colspan="7" scope="col">
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th class="text-end" scope="col">
@@ -157,7 +161,7 @@
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
-          <th class="text-end" colspan="6" scope="col">
+          <th class="text-end" colspan="7" scope="col">
             {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
           </th>
           <th class="text-end" scope="col">
@@ -165,7 +169,7 @@
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="6" scope="col">Total</th>
+          <th class="text-end" colspan="7" scope="col">Total</th>
           <th class="text-end" scope="col">
             {{ company.currency.symbol }}
             {{ estimate.total | number : "0.2-2" }}

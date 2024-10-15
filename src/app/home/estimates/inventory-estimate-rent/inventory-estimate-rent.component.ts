@@ -205,7 +205,7 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
     } else {
       item.error = false;
       item.shipmentQty = +val.detail.value;
-      item.totalCost = +item.shipmentQty * +item.hireCost;
+      this.calcItemTotal(item);
     }
   }
 
@@ -215,8 +215,22 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
     } else {
       item.error = false;
       item.hireCost = +val.detail.value;
-      item.totalCost = +item.shipmentQty * +item.hireCost;
+      this.calcItemTotal(item);
     }
+  }
+
+  updateDuration(val, item: InventoryItem) {
+    if (isNaN(+val.detail.value)) {
+      return (item.error = true);
+    } else {
+      item.error = false;
+      item.duration = +val.detail.value;
+      this.calcItemTotal(item);
+    }
+  }
+
+  private calcItemTotal(item: InventoryItem) {
+    item.totalCost = +item.shipmentQty * +item.hireCost * item.duration;
   }
 
   excludeVAT(args) {
@@ -300,6 +314,12 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
     });
 
     this.inventoryEstimate = cloneDeep(estimateCopy);
+    if (this.inventoryEstimate.customer) {
+      this.inventoryEstimate.customer.rep = this.inventoryEstimate?.repName;
+      this.inventoryEstimate.customer.email = this.inventoryEstimate?.repEmail;
+      this.inventoryEstimate.customer.phone =
+        this.inventoryEstimate?.repContact;
+    }
   }
 
   // END: Calculations
@@ -307,6 +327,10 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
   // START: Functions to initialise the form
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
+      siteName: [this.inventoryEstimate.siteName, Validators.required],
+      repName: [this.inventoryEstimate.repName],
+      repEmail: [this.inventoryEstimate.repEmail],
+      repContact: [this.inventoryEstimate.repContact],
       customer: [this.inventoryEstimate.customer, Validators.required],
       scope: [this.inventoryEstimate.scope],
       discountPercentage: [
@@ -330,7 +354,9 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
             if (inventoryItem) {
               inventoryItem.shipmentQty = +item.shipmentQty;
               inventoryItem.hireCost = +item.hireCost;
-              inventoryItem.totalCost = +item.shipmentQty * +item.hireCost;
+              inventoryItem.duration = +item.duration || 1;
+              inventoryItem.totalCost =
+                +item.shipmentQty * +item.hireCost * (+item.duration || 1);
             }
           });
           this.items = items;
@@ -344,6 +370,10 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
 
   private initFrom() {
     this.form = this.masterSvc.fb().group({
+      siteName: ['', Validators.required],
+      repName: [''],
+      repEmail: [''],
+      repContact: [''],
       customer: ['', Validators.required],
       scope: ['', Validators.required],
       discountPercentage: [

@@ -51,6 +51,8 @@ export class EstimateV2TableComponent {
         return 'warning';
       case 'scaffold created':
         return 'tertiary';
+      case 'rejected':
+        return 'danger';
       case 'void':
         return 'danger';
     }

@@ -12,13 +12,13 @@ import { User } from 'src/app/models/user.model';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MasterService } from '../../../services/master.service';
-import { AcceptEstimateV2Component } from './accept-estimate-v2/accept-estimate-v2.component';
+import { AcceptBasicEstimateComponent } from './accept-basic-estimate/accept-basic-estimate.component';
 
 @Component({
-  selector: 'app-add-estimate-v2',
-  templateUrl: './add-estimate-v2.component.html',
+  selector: 'app-add-basic-estimate',
+  templateUrl: './add-basic-estimate.component.html',
 })
-export class AddEstimateV2Component implements OnInit {
+export class AddBasicEstimateComponent implements OnInit {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() set value(val: EstimateV2) {
     if (val) {
@@ -193,7 +193,7 @@ export class AddEstimateV2Component implements OnInit {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       //start the acceptance process
       const modal = await this.masterSvc.modal().create({
-        component: AcceptEstimateV2Component,
+        component: AcceptBasicEstimateComponent,
         componentProps: {
           company: this.company,
           user: this.user,
@@ -318,12 +318,20 @@ export class AddEstimateV2Component implements OnInit {
       createdByName: this.user.name,
     });
     this.estimate = cloneDeep(estimateCopy);
+    if (this.estimate.customer) {
+      this.estimate.customer.rep = this.estimate?.repName;
+      this.estimate.customer.email = this.estimate?.repEmail;
+      this.estimate.customer.phone = this.estimate?.repContact;
+    }
   }
   // START: Functions to initialise the form
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       code: [this.estimate.code],
       siteName: [this.estimate.siteName, Validators.required],
+      repName: [this.estimate.repName],
+      repEmail: [this.estimate.repEmail],
+      repContact: [this.estimate.repContact],
       customer: [this.estimate.customer, Validators.required],
       scope: [this.estimate.scope, Validators.nullValidator],
       note1: [this.estimate.note1, Validators.nullValidator],
@@ -358,6 +366,9 @@ export class AddEstimateV2Component implements OnInit {
     this.form = this.masterSvc.fb().group({
       code: [''],
       siteName: ['', Validators.required],
+      repName: [''],
+      repEmail: [''],
+      repContact: [''],
       customer: ['', Validators.required],
       scope: ['', Validators.nullValidator],
       note1: ['', Validators.nullValidator],

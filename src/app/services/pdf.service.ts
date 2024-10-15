@@ -188,7 +188,7 @@ export class PdfService {
     }
   }
 
-  // ESTIMATE STANDARD PDF
+  // ESTIMATE BASIC PDF
   async generateBasicEstimate(
     estimate: EstimateV2,
     company: Company,
@@ -232,11 +232,12 @@ export class PdfService {
     };
 
     const data = {
+      header: this.getPageNumbers(),
       footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Estimate-${estimate.code}`),
+      info: this.getMetaData(`${company.name}-Quotation-${estimate.code}`),
       content: [
         await this.getHeader(
-          'Estimate',
+          'Quotation',
           estimate.code,
           estimate.siteName,
           estimate.date,
@@ -252,6 +253,11 @@ export class PdfService {
         { text: estimate.scope },
         hr,
         summary,
+        hr,
+        { text: 'Note: Rental Manpower', style: 'h4b' },
+        { text: estimate.note1 },
+        { text: 'Note: Rental Material', style: 'h4b' },
+        { text: estimate.note2 },
         hr,
         {
           table: {
@@ -408,7 +414,7 @@ export class PdfService {
   ) {
     const items = [];
     estimate.items.forEach((item, i) => {
-      items.push(this.addSaleItem(i, company, item, true));
+      items.push(this.addRentalEstimateItem(i, company, item));
     });
 
     const summary = {
@@ -431,8 +437,8 @@ export class PdfService {
               style: 'h4b',
               alignment: 'left',
             },
-            { text: 'Unit', style: 'h4b', alignment: 'center' },
-            { text: 'Rate', style: 'h4b', alignment: 'center' },
+            { text: 'Duration / Month', style: 'h4b', alignment: 'center' },
+            { text: 'Rent / Month', style: 'h4b', alignment: 'center' },
             { text: 'Qty', style: 'h4b', alignment: 'center' },
             { text: 'Total', style: 'h4b', alignment: 'right' },
           ],
@@ -443,11 +449,12 @@ export class PdfService {
     };
 
     const data = {
+      header: this.getPageNumbers(),
       footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Estimate-${estimate.code}`),
+      info: this.getMetaData(`${company.name}-Quotation-${estimate.code}`),
       content: [
         await this.getHeader(
-          'Rental Estimate',
+          'Rental Quotation',
           estimate.code,
           estimate.siteName,
           estimate.date,
@@ -654,11 +661,12 @@ export class PdfService {
     };
 
     const data = {
+      header: this.getPageNumbers(),
       footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Estimate-${estimate.code}`),
+      info: this.getMetaData(`${company.name}-Quotation-${estimate.code}`),
       content: [
         await this.getHeader(
-          'Sale Estimate',
+          'Sale Quotation',
           estimate.code,
           'N/A',
           estimate.date,
@@ -866,6 +874,7 @@ export class PdfService {
     };
 
     const data = {
+      header: this.getPageNumbers(),
       footer: await this.getFooter(),
       info: this.getMetaData(
         `${company.name}-Invoice-${invoice.estimate.code}`
@@ -1157,6 +1166,7 @@ export class PdfService {
     };
 
     const data = {
+      header: this.getPageNumbers(),
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
       content: [
@@ -2766,7 +2776,7 @@ export class PdfService {
             '',
           ],
           [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
-          [{ text: 'Site:', style: 'h6b' }, `${siteName}`, '', ''],
+          [{ text: 'Project:', style: 'h6b' }, `${siteName}`, '', ''],
           ...data,
           [
             { text: 'Date Issued:', style: 'h6b' },
@@ -2908,7 +2918,7 @@ export class PdfService {
         style: 'h6',
       },
       {
-        text: 'EA',
+        text: item.unit,
         style: 'h6',
         alignment: 'center',
       },
@@ -2929,6 +2939,45 @@ export class PdfService {
       },
       {
         text: `${company.currency.symbol} ${this.format(item.total)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
+  }
+
+  private addRentalEstimateItem(index: number, company: Company, item: any) {
+    return [
+      {
+        text: index++,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.name,
+        style: 'h6',
+      },
+      {
+        text: item.duration,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.hireCost)}`,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.shipmentQty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.totalCost)}`,
         style: 'h6',
         alignment: 'right',
       },
@@ -3205,6 +3254,17 @@ export class PdfService {
       ]);
     }
     return footerCS;
+  }
+
+  private getPageNumbers() {
+    return (currentPage, pageCount) => [
+      {
+        text: currentPage.toString() + ' of ' + pageCount,
+        style: 'h4b',
+        alignment: 'right',
+        margin: [0, 15, 15, 0],
+      },
+    ];
   }
   private getMetaData(title: string) {
     const info = {

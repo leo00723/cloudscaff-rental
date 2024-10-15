@@ -3,16 +3,16 @@ import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
+import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
 import { InventoryEstimateSell } from 'src/app/models/inventory-estimate-sell.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
 import { UserState } from 'src/app/shared/user/user.state';
 import { CompanyState } from '../../shared/company/company.state';
-import { AddEstimateV2Component } from './add-estimate-v2/add-estimate-v2.component';
-import { InventoryEstimateSellComponent } from './inventory-estimate-sell/inventory-estimate-sell.component';
-import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
+import { AddBasicEstimateComponent } from './basic-estimate/add-basic-estimate.component';
 import { InventoryEstimateRentComponent } from './inventory-estimate-rent/inventory-estimate-rent.component';
+import { InventoryEstimateSellComponent } from './inventory-estimate-sell/inventory-estimate-sell.component';
 @Component({
   selector: 'app-estimates',
   templateUrl: './estimates.page.html',
@@ -39,7 +39,7 @@ export class EstimatesPage implements OnInit {
   }
   async addEstimateV2() {
     const modal = await this.masterSvc.modal().create({
-      component: AddEstimateV2Component,
+      component: AddBasicEstimateComponent,
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'addEstimate',
@@ -48,7 +48,7 @@ export class EstimatesPage implements OnInit {
   }
   async editEstimateV2(estimate: EstimateV2) {
     const modal = await this.masterSvc.modal().create({
-      component: AddEstimateV2Component,
+      component: AddBasicEstimateComponent,
       componentProps: {
         value: estimate,
         isEdit: true,

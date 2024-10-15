@@ -13,10 +13,10 @@ import { Navigate } from 'src/app/shared/router.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
-  selector: 'app-accept-estimate-v2',
-  templateUrl: './accept-estimate-v2.component.html',
+  selector: 'app-accept-basic-estimate',
+  templateUrl: './accept-basic-estimate.component.html',
 })
-export class AcceptEstimateV2Component implements OnInit {
+export class AcceptBasicEstimateComponent implements OnInit {
   @Input() form;
   @Input() estimate: EstimateV2;
   company: Company;

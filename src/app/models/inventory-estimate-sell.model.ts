@@ -28,4 +28,7 @@ export interface InventoryEstimateSell {
   uploads?: UploadedFile[];
   poNumber?: string;
   acceptedBy?: string;
+  repName?: string;
+  repEmail?: string;
+  repContact?: string;
 }
