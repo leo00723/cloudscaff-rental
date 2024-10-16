@@ -19,6 +19,7 @@ export interface Company {
   gst?: boolean;
   logoRef?: string;
   logoUrl?: string;
+  subHeaderUrl?: string;
   mass?: UnitData;
   measurement?: UnitData;
   name?: string;

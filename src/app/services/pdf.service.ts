@@ -141,6 +141,8 @@ const defaultCS = {
   color: 'black',
   // alignment: 'justify'
 };
+
+const defaultSubHeader = `https://firebasestorage.googleapis.com/v0/b/cloudscaff-178c8.appspot.com/o/company%2FQy4PqIjiTdzOfIeDzsa3%2Fuploads%2Fsubheader.png?alt=media&token=80281f49-c195-44d4-968d-0a850bb36219`;
 @Injectable({
   providedIn: 'root',
 })
@@ -248,7 +250,19 @@ export class PdfService {
           []
         ),
         hr,
-        this.getSubHeader(estimate.customer, company),
+        this.getSubHeader([
+          [
+            {
+              fit: [760, 200],
+              image: await this.getBase64ImageFromURL(
+                company.subHeaderUrl || defaultSubHeader
+              ),
+            },
+            '',
+          ],
+        ]),
+        hr,
+        this.getCompanyInfo(estimate.customer, company),
         hr,
         { text: estimate.scope },
         hr,
@@ -465,7 +479,19 @@ export class PdfService {
           []
         ),
         hr,
-        this.getSubHeader(estimate.customer, company),
+        this.getSubHeader([
+          [
+            {
+              fit: [510, 200],
+              image: await this.getBase64ImageFromURL(
+                company.subHeaderUrl || defaultSubHeader
+              ),
+            },
+            '',
+          ],
+        ]),
+        hr,
+        this.getCompanyInfo(estimate.customer, company),
         hr,
         { text: estimate.scope },
         hr,
@@ -613,7 +639,6 @@ export class PdfService {
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
@@ -677,7 +702,19 @@ export class PdfService {
           []
         ),
         hr,
-        this.getSubHeader(estimate.customer, company),
+        this.getSubHeader([
+          [
+            {
+              fit: [760, 200],
+              image: await this.getBase64ImageFromURL(
+                company.subHeaderUrl || defaultSubHeader
+              ),
+            },
+            '',
+          ],
+        ]),
+        hr,
+        this.getCompanyInfo(estimate.customer, company),
         hr,
         { text: estimate.scope },
         hr,
@@ -899,7 +936,19 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getSubHeader(invoice.estimate.customer, company),
+        this.getSubHeader([
+          [
+            {
+              fit: [760, 200],
+              image: await this.getBase64ImageFromURL(
+                company.subHeaderUrl || defaultSubHeader
+              ),
+            },
+            '',
+          ],
+        ]),
+        hr,
+        this.getCompanyInfo(invoice.estimate.customer, company),
         hr,
         { text: invoice.estimate.scope },
         hr,
@@ -1189,7 +1238,19 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getSubHeader(invoice.estimate.customer, company),
+        this.getSubHeader([
+          [
+            {
+              fit: [760, 200],
+              image: await this.getBase64ImageFromURL(
+                company.subHeaderUrl || defaultSubHeader
+              ),
+            },
+            '',
+          ],
+        ]),
+        hr,
+        this.getCompanyInfo(invoice.estimate.customer, company),
         hr,
         { text: invoice.estimate.scope },
         hr,
@@ -1572,7 +1633,7 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getSubHeader(inspection.customer, company),
+        this.getCompanyInfo(inspection.customer, company),
         hr,
         { text: inspection.notes },
         hr,
@@ -1850,7 +1911,7 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getSubHeader(handover.customer, company),
+        this.getCompanyInfo(handover.customer, company),
         hr,
         { text: handover.notes },
         hr,
@@ -2155,7 +2216,7 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getSubHeader(dismantle.customer, company),
+        this.getCompanyInfo(dismantle.customer, company),
         // hr,
         // { text: dismantle.notes },
         hr,
@@ -2307,7 +2368,7 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getSubHeader(shipment.site.customer, company),
+        this.getCompanyInfo(shipment.site.customer, company),
         hr,
         summary,
         hr,
@@ -2657,7 +2718,7 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getSubHeader(returnDoc.site.customer, company),
+        this.getCompanyInfo(returnDoc.site.customer, company),
         hr,
         summary,
         hr,
@@ -2791,7 +2852,21 @@ export class PdfService {
     };
     return header;
   }
-  private getSubHeader(customer: Customer, company: Company) {
+
+  // [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
+  private getSubHeader(data?: any[]) {
+    const header = {
+      style: 'tableExample',
+      table: {
+        widths: ['*', '*', '*', '*'],
+        body: [...data],
+      },
+      layout: 'noBorders',
+    };
+    return header;
+  }
+
+  private getCompanyInfo(customer: Customer, company: Company) {
     const address = {
       style: 'tableExample',
 
