@@ -238,29 +238,15 @@ export class PdfService {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Quotation-${estimate.code}`),
       content: [
-        await this.getHeader(
+        await this.getBillingHeader(
           'Quotation',
           estimate.code,
           estimate.siteName,
           estimate.date,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
+          company,
           '',
           []
         ),
-        hr,
-        this.getSubHeader([
-          [
-            {
-              fit: [760, 200],
-              image: await this.getBase64ImageFromURL(
-                company.subHeaderUrl || defaultSubHeader
-              ),
-            },
-            '',
-          ],
-        ]),
         hr,
         this.getCompanyInfo(estimate.customer, company),
         hr,
@@ -293,7 +279,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
                 { text: company.bankName, alignment: 'left' },
                 {
                   text: 'Subtotal:',
@@ -309,7 +295,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
                 { text: company.name, alignment: 'left' },
                 {
                   text: `Discount (${estimate.discountPercentage}%):`,
@@ -325,8 +311,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
-                { text: company.accountNum, alignment: 'left' },
+                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
+                { text: `SA${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -342,12 +328,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  text: company.branchCode ? 'Branch:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: company.swiftCode ? company.swiftCode : '',
+                  text: company.branchCode ? company.branchCode : '',
                   alignment: 'left',
                 },
                 {
@@ -378,12 +364,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: '',
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: '',
+                  text: company.swiftCode ? company.swiftCode : '',
                   alignment: 'left',
                 },
                 {
@@ -399,6 +385,20 @@ export class PdfService {
                   style: 'h3',
                   alignment: 'right',
                   margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: 'Grand Total in words:',
+                  style: 'h4b',
+                  alignment: 'right',
+                  colSpan: 3,
+                },
+                '',
+                '',
+                {
+                  text: this.numberToWords(estimate.total),
+                  style: 'h4b',
                 },
               ],
             ],
@@ -436,7 +436,7 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', '*'],
 
         body: [
           [
@@ -450,6 +450,11 @@ export class PdfService {
               text: 'Description',
               style: 'h4b',
               alignment: 'left',
+            },
+            {
+              text: 'Unit',
+              style: 'h4b',
+              alignment: 'center',
             },
             { text: 'Duration / Month', style: 'h4b', alignment: 'center' },
             { text: 'Rent / Month', style: 'h4b', alignment: 'center' },
@@ -467,29 +472,15 @@ export class PdfService {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Quotation-${estimate.code}`),
       content: [
-        await this.getHeader(
+        await this.getBillingHeader(
           'Rental Quotation',
           estimate.code,
           estimate.siteName,
           estimate.date,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
+          company,
           '',
           []
         ),
-        hr,
-        this.getSubHeader([
-          [
-            {
-              fit: [510, 200],
-              image: await this.getBase64ImageFromURL(
-                company.subHeaderUrl || defaultSubHeader
-              ),
-            },
-            '',
-          ],
-        ]),
         hr,
         this.getCompanyInfo(estimate.customer, company),
         hr,
@@ -517,7 +508,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
                 { text: company.bankName, alignment: 'left' },
                 {
                   text: 'Subtotal:',
@@ -533,7 +524,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
                 { text: company.name, alignment: 'left' },
                 {
                   text: `Discount (${estimate.discountPercentage}%):`,
@@ -549,8 +540,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
-                { text: company.accountNum, alignment: 'left' },
+                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
+                { text: `SA${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -566,12 +557,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  text: company.branchCode ? 'Branch:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: company.swiftCode ? company.swiftCode : '',
+                  text: company.branchCode ? company.branchCode : '',
                   alignment: 'left',
                 },
                 {
@@ -602,12 +593,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: '',
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: '',
+                  text: company.swiftCode ? company.swiftCode : '',
                   alignment: 'left',
                 },
                 {
@@ -625,6 +616,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
+              [
+                {
+                  text: 'Grand Total in words:',
+                  style: 'h4b',
+                  alignment: 'right',
+                  colSpan: 3,
+                },
+                '',
+                '',
+                {
+                  text: this.numberToWords(estimate.total),
+                  style: 'h4b',
+                },
+              ],
             ],
           },
           layout: 'noBorders',
@@ -639,6 +644,7 @@ export class PdfService {
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
@@ -690,29 +696,15 @@ export class PdfService {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Quotation-${estimate.code}`),
       content: [
-        await this.getHeader(
+        await this.getBillingHeader(
           'Sale Quotation',
           estimate.code,
           'N/A',
           estimate.date,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
+          company,
           '',
           []
         ),
-        hr,
-        this.getSubHeader([
-          [
-            {
-              fit: [760, 200],
-              image: await this.getBase64ImageFromURL(
-                company.subHeaderUrl || defaultSubHeader
-              ),
-            },
-            '',
-          ],
-        ]),
         hr,
         this.getCompanyInfo(estimate.customer, company),
         hr,
@@ -740,7 +732,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
                 { text: company.bankName, alignment: 'left' },
                 {
                   text: 'Subtotal:',
@@ -756,7 +748,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
                 { text: company.name, alignment: 'left' },
                 {
                   text: `Discount (${estimate.discountPercentage}%):`,
@@ -772,8 +764,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
-                { text: company.accountNum, alignment: 'left' },
+                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
+                { text: `SA${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -789,12 +781,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  text: company.branchCode ? 'Branch:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: company.swiftCode ? company.swiftCode : '',
+                  text: company.branchCode ? company.branchCode : '',
                   alignment: 'left',
                 },
                 {
@@ -825,12 +817,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: '',
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: '',
+                  text: company.swiftCode ? company.swiftCode : '',
                   alignment: 'left',
                 },
                 {
@@ -846,6 +838,20 @@ export class PdfService {
                   style: 'h3',
                   alignment: 'right',
                   margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: 'Grand Total in words:',
+                  style: 'h4b',
+                  alignment: 'right',
+                  colSpan: 3,
+                },
+                '',
+                '',
+                {
+                  text: this.numberToWords(estimate.total),
+                  style: 'h4b',
                 },
               ],
             ],
@@ -917,14 +923,12 @@ export class PdfService {
         `${company.name}-Invoice-${invoice.estimate.code}`
       ),
       content: [
-        await this.getHeader(
+        await this.getBillingHeader(
           isdraft ? 'Invoice Draft' : 'Invoice',
           isdraft ? 'Invoice Draft' : invoice.code,
           'N/A',
           isdraft ? invoice.date : invoice.date,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
+          company,
           '',
           [
             [
@@ -935,18 +939,6 @@ export class PdfService {
             ],
           ]
         ),
-        hr,
-        this.getSubHeader([
-          [
-            {
-              fit: [760, 200],
-              image: await this.getBase64ImageFromURL(
-                company.subHeaderUrl || defaultSubHeader
-              ),
-            },
-            '',
-          ],
-        ]),
         hr,
         this.getCompanyInfo(invoice.estimate.customer, company),
         hr,
@@ -974,7 +966,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
                 { text: company.bankName, alignment: 'left' },
                 {
                   text: 'Subtotal:',
@@ -990,7 +982,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
                 { text: company.name, alignment: 'left' },
                 {
                   text: `Discount (${invoice.estimate.discountPercentage}%):`,
@@ -1006,8 +998,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
-                { text: company.accountNum, alignment: 'left' },
+                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
+                { text: `SA${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -1023,12 +1015,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  text: company.branchCode ? 'Branch:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: company.swiftCode ? company.swiftCode : '',
+                  text: company.branchCode ? company.branchCode : '',
                   alignment: 'left',
                 },
                 {
@@ -1059,12 +1051,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: '',
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: '',
+                  text: company.swiftCode ? company.swiftCode : '',
                   alignment: 'left',
                 },
                 {
@@ -1080,6 +1072,20 @@ export class PdfService {
                   style: 'h3',
                   alignment: 'right',
                   margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: 'Grand Total in words:',
+                  style: 'h4b',
+                  alignment: 'right',
+                  colSpan: 3,
+                },
+                '',
+                '',
+                {
+                  text: this.numberToWords(invoice.estimate.total),
+                  style: 'h4b',
                 },
               ],
             ],
@@ -1219,14 +1225,12 @@ export class PdfService {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
       content: [
-        await this.getHeader(
+        await this.getBillingHeader(
           isdraft ? 'Invoice Draft' : 'Invoice',
           isdraft ? 'Invoice Draft' : invoice.code,
           invoice.site.name,
           isdraft ? invoice.date : invoice.date,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
+          company,
           '',
           [
             [
@@ -1237,18 +1241,6 @@ export class PdfService {
             ],
           ]
         ),
-        hr,
-        this.getSubHeader([
-          [
-            {
-              fit: [760, 200],
-              image: await this.getBase64ImageFromURL(
-                company.subHeaderUrl || defaultSubHeader
-              ),
-            },
-            '',
-          ],
-        ]),
         hr,
         this.getCompanyInfo(invoice.estimate.customer, company),
         hr,
@@ -1296,7 +1288,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Bank:', style: 'h6b', alignment: 'left' },
+                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
                 { text: company.bankName, alignment: 'left' },
                 {
                   text: 'Credit:',
@@ -1312,7 +1304,7 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Name:', style: 'h6b', alignment: 'left' },
+                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
                 { text: company.name, alignment: 'left' },
                 {
                   text: `Discount:`,
@@ -1328,8 +1320,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'Account Number:', style: 'h6b', alignment: 'left' },
-                { text: company.accountNum, alignment: 'left' },
+                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
+                { text: `SA${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -1345,12 +1337,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  text: company.branchCode ? 'Branch:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: company.swiftCode ? company.swiftCode : '',
+                  text: company.branchCode ? company.branchCode : '',
                   alignment: 'left',
                 },
                 {
@@ -1377,12 +1369,12 @@ export class PdfService {
               ],
               [
                 {
-                  text: '',
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
                 {
-                  text: '',
+                  text: company.swiftCode ? company.swiftCode : '',
                   alignment: 'left',
                 },
                 {
@@ -1398,6 +1390,20 @@ export class PdfService {
                   style: 'h3',
                   alignment: 'right',
                   margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: 'Grand Total in words:',
+                  style: 'h4b',
+                  alignment: 'right',
+                  colSpan: 3,
+                },
+                '',
+                '',
+                {
+                  text: this.numberToWords(invoice.total),
+                  style: 'h4b',
                 },
               ],
             ],
@@ -2852,14 +2858,58 @@ export class PdfService {
     };
     return header;
   }
+  private async getBillingHeader(
+    title: string,
+    code: string,
+    siteName: string,
+    date: any,
+    company: Company,
+    link?: string,
+    data?: any
+  ) {
+    const linkData = link
+      ? [
+          { text: 'View Online:', style: 'h6b' },
+          {
+            text: 'Click here to view online',
+            style: ['h6b', { color: 'blue' }],
+            link,
+          },
+          '',
+          '',
+        ]
+      : ['', '', '', ''];
 
-  // [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
-  private getSubHeader(data?: any[]) {
     const header = {
       style: 'tableExample',
       table: {
         widths: ['*', '*', '*', '*'],
-        body: [...data],
+
+        body: [
+          [
+            {
+              fit: [760, 200],
+              image: await this.getBase64ImageFromURL(
+                company.subHeaderUrl || defaultSubHeader
+              ),
+              colSpan: 4,
+            },
+            '',
+            '',
+            '',
+          ],
+          [{ text: title, style: 'header', colSpan: 2 }, '', '', ''],
+          [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
+          [{ text: 'Project:', style: 'h6b' }, `${siteName}`, '', ''],
+          ...data,
+          [
+            { text: 'Date Issued:', style: 'h6b' },
+            `${this.toDate(date)}`,
+            '',
+            '',
+          ],
+          linkData,
+        ],
       },
       layout: 'noBorders',
     };
@@ -3023,7 +3073,7 @@ export class PdfService {
   private addRentalEstimateItem(index: number, company: Company, item: any) {
     return [
       {
-        text: index++,
+        text: index + 1,
         style: 'h6',
         alignment: 'center',
       },
@@ -3035,6 +3085,11 @@ export class PdfService {
       {
         text: item.name,
         style: 'h6',
+      },
+      {
+        text: 'EA',
+        style: 'h6',
+        alignment: 'center',
       },
       {
         text: item.duration,
@@ -3300,6 +3355,97 @@ export class PdfService {
     };
 
     return summary;
+  }
+
+  private numberToWords(num: number): string {
+    if (num === 0) {
+      return 'Zero';
+    }
+
+    const belowTwenty: string[] = [
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen',
+    ];
+
+    const tens: string[] = [
+      '',
+      '',
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety',
+    ];
+
+    const thousands: string[] = ['', 'Thousand', 'Million', 'Billion'];
+
+    const helper = (n: number): string => {
+      if (n === 0) {
+        return '';
+      }
+      if (n < 20) {
+        return belowTwenty[n] + ' ';
+      }
+      if (n < 100) {
+        return tens[Math.floor(n / 10)] + ' ' + helper(n % 10);
+      }
+      return belowTwenty[Math.floor(n / 100)] + ' Hundred ' + helper(n % 100);
+    };
+
+    const convertIntegerPart = (num2: number): string => {
+      let word = '';
+      let i = 0;
+
+      while (num2 > 0) {
+        if (num2 % 1000 !== 0) {
+          word = helper(num2 % 1000) + thousands[i] + ' ' + word;
+        }
+        num2 = Math.floor(num2 / 1000);
+        i++;
+      }
+
+      return word.trim();
+    };
+
+    const dollars = Math.floor(num); // Get the whole part (dollars)
+    const halala = Math.round((num - dollars) * 100); // Get the decimal part (halala)
+
+    // Convert dollars to words
+    const dollarWords =
+      convertIntegerPart(dollars) +
+      (dollars === 1 ? ' Saudi Riyal' : ' Saudi Riyals');
+
+    // Convert halala to words, if any
+    const halalaWords =
+      halala > 0 ? convertIntegerPart(halala) + ' Halala' : '';
+
+    // Construct the final phrase
+    if (halalaWords) {
+      return `${dollarWords} and ${halalaWords} Only`;
+    } else {
+      return `${dollarWords} Only`;
+    }
   }
 
   private async getFooter() {
