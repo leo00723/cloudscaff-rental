@@ -44,7 +44,7 @@ export class InspectionSummaryComponent {
       );
     const pdf = await this.masterSvc
       .pdf()
-      .generateInspection(this.inspection, this.company, terms);
+      .inspection(this.inspection, this.company, terms);
     this.masterSvc.pdf().handlePdf(pdf, this.inspection.code);
   }
 

@@ -310,7 +310,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
     }
     const pdf = await this.masterSvc
       .pdf()
-      .generateReturn(this.returnDoc, this.company, null);
+      .returnDoc(this.returnDoc, this.company, null);
     this.masterSvc.pdf().handlePdf(pdf, this.returnDoc.code);
   }
   async downloadPicklist() {
@@ -320,7 +320,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       }
       const pdf = await this.masterSvc
         .pdf()
-        .generateReturnPickList(this.returnDoc, this.items, this.company);
+        .returnPickList(this.returnDoc, this.items, this.company);
       this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.returnDoc.code}`);
     } else {
       const returnDoc: TransactionReturn = {
@@ -330,7 +330,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       };
       const pdf = await this.masterSvc
         .pdf()
-        .generateReturnPickList(returnDoc, this.items, this.company);
+        .returnPickList(returnDoc, this.items, this.company);
       this.masterSvc.pdf().handlePdf(pdf, `Picklist-${returnDoc.site.name}`);
     }
   }

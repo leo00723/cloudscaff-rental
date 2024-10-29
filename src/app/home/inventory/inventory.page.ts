@@ -14,7 +14,7 @@ import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locat
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Request } from 'src/app/models/request.model';
-import { Shipment } from 'src/app/models/shipment.model';
+import { Delivery } from 'src/app/models/delivery.model';
 import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { Transfer } from 'src/app/models/transfer.model';
 import { User } from 'src/app/models/user.model';
@@ -40,11 +40,11 @@ export class InventoryPage implements OnInit {
   @Select() company$: Observable<Company>;
   inventoryItems$: Observable<InventoryItem[]>;
 
-  shipments$: Observable<Shipment[]>;
-  pendingShipments$: Observable<Shipment[]>;
-  outboundShipments$: Observable<Shipment[]>;
-  reservedShipments$: Observable<Shipment[]>;
-  voidShipments$: Observable<Shipment[]>;
+  shipments$: Observable<Delivery[]>;
+  pendingShipments$: Observable<Delivery[]>;
+  outboundShipments$: Observable<Delivery[]>;
+  reservedShipments$: Observable<Delivery[]>;
+  voidShipments$: Observable<Delivery[]>;
 
   transfers$: Observable<Transfer[]>;
   pendingTransfers$: Observable<Transfer[]>;
@@ -152,7 +152,7 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
-  async viewShipment(shipment: Shipment) {
+  async viewShipment(shipment: Delivery) {
     const modal = await this.masterSvc.modal().create({
       component: AddShipmentComponent,
       componentProps: {

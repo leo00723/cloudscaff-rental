@@ -14,7 +14,7 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { PO } from 'src/app/models/po.model';
 import { Request } from 'src/app/models/request.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
-import { Shipment } from 'src/app/models/shipment.model';
+import { Delivery } from 'src/app/models/delivery.model';
 import { SI } from 'src/app/models/si.model';
 import { Site } from 'src/app/models/site.model';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
@@ -59,8 +59,8 @@ export class ViewSitePage implements OnInit {
   outboundReturns$: Observable<TransactionReturn[]>;
   returns$: Observable<TransactionReturn[]>;
 
-  outboundDeliveries$: Observable<Shipment[]>;
-  deliveries$: Observable<Shipment[]>;
+  outboundDeliveries$: Observable<Delivery[]>;
+  deliveries$: Observable<Delivery[]>;
 
   pendingInstructions$: Observable<SI[]>;
   signedInstructions$: Observable<SI[]>;
@@ -142,21 +142,21 @@ export class ViewSitePage implements OnInit {
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['pending']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
     this.submittedRequests$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['submitted']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
     this.approvedRequests$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/requests`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['approved']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
 
     this.outboundDeliveries$ = this.masterSvc
       .edit()
@@ -164,35 +164,35 @@ export class ViewSitePage implements OnInit {
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['on-route']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
     this.deliveries$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/shipments`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['received']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
     this.pendingInstructions$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['needs signature']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
     this.signedInstructions$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['signed', 'scaffold created']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
     this.instructions$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/siteInstructions`, [
         where('site.id', '==', this.ids[1]),
         where('status', 'in', ['completed']),
         orderBy('code', 'desc'),
-      ]) as Observable<Shipment[]>;
+      ]) as Observable<Delivery[]>;
     this.pendingReturns$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
@@ -321,7 +321,7 @@ export class ViewSitePage implements OnInit {
     return;
   }
 
-  async viewShipment(shipment: Shipment) {
+  async viewShipment(shipment: Delivery) {
     const modal = await this.masterSvc.modal().create({
       component: AddShipmentComponent,
       componentProps: {
@@ -428,9 +428,7 @@ export class ViewSitePage implements OnInit {
 
   async downloadPDF(items: InventoryItem[], site: Site) {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
-    const pdf = await this.masterSvc
-      .pdf()
-      .generateInventoryList(site, items, company);
+    const pdf = await this.masterSvc.pdf().inventoryList(site, items, company);
     this.masterSvc
       .pdf()
       .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);

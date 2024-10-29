@@ -24,7 +24,7 @@ import { LabourItem } from '../models/labourItem.model';
 import { Modification } from '../models/modification.model';
 import { PaymentApplication } from '../models/paymentApplication.model';
 import { Return } from '../models/return.model';
-import { Shipment } from '../models/shipment.model';
+import { Delivery } from '../models/delivery.model';
 import { Site } from '../models/site.model';
 import { Statement } from '../models/statement.mode';
 import { TransportItem } from '../models/transport.model';
@@ -3460,7 +3460,7 @@ export class PdfService {
 
   // SHIPMENT INVENTORY PDF
   async generateShipment(
-    shipment: Shipment,
+    shipment: Delivery,
     company: Company,
     terms: Term | null
   ) {
@@ -3777,7 +3777,7 @@ export class PdfService {
 
   // Picklist PDF
   async generatePickList(
-    docData: Shipment | Return,
+    docData: Delivery | Return,
     inventory: InventoryItem[],
     company: Company
   ) {
@@ -3856,7 +3856,7 @@ export class PdfService {
   }
 
   async generateReturnPickList(
-    docData: Shipment | Return,
+    docData: Delivery | Return,
     inventory: InventoryItem[],
     company: Company
   ) {

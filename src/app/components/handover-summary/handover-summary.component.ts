@@ -112,7 +112,7 @@ export class HandoverSummaryComponent {
       );
     const pdf = await this.masterSvc
       .pdf()
-      .generateHandover(this.handover, this.company, terms);
+      .handover(this.handover, this.company, terms);
     this.masterSvc.pdf().handlePdf(pdf, this.handover.code);
   }
 

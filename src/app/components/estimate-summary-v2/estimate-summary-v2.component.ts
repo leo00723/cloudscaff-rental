@@ -47,7 +47,7 @@ export class EstimateSummaryV2Component {
     //   );
     const pdf = await this.masterSvc
       .pdf()
-      .generateBasicEstimate(this.estimate, this.company, terms);
+      .basicEstimate(this.estimate, this.company, terms);
     this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
   }
   async share(terms: Term | null) {

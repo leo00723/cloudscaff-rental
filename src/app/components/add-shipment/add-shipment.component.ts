@@ -12,7 +12,7 @@ import { Select } from '@ngxs/store';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
-import { Shipment } from 'src/app/models/shipment.model';
+import { Delivery } from 'src/app/models/delivery.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -30,7 +30,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
   @Input() inventoryItems$: Observable<InventoryItem[]>;
-  @Input() set value(val: Shipment) {
+  @Input() set value(val: Delivery) {
     if (val) {
       Object.assign(this.shipment, val);
       this.initEditForm();
@@ -38,7 +38,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
   items: InventoryItem[];
   itemBackup: InventoryItem[];
-  shipment: Shipment = { status: 'pending', uploads: [] };
+  shipment: Delivery = { status: 'pending', uploads: [] };
   form: FormGroup;
   user: User;
   company: Company;
@@ -109,7 +109,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       this.loading = true;
       try {
         this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
-        const shipment: Shipment = { ...this.form.value };
+        const shipment: Delivery = { ...this.form.value };
 
         shipment.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
         this.company = this.masterSvc
@@ -349,7 +349,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
     const pdf = await this.masterSvc
       .pdf()
-      .generatePickList(this.shipment, this.shipment.items, this.company);
+      .pickList(this.shipment, this.shipment.items, this.company);
     this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.shipment.code}`);
   }
   async downloadPdf() {
@@ -358,7 +358,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
     const pdf = await this.masterSvc
       .pdf()
-      .generateShipment(this.shipment, this.company, null);
+      .delivery(this.shipment, this.company, null);
     this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
   }
 
@@ -545,7 +545,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.loading = true;
     try {
       this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
-      const shipment: Shipment = { ...this.form.value };
+      const shipment: Delivery = { ...this.form.value };
       shipment.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
       this.company = this.masterSvc
         .store()

@@ -153,7 +153,7 @@ export class ScaffoldTableComponent {
         handover = { ...handover, date: handover?.date?.toDate() };
         const pdf = await this.masterSvc
           .pdf()
-          .generateHandover(handover, handover.company, terms || null);
+          .handover(handover, handover.company, terms || null);
         this.masterSvc.pdf().handlePdf(pdf, handover.code);
         loading.dismiss();
       });
@@ -172,7 +172,7 @@ export class ScaffoldTableComponent {
         dismantle = { ...dismantle, date: dismantle?.date?.toDate() };
         const pdf = await this.masterSvc
           .pdf()
-          .generateDismantle(dismantle, dismantle.company, terms || null);
+          .dismantle(dismantle, dismantle.company, terms || null);
         this.masterSvc.pdf().handlePdf(pdf, dismantle.code);
         loading.dismiss();
       });
@@ -190,7 +190,7 @@ export class ScaffoldTableComponent {
         inspection = { ...inspection, date: inspection?.date?.toDate() };
         const pdf = await this.masterSvc
           .pdf()
-          .generateInspection(inspection, inspection.company, terms || null);
+          .inspection(inspection, inspection.company, terms || null);
         this.masterSvc.pdf().handlePdf(pdf, inspection.code);
         loading.dismiss();
       });

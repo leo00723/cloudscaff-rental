@@ -31,7 +31,7 @@ export class EstimateSummarySellComponent {
   async download(terms: Term | null) {
     const pdf = await this.masterSvc
       .pdf()
-      .generateSaleEstimate(this.estimate, this.company, terms);
+      .saleEstimate(this.estimate, this.company, terms);
     this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
   }
 
@@ -47,7 +47,7 @@ export class EstimateSummarySellComponent {
     };
     const pdf = await this.masterSvc
       .pdf()
-      .generateSaleInvoice(invoice, this.company, null, true);
+      .saleInvoice(invoice, this.company, null, true);
     this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
   }
 

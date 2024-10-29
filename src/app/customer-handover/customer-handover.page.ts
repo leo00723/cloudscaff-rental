@@ -120,7 +120,7 @@ export class CustomerHandoverPage {
   }
 
   async download(terms: Term | null, handover: Handover, company: Company) {
-    const pdf = await this.pdf.generateHandover(handover, company, terms);
+    const pdf = await this.pdf.handover(handover, company, terms);
     if (!this.pdf.handlePdf(pdf, handover.code)) {
       this.notificationSvc.toast(
         'Documents can only be downloaded on pc or web',

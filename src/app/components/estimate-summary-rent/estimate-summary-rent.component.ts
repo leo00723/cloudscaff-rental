@@ -31,7 +31,7 @@ export class EstimateSummaryRentComponent {
   async download(terms: Term | null) {
     const pdf = await this.masterSvc
       .pdf()
-      .generateRentalEstimate(this.estimate, this.company, terms);
+      .rentalEstimate(this.estimate, this.company, terms);
     this.masterSvc.pdf().handlePdf(pdf, this.estimate.code);
   }
   async share(terms: Term | null) {

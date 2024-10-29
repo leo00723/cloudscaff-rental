@@ -111,7 +111,7 @@ export class DismantleSummaryComponent {
       );
     const pdf = await this.masterSvc
       .pdf()
-      .generateDismantle(this.dismantle, this.company, terms);
+      .dismantle(this.dismantle, this.company, terms);
     this.masterSvc.pdf().handlePdf(pdf, this.dismantle.code);
   }
 

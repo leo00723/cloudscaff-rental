@@ -68,7 +68,7 @@ export class CustomerInspectionPage {
   }
 
   async download(terms: Term | null, inspection: Inspection, company: Company) {
-    const pdf = await this.pdf.generateInspection(inspection, company, terms);
+    const pdf = await this.pdf.inspection(inspection, company, terms);
     if (!this.pdf.handlePdf(pdf, inspection.code)) {
       this.notificationSvc.toast(
         'Documents can only be downloaded on pc or web',

@@ -65,7 +65,7 @@ export class InvoiceComponent implements OnInit {
   }
 
   async download(terms: Term | null) {
-    const pdf = await this.pdfSvc.generateRentalInvoice(
+    const pdf = await this.pdfSvc.rentalInvoice(
       this.invoice,
       this.company,
       terms

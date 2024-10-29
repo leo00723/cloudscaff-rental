@@ -240,7 +240,7 @@ export class PurchaseOrderComponent implements OnInit {
       date: new Date(),
       poId: this.po.id,
     };
-    const pdf = await this.pdfSvc.generateRentalInvoice(
+    const pdf = await this.pdfSvc.rentalInvoice(
       invoice,
       this.company,
       null,

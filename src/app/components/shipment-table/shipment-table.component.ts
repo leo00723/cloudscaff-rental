@@ -12,7 +12,7 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
-import { Shipment } from 'src/app/models/shipment.model';
+import { Delivery } from 'src/app/models/delivery.model';
 
 @Component({
   selector: 'app-shipment-table',
@@ -21,10 +21,10 @@ import { Shipment } from 'src/app/models/shipment.model';
 })
 export class ShipmentTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<Shipment>();
-  shipments$: Observable<Shipment[]>;
-  temp$: Observable<Shipment[]>;
-  @Input() set value(estimates: Observable<Shipment[]>) {
+  @Output() selectedItem = new EventEmitter<Delivery>();
+  shipments$: Observable<Delivery[]>;
+  temp$: Observable<Delivery[]>;
+  @Input() set value(estimates: Observable<Delivery[]>) {
     this.temp$ = estimates;
     this.shipments$ = estimates;
   }

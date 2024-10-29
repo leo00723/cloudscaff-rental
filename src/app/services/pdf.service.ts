@@ -13,7 +13,7 @@ import { WeightPipe } from '../components/weight.pipe';
 import { Handover } from '../models/handover.model';
 import { Inspection } from '../models/inspection.model';
 import { InventoryItem } from '../models/inventoryItem.model';
-import { Shipment } from '../models/shipment.model';
+import { Delivery } from '../models/delivery.model';
 import { Site } from '../models/site.model';
 import { TransactionReturn } from '../models/transactionReturn.model';
 import { UploadedFile } from '../models/uploadedFile.model';
@@ -191,7 +191,7 @@ export class PdfService {
   }
 
   // ESTIMATE BASIC PDF
-  async generateBasicEstimate(
+  async basicEstimate(
     estimate: EstimateV2,
     company: Company,
     terms: Term | null
@@ -421,7 +421,7 @@ export class PdfService {
   }
 
   // ESTIMATE RENTAL PDF
-  async generateRentalEstimate(
+  async rentalEstimate(
     estimate: InventoryEstimateRent,
     company: Company,
     terms: Term | null
@@ -650,7 +650,7 @@ export class PdfService {
   }
 
   // ESTIMATE RENTAL PDF
-  async generateSaleEstimate(
+  async saleEstimate(
     estimate: InventoryEstimateSell,
     company: Company,
     terms: Term | null
@@ -874,7 +874,7 @@ export class PdfService {
   }
 
   // INVOICE RENTAL PDF
-  async generateSaleInvoice(
+  async saleInvoice(
     invoice: SaleInvoice,
     company: Company,
     terms: Term | null,
@@ -1108,7 +1108,7 @@ export class PdfService {
   }
 
   // INVOICE RENTAL PDF
-  async generateRentalInvoice(
+  async rentalInvoice(
     invoice: TransactionInvoice,
     company: Company,
     terms: Term | null,
@@ -1426,7 +1426,7 @@ export class PdfService {
   }
 
   // INSPECTION PDF
-  async generateInspection(
+  async inspection(
     inspection: Inspection,
     company: Company,
     terms: Term | null
@@ -1702,11 +1702,7 @@ export class PdfService {
   }
 
   // HANDOVER PDF
-  async generateHandover(
-    handover: Handover,
-    company: Company,
-    terms: Term | null
-  ) {
+  async handover(handover: Handover, company: Company, terms: Term | null) {
     const attachments = [];
     handover.scaffold.attachments.forEach((a, i) => {
       attachments.push([
@@ -2021,11 +2017,7 @@ export class PdfService {
   }
 
   // HANDOVER PDF
-  async generateDismantle(
-    dismantle: Handover,
-    company: Company,
-    terms: Term | null
-  ) {
+  async dismantle(dismantle: Handover, company: Company, terms: Term | null) {
     const attachments = [];
     dismantle.scaffold.attachments.forEach((a, i) => {
       attachments.push([
@@ -2302,16 +2294,12 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
-  // SHIPMENT INVENTORY PDF
-  async generateShipment(
-    shipment: Shipment,
-    company: Company,
-    terms: Term | null
-  ) {
-    const summary = this.createShipmentTable(shipment.items);
-    const signature1 = shipment.signature
+  // DELIVERY INVENTORY PDF
+  async delivery(delivery: Delivery, company: Company, terms: Term | null) {
+    const summary = this.createShipmentTable(delivery.items);
+    const signature1 = delivery.signature
       ? {
-          image: await this.getBase64ImageFromURL(shipment.signature),
+          image: await this.getBase64ImageFromURL(delivery.signature),
           width: 100,
           alignment: 'right',
         }
@@ -2321,9 +2309,9 @@ export class PdfService {
           alignment: 'Right',
           color: 'red',
         };
-    const signature2 = shipment.signature2
+    const signature2 = delivery.signature2
       ? {
-          image: await this.getBase64ImageFromURL(shipment.signature2),
+          image: await this.getBase64ImageFromURL(delivery.signature2),
           width: 100,
           alignment: 'right',
         }
@@ -2335,13 +2323,13 @@ export class PdfService {
         };
     const data = {
       footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Delivery-${shipment.code}`),
+      info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
       content: [
         await this.getHeader(
           'Delivery Note',
-          shipment.code,
-          shipment.site.code,
-          shipment.date,
+          delivery.code,
+          delivery.site.code,
+          delivery.date,
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/default.webp',
@@ -2349,38 +2337,38 @@ export class PdfService {
           [
             [
               { text: 'Site Name', style: 'h6b' },
-              `${shipment?.site.name || 'N/A'}`,
+              `${delivery?.site.name || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'Driver:', style: 'h6b' },
-              `${shipment?.driverName || 'N/A'}`,
+              `${delivery?.driverName || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'Driver Contact:', style: 'h6b' },
-              `${shipment?.driverNo || 'N/A'}`,
+              `${delivery?.driverNo || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'Vehicle Reg:', style: 'h6b' },
-              `${shipment?.vehicleReg || 'N/A'}`,
+              `${delivery?.vehicleReg || 'N/A'}`,
               '',
               '',
             ],
           ]
         ),
         hr,
-        this.getCompanyInfo(shipment.site.customer, company),
+        this.getCompanyInfo(delivery.site.customer, company),
         hr,
         summary,
         hr,
         {
           text: `Total Weight : ${this.weightPipe.transform(
-            shipment.items,
+            delivery.items,
             true
           )}`,
           style: 'h3',
@@ -2400,14 +2388,14 @@ export class PdfService {
                   alignment: 'left',
                 },
                 {
-                  text: shipment.status,
+                  text: delivery.status,
                   style: 'h4b',
                   alignment: 'center',
                 },
               ],
               [
                 {
-                  text: `Sent By ${shipment?.signedBy || 'N/A'}`,
+                  text: `Sent By ${delivery?.signedBy || 'N/A'}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -2415,7 +2403,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: `Received By ${shipment?.signedBy2 || 'N/A'}`,
+                  text: `Received By ${delivery?.signedBy2 || 'N/A'}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -2425,7 +2413,15 @@ export class PdfService {
           },
           layout: tLayout,
         },
-        await this.addUploads(shipment.uploads),
+        {
+          text: `If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
+After received this material please sign and seal this delivery note and return a copy to us.
+E-mail: Info@hayakel-ksa.com`,
+          alignment: 'center',
+          margin: [0, 10, 0, 0],
+          style: 'hb4',
+        },
+        await this.addUploads(delivery.uploads),
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
@@ -2434,7 +2430,7 @@ export class PdfService {
   }
 
   // SITE INVENTORY PDF
-  async generateInventoryList(
+  async inventoryList(
     site: Site,
     inventory: InventoryItem[],
     company: Company
@@ -2500,8 +2496,8 @@ export class PdfService {
   }
 
   // DELIVERY PICKLIST PDF
-  async generatePickList(
-    docData: Shipment | TransactionReturn,
+  async pickList(
+    docData: Delivery | TransactionReturn,
     inventory: InventoryItem[],
     company: Company
   ) {
@@ -2578,8 +2574,8 @@ export class PdfService {
 
   // RETURN PICKLIST PDF
 
-  async generateReturnPickList(
-    docData: Shipment | TransactionReturn,
+  async returnPickList(
+    docData: Delivery | TransactionReturn,
     inventory: InventoryItem[] | TransactionItem[],
     company: Company
   ) {
@@ -2653,7 +2649,7 @@ export class PdfService {
   }
 
   // RETURN INVENTORY PDF
-  async generateReturn(
+  async returnDoc(
     returnDoc: TransactionReturn,
     company: Company,
     terms: Term | null
@@ -2724,7 +2720,7 @@ export class PdfService {
           ]
         ),
         hr,
-        this.getCompanyInfo(returnDoc.site.customer, company),
+        this.getCompanyInfo(company, returnDoc.site.customer),
         hr,
         summary,
         hr,
@@ -2777,6 +2773,14 @@ export class PdfService {
             ],
           },
           layout: tLayout,
+        },
+        {
+          text: `If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
+After received this material please sign and seal this delivery note and return a copy to us.
+E-mail: Info@hayakel-ksa.com`,
+          alignment: 'center',
+          margin: [0, 10, 0, 0],
+          style: 'hb4',
         },
         await this.addUploads(returnDoc.uploads),
       ],
@@ -2916,7 +2920,10 @@ export class PdfService {
     return header;
   }
 
-  private getCompanyInfo(customer: Customer, company: Company) {
+  private getCompanyInfo(
+    customer: Customer | Company,
+    company: Company | Customer
+  ) {
     const address = {
       style: 'tableExample',
 
@@ -2961,7 +2968,7 @@ export class PdfService {
             { text: 'Representative:', style: 'h6b' },
             customer?.rep || 'N/A',
             { text: 'Representative:', style: 'h6b' },
-            'N/A',
+            company?.rep || 'N/A',
           ],
           [
             { text: 'Email:', style: 'h6b' },
@@ -3257,8 +3264,9 @@ export class PdfService {
 
   private createShipmentTable(shipmentItems: InventoryItem[]) {
     const items = [];
-    shipmentItems.forEach((item) => {
+    shipmentItems.forEach((item, i) => {
       items.push([
+        { text: i + 1, style: 'h4b', alignment: 'left' },
         { text: item.code, style: 'h4b', alignment: 'left' },
         {
           text: item.category,
@@ -3282,11 +3290,12 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', '*', 'auto', '*', 'auto', 'auto'],
+        widths: ['auto', 'auto', '*', 'auto', '*', 'auto', 'auto'],
 
         body: [
           [
             { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Code', style: 'h4b', alignment: 'left' },
             {
               text: 'Category',
               style: 'h4b',
@@ -3308,8 +3317,9 @@ export class PdfService {
 
   private createTransactionReturnTable(transactionItems: TransactionItem[]) {
     const items = [];
-    transactionItems.forEach((item) => {
+    transactionItems.forEach((item, i) => {
       items.push([
+        { text: i + 1, style: 'h4b', alignment: 'left' },
         { text: item.code, style: 'h4b', alignment: 'left' },
         {
           text: item.category,
@@ -3333,11 +3343,12 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', '*', 'auto', '*', 'auto', 'auto'],
+        widths: ['auto', 'auto', '*', 'auto', '*', 'auto', 'auto'],
 
         body: [
           [
             { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Code', style: 'h4b', alignment: 'left' },
             {
               text: 'Category',
               style: 'h4b',
@@ -3345,7 +3356,7 @@ export class PdfService {
             },
             { text: 'Size', style: 'h4b', alignment: 'center' },
             { text: 'Name', style: 'h4b', alignment: 'left' },
-            { text: 'Delivered Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Returned Qty', style: 'h4b', alignment: 'center' },
             { text: 'Weight', style: 'h4b', alignment: 'center' },
           ],
           ...items,

@@ -120,7 +120,7 @@ export class CustomerDismantlePage {
   }
 
   async download(terms: Term | null, dismantle: Handover, company: Company) {
-    const pdf = await this.pdf.generateDismantle(dismantle, company, terms);
+    const pdf = await this.pdf.dismantle(dismantle, company, terms);
     if (!this.pdf.handlePdf(pdf, dismantle.code)) {
       this.notificationSvc.toast(
         'Documents can only be downloaded on pc or web',

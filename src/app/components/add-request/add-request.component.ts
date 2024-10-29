@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Request } from 'src/app/models/request.model';
-import { Shipment } from 'src/app/models/shipment.model';
+import { Delivery } from 'src/app/models/delivery.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -160,7 +160,7 @@ export class AddRequestComponent implements OnInit, OnDestroy {
       this.loading = true;
       try {
         let hasDeficit = false;
-        const shipment: Shipment = {
+        const shipment: Delivery = {
           ...this.request,
           items: cloneDeep(this.request.items),
           status: 'pending',
