@@ -102,7 +102,7 @@ export class SaleInvoiceComponent {
       this.company,
       terms
     );
-    this.pdfSvc.handlePdf(pdf, this.invoice.code);
+    await this.pdfSvc.handlePdf(pdf, this.invoice.code);
   }
   async share(terms: Term | null) {
     // const sharedEstimate = {

@@ -70,7 +70,7 @@ export class InvoiceComponent implements OnInit {
       this.company,
       terms
     );
-    this.pdfSvc.handlePdf(pdf, this.invoice.code);
+    await this.pdfSvc.handlePdf(pdf, this.invoice.code);
   }
 
   close() {

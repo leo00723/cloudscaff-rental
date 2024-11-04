@@ -1114,6 +1114,41 @@ export class PdfService {
     terms: Term | null,
     isdraft?: boolean
   ) {
+    const estimateItems = [];
+    invoice.estimate.items.forEach((item, i) => {
+      estimateItems.push(this.addEstimateItem(i, company, item));
+    });
+    const estimateSummary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Item Code',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Duration / Months', style: 'h4b', alignment: 'center' },
+            { text: 'Rent / Months', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          ...estimateItems,
+        ],
+      },
+      layout: tLayout,
+    };
     const items = [];
     invoice.items.forEach((item) => {
       items.push(this.addRentalItem(company, item, invoice.endDate));
@@ -1176,7 +1211,7 @@ export class PdfService {
     invoice.creditItems.forEach((item, i) => {
       credit.push([
         {
-          text: i++,
+          text: i + 1,
           style: 'h6',
           alignment: 'center',
         },
@@ -1245,6 +1280,8 @@ export class PdfService {
         this.getCompanyInfo(invoice.estimate.customer, company),
         hr,
         { text: invoice.estimate.scope },
+
+        invoice.type !== 'Rental' ? [hr, estimateSummary] : [],
         hr,
         { text: 'Invoice Items', style: 'h4b' },
         summary,
@@ -3036,7 +3073,7 @@ E-mail: Info@hayakel-ksa.com`,
   private addEstimateItem(index: number, company: Company, item: any) {
     return [
       {
-        text: index++,
+        text: index + 1,
         style: 'h6',
         alignment: 'center',
       },
@@ -3046,7 +3083,9 @@ E-mail: Info@hayakel-ksa.com`,
         alignment: 'center',
       },
       {
-        text: item.description,
+        stack: item?.note
+          ? [item.description, , { text: item.note, color: 'red' }]
+          : [item.description],
         style: 'h6',
       },
       {
@@ -3129,7 +3168,7 @@ E-mail: Info@hayakel-ksa.com`,
   ) {
     return [
       {
-        text: index++,
+        text: index + 1,
         style: 'h6',
         alignment: 'center',
       },
@@ -3220,7 +3259,7 @@ E-mail: Info@hayakel-ksa.com`,
         alignment: 'center',
       },
       {
-        text: item.returnQty,
+        text: item.returnTotal,
         style: 'h6',
         alignment: 'center',
       },
