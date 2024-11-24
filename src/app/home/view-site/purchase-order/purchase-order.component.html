@@ -147,7 +147,7 @@
             <td>
               {{
                 (transaction.invoiceStart.toDate()
-                  | dateDiff : field("endDate").value) / 31 | number : "0.2-2"
+                  | dateDiff : field("endDate").value) / 30 | number : "0.2-2"
               }}
             </td>
 
@@ -234,7 +234,7 @@
             <td>
               {{
                 (transaction.invoiceStart.toDate()
-                  | dateDiff : transaction.invoiceEnd.toDate() : true) / 31
+                  | dateDiff : transaction.invoiceEnd.toDate() : true) / 30
                   | number : "0.2-2"
               }}
             </td>

@@ -3300,7 +3300,7 @@ E-mail: Info@hayakel-ksa.com`,
       end = item.invoiceEnd.toDate();
       days = +this.dateDiffPipe.transform(start, end, true);
     }
-    const months = this.format(days / 31);
+    const months = this.format(days / 30);
     const total = +item.invoiceQty * +item.hireRate * days;
     return [
       {

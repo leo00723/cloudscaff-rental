@@ -439,6 +439,7 @@ export class ViewSitePage implements OnDestroy {
         .edit()
         .getCollectionFiltered(`company/${company.id}/transactionLog`, [
           where('siteId', '==', site.id),
+          where('transactionType', '==', 'Delivery'),
         ])
         .pipe(take(1))
         .subscribe(async (data) => {
