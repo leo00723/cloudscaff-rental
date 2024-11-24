@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { take, tap } from 'rxjs/operators';
 import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
 import { AddReturnComponent } from 'src/app/components/add-return/add-return.component';
@@ -40,7 +40,7 @@ import { PurchaseOrderComponent } from './purchase-order/purchase-order.componen
     `,
   ],
 })
-export class ViewSitePage implements OnInit {
+export class ViewSitePage implements OnDestroy {
   @Select() company$: Observable<Company>;
   @Select() user$: Observable<User>;
   site$: Observable<Site>;
@@ -75,6 +75,8 @@ export class ViewSitePage implements OnInit {
 
   active = 'scaffolds';
   ids = [];
+
+  private subs = new Subscription();
   constructor(
     private masterSvc: MasterService,
     private activatedRoute: ActivatedRoute
@@ -236,7 +238,10 @@ export class ViewSitePage implements OnInit {
         orderBy('code', 'desc'),
       ]) as Observable<any[]>;
   }
-  ngOnInit() {}
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
 
   async editSite(site: Site) {
     const modal = await this.masterSvc.modal().create({
@@ -426,12 +431,49 @@ export class ViewSitePage implements OnInit {
     this.active = ev.detail.value;
   }
 
-  async downloadPDF(items: InventoryItem[], site: Site) {
+  downloadPDF(items: InventoryItem[], site: Site) {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
-    const pdf = await this.masterSvc.pdf().inventoryList(site, items, company);
-    this.masterSvc
-      .pdf()
-      .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
+
+    this.subs.add(
+      this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+          where('siteId', '==', site.id),
+        ])
+        .pipe(take(1))
+        .subscribe(async (data) => {
+          const groupedData = data.reduce((acc, item) => {
+            const { itemId, deliveredQty, balanceQty, returnTotal } = item;
+
+            // If the itemId is not in the accumulator, initialize it
+            if (!acc[itemId]) {
+              acc[itemId] = {
+                ...item,
+                deliveredQty: 0,
+                balanceQty: 0,
+                returnTotal: 0,
+              };
+            }
+
+            // Sum the quantities
+            acc[itemId].deliveredQty += deliveredQty || 0;
+            acc[itemId].balanceQty += balanceQty || 0;
+            acc[itemId].returnTotal += returnTotal || 0;
+
+            return acc;
+          }, {});
+
+          // Convert the grouped object back to an array
+          const groupedList = Object.values(groupedData);
+
+          const pdf = await this.masterSvc
+            .pdf()
+            .inventoryTransactionList(site, groupedList, company);
+          this.masterSvc
+            .pdf()
+            .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
+        })
+    );
   }
 
   async saveAsImage(parent: any, site: string) {

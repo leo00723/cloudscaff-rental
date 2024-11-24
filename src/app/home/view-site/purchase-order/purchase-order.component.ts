@@ -87,6 +87,7 @@ export class PurchaseOrderComponent implements OnInit {
     } else {
       item.error = false;
       item.hireRate = +val.detail.target.value;
+      item.siteId = this.po.site.id;
       try {
         this.saving = true;
         await this.editSvc.updateDoc(
@@ -94,6 +95,7 @@ export class PurchaseOrderComponent implements OnInit {
           item.id,
           {
             hireRate: item.hireRate,
+            siteId: item.siteId,
           }
         );
         this.calcTotal();

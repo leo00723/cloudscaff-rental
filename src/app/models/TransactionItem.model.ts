@@ -26,4 +26,5 @@ export interface TransactionItem {
   hireRate?: number;
   poNumber?: string;
   transactionType?: string;
+  siteId?: string;
 }

@@ -2532,6 +2532,80 @@ E-mail: Info@hayakel-ksa.com`,
     return this.generatePdf(data);
   }
 
+  // SITE INVENTORY PDF
+  async inventoryTransactionList(
+    site: Site,
+    inventory: TransactionItem[],
+    company: Company
+  ) {
+    const items = [];
+    inventory.forEach((item, i) => {
+      items.push([
+        { text: i + 1, style: 'h4b', alignment: 'left' },
+        { text: item.code, style: 'h4b', alignment: 'left' },
+        { text: item.name, style: 'h4b', alignment: 'left' },
+        {
+          text: this.decimalPipe.transform(item.deliveredQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.returnTotal),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.balanceQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+      ]);
+    });
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            { text: 'Code', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Delivered', style: 'h4b', alignment: 'center' },
+            { text: 'Returned', style: 'h4b', alignment: 'center' },
+            { text: 'Balance', style: 'h4b', alignment: 'center' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+    const data = {
+      footer: await this.getFooter(),
+      // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
+      content: [
+        await this.getHeader(
+          'Inventory List',
+          site.code,
+          site.name,
+          new Date(),
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          []
+        ),
+        hr,
+        summary,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+    return this.generatePdf(data);
+  }
+
   // DELIVERY PICKLIST PDF
   async pickList(
     docData: Delivery | TransactionReturn,

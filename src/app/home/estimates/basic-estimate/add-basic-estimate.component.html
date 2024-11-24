@@ -367,19 +367,20 @@
             *ngIf="loading"
           ></ion-progress-bar>
 
-          <ion-col
-            size="6"
-            *ngIf="
-              isEdit &&
-              (estimate.status === 'pending' || estimate.status === 'revised')
-            "
-          >
-            <ion-button
-              shape="round"
-              color="danger"
-              [disabled]="form.invalid"
-              (click)="updateEstimate('rejected')"
-              >Rejected</ion-button
+          <ion-col size="6">
+            <ng-container
+              *ngIf="
+                isEdit &&
+                (estimate.status === 'pending' || estimate.status === 'revised')
+              "
+            >
+              <ion-button
+                shape="round"
+                color="danger"
+                [disabled]="form.invalid"
+                (click)="updateEstimate('rejected')"
+                >Rejected</ion-button
+              ></ng-container
             >
           </ion-col>
           <ion-col size="6" class="text-end">
