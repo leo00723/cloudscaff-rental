@@ -43,6 +43,7 @@
     name="Customer"
     prop="customer.name"
   ></ngx-datatable-column>
+  <ngx-datatable-column name="PO Number" prop="poNumber"></ngx-datatable-column>
   <ngx-datatable-column name="Date" prop="date">
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       {{ value | date : "dd MMM yyyy" }}
