@@ -476,14 +476,14 @@
             (click)="updateShipment('pending')"
             >Update Delivery</ion-button
           >
-          <ion-button
+          <!-- <ion-button
             shape="round"
             *ngIf="isEdit && !loading && shipment.status === 'pending'"
             color="success"
             [disabled]="!blob || (!shipment.signedBy && form.invalid)"
             (click)="sendDelivery()"
             >Send Delivery</ion-button
-          >
+          > -->
 
           <ion-button
             shape="round"
@@ -502,7 +502,7 @@
               fill="outline"
               *ngIf="isEdit && !loading && shipment.status === 'pending'"
               color="tertiary"
-              [disabled]="!blob || (!shipment.signedBy && form.invalid)"
+              [disabled]="!blob || !shipment.signedBy || form.invalid"
               (click)="receiveDelivery(true)"
               >Send Immediately</ion-button
             >
