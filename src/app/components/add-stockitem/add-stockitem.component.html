@@ -186,26 +186,6 @@
             </app-input-text>
           </ion-col>
         </ng-container>
-        <!-- <ion-col sizeMd="4">
-          <app-input-reactive
-            title="Cross Hire Qty"
-            type="number"
-            controlName="crossHireQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col> -->
-        <!-- <ion-col sizeMd="4" size="12">
-          <app-input-reactive
-            title="Total Qty "
-            type="number"
-            controlName="availableQty"
-            [form]="form"
-            [readonly]="true"
-          >
-          </app-input-reactive>
-        </ion-col> -->
         <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Weight  ({{ company.mass.symbol }})"
@@ -264,193 +244,37 @@
         </ion-col>
       </ion-row>
 
-      <!-- <ion-row
-        formArrayName="crossHire"
-        class="mb-3"
-        *ngFor="let hire of crossHireForms.controls; let i = index"
-      >
-        <ion-col sizeMd="12">
-          <ion-note> Cross Hire {{ i + 1 }} </ion-note>
-          <ion-chip
-            outline
-            color="danger"
-            class="ion-float-end"
-            (click)="deleteCrossHire(i)"
-          >
-            <ion-label>Delete</ion-label>
-          </ion-chip>
-        </ion-col>
-        <ion-col>
-          <app-input-reactive
-            title="Company"
-            controlName="company"
-            placeholder="Enter Company Name"
-            [form]="hire"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col>
-          <app-input-reactive
-            title="Qty"
-            type="number"
-            controlName="qty"
-            [form]="hire"
-            (fieldChange)="update()"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col>
-          <app-input-date
-            [form]="hire"
-            controlName="date"
-            title="Hire Date"
-          ></app-input-date>
-        </ion-col>
-        <ion-col sizeMd="12">
-          <app-input-reactive
-            title="Notes"
-            [textarea]="true"
-            controlName="notes"
-            placeholder="Enter any notes..."
-            [form]="hire"
-          >
-          </app-input-reactive>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col sizeMd="12" class="text-center">
-          <ion-button
-            shape="round"
-            color="success"
-            (click)="addCrossHire()"
-            *ngIf="!loading"
-          >
-            Add Cross Hire
-          </ion-button>
-        </ion-col>
-      </ion-row> -->
       <ng-container *ngIf="isEdit">
         <app-title-block>Manage Qty</app-title-block>
         <ion-row class="card-outline mb-3">
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Remove from Total Qty"
-              type="number"
-              [value]="removeQty"
-              (fieldChange)="removeQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
-            <ion-button
-              class="float-end"
-              size="small"
-              color="danger"
-              shape="round"
-              (click)="removeYardQty()"
-            >
-              Remove
-            </ion-button>
-          </ion-col>
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Add to Total Qty"
-              [value]="addQty"
-              type="number"
-              (fieldChange)="addQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
+          <!-- Reusable Component for Quantity Operations -->
+          <ng-container *ngFor="let operation of operations; let i = index">
+            <ion-col [sizeMd]="i > 1 ? 4 : 6" size="12" class="mb-3">
+              <app-input-text
+                [title]="operation.title"
+                [type]="'number'"
+                [value]="operation.value"
+                (fieldChange)="operation.onChange($event)"
+              ></app-input-text>
+              <app-input-text
+                title="Comment"
+                [optional]="true"
+                (fieldChange)="comment = $event"
+              ></app-input-text>
+              <ion-button
+                class="float-end"
+                [size]="'small'"
+                [color]="operation.color"
+                [shape]="'round'"
+                (click)="operation.onClick()"
+              >
+                {{ operation.buttonLabel }}
+              </ion-button>
+            </ion-col>
+          </ng-container>
 
-            <ion-button
-              class="float-end"
-              size="small"
-              color="success"
-              shape="round"
-              (click)="addYardQty()"
-            >
-              Add
-            </ion-button>
-          </ion-col>
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Move Maintenance to Available"
-              type="number"
-              [value]="moveQty"
-              (fieldChange)="moveQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
-            <ion-button
-              class="float-end"
-              size="small"
-              color="warning"
-              shape="round"
-              (click)="moveToYard()"
-            >
-              Move
-            </ion-button>
-          </ion-col>
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Move Available to Maintenance"
-              type="number"
-              [value]="maintenanceQty"
-              (fieldChange)="maintenanceQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
-            <ion-button
-              class="float-end"
-              size="small"
-              color="warning"
-              shape="round"
-              (click)="
-                moveTo(
-                  'Available',
-                  'Maintenance',
-                  'inMaintenanceQty',
-                  maintenanceQty
-                )
-              "
-            >
-              Move
-            </ion-button>
-          </ion-col>
-          <ion-col sizeMd="4" size="12">
-            <app-input-text
-              title="Move Available to Damaged"
-              type="number"
-              [value]="damagedQty"
-              (fieldChange)="damagedQty = $event"
-            ></app-input-text>
-            <app-input-text
-              title="Comment"
-              [optional]="true"
-              (fieldChange)="comment = $event"
-            ></app-input-text>
-            <ion-button
-              class="float-end"
-              size="small"
-              color="warning"
-              shape="round"
-              (click)="moveTo('Available', 'Damaged', 'damagedQty', damagedQty)"
-            >
-              Move
-            </ion-button>
-          </ion-col>
-          <ion-col sizeMd="4" size="12" *ngIf="inventoryItem.damagedQty > 0">
+          <!-- Conditional Button for Damaged Items -->
+          <!-- <ion-col sizeMd="4" size="12" *ngIf="inventoryItem.damagedQty > 0">
             <div class="h-100 d-flex justify-content-center align-items-center">
               <ion-button
                 class="my-auto w-100 h-100"
@@ -461,9 +285,34 @@
                 Repurpose Damaged Items
               </ion-button>
             </div>
+          </ion-col> -->
+        </ion-row>
+        <app-title-block>Uploads</app-title-block>
+        <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-multiuploader
+              [autoupload]="true"
+              (uploaded)="uploaded($event)"
+            ></app-multiuploader>
+          </ion-col>
+          <ion-col size="12">
+            <app-title-block> Uploaded Files </app-title-block>
+            <ion-row>
+              <ion-col
+                size="12"
+                *ngFor="let file of inventoryItem.uploads; let i = index"
+              >
+                <app-file-item
+                  [simplified]="true"
+                  [file]="file"
+                  [allowDelete]="false"
+                ></app-file-item>
+              </ion-col>
+            </ion-row>
           </ion-col>
         </ion-row>
       </ng-container>
+
       <ion-row *ngIf="isEdit">
         <ion-col size="12">
           <app-title-block>Log history</app-title-block>

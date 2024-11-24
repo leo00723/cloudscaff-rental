@@ -1,4 +1,5 @@
 import { Category } from './componentTypes.model';
+import { UploadedFile } from './uploadedFile.model';
 
 export interface CrossHire {
   company?: string;
@@ -35,4 +36,5 @@ export interface InventoryItem {
   checked?: boolean;
   deficit?: number;
   duration?: number;
+  uploads?: UploadedFile[];
 }

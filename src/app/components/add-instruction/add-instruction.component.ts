@@ -1,17 +1,5 @@
 import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
-import { Select } from '@ngxs/store';
-import { increment } from 'firebase/firestore';
-import { Observable, tap } from 'rxjs';
-import { Company } from 'src/app/models/company.model';
-import { Customer } from 'src/app/models/customer.model';
-import { Handover } from 'src/app/models/handover.model';
-import { HandoverTemplate } from 'src/app/models/handoverTemplate.model';
-import { Scaffold } from 'src/app/models/scaffold.model';
-import { MasterService } from 'src/app/services/master.service';
-import { CompanyState } from 'src/app/shared/company/company.state';
-import { UserState } from 'src/app/shared/user/user.state';
-import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
-import { SI } from 'src/app/models/si.model';
+import { arrayUnion, orderBy, where } from '@angular/fire/firestore';
 import {
   FormArray,
   FormBuilder,
@@ -19,14 +7,22 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { Site } from 'src/app/models/site.model';
+import { Select } from '@ngxs/store';
+import { increment } from 'firebase/firestore';
 import cloneDeep from 'lodash/cloneDeep';
+import { Observable } from 'rxjs';
+import { Company } from 'src/app/models/company.model';
+import { Customer } from 'src/app/models/customer.model';
+import { Scaffold } from 'src/app/models/scaffold.model';
+import { SI } from 'src/app/models/si.model';
+import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
-import { SignaturePadComponent } from '../signature-pad/signature-pad.component';
-import { SignatureModalComponent } from '../signature-modal/signature-modal.component';
-import { ImgService } from 'src/app/services/img.service';
+import { MasterService } from 'src/app/services/master.service';
 import { UtilityService } from 'src/app/services/utility.service';
-import { arrayUnion, orderBy, where } from '@angular/fire/firestore';
+import { CompanyState } from 'src/app/shared/company/company.state';
+import { UserState } from 'src/app/shared/user/user.state';
+import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
+import { SignatureModalComponent } from '../signature-modal/signature-modal.component';
 @Component({
   selector: 'app-add-instruction',
   templateUrl: './add-instruction.component.html',

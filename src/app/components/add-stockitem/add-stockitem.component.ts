@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
@@ -8,6 +8,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { RepurposeInventoryComponent } from '../repurpose-inventory/repurpose-inventory.component';
+import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 
 @Component({
   selector: 'app-add-stockitem',
@@ -15,6 +16,7 @@ import { RepurposeInventoryComponent } from '../repurpose-inventory/repurpose-in
   styles: [],
 })
 export class AddStockitemComponent implements OnInit {
+  @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
   @Input() set value(val: InventoryItem) {
     if (val) {
@@ -36,6 +38,56 @@ export class AddStockitemComponent implements OnInit {
   maintenanceQty = 0;
   damagedQty = 0;
   comment = '';
+
+  operations = [
+    {
+      title: 'Remove from Total Qty',
+      value: this.removeQty,
+      color: 'danger',
+      buttonLabel: 'Remove',
+      onChange: (value: number) => (this.removeQty = value),
+      onClick: () => this.removeYardQty(),
+    },
+    {
+      title: 'Add to Total Qty',
+      value: this.addQty,
+      color: 'success',
+      buttonLabel: 'Add',
+      onChange: (value: number) => (this.addQty = value),
+      onClick: () => this.addYardQty(),
+    },
+    {
+      title: 'Move Maintenance to Available',
+      value: this.moveQty,
+      color: 'warning',
+      buttonLabel: 'Move',
+      onChange: (value: number) => (this.moveQty = value),
+      onClick: () => this.moveToYard(),
+    },
+    {
+      title: 'Move Available to Maintenance',
+      value: this.maintenanceQty,
+      color: 'warning',
+      buttonLabel: 'Move',
+      onChange: (value: number) => (this.maintenanceQty = value),
+      onClick: () =>
+        this.moveTo(
+          'Available',
+          'Maintenance',
+          'inMaintenanceQty',
+          this.maintenanceQty
+        ),
+    },
+    {
+      title: 'Move Available to Damaged',
+      value: this.damagedQty,
+      color: 'warning',
+      buttonLabel: 'Move',
+      onChange: (value: number) => (this.damagedQty = value),
+      onClick: () =>
+        this.moveTo('Available', 'Damaged', 'damagedQty', this.damagedQty),
+    },
+  ];
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -50,34 +102,10 @@ export class AddStockitemComponent implements OnInit {
     }
   }
 
-  get crossHireForms() {
-    return this.form.get('crossHire') as FormArray;
-  }
-  addCrossHire() {
-    const crossHire = this.masterSvc.fb().group({
-      company: ['', Validators.required],
-      qty: ['', [Validators.required, Validators.min(0)]],
-      date: ['', [Validators.required]],
-      notes: [''],
-    });
-    this.crossHireForms.push(crossHire);
-  }
-  deleteCrossHire(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.crossHireForms.removeAt(i);
-      this.update();
-    });
-  }
-
   //update the totals for a category
   update() {
-    let crossHire = 0;
-    this.crossHireForms.controls.forEach((c) => {
-      crossHire += +c.get('qty').value;
-    });
     const yard = +this.field('yardQty').value;
-    this.field('crossHireQty').setValue(crossHire);
-    this.field('availableQty').setValue(crossHire + yard);
+    this.field('availableQty').setValue(yard);
   }
 
   close() {
@@ -287,6 +315,13 @@ export class AddStockitemComponent implements OnInit {
     return await modal.present();
   }
 
+  async uploaded(newFiles) {
+    this.inventoryItem.uploads
+      ? this.inventoryItem.uploads.push(...newFiles)
+      : (this.inventoryItem.uploads = newFiles);
+    this.autoUpdate();
+  }
+
   private async autoUpdate() {
     this.loading = true;
     try {
@@ -296,6 +331,7 @@ export class AddStockitemComponent implements OnInit {
           `company/${this.company.id}/stockItems`,
           this.inventoryItem.id,
           {
+            ...this.inventoryItem,
             ...this.form.value,
             category:
               this.form.value.categoryType.name ||
@@ -350,7 +386,6 @@ export class AddStockitemComponent implements OnInit {
         this.inventoryItem.yardQty,
         [Validators.required, Validators.min(0)],
       ],
-      crossHireQty: [this.inventoryItem.crossHireQty, [Validators.min(0)]],
       inUseQty: [this.inventoryItem.inUseQty, [Validators.min(0)]],
       inMaintenanceQty: [
         this.inventoryItem.inMaintenanceQty,
@@ -359,19 +394,7 @@ export class AddStockitemComponent implements OnInit {
       damagedQty: [this.inventoryItem.damagedQty, [Validators.min(0)]],
       reservedQty: [this.inventoryItem?.reservedQty, [Validators.min(0)]],
       lostQty: [this.inventoryItem.lostQty, [Validators.min(0)]],
-      crossHire: this.masterSvc.fb().array([]),
     });
-    if (this.inventoryItem.crossHire) {
-      this.inventoryItem.crossHire.forEach((c) => {
-        const crosshire = this.masterSvc.fb().group({
-          company: [c.company, Validators.required],
-          qty: [c.qty, [Validators.required, Validators.min(0)]],
-          date: [c.date, [Validators.required]],
-          notes: [c.notes],
-        });
-        this.crossHireForms.push(crosshire);
-      });
-    }
   }
 
   private initForm() {
@@ -388,13 +411,11 @@ export class AddStockitemComponent implements OnInit {
       weight: [0, [Validators.required, Validators.min(0)]],
       availableQty: [0, [Validators.required, Validators.min(0)]],
       yardQty: [0, [Validators.required, Validators.min(0)]],
-      crossHireQty: [0, [Validators.min(0)]],
       inUseQty: [0, [Validators.min(0)]],
       reservedQty: [0, [Validators.min(0)]],
       inMaintenanceQty: [0, [Validators.min(0)]],
       damagedQty: [0, [Validators.min(0)]],
       lostQty: [0, [Validators.min(0)]],
-      crossHire: this.masterSvc.fb().array([]),
     });
   }
 }
