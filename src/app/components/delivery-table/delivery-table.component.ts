@@ -15,11 +15,11 @@ import { map, Observable } from 'rxjs';
 import { Delivery } from 'src/app/models/delivery.model';
 
 @Component({
-  selector: 'app-shipment-table',
-  templateUrl: './shipment-table.component.html',
+  selector: 'app-delivery-table',
+  templateUrl: './delivery-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShipmentTableComponent {
+export class DeliveryTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<Delivery>();
   shipments$: Observable<Delivery[]>;

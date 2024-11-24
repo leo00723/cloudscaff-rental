@@ -408,10 +408,10 @@
                 >
               </ion-item>
               <div class="ion-padding" slot="content">
-                <app-shipment-table
+                <app-delivery-table
                   [value]="outboundDeliveries$"
                   (selectedItem)="viewShipment($event)"
-                ></app-shipment-table>
+                ></app-delivery-table>
               </div>
             </ion-accordion>
           </ng-container>
@@ -424,10 +424,10 @@
                 >
               </ion-item>
               <div class="ion-padding" slot="content">
-                <app-shipment-table
+                <app-delivery-table
                   [value]="deliveries$"
                   (selectedItem)="viewShipment($event)"
-                ></app-shipment-table>
+                ></app-delivery-table>
               </div>
             </ion-accordion>
           </ng-container>

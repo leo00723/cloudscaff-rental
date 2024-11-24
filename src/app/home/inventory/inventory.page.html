@@ -245,10 +245,10 @@
             >
           </ion-item>
           <div class="ion-padding" slot="content">
-            <app-shipment-table
+            <app-delivery-table
               [value]="pendingShipments$"
               (selectedItem)="viewShipment($event)"
-            ></app-shipment-table>
+            ></app-delivery-table>
           </div>
         </ion-accordion>
       </ng-container>
@@ -260,10 +260,10 @@
             >
           </ion-item>
           <div class="ion-padding" slot="content">
-            <app-shipment-table
+            <app-delivery-table
               [value]="outboundShipments$"
               (selectedItem)="viewShipment($event)"
-            ></app-shipment-table>
+            ></app-delivery-table>
           </div>
         </ion-accordion>
       </ng-container>
@@ -275,10 +275,10 @@
             >
           </ion-item>
           <div class="ion-padding" slot="content">
-            <app-shipment-table
+            <app-delivery-table
               [value]="reservedShipments$"
               (selectedItem)="viewShipment($event)"
-            ></app-shipment-table>
+            ></app-delivery-table>
           </div>
         </ion-accordion>
       </ng-container>
@@ -290,10 +290,10 @@
             >
           </ion-item>
           <div class="ion-padding" slot="content">
-            <app-shipment-table
+            <app-delivery-table
               [value]="shipments$"
               (selectedItem)="viewShipment($event)"
-            ></app-shipment-table>
+            ></app-delivery-table>
           </div>
         </ion-accordion>
       </ng-container>
@@ -305,10 +305,10 @@
             >
           </ion-item>
           <div class="ion-padding" slot="content">
-            <app-shipment-table
+            <app-delivery-table
               [value]="voidShipments$"
               (selectedItem)="viewShipment($event)"
-            ></app-shipment-table>
+            ></app-delivery-table>
           </div>
         </ion-accordion>
       </ng-container>

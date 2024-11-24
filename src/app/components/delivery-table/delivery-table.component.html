@@ -62,6 +62,17 @@
       {{ value | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
+
+  <ngx-datatable-column
+    name="Date Created"
+    prop="date"
+    cellClass="text-center"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ value | date : "dd MMM yyyy" }}
+    </ng-template>
+  </ngx-datatable-column>
   <ngx-datatable-column
     name="Created By"
     prop="createdByName"

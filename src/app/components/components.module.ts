@@ -62,7 +62,7 @@ import { ScaffoldOverviewTable2Component } from './scaffold-overview-table-2/sca
 import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.component';
 import { SearchableSelectComponent } from './searchable-select/searchable-select.component';
 import { ShareDocumentComponent } from './share-document/share-document.component';
-import { ShipmentTableComponent } from './shipment-table/shipment-table.component';
+import { DeliveryTableComponent } from './delivery-table/delivery-table.component';
 import { ShowHidePasswordComponent } from './show-hide-password/show-hide-password.component';
 import { SITableComponent } from './si-table/si-table.component';
 import { SignatureModalComponent } from './signature-modal/signature-modal.component';
@@ -137,7 +137,7 @@ const COMPONENTS = [
   ScaffoldOverviewTable2Component,
   ScaffoldTableComponent,
   ShareDocumentComponent,
-  ShipmentTableComponent,
+  DeliveryTableComponent,
   ShowHidePasswordComponent,
   SignatureModalComponent,
   SignaturePadComponent,
