@@ -26,40 +26,40 @@
     </ion-col>
     <ion-col sizeMd="6" size="8" class="text-end">
       <ng-container *ngIf="terms$ | async as terms; else noTerms">
-        <ion-button
+        <ion-chip
           size="small"
           (click)="download(terms)"
           fill="clear"
-          color="primary"
+          color="tertiary"
         >
-          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
-        </ion-button>
-        <!-- <ion-button
-      size="small"
-      (click)="share(terms)"
-      fill="clear"
-      color="primary"
-    >
-      <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
-    </ion-button> -->
-      </ng-container>
-      <ng-template #noTerms>
-        <ion-button
+          Basic Invoice
+        </ion-chip>
+        <ion-chip
           size="small"
-          (click)="download(null)"
+          (click)="downloadDetailed(terms)"
           fill="clear"
           color="primary"
         >
-          <ion-icon name="cloud-download-outline"></ion-icon>&nbsp;Download
-        </ion-button>
-        <!-- <ion-button
-      size="small"
-      (click)="share(null)"
-      fill="clear"
-      color="primary"
-    >
-      <ion-icon name="share-social-outline"></ion-icon>&nbsp;Send
-    </ion-button> -->
+          Detailed Invoice
+        </ion-chip>
+      </ng-container>
+      <ng-template #noTerms>
+        <ion-chip
+          size="small"
+          (click)="download(null)"
+          fill="clear"
+          color="tertiary"
+        >
+          Basic Invoice
+        </ion-chip>
+        <ion-chip
+          size="small"
+          (click)="downloadDetailed(null)"
+          fill="clear"
+          color="primary"
+        >
+          Detailed Invoice
+        </ion-chip>
       </ng-template>
     </ion-col>
     <ion-col size="6">

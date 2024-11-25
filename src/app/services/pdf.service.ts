@@ -1150,7 +1150,387 @@ export class PdfService {
       layout: tLayout,
     };
     const items = [];
+
     invoice.items.forEach((item) => {
+      items.push(this.addRentalItem(company, item, invoice.endDate));
+    });
+
+    const summary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: [
+          'auto',
+          'auto',
+          '*',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          '*',
+        ],
+
+        body: [
+          [
+            { text: 'Docket', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Item Code',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Delivered', style: 'h4b', alignment: 'center' },
+            { text: 'Returned', style: 'h4b', alignment: 'center' },
+            { text: 'Balance', style: 'h4b', alignment: 'center' },
+            { text: 'Start Date', style: 'h4b', alignment: 'center' },
+            { text: 'End Date', style: 'h4b', alignment: 'center' },
+            { text: 'Days', style: 'h4b', alignment: 'center' },
+            { text: 'Months', style: 'h4b', alignment: 'center' },
+            { text: 'Daily Rent Rate', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    const credit = [];
+    invoice.creditItems.forEach((item, i) => {
+      credit.push([
+        {
+          text: i + 1,
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: item.description,
+          style: 'h6',
+          alignment: 'left',
+        },
+        {
+          text: `-${company.currency.symbol} ${this.format(item.total)}`,
+          style: 'h6',
+          alignment: 'right',
+        },
+      ]);
+    });
+
+    const creditSummary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', '*', '*'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'center' },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Total',
+              style: 'h4b',
+              alignment: 'left',
+            },
+          ],
+          ...credit,
+        ],
+      },
+      layout: tLayout,
+    };
+
+    const data = {
+      header: this.getPageNumbers(),
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
+      content: [
+        await this.getBillingHeader(
+          isdraft ? 'Invoice Draft' : 'Invoice',
+          isdraft ? 'Invoice Draft' : invoice.code,
+          invoice.site.name,
+          isdraft ? invoice.date : invoice.date,
+          company,
+          '',
+          [
+            [
+              { text: 'PO Number', style: 'h6b' },
+              `${invoice?.poNumber || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getCompanyInfo(invoice.estimate.customer, company),
+        hr,
+        { text: invoice.estimate.scope },
+
+        invoice.type !== 'Rental' ? [hr, estimateSummary] : [],
+        hr,
+        { text: 'Invoice Items', style: 'h4b' },
+        summary,
+        hr,
+        { text: 'Credit Items', style: 'h4b' },
+        creditSummary,
+        hr,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+              [
+                '',
+                '',
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    invoice.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Credit:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `-${company.currency.symbol} ${this.format(
+                    invoice.creditTotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    invoice.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
+                { text: `SA${company.accountNum}`, alignment: 'left' },
+                {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    invoice.subtotal - invoice.discount - invoice.creditTotal
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.branchCode ? 'Branch:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.branchCode ? company.branchCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(invoice.vat)}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(invoice.tax)}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    invoice.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: 'Grand Total in words:',
+                  style: 'h4b',
+                  alignment: 'right',
+                  colSpan: 3,
+                },
+                '',
+                '',
+                {
+                  text: this.numberToWords(invoice.total),
+                  style: 'h4b',
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        await this.addUploads(invoice.estimate.uploads),
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+    return this.generatePdf(data);
+  }
+  // INVOICE RENTAL MERGED PDF
+  async rentalInvoiceMerged(
+    invoice: TransactionInvoice,
+    company: Company,
+    terms: Term | null,
+    isdraft?: boolean
+  ) {
+    const estimateItems = [];
+    invoice.estimate.items.forEach((item, i) => {
+      estimateItems.push(this.addEstimateItem(i, company, item));
+    });
+    const estimateSummary = {
+      table: {
+        // headers are automatically repeated if the table spans over multiple pages
+        // you can declare how many rows should be treated as headers
+        headerRows: 1,
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+
+        body: [
+          [
+            { text: '#', style: 'h4b', alignment: 'left' },
+            {
+              text: 'Item Code',
+              style: 'h4b',
+              alignment: 'center',
+            },
+            {
+              text: 'Description',
+              style: 'h4b',
+              alignment: 'left',
+            },
+            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Duration / Months', style: 'h4b', alignment: 'center' },
+            { text: 'Rent / Months', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          ...estimateItems,
+        ],
+      },
+      layout: tLayout,
+    };
+    const items = [];
+
+    const mergedItems: TransactionItem[] = [];
+
+    // Iterate over each item in the list
+    invoice.items.forEach((item) => {
+      // Try to find an existing item in the mergedItems array with the same `code` and `invoiceStart`
+      const existingItem = mergedItems.find((mergedItem) => {
+        mergedItem.itemId === item.itemId &&
+          mergedItem.invoiceStart.toDate().toDateString() ===
+            item.invoiceStart.toDate().toDateString();
+      });
+
+      if (existingItem) {
+        // If the item exists, merge the quantities
+        existingItem.deliveryCode.concat(item.deliveryCode);
+        existingItem.invoiceQty += item.invoiceQty;
+        existingItem.deliveredQty += item.deliveredQty;
+        existingItem.returnTotal += item.returnTotal;
+        existingItem.balanceQty += item.balanceQty;
+      } else {
+        // If no matching item is found, add the current item as is
+        mergedItems.push({ ...item });
+      }
+    });
+
+    mergedItems.forEach((item) => {
       items.push(this.addRentalItem(company, item, invoice.endDate));
     });
 
@@ -2529,6 +2909,97 @@ E-mail: Info@hayakel-ksa.com`,
       styles: stylesCS,
       defaultStyle: defaultCS,
     };
+    return this.generatePdf(data);
+  }
+
+  // INVENTORY MATRIX PDF
+  async inventoryMatrix(
+    company: Company,
+    matrix: any[], // Data transformed from downloadMasterlistMatrix
+    sites: any[] // Array of all unique site names
+  ) {
+    const items = [];
+
+    // Generate the table rows dynamically
+    matrix.forEach((matrixCell) => {
+      const item = matrixCell.item;
+      const site = matrixCell.site;
+
+      // Check if the item row already exists
+      let row = items.find((r) => r[0].text === item.code);
+
+      if (!row) {
+        // Create a new row if not found
+        row = [
+          { text: item.code, style: 'h4b', alignment: 'left' },
+          { text: item.category, style: 'h4b', alignment: 'left' },
+          { text: item.name, style: 'h4b', alignment: 'left' },
+          ...sites.map(() => ({
+            text: '0',
+            style: 'h4b',
+            alignment: 'center',
+          })), // Add a placeholder '0' for each site
+        ];
+        items.push(row);
+      }
+
+      // Find the index of the site in the row and add the quantity
+      const siteIndex = sites.indexOf(site);
+      if (siteIndex !== -1) {
+        row[3 + siteIndex] = {
+          text: matrixCell.availableQty.toString(),
+          style: 'h4b',
+          alignment: 'center',
+        };
+      }
+    });
+
+    // Build the table headers
+    const headers = [
+      { text: 'Code', style: 'h4b', alignment: 'left' },
+      { text: 'Category', style: 'h4b', alignment: 'left' },
+      { text: 'Name', style: 'h4b', alignment: 'left' },
+      ...sites.map((site) => ({
+        text: site.name,
+        style: 'h4b',
+        alignment: 'center',
+      })),
+    ];
+
+    // Define the summary table
+    const summary = {
+      table: {
+        headerRows: 1,
+        widths: ['auto', '*', 'auto', ...sites.map(() => 'auto')],
+        body: [headers, ...items],
+      },
+      layout: tLayout,
+    };
+
+    // Prepare the PDF data
+    const data = {
+      footer: await this.getFooter(),
+      content: [
+        await this.getHeader(
+          'Inventory Matrix',
+          '',
+          '',
+          new Date(),
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          []
+        ),
+        hr,
+        summary,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+
+    // Generate the PDF
     return this.generatePdf(data);
   }
 

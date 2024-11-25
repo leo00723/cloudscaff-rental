@@ -12,9 +12,9 @@ import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-
 import { TransactionReturnComponent } from 'src/app/components/transaction-return/transaction-return.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { Company } from 'src/app/models/company.model';
+import { Delivery } from 'src/app/models/delivery.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Request } from 'src/app/models/request.model';
-import { Delivery } from 'src/app/models/delivery.model';
 import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { Transfer } from 'src/app/models/transfer.model';
 import { User } from 'src/app/models/user.model';
@@ -64,6 +64,12 @@ export class InventoryPage implements OnInit {
   uploadCounter = 0;
   uploadTotal = 0;
 
+  siteStockList = [];
+  allSites = [];
+
+  matrix = [];
+  items = [];
+  sites = [];
   constructor(
     private masterSvc: MasterService,
     private activatedRoute: ActivatedRoute
@@ -73,6 +79,47 @@ export class InventoryPage implements OnInit {
   }
   ngOnInit() {
     this.init();
+  }
+
+  downloadMasterlistMatrix() {
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${company.id}/siteStock`, [
+        where('ids', '!=', []),
+      ])
+      .subscribe(async (data) => {
+        const matrix = [];
+        const sites = [];
+
+        data.forEach((siteStock) => {
+          sites.push(siteStock.site);
+
+          siteStock.items.forEach((item) => {
+            if (
+              !matrix.some((existingItem) => existingItem.itemId === item.id)
+            ) {
+              matrix.push({
+                item,
+                site: siteStock.site,
+                availableQty: item.availableQty,
+              });
+            }
+          });
+        });
+
+        const pdf = await this.masterSvc
+          .pdf()
+          .inventoryMatrix(company, matrix, sites);
+        this.masterSvc.pdf().handlePdf(pdf, `Inventory Masterlist`);
+      });
+  }
+
+  getAvailableQty(itemId: string, siteId: string): number {
+    const cell = this.matrix.find(
+      (m) => m.itemId === itemId && m.siteId === siteId
+    );
+    return cell ? cell.availableQty : 0;
   }
 
   async addItem() {

@@ -64,8 +64,17 @@ export class InvoiceComponent implements OnInit {
     });
   }
 
-  async download(terms: Term | null) {
+  async downloadDetailed(terms: Term | null) {
     const pdf = await this.pdfSvc.rentalInvoice(
+      this.invoice,
+      this.company,
+      terms
+    );
+    await this.pdfSvc.handlePdf(pdf, this.invoice.code);
+  }
+
+  async download(terms: Term | null) {
+    const pdf = await this.pdfSvc.rentalInvoiceMerged(
       this.invoice,
       this.company,
       terms

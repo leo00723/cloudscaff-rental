@@ -125,27 +125,27 @@
   <ng-container *ngSwitchDefault>
     <ng-container *ngIf="inventoryItems$ | async as items; else loading">
       <div class="text-end" *ngIf="!importing && items.length !== 0">
-        <a
+        <ion-chip
           type="button"
-          class="btn btn-info btn-sm rounded-pill me-2"
-          (click)="importing = true"
-          >Import Inventory</a
+          color="tertiary"
+          (click)="downloadMasterlistMatrix()"
         >
-        <a
-          type="button"
-          class="btn btn-primary btn-sm rounded-pill me-2"
-          (click)="addItem()"
-          >Add New Item</a
-        >
+          Download PDF
+        </ion-chip>
+        <ion-chip type="button" color="success" (click)="importing = true">
+          Import Inventory
+        </ion-chip>
+
+        <ion-chip type="button" color="primary" (click)="addItem()">
+          Add New Item
+        </ion-chip>
       </div>
       <div class="text-end" *ngIf="importing && items.length !== 0">
-        <a
-          type="button"
-          class="btn btn-danger btn-sm rounded-pill me-2"
-          (click)="importing = false"
-          >Close</a
+        <ion-chip type="button" color="danger" (click)="importing = false"
+          >Close</ion-chip
         >
       </div>
+
       <app-inventory-table
         [value]="inventoryItems$"
         *ngIf="items.length > 0 && !importing && !uploading"
