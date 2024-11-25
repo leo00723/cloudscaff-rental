@@ -2980,17 +2980,31 @@ E-mail: Info@hayakel-ksa.com`,
     const data = {
       footer: await this.getFooter(),
       content: [
-        await this.getHeader(
-          'Inventory Matrix',
-          '',
-          '',
-          new Date(),
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
-          null,
-          []
-        ),
+        {
+          style: 'tableExample',
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                { text: 'Master Site Inventory', style: 'header', colSpan: 2 },
+                '',
+                {
+                  colSpan: 2,
+                  width: 100,
+                  image: await this.getBase64ImageFromURL(
+                    company.logoUrl.length > 0
+                      ? company.logoUrl
+                      : 'assets/icon/default.webp'
+                  ),
+                  alignment: 'right',
+                },
+                '',
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
         hr,
         summary,
       ],
