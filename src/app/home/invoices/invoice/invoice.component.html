@@ -86,7 +86,11 @@
     *ngIf="invoice.type === 'Rental'; else default"
   ></app-po-rental-summary>
   <ng-template #default>
-    <app-po-summary [value]="invoice.estimate"></app-po-summary>
+    <app-po-summary
+      [value]="invoice.estimate"
+      [customInvoice]="invoice.customInvoice"
+      [isInvoice]="true"
+    ></app-po-summary>
   </ng-template>
   <ion-row>
     <ion-col size="12">
@@ -111,13 +115,15 @@
           <th rowspan="2">Item Code</th>
           <th class="text-start" rowspan="2">Description</th>
           <th rowspan="2">Unit</th>
-          <th rowspan="2">Qty for Invoice</th>
+          <th rowspan="2" *ngIf="!invoice.customInvoice">Qty for Invoice</th>
           <th colspan="3">Actual Qty</th>
           <th colspan="2">Hire Period</th>
           <th rowspan="2">Days</th>
           <th rowspan="2">Months</th>
-          <th rowspan="2">Daily Rent Rate</th>
-          <th class="text-end" rowspan="2">Amount</th>
+          <th rowspan="2" *ngIf="!invoice.customInvoice">Daily Rent Rate</th>
+          <th class="text-end" rowspan="2" *ngIf="!invoice.customInvoice">
+            Amount
+          </th>
         </tr>
         <tr class="text-center align-middle">
           <th>Delivered</th>
@@ -150,7 +156,9 @@
             <td>EA</td>
 
             <!-- Qty for Invoice -->
-            <td class="fw-bold">{{ transaction.invoiceQty }}</td>
+            <td class="fw-bold" *ngIf="!invoice.customInvoice">
+              {{ transaction.invoiceQty }}
+            </td>
 
             <!-- Delivered Qty  -->
             <td class="text-success fw-bold">
@@ -191,7 +199,7 @@
             </td>
 
             <!-- Daily Rent Rate -->
-            <td>
+            <td *ngIf="!invoice.customInvoice">
               <ion-input
                 debounce="300"
                 inputmode="numeric"
@@ -206,7 +214,7 @@
             </td>
 
             <!-- Total Amount (qty * rate * days) -->
-            <td class="text-end">
+            <td class="text-end" *ngIf="!invoice.customInvoice">
               {{ company.currency.symbol }}
               {{
                 transaction.invoiceQty *
@@ -237,7 +245,9 @@
             <td>EA</td>
 
             <!-- Qty for Invoice -->
-            <td class="fw-bold">{{ transaction.invoiceQty }}</td>
+            <td class="fw-bold" *ngIf="!invoice.customInvoice">
+              {{ transaction.invoiceQty }}
+            </td>
 
             <!-- Delivered Qty  -->
             <td class="text-success fw-bold">
@@ -280,7 +290,7 @@
             </td>
 
             <!-- Daily Rent Rate -->
-            <td>
+            <td *ngIf="!invoice.customInvoice">
               <ion-input
                 debounce="300"
                 inputmode="numeric"
@@ -295,7 +305,7 @@
             </td>
 
             <!-- Total Amount (qty * rate * days) -->
-            <td class="text-end">
+            <td class="text-end" *ngIf="!invoice.customInvoice">
               {{ company.currency.symbol }}
               {{
                 transaction.invoiceQty *
@@ -307,10 +317,8 @@
             </td>
           </tr>
         </ng-container>
-      </tbody>
-      <tbody>
         <tr>
-          <td colspan="14">
+          <td [colSpan]="invoice.customInvoice ? 12 : 14">
             <app-title-block>Credit notes</app-title-block>
             <form [formGroup]="form">
               <ion-grid>
@@ -369,29 +377,69 @@
       <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
-          <th class="text-end" colspan="11" scope="col">Subtotal</th>
-          <th class="text-end" colspan="3" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 9 : 11"
+            scope="col"
+          >
+            Subtotal
+          </th>
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 2 : 3"
+            scope="col"
+          >
             {{ company.currency.symbol }}
             {{ invoice.subtotal | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="11" scope="col">Credit</th>
-          <th class="text-end text-danger" colspan="3" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 9 : 11"
+            scope="col"
+          >
+            Credit
+          </th>
+          <th
+            class="text-end text-danger"
+            [colSpan]="invoice.customInvoice ? 2 : 3"
+            scope="col"
+          >
             - {{ company.currency.symbol }}
             {{ invoice.creditTotal || 0 | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="11" scope="col">Discount</th>
-          <th class="text-end text-danger" colspan="3" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 9 : 11"
+            scope="col"
+          >
+            Discount
+          </th>
+          <th
+            class="text-end text-danger"
+            [colSpan]="invoice.customInvoice ? 2 : 3"
+            scope="col"
+          >
             - {{ company.currency.symbol }}
             {{ invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="11" scope="col">Invoice Total</th>
-          <th class="text-end" colspan="3" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 9 : 11"
+            scope="col"
+          >
+            Invoice Total
+          </th>
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 2 : 3"
+            scope="col"
+          >
             {{ company.currency.symbol }}
             {{
               invoice.subtotal - invoice.discount - invoice.creditTotal
@@ -400,24 +448,50 @@
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
-          <th class="text-end" colspan="11" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 9 : 11"
+            scope="col"
+          >
             Sales Tax ({{ company.salesTax }}%)
           </th>
-          <th class="text-end" colspan="3" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 2 : 3"
+            scope="col"
+          >
             {{ company.currency.symbol }} {{ invoice.tax | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
-          <th class="text-end" colspan="11" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 9 : 11"
+            scope="col"
+          >
             {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
           </th>
-          <th class="text-end" colspan="3" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 2 : 3"
+            scope="col"
+          >
             {{ company.currency.symbol }} {{ invoice.vat | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
-          <th class="text-end" colspan="11" scope="col">Grand Total</th>
-          <th class="text-end" colspan="3" scope="col">
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 9 : 11"
+            scope="col"
+          >
+            Grand Total
+          </th>
+          <th
+            class="text-end"
+            [colSpan]="invoice.customInvoice ? 2 : 3"
+            scope="col"
+          >
             {{ company.currency.symbol }}
             {{ invoice.total | number : "0.2-2" }}
           </th>

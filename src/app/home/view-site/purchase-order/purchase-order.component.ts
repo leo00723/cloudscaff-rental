@@ -16,6 +16,7 @@ import { Store } from '@ngxs/store';
 import { take } from 'rxjs';
 import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
 import { Company } from 'src/app/models/company.model';
+import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { PO } from 'src/app/models/po.model';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
@@ -41,7 +42,14 @@ export class PurchaseOrderComponent implements OnInit {
 
   protected company: Company;
   protected form: FormGroup;
-  protected po: PO = { subtotal: 0, discount: 0, total: 0, tax: 0, vat: 0 };
+  protected po: PO = {
+    subtotal: 0,
+    discount: 0,
+    total: 0,
+    tax: 0,
+    vat: 0,
+    customInvoice: false,
+  };
   protected saving = false;
   protected transactions: TransactionItem[] = [];
   protected user: User;
@@ -59,7 +67,7 @@ export class PurchaseOrderComponent implements OnInit {
     this.company = this.store.selectSnapshot(CompanyState.company);
     this.form = this.fb.group({
       excludeVAT: [false, Validators.required],
-      endDate: ['', Validators.required],
+      endDate: [undefined, Validators.required],
       discount: [0],
       days: [0],
       months: [0],
@@ -113,6 +121,16 @@ export class PurchaseOrderComponent implements OnInit {
 
   excludeVAT(args) {
     this.field('excludeVAT').setValue(args.detail.checked);
+    this.calcTotal();
+  }
+
+  enableCustomInvoice() {
+    this.po.customInvoice = !this.po.customInvoice;
+    this.calcTotal();
+  }
+
+  updatePOEstimate(estimate: EstimateV2) {
+    this.po.estimate = estimate;
     this.calcTotal();
   }
 
@@ -252,23 +270,31 @@ export class PurchaseOrderComponent implements OnInit {
     this.pdfSvc.handlePdf(pdf, this.po.code);
   }
 
-  private calcTotal() {
+  private async calcTotal() {
     this.po.subtotal = 0;
-    this.transactions.forEach((item) => {
-      this.po.subtotal +=
-        +item.invoiceQty *
-        +item.hireRate *
-        (item.transactionType === 'Return'
-          ? +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              item.invoiceEnd.toDate(),
-              true
-            )
-          : +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              this.field('endDate').value
-            ));
-    });
+    if (!this.po.customInvoice) {
+      this.transactions.forEach((item) => {
+        this.po.subtotal +=
+          +item.invoiceQty *
+          +item.hireRate *
+          (item.transactionType === 'Return'
+            ? +this.dateDiff.transform(
+                item.invoiceStart.toDate(),
+                item.invoiceEnd.toDate(),
+                true
+              )
+            : +this.dateDiff.transform(
+                item.invoiceStart.toDate(),
+                this.field('endDate').value
+              ));
+      });
+    } else {
+      this.po.estimate.items.forEach((item) => {
+        if (item.forInvoice) {
+          this.po.subtotal += item.total;
+        }
+      });
+    }
 
     this.po.discount = +this.field('discount').value;
     const totalAfterDiscount = this.po.subtotal - this.po.discount;
@@ -281,6 +307,23 @@ export class PurchaseOrderComponent implements OnInit {
       this.po.tax = totalAfterDiscount * (this.company.salesTax / 100);
       this.po.vat = totalAfterDiscount * (this.company.vat / 100);
       this.po.total = totalAfterDiscount + this.po.tax + this.po.vat;
+    }
+
+    try {
+      this.saving = true;
+      await this.editSvc.updateDoc(
+        `company/${this.company.id}/pos`,
+        this.po.id,
+        this.po
+      );
+    } catch (e) {
+      console.log(e);
+      this.notificationSvc.toast(
+        'Something went wrong saving PO, please try again',
+        'danger'
+      );
+    } finally {
+      this.saving = false;
     }
   }
 

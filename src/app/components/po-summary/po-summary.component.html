@@ -14,12 +14,15 @@
         <th class="text-center" scope="col">Duration / Months</th>
         <th class="text-center" scope="col">Rent / Month</th>
         <th class="text-end" scope="col">Total</th>
+        <th class="text-center" scope="col" *ngIf="customInvoice && !isInvoice">
+          Invoice
+        </th>
       </tr>
     </thead>
     <tbody>
       <!-- ITEMS -->
       <ng-container *ngFor="let item of estimate.items; let i = index">
-        <tr class="small align-middle">
+        <tr class="small align-middle" *ngIf="item.forInvoice">
           <th class="text-center" scope="row">{{ i + 1 }}</th>
           <td class="text-center">
             {{ item.code }}
@@ -46,6 +49,13 @@
           <td class="text-end">
             {{ company.currency.symbol }}
             {{ item.total | number : "0.2-2" }}
+          </td>
+          <td class="text-center" *ngIf="customInvoice && !isInvoice">
+            <ion-checkbox
+              mode="ios"
+              [checked]="item.forInvoice"
+              (ionChange)="addToInvoice($event, i)"
+            ></ion-checkbox>
           </td>
         </tr>
       </ng-container>

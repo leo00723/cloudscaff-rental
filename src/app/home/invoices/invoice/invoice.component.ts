@@ -141,21 +141,29 @@ export class InvoiceComponent implements OnInit {
     try {
       this.saving = true;
       this.invoice.subtotal = 0;
-      this.invoice.items.forEach((item) => {
-        this.invoice.subtotal +=
-          +item.invoiceQty *
-          +item.hireRate *
-          (item.transactionType === 'Return'
-            ? +this.dateDiff.transform(
-                item.invoiceStart.toDate(),
-                item.invoiceEnd.toDate(),
-                true
-              )
-            : +this.dateDiff.transform(
-                item.invoiceStart.toDate(),
-                this.invoice.endDate
-              ));
-      });
+      if (!this.invoice.customInvoice) {
+        this.invoice.items.forEach((item) => {
+          this.invoice.subtotal +=
+            +item.invoiceQty *
+            +item.hireRate *
+            (item.transactionType === 'Return'
+              ? +this.dateDiff.transform(
+                  item.invoiceStart.toDate(),
+                  item.invoiceEnd.toDate(),
+                  true
+                )
+              : +this.dateDiff.transform(
+                  item.invoiceStart.toDate(),
+                  this.invoice.endDate
+                ));
+        });
+      } else {
+        this.invoice.estimate.items.forEach((item) => {
+          if (item.forInvoice) {
+            this.invoice.subtotal += item.total;
+          }
+        });
+      }
       this.invoice.creditTotal = 0;
       this.invoice.creditItems = this.form.value.creditItems;
       this.invoice.creditItems.forEach((item) => {

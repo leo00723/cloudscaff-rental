@@ -18,4 +18,5 @@ export interface PO {
   vat?: number;
   status?: string;
   type?: string;
+  customInvoice?: boolean;
 }

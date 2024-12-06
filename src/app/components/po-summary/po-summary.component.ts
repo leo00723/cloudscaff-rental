@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   inject,
   Input,
+  Output,
 } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { Company } from 'src/app/models/company.model';
@@ -21,10 +23,18 @@ export class POSummaryComponent {
   }
   @Input() canDownload = false;
   @Input() showUploads = false;
+  @Input() customInvoice = false;
+  @Input() isInvoice = false;
+  @Output() update = new EventEmitter<EstimateV2>();
   estimate: EstimateV2;
   company: Company;
   private store = inject(Store);
   constructor() {
     this.company = this.store.selectSnapshot(CompanyState.company);
+  }
+
+  addToInvoice(args, index: number) {
+    this.estimate.items[index].forInvoice = args.detail.checked;
+    this.update.emit(this.estimate);
   }
 }

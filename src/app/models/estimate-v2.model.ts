@@ -33,4 +33,5 @@ export interface EstimateV2 {
   repName?: string;
   repEmail?: string;
   repContact?: string;
+  forInvoice?: boolean;
 }

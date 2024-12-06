@@ -1115,9 +1115,29 @@ export class PdfService {
     isdraft?: boolean
   ) {
     const estimateItems = [];
-    invoice.estimate.items.forEach((item, i) => {
-      estimateItems.push(this.addEstimateItem(i, company, item));
-    });
+    const items = [];
+
+    if (!invoice.customInvoice) {
+      // If customInvoice is false, include all items
+      invoice.estimate.items.forEach((item, i) => {
+        estimateItems.push(this.addEstimateItem(i, company, item));
+      });
+
+      invoice.items.forEach((item) => {
+        items.push(this.addRentalItem(company, item, invoice.endDate));
+      });
+    } else {
+      // If customInvoice is true, filter out items without the forInvoice flag
+      invoice.estimate.items
+        .filter((item) => item.forInvoice)
+        .forEach((item, i) => {
+          estimateItems.push(this.addEstimateItem(i, company, item));
+        });
+
+      invoice.items.forEach((item) => {
+        items.push(this.addRentalItemCustom(item, invoice.endDate));
+      });
+    }
     const estimateSummary = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages
@@ -1149,61 +1169,75 @@ export class PdfService {
       },
       layout: tLayout,
     };
-    const items = [];
 
-    invoice.items.forEach((item) => {
-      items.push(this.addRentalItem(company, item, invoice.endDate));
-    });
+    // Define table headers based on customInvoice flag
+    const summaryTableHeaders = invoice.customInvoice
+      ? [
+          { text: 'Docket', style: 'h4b', alignment: 'left' },
+          { text: 'Item Code', style: 'h4b', alignment: 'center' },
+          { text: 'Description', style: 'h4b', alignment: 'left' },
+          { text: 'Unit', style: 'h4b', alignment: 'center' },
+          { text: 'Delivered', style: 'h4b', alignment: 'center' },
+          { text: 'Returned', style: 'h4b', alignment: 'center' },
+          { text: 'Balance', style: 'h4b', alignment: 'center' },
+          { text: 'Start Date', style: 'h4b', alignment: 'center' },
+          { text: 'End Date', style: 'h4b', alignment: 'center' },
+          { text: 'Days', style: 'h4b', alignment: 'center' },
+          { text: 'Months', style: 'h4b', alignment: 'center' },
+        ]
+      : [
+          { text: 'Docket', style: 'h4b', alignment: 'left' },
+          { text: 'Item Code', style: 'h4b', alignment: 'center' },
+          { text: 'Description', style: 'h4b', alignment: 'left' },
+          { text: 'Unit', style: 'h4b', alignment: 'center' },
+          { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
+          { text: 'Delivered', style: 'h4b', alignment: 'center' },
+          { text: 'Returned', style: 'h4b', alignment: 'center' },
+          { text: 'Balance', style: 'h4b', alignment: 'center' },
+          { text: 'Start Date', style: 'h4b', alignment: 'center' },
+          { text: 'End Date', style: 'h4b', alignment: 'center' },
+          { text: 'Days', style: 'h4b', alignment: 'center' },
+          { text: 'Months', style: 'h4b', alignment: 'center' },
+          { text: 'Daily Rent Rate', style: 'h4b', alignment: 'center' },
+          { text: 'Total', style: 'h4b', alignment: 'right' },
+        ];
+
+    // Define the table body, filtering out the columns based on customInvoice flag
 
     const summary = {
       table: {
-        // headers are automatically repeated if the table spans over multiple pages
-        // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: [
-          'auto',
-          'auto',
-          '*',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          '*',
-        ],
-
-        body: [
-          [
-            { text: 'Docket', style: 'h4b', alignment: 'left' },
-            {
-              text: 'Item Code',
-              style: 'h4b',
-              alignment: 'center',
-            },
-            {
-              text: 'Description',
-              style: 'h4b',
-              alignment: 'left',
-            },
-            { text: 'Unit', style: 'h4b', alignment: 'center' },
-            { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
-            { text: 'Delivered', style: 'h4b', alignment: 'center' },
-            { text: 'Returned', style: 'h4b', alignment: 'center' },
-            { text: 'Balance', style: 'h4b', alignment: 'center' },
-            { text: 'Start Date', style: 'h4b', alignment: 'center' },
-            { text: 'End Date', style: 'h4b', alignment: 'center' },
-            { text: 'Days', style: 'h4b', alignment: 'center' },
-            { text: 'Months', style: 'h4b', alignment: 'center' },
-            { text: 'Daily Rent Rate', style: 'h4b', alignment: 'center' },
-            { text: 'Total', style: 'h4b', alignment: 'right' },
-          ],
-          ...items,
-        ],
+        widths: invoice.customInvoice
+          ? [
+              'auto',
+              'auto',
+              '*',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+            ]
+          : [
+              'auto',
+              'auto',
+              '*',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              '*',
+              'auto',
+            ],
+        body: [summaryTableHeaders, ...items],
       },
       layout: tLayout,
     };
@@ -1470,9 +1504,54 @@ export class PdfService {
     isdraft?: boolean
   ) {
     const estimateItems = [];
-    invoice.estimate.items.forEach((item, i) => {
-      estimateItems.push(this.addEstimateItem(i, company, item));
+    const items = [];
+    const mergedItems: TransactionItem[] = [];
+
+    // Iterate over each item in the list
+    invoice.items.forEach((item) => {
+      // Try to find an existing item in the mergedItems array with the same `itemId` and `invoiceStart`
+      const existingItem = mergedItems.find(
+        (mergedItem) =>
+          mergedItem.itemId === item.itemId &&
+          mergedItem.invoiceStart.toDate().toDateString() ===
+            item.invoiceStart.toDate().toDateString() &&
+          item.transactionType !== 'Return'
+      );
+
+      if (existingItem) {
+        // If the item exists, merge the quantities
+        existingItem.deliveryCode.concat(item.deliveryCode);
+        existingItem.invoiceQty += item.invoiceQty;
+        existingItem.deliveredQty += item.deliveredQty;
+        existingItem.returnTotal += item.returnTotal;
+        existingItem.balanceQty += item.balanceQty;
+      } else {
+        // If no matching item is found, add the current item as is
+        mergedItems.push({ ...item });
+      }
     });
+
+    if (!invoice.customInvoice) {
+      // If customInvoice is false, include all items
+      invoice.estimate.items.forEach((item, i) => {
+        estimateItems.push(this.addEstimateItem(i, company, item));
+      });
+
+      mergedItems.forEach((item) => {
+        items.push(this.addRentalItem(company, item, invoice.endDate));
+      });
+    } else {
+      // If customInvoice is true, filter out items without the forInvoice flag
+      invoice.estimate.items
+        .filter((item) => item.forInvoice)
+        .forEach((item, i) => {
+          estimateItems.push(this.addEstimateItem(i, company, item));
+        });
+
+      mergedItems.forEach((item) => {
+        items.push(this.addRentalItemCustom(item, invoice.endDate));
+      });
+    }
     const estimateSummary = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages
@@ -1504,87 +1583,75 @@ export class PdfService {
       },
       layout: tLayout,
     };
-    const items = [];
 
-    const mergedItems: TransactionItem[] = [];
+    // Define table headers based on customInvoice flag
+    const summaryTableHeaders = invoice.customInvoice
+      ? [
+          { text: 'Docket', style: 'h4b', alignment: 'left' },
+          { text: 'Item Code', style: 'h4b', alignment: 'center' },
+          { text: 'Description', style: 'h4b', alignment: 'left' },
+          { text: 'Unit', style: 'h4b', alignment: 'center' },
+          { text: 'Delivered', style: 'h4b', alignment: 'center' },
+          { text: 'Returned', style: 'h4b', alignment: 'center' },
+          { text: 'Balance', style: 'h4b', alignment: 'center' },
+          { text: 'Start Date', style: 'h4b', alignment: 'center' },
+          { text: 'End Date', style: 'h4b', alignment: 'center' },
+          { text: 'Days', style: 'h4b', alignment: 'center' },
+          { text: 'Months', style: 'h4b', alignment: 'center' },
+        ]
+      : [
+          { text: 'Docket', style: 'h4b', alignment: 'left' },
+          { text: 'Item Code', style: 'h4b', alignment: 'center' },
+          { text: 'Description', style: 'h4b', alignment: 'left' },
+          { text: 'Unit', style: 'h4b', alignment: 'center' },
+          { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
+          { text: 'Delivered', style: 'h4b', alignment: 'center' },
+          { text: 'Returned', style: 'h4b', alignment: 'center' },
+          { text: 'Balance', style: 'h4b', alignment: 'center' },
+          { text: 'Start Date', style: 'h4b', alignment: 'center' },
+          { text: 'End Date', style: 'h4b', alignment: 'center' },
+          { text: 'Days', style: 'h4b', alignment: 'center' },
+          { text: 'Months', style: 'h4b', alignment: 'center' },
+          { text: 'Daily Rent Rate', style: 'h4b', alignment: 'center' },
+          { text: 'Total', style: 'h4b', alignment: 'right' },
+        ];
 
-    // Iterate over each item in the list
-    invoice.items.forEach((item) => {
-      // Try to find an existing item in the mergedItems array with the same `itemId` and `invoiceStart`
-      const existingItem = mergedItems.find(
-        (mergedItem) =>
-          mergedItem.itemId === item.itemId &&
-          mergedItem.invoiceStart.toDate().toDateString() ===
-            item.invoiceStart.toDate().toDateString() &&
-          item.transactionType !== 'Return'
-      );
-
-      if (existingItem) {
-        // If the item exists, merge the quantities
-        existingItem.deliveryCode.concat(item.deliveryCode);
-        existingItem.invoiceQty += item.invoiceQty;
-        existingItem.deliveredQty += item.deliveredQty;
-        existingItem.returnTotal += item.returnTotal;
-        existingItem.balanceQty += item.balanceQty;
-      } else {
-        // If no matching item is found, add the current item as is
-        mergedItems.push({ ...item });
-      }
-    });
-
-    mergedItems.forEach((item) => {
-      items.push(this.addRentalItem(company, item, invoice.endDate));
-    });
+    // Define the table body, filtering out the columns based on customInvoice flag
 
     const summary = {
       table: {
-        // headers are automatically repeated if the table spans over multiple pages
-        // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: [
-          'auto',
-          'auto',
-          '*',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          '*',
-        ],
-
-        body: [
-          [
-            { text: 'Docket', style: 'h4b', alignment: 'left' },
-            {
-              text: 'Item Code',
-              style: 'h4b',
-              alignment: 'center',
-            },
-            {
-              text: 'Description',
-              style: 'h4b',
-              alignment: 'left',
-            },
-            { text: 'Unit', style: 'h4b', alignment: 'center' },
-            { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
-            { text: 'Delivered', style: 'h4b', alignment: 'center' },
-            { text: 'Returned', style: 'h4b', alignment: 'center' },
-            { text: 'Balance', style: 'h4b', alignment: 'center' },
-            { text: 'Start Date', style: 'h4b', alignment: 'center' },
-            { text: 'End Date', style: 'h4b', alignment: 'center' },
-            { text: 'Days', style: 'h4b', alignment: 'center' },
-            { text: 'Months', style: 'h4b', alignment: 'center' },
-            { text: 'Daily Rent Rate', style: 'h4b', alignment: 'center' },
-            { text: 'Total', style: 'h4b', alignment: 'right' },
-          ],
-          ...items,
-        ],
+        widths: invoice.customInvoice
+          ? [
+              'auto',
+              'auto',
+              '*',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+            ]
+          : [
+              'auto',
+              'auto',
+              '*',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              '*',
+              'auto',
+            ],
+        body: [summaryTableHeaders, ...items],
       },
       layout: tLayout,
     };
@@ -3858,6 +3925,82 @@ E-mail: Info@hayakel-ksa.com`,
         text: `${company.currency.symbol} ${this.format(total)}`,
         style: 'h6',
         alignment: 'right',
+      },
+    ];
+  }
+
+  private addRentalItemCustom(item: TransactionItem, endDate?: any) {
+    let start = null;
+    let end = null;
+    let days = null;
+    let code = null;
+    if (item.transactionType === 'Delivery') {
+      code = item.deliveryCode;
+      start = item.invoiceStart.toDate();
+      end = endDate;
+      days = +this.dateDiffPipe.transform(start, end);
+    } else {
+      code = item.returnCode;
+      start = item.invoiceStart.toDate();
+      end = item.invoiceEnd.toDate();
+      days = +this.dateDiffPipe.transform(start, end, true);
+    }
+    const months = this.format(days / 30);
+    return [
+      {
+        text: code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.name,
+        style: 'h6',
+      },
+      {
+        text: 'EA',
+        style: 'h6',
+        alignment: 'center',
+      },
+
+      {
+        text: item.deliveredQty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.returnTotal,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.balanceQty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: this.toDate(start, true),
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: this.toDate(end, true),
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: days,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: months,
+        style: 'h6',
+        alignment: 'center',
       },
     ];
   }
