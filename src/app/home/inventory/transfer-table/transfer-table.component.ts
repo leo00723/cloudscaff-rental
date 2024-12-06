@@ -61,8 +61,10 @@ export class TransferTableComponent {
           (s) =>
             s.code.toLowerCase().indexOf(val) !== -1 ||
             s.fromSite.name.toLowerCase().indexOf(val) !== -1 ||
+            s.fromPO.toLowerCase().indexOf(val) !== -1 ||
             s.fromSite.customer.name.toLowerCase().indexOf(val) !== -1 ||
             s.toSite.name.toLowerCase().indexOf(val) !== -1 ||
+            s.toPO.toLowerCase().indexOf(val) !== -1 ||
             s.toSite.customer.name.toLowerCase().indexOf(val) !== -1 ||
             s.status.toLowerCase().indexOf(val) !== -1 ||
             !val

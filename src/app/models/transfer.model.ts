@@ -1,15 +1,17 @@
 import { Company } from './company.model';
-import { InventoryItem } from './inventoryItem.model';
 import { Site } from './site.model';
+import { TransactionItem } from './transactionItem.model';
 import { UploadedFile } from './uploadedFile.model';
 
 export interface Transfer {
   id?: string;
   code?: string;
   fromSite?: Site;
+  fromPO?: string;
   toSite?: Site;
+  toPO?: string;
   company?: Company;
-  items?: InventoryItem[];
+  items?: TransactionItem[];
   transferDate?: any;
   date?: any;
   notes?: string;

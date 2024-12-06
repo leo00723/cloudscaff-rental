@@ -10,7 +10,7 @@ export interface TransactionItem {
   code?: string;
   category?: string;
   name?: string;
-  weight?: string;
+  weight?: number;
   deliveryCode?: string;
   deliveredQty?: number;
   invoiceQty?: number;

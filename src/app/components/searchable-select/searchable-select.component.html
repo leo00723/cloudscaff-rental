@@ -49,12 +49,25 @@
     </ion-header>
     <ion-content>
       <ion-item *ngFor="let item of filtered" (click)="itemSelected()">
+        <ion-badge slot="start" *ngIf="itemTextField3" mode="ios">
+          {{ leaf3(item) }}
+        </ion-badge>
+        <div>
+          <ion-note class="text-sm" *ngIf="itemTextField2" text-wrap>
+            {{ leaf2(item) }}
+          </ion-note>
+
+          <ion-text class="my-auto" text-wrap>
+            <h6>{{ leaf(item) }}</h6>
+          </ion-text>
+        </div>
+
         <ion-checkbox
+          class="my-auto"
           mode="ios"
-          slot="start"
+          slot="end"
           [(ngModel)]="item.selected"
         ></ion-checkbox>
-        <ion-label>{{ leaf(item) }}</ion-label>
       </ion-item>
     </ion-content>
   </ng-template>

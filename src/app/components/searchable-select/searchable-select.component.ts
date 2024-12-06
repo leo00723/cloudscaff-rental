@@ -24,6 +24,8 @@ export class SearchableSelectComponent implements OnChanges {
   @Input() showInput = true;
   @Input() resetStatus = true;
   @Input() itemTextField = 'name';
+  @Input() itemTextField2 = '';
+  @Input() itemTextField3 = '';
   @Input() isOpen = false;
   @Output() selectedChanged: EventEmitter<any> = new EventEmitter();
 
@@ -88,11 +90,18 @@ export class SearchableSelectComponent implements OnChanges {
 
   filter(event: SearchbarCustomEvent) {
     const filter = event.detail.value.toLowerCase();
-    this.filtered = this.data.filter((item) =>
-      this.leaf(item).toLowerCase().includes(filter)
+    this.filtered = this.data.filter(
+      (item) =>
+        this.leaf(item).toLowerCase().includes(filter) ||
+        this.leaf2(item)?.toLowerCase()?.includes(filter) ||
+        this.leaf3(item)?.toLowerCase()?.includes(filter)
     );
   }
 
   leaf = (obj) =>
     this.itemTextField.split('.').reduce((value, index) => value[index], obj);
+  leaf2 = (obj) =>
+    this.itemTextField2.split('.').reduce((value, index) => value[index], obj);
+  leaf3 = (obj) =>
+    this.itemTextField3.split('.').reduce((value, index) => value[index], obj);
 }

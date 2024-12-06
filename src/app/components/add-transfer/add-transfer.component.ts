@@ -1,10 +1,11 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Site } from 'src/app/models/site.model';
+import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { Transfer } from 'src/app/models/transfer.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -29,8 +30,8 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   form: FormGroup;
   user: User;
   company: Company;
-  items: InventoryItem[];
-  itemBackup: InventoryItem[];
+  items: TransactionItem[] = [];
+  itemBackup: TransactionItem[];
   sites$: Observable<Site[]>;
   loading = false;
   viewAll = true;
@@ -57,7 +58,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       try {
         const transfer: Transfer = { ...this.form.value };
         this.itemBackup ||= [...this.items];
-        transfer.items = this.itemBackup.filter((item) => item.shipmentQty > 0);
+        transfer.items = this.itemBackup.filter((item) => item.returnQty > 0);
         this.company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
@@ -101,7 +102,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
         Object.assign(this.transfer, this.form.value);
         this.itemBackup ||= [...this.items];
         this.transfer.items = this.itemBackup.filter(
-          (item) => item.shipmentQty > 0
+          (item) => item.returnQty > 0
         );
         this.transfer.status = status;
         await this.upload();
@@ -138,31 +139,37 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   }
 
   delete() {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      await this.masterSvc
-        .edit()
-        .deleteDocById(
-          `company/${this.company.id}/transfers`,
-          this.transfer.id
-        );
-      this.close();
-    });
+    // this.masterSvc.notification().presentAlertConfirm(async () => {
+    //   await this.masterSvc
+    //     .edit()
+    //     .deleteDocById(
+    //       `company/${this.company.id}/transfers`,
+    //       this.transfer.id
+    //     );
+    //   this.close();
+    // });
   }
 
-  updateItems() {
-    const fromSite = this.field('fromSite').value.id;
-    this.subs.add(
-      this.masterSvc
-        .edit()
-        .getDocById(`company/${this.company.id}/siteStock`, fromSite)
-        .subscribe((data) => {
-          this.items = data.items;
-        })
-    );
+  changeFromSite(event) {
+    this.field('fromSite').setValue(event[0]);
+    this.field('fromPO').setValue('');
+    this.items = [];
+    this.itemBackup = [];
   }
-  update(val, item: InventoryItem) {
-    item.shipmentQty = +val.detail.value;
-    this.checkError(item);
+  changeToSite(event) {
+    this.field('toSite').setValue(event[0]);
+    this.field('toPO').setValue('');
+  }
+
+  update(val, item: TransactionItem) {
+    item.returnQty = +val.detail.value;
+    if (item.returnQty > item.balanceQty || item.returnQty < 0) {
+      item.error = true;
+      this.error = true;
+    } else {
+      item.error = false;
+      this.error = false;
+    }
   }
 
   search(event) {
@@ -184,31 +191,39 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkError(item: InventoryItem) {
-    const totalQty = item.availableQty ? item.availableQty : 0;
-    const inUseQty = item.inUseQty ? item.inUseQty : 0;
-    const damaged = item.damagedQty ? item.damagedQty : 0;
-    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
-    const lost = item.lostQty ? item.lostQty : 0;
-    const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
-    if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
-      item.error = true;
-      this.error = true;
-    } else {
-      item.error = false;
-      this.error = false;
-    }
-  }
   close() {
     this.masterSvc.modal().dismiss();
   }
   field(field: string) {
     return this.form.get(field) as FormControl;
   }
+
+  protected getTransactions(value: any) {
+    const poNumber = this.field('fromPO').value;
+    if (!poNumber) {
+      return;
+    }
+    this.subs.add(
+      this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
+          where('status', '==', 'active'),
+          where('transactionType', '==', 'Delivery'),
+          where('poNumber', '==', poNumber),
+        ])
+        .pipe(take(1))
+        .subscribe((data) => {
+          this.items = data;
+        })
+    );
+  }
+
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       fromSite: [this.transfer.fromSite, Validators.required],
+      fromPO: [this.transfer.fromPO, Validators.required],
       toSite: [this.transfer.toSite, Validators.required],
+      toPO: [this.transfer.toPO, Validators.required],
       transferDate: [this.transfer.transferDate, Validators.required],
       notes: [this.transfer.notes, Validators.nullValidator],
       updatedBy: [this.user.id],
@@ -220,18 +235,20 @@ export class AddTransferComponent implements OnInit, OnDestroy {
       this.subs.add(
         this.masterSvc
           .edit()
-          .getDocById(
-            `company/${this.company.id}/siteStock`,
-            this.transfer.fromSite.id
-          )
+          .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
+            where('status', '==', 'active'),
+            where('transactionType', '==', 'Delivery'),
+            where('poNumber', '==', this.transfer.fromPO),
+          ])
+          .pipe(take(1))
           .subscribe((data) => {
             this.transfer.items.forEach((item) => {
-              const inventoryItem = data.items.find((i) => i.id === item.id);
+              const inventoryItem = data.find((i) => i.id === item.id);
               if (inventoryItem) {
-                inventoryItem.shipmentQty = +item.shipmentQty;
+                inventoryItem.returnQty = +item.returnQty;
               }
             });
-            this.items = data.items;
+            this.items = data;
           })
       );
     } else {
@@ -241,7 +258,9 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       fromSite: ['', Validators.required],
+      fromPO: ['', Validators.required],
       toSite: ['', Validators.required],
+      toPO: ['', Validators.required],
       transferDate: ['', Validators.required],
       notes: ['', Validators.nullValidator],
       createdBy: [this.user.id],

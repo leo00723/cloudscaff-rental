@@ -74,7 +74,8 @@
               title="Select Site"
               [data]="sites"
               itemTextField="name"
-              [add]="false"
+              itemTextField2="customer.name"
+              itemTextField3="code"              [add]="false"
               (selectedChanged)="changeSite($event)"
               #select
             ></app-searchable-select>
