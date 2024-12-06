@@ -1510,12 +1510,14 @@ export class PdfService {
 
     // Iterate over each item in the list
     invoice.items.forEach((item) => {
-      // Try to find an existing item in the mergedItems array with the same `code` and `invoiceStart`
-      const existingItem = mergedItems.find((mergedItem) => {
-        mergedItem.itemId === item.itemId &&
+      // Try to find an existing item in the mergedItems array with the same `itemId` and `invoiceStart`
+      const existingItem = mergedItems.find(
+        (mergedItem) =>
+          mergedItem.itemId === item.itemId &&
           mergedItem.invoiceStart.toDate().toDateString() ===
-            item.invoiceStart.toDate().toDateString();
-      });
+            item.invoiceStart.toDate().toDateString() &&
+          item.transactionType !== 'Return'
+      );
 
       if (existingItem) {
         // If the item exists, merge the quantities

@@ -129,6 +129,8 @@ export class PurchaseOrderComponent implements OnInit {
           createdByName: this.user.name,
           date: new Date(),
           poId: this.po.id,
+          creditItems: [],
+          creditTotal: 0,
         };
 
         invoice.code = this.editSvc.generateDocCode(
@@ -231,7 +233,7 @@ export class PurchaseOrderComponent implements OnInit {
     });
   }
 
-  async downloadDraft() {
+  async downloadDraft(isBasic?: boolean) {
     const invoice: TransactionInvoice = {
       ...this.po,
       ...this.form.value,
@@ -241,13 +243,12 @@ export class PurchaseOrderComponent implements OnInit {
       createdByName: this.user.name,
       date: new Date(),
       poId: this.po.id,
+      creditItems: [],
+      creditTotal: 0,
     };
-    const pdf = await this.pdfSvc.rentalInvoice(
-      invoice,
-      this.company,
-      null,
-      true
-    );
+    const pdf = isBasic
+      ? await this.pdfSvc.rentalInvoiceMerged(invoice, this.company, null, true)
+      : await this.pdfSvc.rentalInvoice(invoice, this.company, null, true);
     this.pdfSvc.handlePdf(pdf, this.po.code);
   }
 

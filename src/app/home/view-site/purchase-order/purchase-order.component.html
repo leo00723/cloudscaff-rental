@@ -22,11 +22,19 @@
     <ion-col size="12" class="text-end">
       <ion-chip
         size="small"
+        (click)="downloadDraft(true)"
+        color="warning"
+        *ngIf="!saving && transactions.length > 0 && form.valid"
+      >
+        Basic Invoice Draft
+      </ion-chip>
+      <ion-chip
+        size="small"
         (click)="downloadDraft()"
         color="tertiary"
         *ngIf="!saving && transactions.length > 0 && form.valid"
       >
-        Invoice Draft
+        Detailed Invoice Draft
       </ion-chip>
       <!-- <ion-button
         size="small"
