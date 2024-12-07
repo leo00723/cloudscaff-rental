@@ -431,7 +431,7 @@ export class InventoryPage implements OnInit {
         this.transfers$ = this.masterSvc
           .edit()
           .getCollectionWhereAndOrder(
-            `company/${id}/transfers`,
+            `company/${id}/poTransfers`,
             'status',
             '==',
             'sent',
@@ -441,7 +441,7 @@ export class InventoryPage implements OnInit {
         this.pendingTransfers$ = this.masterSvc
           .edit()
           .getCollectionWhereAndOrder(
-            `company/${id}/transfers`,
+            `company/${id}/poTransfers`,
             'status',
             '==',
             'pending',

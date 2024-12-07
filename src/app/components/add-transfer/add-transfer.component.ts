@@ -72,7 +72,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
         transfer.uploads = this.transfer.uploads;
         await this.masterSvc
           .edit()
-          .addDocument(`company/${this.company.id}/transfers`, transfer);
+          .addDocument(`company/${this.company.id}/poTransfers`, transfer);
 
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalTransfers: increment(1),
@@ -110,7 +110,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
         await this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.company.id}/transfers`,
+            `company/${this.company.id}/poTransfers`,
             this.transfer.id,
             this.transfer
           );
@@ -143,7 +143,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     //   await this.masterSvc
     //     .edit()
     //     .deleteDocById(
-    //       `company/${this.company.id}/transfers`,
+    //       `company/${this.company.id}/poTransfers`,
     //       this.transfer.id
     //     );
     //   this.close();
