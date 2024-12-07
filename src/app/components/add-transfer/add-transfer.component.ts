@@ -62,7 +62,6 @@ export class AddTransferComponent implements OnInit, OnDestroy {
         this.company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
-
         transfer.code = `TRA${new Date().toLocaleDateString('en', {
           year: '2-digit',
         })}${(this.company.totalTransfers ? this.company.totalTransfers + 1 : 1)
@@ -82,7 +81,6 @@ export class AddTransferComponent implements OnInit, OnDestroy {
           .notification()
           .toast('Transfer created successfully', 'success');
         this.close();
-        this.loading = false;
       } catch (e) {
         console.error(e);
         this.masterSvc
@@ -91,6 +89,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
             'Something went wrong creating transfer. Please try again!',
             'danger'
           );
+      } finally {
         this.loading = false;
       }
     });
@@ -154,7 +153,6 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     this.field('fromSite').setValue(event[0]);
     this.field('fromPO').setValue('');
     this.items = [];
-    this.itemBackup = [];
   }
   changeToSite(event) {
     this.field('toSite').setValue(event[0]);
@@ -173,7 +171,6 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   }
 
   search(event) {
-    console.log('searching');
     this.searching = true;
     const val = event.detail.value.toLowerCase() as string;
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
