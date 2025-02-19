@@ -21,8 +21,8 @@
     </thead>
     <tbody>
       <!-- ITEMS -->
-      <ng-container *ngFor="let item of estimate.items; let i = index">
-        <tr class="small align-middle" *ngIf="item.forInvoice">
+      <ng-container *ngFor="let item of filteredItems; let i = index">
+        <tr class="small align-middle">
           <th class="text-center" scope="row">{{ i + 1 }}</th>
           <td class="text-center">
             {{ item.code }}
