@@ -245,8 +245,15 @@
       </ion-row>
 
       <ng-container *ngIf="isEdit">
-        <app-title-block>Manage Qty</app-title-block>
+        <app-title-block>Uploads</app-title-block>
         <ion-row class="card-outline mb-3">
+          <ion-col size="12">
+            <app-multiuploader></app-multiuploader>
+          </ion-col>
+        </ion-row>
+
+        <app-title-block>Manage Qty</app-title-block>
+        <ion-row class="card-outline mb-3" *ngIf="!uploading">
           <!-- Reusable Component for Quantity Operations -->
           <ng-container *ngFor="let operation of operations; let i = index">
             <ion-col [sizeMd]="i > 1 ? 4 : 6" size="12" class="mb-3">
@@ -287,81 +294,68 @@
             </div>
           </ion-col> -->
         </ion-row>
-        <app-title-block>Uploads</app-title-block>
+
+        <app-title-block>Log history</app-title-block>
         <ion-row class="card-outline mb-3">
           <ion-col size="12">
-            <app-multiuploader
-              [autoupload]="true"
-              (uploaded)="uploaded($event)"
-            ></app-multiuploader>
-          </ion-col>
-          <ion-col size="12">
-            <app-title-block> Uploaded Files </app-title-block>
-            <ion-row>
-              <ion-col
-                size="12"
-                *ngFor="let file of inventoryItem.uploads; let i = index"
-              >
-                <app-file-item
-                  [simplified]="true"
-                  [file]="file"
-                  [allowDelete]="false"
-                ></app-file-item>
-              </ion-col>
-            </ion-row>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered">
+                <thead>
+                  <tr class="table-light align-middle text-center">
+                    <th>#</th>
+                    <th class="text-start">Status</th>
+                    <th class="text-start">Comment</th>
+                    <th class="text-start">Uploads</th>
+                    <th>User</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container
+                    *ngFor="let log of inventoryItem.log; let i = index"
+                  >
+                    <tr class="small text-center align-middle">
+                      <td>{{ i + 1 }}</td>
+                      <td
+                        class="text-start"
+                        [ngClass]="
+                          log.status === 'add'
+                            ? 'text-success'
+                            : log.status === 'remove'
+                            ? 'text-danger'
+                            : 'text-warning'
+                        "
+                      >
+                        {{ log.message }}
+                      </td>
+                      <td class="text-start">
+                        {{ log.comment }}
+                      </td>
+                      <td>
+                        <div *ngFor="let item of log.uploads">
+                          <a
+                            [href]="item.downloadUrl"
+                            target="_blank"
+                            [download]="true"
+                            >{{ item.file }}</a
+                          >
+                        </div>
+                      </td>
+                      <td>{{ log.user.name }}</td>
+                      <td>
+                        {{
+                          (log.date.toDate ? log.date.toDate() : log.date)
+                            | date : "dd/MM/yy HH:mm"
+                        }}
+                      </td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
           </ion-col>
         </ion-row>
       </ng-container>
-
-      <ion-row *ngIf="isEdit">
-        <ion-col size="12">
-          <app-title-block>Log history</app-title-block>
-          <div class="mt-3 table-responsive card-outline">
-            <table class="table table-sm table-bordered">
-              <thead>
-                <tr class="table-light align-middle text-center">
-                  <th>#</th>
-                  <th class="text-start">Status</th>
-                  <th class="text-start">Comment</th>
-                  <th>User</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <ng-container
-                  *ngFor="let log of inventoryItem.log; let i = index"
-                >
-                  <tr class="small text-center align-middle">
-                    <td>{{ i + 1 }}</td>
-                    <td
-                      class="text-start"
-                      [ngClass]="
-                        log.status === 'add'
-                          ? 'text-success'
-                          : log.status === 'remove'
-                          ? 'text-danger'
-                          : 'text-warning'
-                      "
-                    >
-                      {{ log.message }}
-                    </td>
-                    <td class="text-start">
-                      {{ log.comment }}
-                    </td>
-                    <td>{{ log.user.name }}</td>
-                    <td>
-                      {{
-                        (log.date.toDate ? log.date.toDate() : log.date)
-                          | date : "dd/MM/yy HH:mm"
-                      }}
-                    </td>
-                  </tr>
-                </ng-container>
-              </tbody>
-            </table>
-          </div>
-        </ion-col>
-      </ion-row>
     </ion-grid>
   </form>
 </ion-content>

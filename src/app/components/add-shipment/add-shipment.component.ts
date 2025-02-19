@@ -561,6 +561,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .addDocument(`company/${this.company.id}/shipments`, shipment);
 
       this.shipment.id = doc.id;
+      this.shipment.code = shipment.code;
       this.isEdit = true;
       await this.masterSvc.edit().updateDoc('company', this.company.id, {
         totalShipments: increment(1),

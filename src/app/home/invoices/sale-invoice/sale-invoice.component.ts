@@ -53,7 +53,7 @@ export class SaleInvoiceComponent {
       try {
         this.loading = true;
         await this.editSvc.updateDoc(
-          `company/${this.company.id}/sellInvoice`,
+          `company/${this.company.id}/saleInvoices`,
           this.invoice.id,
           { status: 'accepted' }
         );
@@ -75,7 +75,7 @@ export class SaleInvoiceComponent {
       try {
         this.loading = true;
         await this.editSvc.updateDoc(
-          `company/${this.company.id}/sellInvoice`,
+          `company/${this.company.id}/saleInvoices`,
           this.invoice.id,
           { status: 'void' }
         );

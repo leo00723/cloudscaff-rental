@@ -154,7 +154,6 @@ const defaultSubHeader = `https://firebasestorage.googleapis.com/v0/b/cloudscaff
   providedIn: 'root',
 })
 export class PdfService {
-  pdfMake: any;
   private store = inject(Store);
   constructor(
     private dateDiffPipe: DateDiffPipe,
@@ -2852,6 +2851,12 @@ export class PdfService {
               '',
               '',
             ],
+            [
+              { text: 'Created By:', style: 'h6b' },
+              `${delivery?.createdByName || 'N/A'}`,
+              '',
+              '',
+            ],
           ]
         ),
         hr,
@@ -3465,7 +3470,7 @@ E-mail: Info@hayakel-ksa.com`,
   // UTILITY FUNCTIONS
 
   async generatePdf(data) {
-    return this.pdfMake.createPdf(data);
+    return pdfMake.createPdf(data);
   }
   private async getHeader(
     title: string,

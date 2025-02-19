@@ -31,6 +31,7 @@ export class AddStockitemComponent implements OnInit {
   company: Company;
   user: User;
   loading = false;
+  uploading = false;
   categories$: Observable<any>;
   removeQty = 0;
   addQty = 0;
@@ -166,16 +167,19 @@ export class AddStockitemComponent implements OnInit {
   }
 
   addYardQty() {
-    this.masterSvc.notification().presentAlertConfirm(() => {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
       const total = +this.field('yardQty').value + this.addQty;
       this.field('yardQty').setValue(total);
       this.update();
+      const uploads = await this.upload();
+
       const log = {
         message: `Added ${this.addQty} items to Total Qty.`,
         user: this.user,
         date: new Date(),
         status: 'add',
         comment: this.comment,
+        uploads,
       };
       if (this.inventoryItem.log) {
         this.inventoryItem.log.push(log);
@@ -198,17 +202,19 @@ export class AddStockitemComponent implements OnInit {
           5000
         );
     } else {
-      this.masterSvc.notification().presentAlertConfirm(() => {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
         this.field('inMaintenanceQty').setValue(
           inMaintenanceQty - this.moveQty
         );
         this.update();
+        const uploads = await this.upload();
         const log = {
           message: `Moved ${this.moveQty} items from Maintenance to Available Qty.`,
           user: this.user,
           date: new Date(),
           status: 'move',
           comment: this.comment,
+          uploads,
         };
         if (this.inventoryItem.log) {
           this.inventoryItem.log.push(log);
@@ -240,15 +246,18 @@ export class AddStockitemComponent implements OnInit {
           5000
         );
     } else {
-      this.masterSvc.notification().presentAlertConfirm(() => {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
         this.field(field).setValue(currentQty + moveQty);
         this.update();
+        const uploads = await this.upload();
+
         const log = {
           message: `Moved ${moveQty} items from ${category} to ${category2} Qty.`,
           user: this.user,
           date: new Date(),
           status: 'move',
           comment: this.comment,
+          uploads,
         };
         if (this.inventoryItem.log) {
           this.inventoryItem.log.push(log);
@@ -281,15 +290,18 @@ export class AddStockitemComponent implements OnInit {
           5000
         );
     } else {
-      this.masterSvc.notification().presentAlertConfirm(() => {
+      this.masterSvc.notification().presentAlertConfirm(async () => {
         this.field('yardQty').setValue(yardQty - this.removeQty);
         this.update();
+        const uploads = await this.upload();
+
         const log = {
           message: `Removed ${this.removeQty} items from Total Qty.`,
           user: this.user,
           date: new Date(),
           status: 'remove',
           comment: this.comment,
+          uploads,
         };
         if (this.inventoryItem.log) {
           this.inventoryItem.log.push(log);
@@ -315,11 +327,15 @@ export class AddStockitemComponent implements OnInit {
     return await modal.present();
   }
 
-  async uploaded(newFiles) {
+  async upload() {
+    this.uploading = true;
+    const newFiles = await this.uploader.startUpload();
     this.inventoryItem.uploads
       ? this.inventoryItem.uploads.push(...newFiles)
       : (this.inventoryItem.uploads = newFiles);
-    this.autoUpdate();
+    this.uploading = false;
+
+    return newFiles;
   }
 
   private async autoUpdate() {
