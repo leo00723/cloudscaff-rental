@@ -15,9 +15,9 @@
 <ion-content class="ion-padding">
   <ng-container *ngIf="log$ | async as logs">
     <div class="table-responsive">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
+      <table class="table table-striped table-bordered">
+        <thead class="bg-primary">
+          <tr class="text-center">
             <th scope="col">Doc Code</th>
             <th scope="col">Site Name</th>
             <th scope="col">Customer</th>
@@ -27,15 +27,21 @@
         </thead>
         <tbody>
           <ng-container *ngIf="log$ | async as logs">
-            <tr class="align-middle" *ngFor="let log of logs">
-              <td class="text-primary cursor-pointer">
-                {{ log.code }}
+            <tr class="text-center align-middle" *ngFor="let log of logs">
+              <td>
+                <ion-chip
+                  [color]="log.type === 'Delivery' ? 'danger' : 'success'"
+                  >{{ log.code }}</ion-chip
+                >
               </td>
               <td>{{ log.siteName }}</td>
               <td>{{ log.customerName }}</td>
-              <td>{{ log.date }}</td>
-              <td class="text-center">
-                {{ log.qty }}
+              <td>{{ log.date | date : "short" }}</td>
+              <td>
+                <ion-text
+                  [color]="log.type === 'Delivery' ? 'danger' : 'success'"
+                  >{{ log.qty }}</ion-text
+                >
               </td>
             </tr>
           </ng-container>
