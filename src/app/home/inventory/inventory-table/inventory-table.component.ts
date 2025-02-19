@@ -34,6 +34,7 @@ import { Company } from 'src/app/models/company.model';
 export class InventoryTableComponent implements OnInit, OnDestroy {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<InventoryItem>();
+  @Output() viewLog = new EventEmitter<InventoryItem>();
   @Output() editItem = new EventEmitter<InventoryItem>();
   @Output() duplicateItem = new EventEmitter<InventoryItem>();
 
@@ -123,6 +124,10 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   }
   view() {
     this.selectedItem.emit(this.selected[0]);
+  }
+
+  log() {
+    this.viewLog.emit(this.selected[0]);
   }
   deleteItem(item: InventoryItem) {
     if (item.inUseQty > 0) {

@@ -150,6 +150,7 @@
         [value]="inventoryItems$"
         *ngIf="items.length > 0 && !importing && !uploading"
         (selectedItem)="viewItem($event)"
+        (viewLog)="viewLog($event)"
         (editItem)="editItem($event)"
         (duplicateItem)="duplicateItem($event)"
       >

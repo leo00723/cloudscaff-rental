@@ -80,6 +80,7 @@ import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
 import { PORentalSummaryComponent } from './po-rental-summary/po-rental-summary.component';
 import { InvoiceComponent } from '../home/invoices/invoice/invoice.component';
+import { ViewStockLogComponent } from './view-stock-log/view-stock-log.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -151,6 +152,7 @@ const COMPONENTS = [
   UserPickerComponent,
   VideoPlayerComponent,
   ViewStockLocationsComponent,
+  ViewStockLogComponent,
   ViewTermsComponent,
   WeightPipe,
 ];

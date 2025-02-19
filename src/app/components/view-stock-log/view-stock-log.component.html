@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Item Movement Log</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="log$ | async as logs">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">Doc Code</th>
+            <th scope="col">Site Name</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Date</th>
+            <th scope="col">Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="log$ | async as logs">
+            <tr class="align-middle" *ngFor="let log of logs">
+              <td class="text-primary cursor-pointer">
+                {{ log.code }}
+              </td>
+              <td>{{ log.siteName }}</td>
+              <td>{{ log.customerName }}</td>
+              <td>{{ log.date }}</td>
+              <td class="text-center">
+                {{ log.qty }}
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</ion-content>

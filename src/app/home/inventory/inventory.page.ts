@@ -11,6 +11,7 @@ import { AddTransferComponent } from 'src/app/components/add-transfer/add-transf
 import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-item/duplicate-stock-item.component';
 import { TransactionReturnComponent } from 'src/app/components/transaction-return/transaction-return.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
+import { ViewStockLogComponent } from 'src/app/components/view-stock-log/view-stock-log.component';
 import { Company } from 'src/app/models/company.model';
 import { Delivery } from 'src/app/models/delivery.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
@@ -184,6 +185,25 @@ export class InventoryPage implements OnInit {
       cssClass: 'fullscreen',
       showBackdrop: false,
       id: 'viewLocation',
+    });
+    return await modal.present();
+  }
+
+  async viewLog(item: InventoryItem) {
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    const log$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(
+        `company/${company.id}/stockItems/${item.id}/log`,
+        [orderBy('date', 'desc')]
+      );
+
+    const modal = await this.masterSvc.modal().create({
+      component: ViewStockLogComponent,
+      componentProps: { log$ },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'viewLog',
     });
     return await modal.present();
   }
