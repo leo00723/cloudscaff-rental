@@ -62,6 +62,15 @@ export class InvoiceComponent implements OnInit {
       });
       this.creditForms.push(item);
     });
+    this.invoice.items.sort((a, b) => {
+      // Compare by code first
+      if (a.code !== b.code) {
+        return a.code.localeCompare(b.code);
+      }
+
+      // If codes are equal, compare by transactionType
+      return a.transactionType.localeCompare(b.transactionType);
+    });
   }
 
   async downloadDetailed(terms: Term | null) {

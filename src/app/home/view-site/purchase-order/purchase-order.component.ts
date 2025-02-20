@@ -333,9 +333,9 @@ export class PurchaseOrderComponent implements OnInit {
       .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
         where('poNumber', '==', this.po.poNumber),
         where('status', '==', 'active'),
+        orderBy('code', 'asc'),
         orderBy('transactionType', 'asc'),
         orderBy('invoiceStart', 'asc'),
-        orderBy('code', 'asc'),
       ])
       .pipe(take(1))
       .subscribe((data) => {
