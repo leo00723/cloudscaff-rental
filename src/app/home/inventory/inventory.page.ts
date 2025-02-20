@@ -9,6 +9,7 @@ import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipme
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
 import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
 import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-item/duplicate-stock-item.component';
+import { TransactionAdjustmentComponent } from 'src/app/components/transaction-adjustment/transaction-adjustment.component';
 import { TransactionReturnComponent } from 'src/app/components/transaction-return/transaction-return.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { ViewStockLogComponent } from 'src/app/components/view-stock-log/view-stock-log.component';
@@ -251,6 +252,17 @@ export class InventoryPage implements OnInit {
       showBackdrop: false,
       id: 'viewReturn',
       cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
+  async addAdjustment() {
+    const modal = await this.masterSvc.modal().create({
+      component: TransactionAdjustmentComponent,
+      componentProps: {},
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addAdjustment',
     });
     return await modal.present();
   }

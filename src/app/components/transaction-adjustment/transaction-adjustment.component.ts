@@ -6,13 +6,12 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { increment, where } from '@angular/fire/firestore';
+import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import cloneDeep from 'lodash/cloneDeep';
-import { Subscription, take } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Site } from 'src/app/models/site.model';
-import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { User } from 'src/app/models/user.model';
 import { ImgService } from 'src/app/services/img.service';
@@ -20,26 +19,27 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
+import { TransactionItem } from 'src/app/models/transactionItem.model';
 @Component({
-  selector: 'app-add-return',
-  templateUrl: './add-return.component.html',
+  selector: 'app-transaction-adjustment',
+  templateUrl: './transaction-adjustment.component.html',
 })
-export class AddReturnComponent implements OnInit, OnDestroy {
+export class TransactionAdjustmentComponent implements OnInit, OnDestroy {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
   @Input() isEdit = false;
-  @Input() siteData: Site;
   @Input() set value(val: TransactionReturn) {
     if (val) {
-      Object.assign(this.returnDoc, val);
+      Object.assign(this.adjustmentDoc, val);
       this.initEditForm();
     }
   }
-  returnDoc: TransactionReturn = { status: 'pending', uploads: [] };
+  adjustmentDoc: TransactionReturn = { status: 'submitted', uploads: [] };
   form: FormGroup;
   user: User;
   company: Company;
   items: TransactionItem[];
   itemBackup: TransactionItem[];
+  sites$: Observable<Site[]>;
   loading = false;
   viewAll = true;
   searching = false;
@@ -59,10 +59,14 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {
     if (!this.isEdit) {
+      this.init();
       this.initForm();
     }
   }
 
+  changeSite(event) {
+    this.field('site').setValue(event[0]);
+  }
   createReturn() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
@@ -76,22 +80,22 @@ export class AddReturnComponent implements OnInit, OnDestroy {
 
         returnDoc.code = this.masterSvc
           .edit()
-          .generateDocCode(this.company.totalReturns, 'RET');
+          .generateDocCode(this.company.totalAdjustments, 'ADJ');
         await this.upload();
-        returnDoc.uploads = this.returnDoc.uploads;
-        returnDoc.status = 'pending';
+        returnDoc.uploads = this.adjustmentDoc.uploads;
+        returnDoc.status = 'submitted';
         const doc = await this.masterSvc
           .edit()
-          .addDocument(`company/${this.company.id}/returns`, returnDoc);
+          .addDocument(`company/${this.company.id}/adjustments`, returnDoc);
         returnDoc.id = doc.id;
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalReturns: increment(1),
+          totalAdjustments: increment(1),
         });
 
         this.masterSvc
           .notification()
           .toast('Return created successfully', 'success');
-        this.returnDoc = cloneDeep(returnDoc);
+        this.adjustmentDoc = cloneDeep(returnDoc);
         this.isEdit = true;
       } catch (e) {
         console.error(e);
@@ -110,20 +114,20 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
-        Object.assign(this.returnDoc, this.form.value);
+        Object.assign(this.adjustmentDoc, this.form.value);
         this.itemBackup ||= [...this.items];
-        this.returnDoc.items = this.itemBackup.filter(
+        this.adjustmentDoc.items = this.itemBackup.filter(
           (item) => item.returnQty > 0
         );
-        this.returnDoc.status = status;
+        this.adjustmentDoc.status = status;
         await this.upload();
 
         await this.masterSvc
           .edit()
           .updateDoc(
-            `company/${this.company.id}/returns`,
-            this.returnDoc.id,
-            this.returnDoc
+            `company/${this.company.id}/adjustmentss`,
+            this.adjustmentDoc.id,
+            this.adjustmentDoc
           );
 
         this.masterSvc
@@ -169,7 +173,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     try {
       this.loading = true;
       this.itemBackup ||= [...this.items];
-      Object.assign(this.returnDoc, {
+      Object.assign(this.adjustmentDoc, {
         ...this.form.value,
         items: this.itemBackup.filter((item) => item.returnQty > 0),
         status: 'received',
@@ -179,21 +183,21 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       if (!isAdmin) {
         const res = await this.imgService.uploadBlob(
           this.blob,
-          `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature2`,
+          `company/${this.adjustmentDoc.company.id}/shipments/${this.adjustmentDoc.id}/signature2`,
           ''
         );
         if (res) {
-          this.returnDoc.signature2 = res.url2;
-          this.returnDoc.signatureRef2 = res.ref;
+          this.adjustmentDoc.signature2 = res.url2;
+          this.adjustmentDoc.signatureRef2 = res.ref;
         }
       }
 
       await this.masterSvc
         .edit()
         .updateDoc(
-          `company/${this.company.id}/returns`,
-          this.returnDoc.id,
-          this.returnDoc
+          `company/${this.company.id}/adjustmentss`,
+          this.adjustmentDoc.id,
+          this.adjustmentDoc
         );
       await this.downloadPdf();
       this.masterSvc
@@ -217,7 +221,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     try {
       this.loading = true;
       this.itemBackup ||= [...this.items];
-      Object.assign(this.returnDoc, {
+      Object.assign(this.adjustmentDoc, {
         ...this.form.value,
         items: this.itemBackup.filter((item) => item.returnQty > 0),
         status: 'collected',
@@ -226,20 +230,20 @@ export class AddReturnComponent implements OnInit, OnDestroy {
 
       const res = await this.imgService.uploadBlob(
         this.blob,
-        `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature`,
+        `company/${this.adjustmentDoc.company.id}/shipments/${this.adjustmentDoc.id}/signature`,
         ''
       );
       if (res) {
-        this.returnDoc.signature = res.url2;
-        this.returnDoc.signatureRef = res.ref;
+        this.adjustmentDoc.signature = res.url2;
+        this.adjustmentDoc.signatureRef = res.ref;
       }
 
       await this.masterSvc
         .edit()
         .updateDoc(
-          `company/${this.company.id}/returns`,
-          this.returnDoc.id,
-          this.returnDoc
+          `company/${this.company.id}/adjustmentss`,
+          this.adjustmentDoc.id,
+          this.adjustmentDoc
         );
 
       this.masterSvc
@@ -270,12 +274,12 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   async sign(ev: { signature: string; name: string }) {
     if (ev.signature) {
       this.blob = await (await fetch(ev.signature)).blob();
-      if (this.returnDoc.status === 'on-route') {
-        this.returnDoc.signedBy = ev.name;
-      } else if (this.returnDoc.status === 'collected') {
-        this.returnDoc.signedBy2 = ev.name;
+      if (this.adjustmentDoc.status === 'on-route') {
+        this.adjustmentDoc.signedBy = ev.name;
+      } else if (this.adjustmentDoc.status === 'collected') {
+        this.adjustmentDoc.signedBy2 = ev.name;
       } else {
-        this.returnDoc.signedBy2 = ev.name;
+        this.adjustmentDoc.signedBy2 = ev.name;
       }
     } else {
       this.blob = null;
@@ -285,7 +289,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
 
   async upload() {
     const newFiles = await this.uploader.startUpload();
-    this.returnDoc.uploads.push(...newFiles);
+    this.adjustmentDoc.uploads.push(...newFiles);
   }
 
   delete() {
@@ -293,7 +297,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     //   await this.masterSvc
     //     .edit()
     //     .deleteDocById(
-    //       `company/${this.company.id}/returns`,
+    //       `company/${this.company.id}/adjustmentss`,
     //       this.returnDoc.id
     //     );
     //   this.close();
@@ -301,23 +305,25 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   }
 
   async downloadPdf() {
-    if (!this.returnDoc.date) {
-      this.returnDoc.date = new Date();
+    if (!this.adjustmentDoc.date) {
+      this.adjustmentDoc.date = new Date();
     }
     const pdf = await this.masterSvc
       .pdf()
-      .returnDoc(this.returnDoc, this.company, null);
-    this.masterSvc.pdf().handlePdf(pdf, this.returnDoc.code);
+      .returnDoc(this.adjustmentDoc, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.adjustmentDoc.code);
   }
   async downloadPicklist() {
     if (this.isEdit) {
-      if (!this.returnDoc.date) {
-        this.returnDoc.date = new Date();
+      if (!this.adjustmentDoc.date) {
+        this.adjustmentDoc.date = new Date();
       }
       const pdf = await this.masterSvc
         .pdf()
-        .returnPickList(this.returnDoc, this.items, this.company);
-      this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.returnDoc.code}`);
+        .returnPickList(this.adjustmentDoc, this.items, this.company);
+      this.masterSvc
+        .pdf()
+        .handlePdf(pdf, `Picklist-${this.adjustmentDoc.code}`);
     } else {
       const returnDoc: TransactionReturn = {
         ...this.form.value,
@@ -404,6 +410,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     // Update error states
     item.error = hasError;
   }
+
   close() {
     this.masterSvc.modal().dismiss();
   }
@@ -412,33 +419,30 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   }
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
-      site: [this.returnDoc.site, Validators.required],
-      returnDate: [this.returnDoc?.returnDate, Validators.required],
-      notes: [this.returnDoc?.notes, Validators.nullValidator],
+      site: [this.adjustmentDoc.site, Validators.required],
+      returnDate: [this.adjustmentDoc?.returnDate, Validators.required],
+      notes: [this.adjustmentDoc?.notes, Validators.nullValidator],
       updatedBy: [this.user.id],
-      status: [this.returnDoc?.status, Validators.required],
+      status: [this.adjustmentDoc?.status, Validators.required],
       company: [this.company],
       date: [new Date()],
-      driverName: [this.returnDoc?.driverName, Validators.nullValidator],
-      driverNo: [this.returnDoc?.driverNo, Validators.nullValidator],
-      vehicleReg: [this.returnDoc?.vehicleReg, Validators.nullValidator],
-      createdByName: [this.returnDoc?.createdByName || ''],
-      poNumber: [this.returnDoc?.poNumber, Validators.required],
+      driverName: [this.adjustmentDoc?.driverName, Validators.nullValidator],
+      driverNo: [this.adjustmentDoc?.driverNo, Validators.nullValidator],
+      vehicleReg: [this.adjustmentDoc?.vehicleReg, Validators.nullValidator],
+      createdByName: [this.adjustmentDoc?.createdByName || ''],
+      poNumber: [this.adjustmentDoc?.poNumber, Validators.required],
     });
-    if (
-      this.returnDoc.status === 'submitted' ||
-      this.returnDoc.status === 'pending'
-    ) {
+    if (this.adjustmentDoc.status === 'submitted') {
       this.subs.add(
         this.masterSvc
           .edit()
           .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
-            where('poNumber', '==', this.returnDoc?.poNumber),
+            where('poNumber', '==', this.adjustmentDoc?.poNumber),
           ])
           .subscribe((data) => {
-            this.returnDoc.items.forEach((item) => {
+            this.adjustmentDoc.items.forEach((item) => {
               const inventoryItem = data.find((i) => i.itemId === item.itemId);
               if (inventoryItem) {
                 inventoryItem.returnQty = +item.returnQty;
@@ -451,17 +455,17 @@ export class AddReturnComponent implements OnInit, OnDestroy {
           })
       );
     } else {
-      this.items = this.returnDoc.items;
+      this.items = this.adjustmentDoc.items;
     }
   }
   private initForm() {
     this.form = this.masterSvc.fb().group({
-      site: [this.siteData, Validators.required],
+      site: ['', Validators.required],
       returnDate: [undefined, Validators.required],
       notes: ['', Validators.nullValidator],
       createdBy: [this.user.id],
       createdByName: [this.user.name],
-      status: ['pending', Validators.required],
+      status: ['submitted', Validators.required],
       company: [this.company],
       date: [new Date()],
       driverName: ['', Validators.nullValidator],
@@ -469,5 +473,25 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       vehicleReg: ['', Validators.nullValidator],
       poNumber: ['', Validators.required],
     });
+  }
+
+  init() {
+    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+
+    setTimeout(() => {
+      if (id) {
+        this.sites$ = this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${id}/sites`, [
+            where('status', '==', 'active'),
+            orderBy('code', 'desc'),
+          ]);
+      } else {
+        this.masterSvc.log(
+          '-----------------------try sites----------------------'
+        );
+        this.init();
+      }
+    }, 200);
   }
 }

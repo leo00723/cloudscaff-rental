@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { SignaturePadModule } from 'angular2-signaturepad';
 import { SwiperModule } from 'swiper/angular';
+import { InvoiceComponent } from '../home/invoices/invoice/invoice.component';
 import { CompanyPage } from '../home/settings/company/company.page';
 import { AddSiteComponent } from '../home/sites/add-site/add-site.component';
 import { AddHandoverComponent } from './add-handover/add-handover.component';
@@ -26,6 +27,7 @@ import { CustomerComponent } from './customer/customer.component';
 import { DashboardCardMiniComponent } from './dashboard-card-mini/dashboard-card-mini.component';
 import { DateDiffPipe } from './dateDiff.pipe';
 import { DatepickerComponent } from './datepicker/datepicker.component';
+import { DeliveryTableComponent } from './delivery-table/delivery-table.component';
 import { DismantleSummaryComponent } from './dismantle-summary/dismantle-summary.component';
 import { DropzoneDirective } from './dropzone.directive';
 import { DuplicateStockItemComponent } from './duplicate-stock-item/duplicate-stock-item.component';
@@ -52,6 +54,7 @@ import { UploadTaskComponent } from './multiuploader/upload-task/upload-task.com
 import { NotificationsComponent } from './notifications/notifications.component';
 import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
 import { PermissionsSelectComponent } from './permissions-select/permissions-select.component';
+import { PORentalSummaryComponent } from './po-rental-summary/po-rental-summary.component';
 import { POSummaryComponent } from './po-summary/po-summary.component';
 import { POTableComponent } from './po-table/po-table.component';
 import { RepurposeInventoryComponent } from './repurpose-inventory/repurpose-inventory.component';
@@ -62,7 +65,6 @@ import { ScaffoldOverviewTable2Component } from './scaffold-overview-table-2/sca
 import { ScaffoldTableComponent } from './scaffold-table/scaffold-table.component';
 import { SearchableSelectComponent } from './searchable-select/searchable-select.component';
 import { ShareDocumentComponent } from './share-document/share-document.component';
-import { DeliveryTableComponent } from './delivery-table/delivery-table.component';
 import { ShowHidePasswordComponent } from './show-hide-password/show-hide-password.component';
 import { SITableComponent } from './si-table/si-table.component';
 import { SignatureModalComponent } from './signature-modal/signature-modal.component';
@@ -70,17 +72,16 @@ import { SignaturePadComponent } from './signature-pad/signature-pad.component';
 import { SiteFormComponent } from './site-form/site-form.component';
 import { SkeletonTextComponent } from './skeleton-text/skeleton-text.component';
 import { TitleBlockComponent } from './title-block/title-block.component';
+import { TransactionAdjustmentComponent } from './transaction-adjustment/transaction-adjustment.component';
 import { TransactionReturnComponent } from './transaction-return/transaction-return.component';
 import { TutorialGalleryComponent } from './tutorial-gallery/tutorial-gallery.component';
 import { VideoPlayerComponent } from './tutorial-gallery/video-player/video-player.component';
 import { UploaderComponent } from './uploader/uploader.component';
 import { UserPickerComponent } from './user-picker/user-picker.component';
 import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-locations.component';
+import { ViewStockLogComponent } from './view-stock-log/view-stock-log.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
-import { PORentalSummaryComponent } from './po-rental-summary/po-rental-summary.component';
-import { InvoiceComponent } from '../home/invoices/invoice/invoice.component';
-import { ViewStockLogComponent } from './view-stock-log/view-stock-log.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -146,6 +147,7 @@ const COMPONENTS = [
   SkeletonTextComponent,
   TitleBlockComponent,
   TransactionReturnComponent,
+  TransactionAdjustmentComponent,
   TutorialGalleryComponent,
   UploadTaskComponent,
   UploaderComponent,

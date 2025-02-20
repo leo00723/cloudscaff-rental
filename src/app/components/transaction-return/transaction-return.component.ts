@@ -340,9 +340,6 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       case 'returnQty':
         {
           item.returnQty = +val.detail.value;
-          item.returnQty > item.balanceQty || item.returnQty < 0
-            ? (this.error = true)
-            : (this.error = false);
         }
         break;
       case 'damaged':
@@ -355,7 +352,13 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         item.lostQty = +val.detail.value;
         break;
     }
-    this.checkError(item);
+    this.error = false;
+    this.items.forEach((data) => {
+      this.checkError(data);
+      if (data.error) {
+        this.error = true;
+      }
+    });
   }
 
   search(event) {
@@ -376,23 +379,36 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkError(item: TransactionItem) {
-    const damaged = item.damagedQty ? item.damagedQty : 0;
-    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
-    const lost = item.lostQty ? item.lostQty : 0;
-    if (
-      damaged + maintenance + lost > item.returnQty ||
-      damaged < 0 ||
-      maintenance < 0 ||
-      lost < 0
-    ) {
-      item.error = true;
-      this.error = true;
-    } else {
-      item.error = false;
-      this.error = false;
-    }
+  checkError(item: TransactionItem): void {
+    // Use nullish coalescing for cleaner default values
+    const quantities = {
+      damaged: item.damagedQty ?? 0,
+      maintenance: item.inMaintenanceQty ?? 0,
+      lost: item.lostQty ?? 0,
+    };
+
+    // Check if any quantity is negative
+    const hasNegativeQuantity = Object.values(quantities).some(
+      (qty) => qty < 0
+    );
+
+    // Calculate total affected items
+    const totalAffectedItems = Object.values(quantities).reduce(
+      (sum, qty) => sum + qty,
+      0
+    );
+
+    // Combine all validation conditions
+    const hasError =
+      hasNegativeQuantity ||
+      totalAffectedItems > item.returnQty ||
+      item.returnQty > item.balanceQty ||
+      item.returnQty < 0;
+
+    // Update error states
+    item.error = hasError;
   }
+
   close() {
     this.masterSvc.modal().dismiss();
   }
