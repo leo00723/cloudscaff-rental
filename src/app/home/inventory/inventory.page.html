@@ -98,12 +98,12 @@
             </ng-container>
           </ion-label>
         </ion-segment-button>
-        <ion-segment-button
+        <!-- <ion-segment-button
           value="7"
           *ngIf="user.permissionsList.includes('Inventory Adjustments') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
           <ion-label>Adjustments </ion-label>
-        </ion-segment-button>
+        </ion-segment-button> -->
         <ion-segment-button
           value="6"
           *ngIf="user.permissionsList.includes('Transfers') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"

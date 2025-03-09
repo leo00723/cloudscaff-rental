@@ -82,12 +82,14 @@ import { ViewStockLocationsComponent } from './view-stock-locations/view-stock-l
 import { ViewStockLogComponent } from './view-stock-log/view-stock-log.component';
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
+import { AddAdjustmentComponent } from './add-adjustment/add-adjustment.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
   AddInspectionComponent,
   AddInstructionComponent,
   AddRequestComponent,
+  AddAdjustmentComponent,
   AddReturnComponent,
   AddScaffoldComponent,
   AddShipmentComponent,

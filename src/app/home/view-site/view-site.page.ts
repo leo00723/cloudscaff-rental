@@ -26,6 +26,7 @@ import { Navigate } from 'src/app/shared/router.state';
 import { InvoiceComponent } from '../invoices/invoice/invoice.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
+import { AddAdjustmentComponent } from 'src/app/components/add-adjustment/add-adjustment.component';
 
 @Component({
   selector: 'app-view-site',
@@ -54,6 +55,9 @@ export class ViewSitePage implements OnDestroy {
   pendingRequests$: Observable<Request[]>;
   submittedRequests$: Observable<Request[]>;
   approvedRequests$: Observable<Request[]>;
+
+  pendingAdjustments$: Observable<TransactionReturn[]>;
+  adjustments$: Observable<TransactionReturn[]>;
 
   pendingReturns$: Observable<TransactionReturn[]>;
   outboundReturns$: Observable<TransactionReturn[]>;
@@ -195,6 +199,20 @@ export class ViewSitePage implements OnDestroy {
         where('status', 'in', ['completed']),
         orderBy('code', 'desc'),
       ]) as Observable<Delivery[]>;
+    this.pendingAdjustments$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/adjustments`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['pending', 'submitted']),
+        orderBy('code', 'desc'),
+      ]) as Observable<TransactionReturn[]>;
+    this.adjustments$ = this.masterSvc
+      .edit()
+      .getCollectionFiltered(`company/${this.ids[0]}/adjustments`, [
+        where('site.id', '==', this.ids[1]),
+        where('status', 'in', ['sent', 'received']),
+        orderBy('code', 'desc'),
+      ]) as Observable<TransactionReturn[]>;
     this.pendingReturns$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/returns`, [
@@ -273,6 +291,26 @@ export class ViewSitePage implements OnDestroy {
       componentProps: { isEdit: true, value: requestData },
       showBackdrop: false,
       id: 'viewRequest',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async addAdjustment(site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddAdjustmentComponent,
+      componentProps: { siteData: site },
+      showBackdrop: false,
+      id: 'addAdjustment',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+  async viewAdjustment(returnData: TransactionReturn, site: Site) {
+    const modal = await this.masterSvc.modal().create({
+      component: AddAdjustmentComponent,
+      componentProps: { isEdit: true, value: returnData, siteData: site },
+      showBackdrop: false,
+      id: 'viewAdjustment',
       cssClass: 'fullscreen',
     });
     return await modal.present();

@@ -59,6 +59,7 @@ export class PermissionsSelectComponent implements OnInit {
       options: [
         { name: 'Site Deliveries', selected: false },
         { name: 'Site Requests', selected: false },
+        { name: 'Site Adjustments', selected: false },
         { name: 'Site Returns', selected: false },
         { name: 'Site Instructions', selected: false },
         { name: 'Purchase Orders', selected: false },
@@ -77,6 +78,7 @@ export class PermissionsSelectComponent implements OnInit {
       title: 'Inventory',
       options: [
         { name: 'Deliveries', selected: false },
+        { name: 'Inventory Adjustments', selected: false },
         { name: 'Inventory Requests', selected: false },
         { name: 'Inventory Returns', selected: false },
         { name: 'Transfers', selected: false },
