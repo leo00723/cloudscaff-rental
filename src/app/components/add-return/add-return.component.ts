@@ -290,18 +290,6 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.returnDoc.uploads.push(...newFiles);
   }
 
-  delete() {
-    // this.masterSvc.notification().presentAlertConfirm(async () => {
-    //   await this.masterSvc
-    //     .edit()
-    //     .deleteDocById(
-    //       `company/${this.company.id}/returns`,
-    //       this.returnDoc.id
-    //     );
-    //   this.close();
-    // });
-  }
-
   async downloadPdf() {
     if (!this.returnDoc.date) {
       this.returnDoc.date = new Date();
@@ -375,6 +363,15 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     if (!val) {
       this.searching = false;
     }
+  }
+
+  isItemEditable(returnDoc: any, user: any): boolean {
+    return (
+      returnDoc.status !== 'void' &&
+      (returnDoc.status === 'collected' ||
+        user.permissionsList.includes('Inventory Admin') ||
+        returnDoc.status === 'received')
+    );
   }
 
   checkError(item: TransactionItem): void {

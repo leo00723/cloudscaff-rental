@@ -223,14 +223,16 @@
                 </thead>
                 <tbody>
                   <ng-container *ngFor="let item of items; let i = index">
-                    <tr class="align-middle" *ngIf="viewAll; else viewShipment">
+                    <!-- Only render items with returnQty > 0 when not viewing all -->
+                    <tr
+                      class="align-middle"
+                      *ngIf="viewAll || (!viewAll && item.returnQty > 0)"
+                    >
                       <th scope="row">{{ item.code }}</th>
                       <td>{{ item.category }}</td>
                       <td>{{ item.name }}</td>
                       <td class="text-center">{{ item?.location }}</td>
-                      <td class="text-center">
-                        {{ item.balanceQty }}
-                      </td>
+                      <td class="text-center">{{ item.balanceQty }}</td>
                       <td class="text-center">
                         <ion-input
                           #qty
@@ -250,14 +252,9 @@
                           you cannot exceed the available qty
                         </ion-label>
                       </td>
-                      <ng-container
-                        *ngIf="
-                          returnDoc.status !== 'void' &&
-                          (returnDoc.status === 'collected' ||
-                            user.permissionsList.includes('Inventory Admin') ||
-                            returnDoc.status === 'received')
-                        "
-                      >
+
+                      <!-- Extract common conditions for readability -->
+                      <ng-container *ngIf="isItemEditable(returnDoc, user)">
                         <td class="text-center">
                           <ion-input
                             #MaintenanceQty
@@ -308,94 +305,6 @@
                         </td>
                       </ng-container>
                     </tr>
-                    <ng-template #viewShipment>
-                      <tr class="align-middle" *ngIf="item.returnQty > 0">
-                        <th scope="row">{{ item.code }}</th>
-                        <td>{{ item.category }}</td>
-                        <td>{{ item.name }}</td>
-                        <td class="text-center">{{ item?.location }}</td>
-                        <td class="text-center">{{ item.balanceQty }}</td>
-                        <td class="text-center">
-                          <ion-input
-                            #qty
-                            debounce="200"
-                            type="number"
-                            [color]="item.error ? 'danger' : 'success'"
-                            [clearOnEdit]="true"
-                            [value]="item.returnQty"
-                            (ionChange)="update($event, item, 'returnQty')"
-                            [readonly]="
-                              returnDoc.status !== 'submitted' &&
-                              returnDoc.status !== 'pending'
-                            "
-                          >
-                          </ion-input>
-                          <ion-label color="danger" *ngIf="item.error">
-                            you cannot exceed the available qty
-                          </ion-label>
-                        </td>
-
-                        <ng-container
-                          *ngIf="
-                            returnDoc.status !== 'void' &&
-                            (returnDoc.status === 'collected' ||
-                              user.permissionsList.includes(
-                                'Inventory Admin'
-                              ) ||
-                              returnDoc.status === 'received')
-                          "
-                        >
-                          <td class="text-center">
-                            <ion-input
-                              #MaintenanceQty
-                              debounce="200"
-                              type="number"
-                              [color]="item.error ? 'danger' : 'primary'"
-                              [clearOnEdit]="true"
-                              [value]="item.inMaintenanceQty"
-                              (ionChange)="update($event, item, 'maintenance')"
-                              [readonly]="returnDoc.status === 'received'"
-                            >
-                            </ion-input>
-                            <ion-label color="danger" *ngIf="item.error">
-                              you cannot exceed the return qty
-                            </ion-label>
-                          </td>
-                          <td class="text-center">
-                            <ion-input
-                              #DamagedQty
-                              debounce="200"
-                              type="number"
-                              [color]="item.error ? 'danger' : 'warning'"
-                              [clearOnEdit]="true"
-                              [value]="item.damagedQty"
-                              (ionChange)="update($event, item, 'damaged')"
-                              [readonly]="returnDoc.status === 'received'"
-                            >
-                            </ion-input>
-                            <ion-label color="danger" *ngIf="item.error">
-                              you cannot exceed the return qty
-                            </ion-label>
-                          </td>
-                          <td class="text-center">
-                            <ion-input
-                              #LostQty
-                              debounce="200"
-                              type="number"
-                              [color]="item.error ? 'danger' : 'danger'"
-                              [clearOnEdit]="true"
-                              [value]="item.lostQty"
-                              (ionChange)="update($event, item, 'lost')"
-                              [readonly]="returnDoc.status === 'received'"
-                            >
-                            </ion-input>
-                            <ion-label color="danger" *ngIf="item.error">
-                              you cannot exceed the return qty
-                            </ion-label>
-                          </td>
-                        </ng-container>
-                      </tr></ng-template
-                    >
                   </ng-container>
                 </tbody>
               </table>
