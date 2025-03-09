@@ -162,9 +162,11 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
           where('poNumber', '==', poNumber),
+          orderBy('code', 'asc'),
         ])
         .pipe(take(1))
         .subscribe((data) => {
+          console.log(data);
           this.items = data;
         })
     );
@@ -438,6 +440,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
             where('poNumber', '==', this.returnDoc?.poNumber),
+            orderBy('code', 'asc'),
           ])
           .subscribe((data) => {
             this.returnDoc.items.forEach((item) => {

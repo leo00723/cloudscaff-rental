@@ -20,6 +20,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
+import { orderBy } from 'firebase/firestore';
 @Component({
   selector: 'app-add-return',
   templateUrl: './add-return.component.html',
@@ -158,6 +159,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
           where('poNumber', '==', poNumber),
+          orderBy('code', 'asc'),
         ])
         .pipe(take(1))
         .subscribe((data) => {
@@ -436,6 +438,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
             where('poNumber', '==', this.returnDoc?.poNumber),
+            orderBy('code', 'asc'),
           ])
           .subscribe((data) => {
             this.returnDoc.items.forEach((item) => {
