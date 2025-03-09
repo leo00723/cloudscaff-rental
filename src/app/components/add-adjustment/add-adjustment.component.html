@@ -209,18 +209,6 @@
                     <!-- <th scope="col" class="text-center">
                     Weight ({{ company.mass.symbol }})
                   </th> -->
-                    <ng-container
-                      *ngIf="
-                        adjustmentDoc.status !== 'void' &&
-                        (adjustmentDoc.status === 'collected' ||
-                          user.permissionsList.includes('Inventory Admin') ||
-                          adjustmentDoc.status === 'received')
-                      "
-                    >
-                      <th scope="col" class="text-center">Maintenance Qty</th>
-                      <th scope="col" class="text-center">Damaged Qty</th>
-                      <th scope="col" class="text-center">Lost Qty</th>
-                    </ng-container>
                   </tr>
                 </thead>
                 <tbody>
@@ -265,12 +253,12 @@
                 {{ adjustmentDoc.items ? adjustmentDoc.items.length : 0 }}
               </ion-label>
             </ion-item>
-            <ion-item>
+            <!-- <ion-item>
               <ion-label>Total weight</ion-label>
               <ion-label slot="end">
-                <!-- {{ adjustmentDoc.items ? (adjustmentDoc.items | weight : true) : [] }} -->
+                {{ adjustmentDoc.items ? (adjustmentDoc.items | weight : true) : [] }}
               </ion-label>
-            </ion-item>
+            </ion-item> -->
           </ion-col>
           <ion-col
             size="12"
@@ -394,8 +382,8 @@
             color="success"
             *ngIf="isEdit && !loading && adjustmentDoc.status === 'pending'"
             [disabled]="form.invalid || error"
-            (click)="updateAdjustment('submitted')"
-            >Submit Adjustment</ion-button
+            (click)="updateAdjustment('received')"
+            >Complete Adjustment</ion-button
           >
 
           <!-- <ion-button

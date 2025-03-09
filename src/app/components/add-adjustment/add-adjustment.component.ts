@@ -48,7 +48,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
 
   blob: any;
 
-  private imgService = inject(ImgService);
+  // private imgService = inject(ImgService);
   private subs = new Subscription();
 
   constructor(private masterSvc: MasterService) {
@@ -149,73 +149,53 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected getTransactions(value: any) {
-    const poNumber = this.field('poNumber').value;
-    if (!poNumber) {
-      return;
-    }
-    this.subs.add(
-      this.masterSvc
-        .edit()
-        .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
-          where('status', '==', 'active'),
-          where('transactionType', '==', 'Delivery'),
-          where('poNumber', '==', poNumber),
-          orderBy('code', 'asc'),
-        ])
-        .pipe(take(1))
-        .subscribe((data) => {
-          this.items = data;
-        })
-    );
-  }
-  protected async approveAdjustment(isAdmin?: boolean) {
-    try {
-      this.loading = true;
-      this.itemBackup ||= [...this.items];
-      Object.assign(this.adjustmentDoc, {
-        ...this.form.value,
-        items: this.itemBackup.filter((item) => item.returnQty > 0),
-        status: 'received',
-      });
-      await this.upload();
+  // protected async approveAdjustment(isAdmin?: boolean) {
+  //   try {
+  //     this.loading = true;
+  //     this.itemBackup ||= [...this.items];
+  //     Object.assign(this.adjustmentDoc, {
+  //       ...this.form.value,
+  //       items: this.itemBackup.filter((item) => item.returnQty > 0),
+  //       status: 'received',
+  //     });
+  //     await this.upload();
 
-      if (!isAdmin) {
-        const res = await this.imgService.uploadBlob(
-          this.blob,
-          `company/${this.adjustmentDoc.company.id}/shipments/${this.adjustmentDoc.id}/signature2`,
-          ''
-        );
-        if (res) {
-          this.adjustmentDoc.signature2 = res.url2;
-          this.adjustmentDoc.signatureRef2 = res.ref;
-        }
-      }
+  //     if (!isAdmin) {
+  //       const res = await this.imgService.uploadBlob(
+  //         this.blob,
+  //         `company/${this.adjustmentDoc.company.id}/shipments/${this.adjustmentDoc.id}/signature2`,
+  //         ''
+  //       );
+  //       if (res) {
+  //         this.adjustmentDoc.signature2 = res.url2;
+  //         this.adjustmentDoc.signatureRef2 = res.ref;
+  //       }
+  //     }
 
-      await this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.company.id}/adjustments`,
-          this.adjustmentDoc.id,
-          this.adjustmentDoc
-        );
-      await this.downloadPdf();
-      this.masterSvc
-        .notification()
-        .toast('Adjustment updated successfully', 'success');
-      this.close();
-    } catch (e) {
-      console.error(e);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong updating adjustment. Please try again!',
-          'danger'
-        );
-    } finally {
-      this.loading = false;
-    }
-  }
+  //     await this.masterSvc
+  //       .edit()
+  //       .updateDoc(
+  //         `company/${this.company.id}/adjustments`,
+  //         this.adjustmentDoc.id,
+  //         this.adjustmentDoc
+  //       );
+  //     await this.downloadPdf();
+  //     this.masterSvc
+  //       .notification()
+  //       .toast('Adjustment updated successfully', 'success');
+  //     this.close();
+  //   } catch (e) {
+  //     console.error(e);
+  //     this.masterSvc
+  //       .notification()
+  //       .toast(
+  //         'Something went wrong updating adjustment. Please try again!',
+  //         'danger'
+  //       );
+  //   } finally {
+  //     this.loading = false;
+  //   }
+  // }
 
   // protected async logCollection() {
   //   try {
@@ -269,62 +249,6 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
         item.returnQty = item.balanceQty;
       }
     }, 'Are you sure you want to return all items?');
-  }
-
-  async sign(ev: { signature: string; name: string }) {
-    if (ev.signature) {
-      this.blob = await (await fetch(ev.signature)).blob();
-      if (this.adjustmentDoc.status === 'on-route') {
-        this.adjustmentDoc.signedBy = ev.name;
-      } else if (this.adjustmentDoc.status === 'collected') {
-        this.adjustmentDoc.signedBy2 = ev.name;
-      } else {
-        this.adjustmentDoc.signedBy2 = ev.name;
-      }
-    } else {
-      this.blob = null;
-      return;
-    }
-  }
-
-  async upload() {
-    const newFiles = await this.uploader.startUpload();
-    this.adjustmentDoc.uploads.push(...newFiles);
-  }
-
-  async downloadPdf() {
-    if (!this.adjustmentDoc.date) {
-      this.adjustmentDoc.date = new Date();
-    }
-    const pdf = await this.masterSvc
-      .pdf()
-      .returnDoc(this.adjustmentDoc, this.company, null);
-    this.masterSvc.pdf().handlePdf(pdf, this.adjustmentDoc.code);
-  }
-  async downloadPicklist() {
-    if (this.isEdit) {
-      if (!this.adjustmentDoc.date) {
-        this.adjustmentDoc.date = new Date();
-      }
-      const pdf = await this.masterSvc
-        .pdf()
-        .returnPickList(this.adjustmentDoc, this.items, this.company);
-      this.masterSvc
-        .pdf()
-        .handlePdf(pdf, `Picklist-${this.adjustmentDoc.code}`);
-    } else {
-      const adjustmentDoc: TransactionReturn = {
-        ...this.form.value,
-        code: 'N/A',
-        date: new Date(),
-      };
-      const pdf = await this.masterSvc
-        .pdf()
-        .returnPickList(adjustmentDoc, this.items, this.company);
-      this.masterSvc
-        .pdf()
-        .handlePdf(pdf, `Picklist-${adjustmentDoc.site.name}`);
-    }
   }
 
   update(val, item: TransactionItem, type: string) {
@@ -396,6 +320,81 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
   }
   field(field: string) {
     return this.form.get(field) as FormControl;
+  }
+  async upload() {
+    const newFiles = await this.uploader.startUpload();
+    this.adjustmentDoc.uploads.push(...newFiles);
+  }
+
+  async sign(ev: { signature: string; name: string }) {
+    if (ev.signature) {
+      this.blob = await (await fetch(ev.signature)).blob();
+      if (this.adjustmentDoc.status === 'on-route') {
+        this.adjustmentDoc.signedBy = ev.name;
+      } else if (this.adjustmentDoc.status === 'collected') {
+        this.adjustmentDoc.signedBy2 = ev.name;
+      } else {
+        this.adjustmentDoc.signedBy2 = ev.name;
+      }
+    } else {
+      this.blob = null;
+      return;
+    }
+  }
+
+  async downloadPdf() {
+    if (!this.adjustmentDoc.date) {
+      this.adjustmentDoc.date = new Date();
+    }
+    const pdf = await this.masterSvc
+      .pdf()
+      .returnDoc(this.adjustmentDoc, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.adjustmentDoc.code);
+  }
+  async downloadPicklist() {
+    if (this.isEdit) {
+      if (!this.adjustmentDoc.date) {
+        this.adjustmentDoc.date = new Date();
+      }
+      const pdf = await this.masterSvc
+        .pdf()
+        .returnPickList(this.adjustmentDoc, this.items, this.company);
+      this.masterSvc
+        .pdf()
+        .handlePdf(pdf, `Picklist-${this.adjustmentDoc.code}`);
+    } else {
+      const adjustmentDoc: TransactionReturn = {
+        ...this.form.value,
+        code: 'N/A',
+        date: new Date(),
+      };
+      const pdf = await this.masterSvc
+        .pdf()
+        .returnPickList(adjustmentDoc, this.items, this.company);
+      this.masterSvc
+        .pdf()
+        .handlePdf(pdf, `Picklist-${adjustmentDoc.site.name}`);
+    }
+  }
+  protected getTransactions(value: any) {
+    const poNumber = this.field('poNumber').value;
+    if (!poNumber) {
+      return;
+    }
+    this.subs.add(
+      this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
+          where('status', '==', 'active'),
+          where('transactionType', '==', 'Delivery'),
+          where('poNumber', '==', poNumber),
+          orderBy('code', 'asc'),
+        ])
+        .pipe(take(1))
+        .subscribe((data) => {
+          this.items = data;
+        })
+    );
   }
   private initEditForm() {
     this.form = this.masterSvc.fb().group({

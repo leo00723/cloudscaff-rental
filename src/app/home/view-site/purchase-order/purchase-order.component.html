@@ -106,6 +106,7 @@
         </tr>
         <tr class="text-center align-middle">
           <th>Delivered</th>
+          <th>Adjustment</th>
           <th>Returned</th>
           <th>Balance</th>
           <th>Start Date</th>
@@ -142,6 +143,13 @@
             <!-- Delivered Qty  -->
             <td class="text-success fw-bold">
               {{ transaction.deliveredQty }}
+            </td>
+
+            <!-- Adjustment Qty  -->
+            <td class="fw-bold">
+              <ion-text color="tertiary">
+                {{ transaction.adjustmentTotal || 0 }}
+              </ion-text>
             </td>
 
             <!-- Returned Qty  -->
@@ -210,7 +218,14 @@
           >
             <!-- Type (Delivery or Return) -->
             <td>
-              <ion-chip color="danger" mode="ios">
+              <ion-chip
+                [color]="
+                  transaction.transactionType === 'Return'
+                    ? 'danger'
+                    : 'tertiary'
+                "
+                mode="ios"
+              >
                 <ion-label>{{ transaction.returnCode }}</ion-label>
               </ion-chip>
             </td>
@@ -232,6 +247,13 @@
             <!-- Delivered Qty  -->
             <td class="text-success fw-bold">
               {{ transaction.deliveredQty }}
+            </td>
+
+            <!-- Adjustment Qty  -->
+            <td class="fw-bold">
+              <ion-text color="tertiary">
+                {{ transaction.adjustmentTotal || 0 }}
+              </ion-text>
             </td>
 
             <!-- Returned Qty  -->
@@ -301,7 +323,7 @@
       <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
-          <th [colSpan]="po.customInvoice ? 12 : 14">
+          <th [colSpan]="po.customInvoice ? 13 : 15">
             <div class="m-3">
               <form [formGroup]="form">
                 <app-input-reactive
@@ -330,7 +352,7 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice ? 9 : 11"
+            [colSpan]="po.customInvoice ? 10 : 12"
             scope="col"
           >
             Subtotal
@@ -343,7 +365,7 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice ? 9 : 11"
+            [colSpan]="po.customInvoice ? 10 : 12"
             scope="col"
           >
             Discount
@@ -360,7 +382,7 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice ? 9 : 11"
+            [colSpan]="po.customInvoice ? 10 : 12"
             scope="col"
           >
             Invoice Total
@@ -373,7 +395,7 @@
         <tr *ngIf="company.salesTax > 0">
           <th
             class="text-end"
-            [colSpan]="po.customInvoice ? 9 : 11"
+            [colSpan]="po.customInvoice ? 10 : 12"
             scope="col"
           >
             Sales Tax ({{ company.salesTax }}%)
@@ -385,7 +407,7 @@
         <tr *ngIf="company.vat > 0">
           <th
             class="text-end"
-            [colSpan]="po.customInvoice ? 9 : 11"
+            [colSpan]="po.customInvoice ? 10 : 12"
             scope="col"
           >
             {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
@@ -397,7 +419,7 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice ? 9 : 11"
+            [colSpan]="po.customInvoice ? 10 : 12"
             scope="col"
           >
             Grand Total

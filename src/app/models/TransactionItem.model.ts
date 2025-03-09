@@ -15,6 +15,7 @@ export interface TransactionItem {
   deliveredQty?: number;
   invoiceQty?: number;
   balanceQty?: number;
+  adjustmentTotal?: number;
   returnTotal?: number;
   returnQty?: number;
   location?: string;
