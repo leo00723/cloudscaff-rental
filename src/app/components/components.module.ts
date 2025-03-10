@@ -83,6 +83,7 @@ import { ViewStockLogComponent } from './view-stock-log/view-stock-log.component
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
 import { AddAdjustmentComponent } from './add-adjustment/add-adjustment.component';
+import { PoCustomItemComponent } from './po-custom-item/po-custom-item.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -129,6 +130,7 @@ const COMPONENTS = [
   InvoiceComponent,
   MultiuploaderComponent,
   NotificationsComponent,
+  PoCustomItemComponent,
   POSummaryComponent,
   PORentalSummaryComponent,
   POTableComponent,

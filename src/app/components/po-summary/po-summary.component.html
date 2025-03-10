@@ -5,18 +5,30 @@
 <div class="table-responsive">
   <table class="table table-bordered">
     <thead>
-      <tr>
-        <th class="text-center" scope="col">#</th>
-        <th scope="col">Item Code</th>
-        <th scope="col">Description</th>
-        <th class="text-center" scope="col">Unit</th>
-        <th class="text-center" scope="col">Qty</th>
-        <th class="text-center" scope="col">Duration / Months</th>
-        <th class="text-center" scope="col">Rent / Month</th>
-        <th class="text-end" scope="col">Total</th>
-        <th class="text-center" scope="col" *ngIf="customInvoice && !isInvoice">
+      <tr class="align-middle">
+        <th rowspan="2" class="text-center" scope="col">#</th>
+        <th rowspan="2" scope="col">Item Code</th>
+        <th rowspan="2" scope="col">Description</th>
+        <th rowspan="2" class="text-center" scope="col">Unit</th>
+        <th rowspan="2" class="text-center" scope="col">Qty</th>
+        <th colspan="2" class="text-center" *ngIf="customInvoice && !isInvoice">
+          Hire Period
+        </th>
+        <th rowspan="2" class="text-center" scope="col">Duration / Months</th>
+        <th rowspan="2" class="text-center" scope="col">Rent / Month</th>
+        <th rowspan="2" class="text-end" scope="col">Total</th>
+        <th
+          rowspan="2"
+          class="text-center"
+          scope="col"
+          *ngIf="customInvoice && !isInvoice"
+        >
           Invoice
         </th>
+      </tr>
+      <tr class="align-middle" *ngIf="customInvoice && !isInvoice">
+        <th>Start Date</th>
+        <th>End Date</th>
       </tr>
     </thead>
     <tbody>
@@ -40,6 +52,14 @@
           <td class="text-center">
             {{ item.qty }}
           </td>
+
+          <ng-container *ngIf="customInvoice && !isInvoice">
+            <td>
+              {{ item.startDate | date }}
+            </td>
+            <td>{{ item.endDate | date }}</td>
+          </ng-container>
+
           <td class="text-center">
             {{ item.duration }}
           </td>

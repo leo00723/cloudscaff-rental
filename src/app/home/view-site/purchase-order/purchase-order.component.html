@@ -51,11 +51,19 @@
     *ngIf="po.type === 'Rental'; else default"
   ></app-po-rental-summary>
   <ng-template #default>
-    <app-po-summary
-      [value]="po.estimate"
-      [customInvoice]="po.customInvoice"
-      (update)="updatePOEstimate($event)"
-    ></app-po-summary>
+    <ng-container *ngIf="po.customInvoice; else summary">
+      <app-po-custom-item
+        [value]="po.estimate"
+        (update)="updatePOEstimate($event)"
+      ></app-po-custom-item>
+    </ng-container>
+    <ng-template #summary>
+      <app-po-summary
+        [value]="po.estimate"
+        [customInvoice]="po.customInvoice"
+        (update)="updatePOEstimate($event)"
+      ></app-po-summary>
+    </ng-template>
   </ng-template>
   <ion-row>
     <ion-col size="6">
@@ -95,7 +103,7 @@
           <th class="text-start" rowspan="2">Description</th>
           <th rowspan="2">Unit</th>
           <th rowspan="2" *ngIf="!po.customInvoice">Qty for Invoice</th>
-          <th colspan="3">Actual Qty</th>
+          <th colspan="4">Actual Qty</th>
           <th colspan="2">Hire Period</th>
           <th rowspan="2">Days</th>
           <th rowspan="2">Months</th>
