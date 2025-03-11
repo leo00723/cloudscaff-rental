@@ -1,6 +1,6 @@
 <ng-container *ngIf="site$ |async as site">
   <app-header
-    title="{{site.code}} "
+    title="{{site.code}} - {{site.name}}"
     [showMenu]="false"
     [showBack]="true"
     path="/dashboard/sites"

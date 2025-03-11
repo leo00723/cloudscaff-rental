@@ -10,7 +10,7 @@
         (click)="backClicked.emit()"
       ></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title text-wrap>{{ title }}</ion-title>
     <ion-buttons slot="end" *ngIf="btnName || iconName">
       <ion-chip
         mode="ios"
