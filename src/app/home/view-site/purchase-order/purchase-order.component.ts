@@ -3,6 +3,8 @@ import {
   arrayRemove,
   arrayUnion,
   orderBy,
+  serverTimestamp,
+  Timestamp,
   where,
 } from '@angular/fire/firestore';
 import {
@@ -15,6 +17,7 @@ import { ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { take } from 'rxjs';
 import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
+import { DatepickerComponent } from 'src/app/components/datepicker/datepicker.component';
 import { Company } from 'src/app/models/company.model';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { PO } from 'src/app/models/po.model';
@@ -87,6 +90,52 @@ export class PurchaseOrderComponent implements OnInit {
   updateDate() {
     // this.field('endDate').value;
     this.calcTotal();
+  }
+
+  async updateStartDate(transaction: TransactionItem) {
+    const modal = await this.modalSvc.create({
+      component: DatepickerComponent,
+      id: transaction.deliveryCode,
+      cssClass: 'date',
+      componentProps: {
+        value: undefined,
+        field: transaction.deliveryCode,
+      },
+      backdropDismiss: false,
+      mode: 'ios',
+    });
+    await modal.present();
+    const date = (await modal.onDidDismiss()).data;
+
+    if (!date) {
+      return;
+    }
+
+    try {
+      this.saving = true;
+      const batch = this.editSvc.batch();
+
+      this.transactions.forEach((item) => {
+        if (item.deliveryCode === transaction.deliveryCode) {
+          const doc = this.editSvc.docRef(
+            `company/${this.company.id}/transactionLog`,
+            item.id
+          );
+          item.invoiceStart = Timestamp.fromDate(new Date(date));
+          batch.update(doc, { ...item });
+        }
+      });
+      await batch.commit();
+      this.calcTotal();
+    } catch (e) {
+      console.log(e);
+      this.notificationSvc.toast(
+        'Something went wrong saving date, please try again',
+        'danger'
+      );
+    } finally {
+      this.saving = false;
+    }
   }
 
   async updateRate(val, item: TransactionItem) {

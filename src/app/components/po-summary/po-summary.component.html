@@ -1,6 +1,6 @@
-<app-company-info-detail
+<!-- <app-company-info-detail
   [customer]="estimate.customer"
-></app-company-info-detail>
+></app-company-info-detail> -->
 
 <div class="table-responsive">
   <table class="table table-bordered">
@@ -11,7 +11,7 @@
         <th rowspan="2" scope="col">Description</th>
         <th rowspan="2" class="text-center" scope="col">Unit</th>
         <th rowspan="2" class="text-center" scope="col">Qty</th>
-        <th colspan="2" class="text-center" *ngIf="customInvoice && !isInvoice">
+        <th colspan="2" class="text-center" *ngIf="customInvoice">
           Hire Period
         </th>
         <th rowspan="2" class="text-center" scope="col">Duration / Months</th>
@@ -26,7 +26,7 @@
           Invoice
         </th>
       </tr>
-      <tr class="align-middle" *ngIf="customInvoice && !isInvoice">
+      <tr class="align-middle" *ngIf="customInvoice">
         <th>Start Date</th>
         <th>End Date</th>
       </tr>
@@ -53,7 +53,7 @@
             {{ item.qty }}
           </td>
 
-          <ng-container *ngIf="customInvoice && !isInvoice">
+          <ng-container *ngIf="customInvoice">
             <td>
               {{ item.startDate | date }}
             </td>

@@ -129,7 +129,11 @@
           >
             <!-- Type (Delivery or Return) -->
             <td>
-              <ion-chip color="success" mode="ios">
+              <ion-chip
+                color="success"
+                mode="ios"
+                (click)="updateStartDate(transaction)"
+              >
                 <ion-label>{{ transaction.deliveryCode }}</ion-label>
               </ion-chip>
             </td>
