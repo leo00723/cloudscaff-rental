@@ -9,12 +9,12 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title
-      >Purchase Order - {{ po?.code }}
+    <ion-title>
+      Purchase Order - {{ po?.code }} - {{ po?.poNumber }}
       <ion-text *ngIf="saving">
         <i class="text-muted fs-6">(Saving...)</i>
-      </ion-text></ion-title
-    >
+      </ion-text>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
