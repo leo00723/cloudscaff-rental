@@ -138,6 +138,13 @@
         >
           Download PDF
         </ion-chip>
+        <ion-chip
+          type="button"
+          color="success"
+          class="me-2"
+          (click)="bulkAdd = true"
+          >Bulk Update</ion-chip
+        >
         <ion-chip type="button" color="success" (click)="importing = true">
           Import Inventory
         </ion-chip>
@@ -146,15 +153,21 @@
           Add New Item
         </ion-chip>
       </div>
-      <div class="text-end" *ngIf="importing && items.length !== 0">
-        <ion-chip type="button" color="danger" (click)="importing = false"
-          >Close</ion-chip
+      <div
+        class="text-end"
+        *ngIf="(importing || bulkAdd) && items.length !== 0"
+      >
+        <a
+          type="button"
+          class="btn btn-danger btn-sm rounded-pill me-2"
+          (click)="importing ? importing = false : bulkAdd = false"
+          >Close</a
         >
       </div>
 
       <app-inventory-table
         [value]="inventoryItems$"
-        *ngIf="items.length > 0 && !importing && !uploading"
+        *ngIf="items.length > 0 && !importing && !uploading && !bulkAdd"
         (selectedItem)="viewItem($event)"
         (viewLog)="viewLog($event)"
         (editItem)="editItem($event)"
@@ -166,25 +179,6 @@
         *ngIf="items.length === 0 || importing || uploading"
         style="height: 100%"
       >
-        <!-- <ion-col class="m-auto" *ngSwitchCase="0">
-            <ion-thumbnail class="mx-auto">
-              <ion-img
-                class="img-fluid"
-                width="100px"
-                src="assets/icons/icon-512x512.png"
-                alt="logo"
-              ></ion-img>
-            </ion-thumbnail>
-            <div class="mb-5">
-              <ion-text color="primary">
-                <h1 class="display-1 fw-bold">No Inventory?</h1>
-              </ion-text>
-              <p class="lead">Lets get started importing your inventory.</p>
-            </div>
-            <ion-button mode="ios" shape="round" (click)="page = 1">
-              Click Here to Import Inventory
-            </ion-button>
-          </ion-col> -->
         <ion-col class="m-auto">
           <div>
             <ion-text color="primary">
@@ -224,6 +218,72 @@
               />
             </ng-container>
             <p class="text-center mt-5" *ngIf="uploading">
+              <span class="fw-bold">{{uploadCounter}}</span> uploaded of
+              <span class="fw-bold">{{uploadTotal}}</span>
+            </p>
+            <ion-progress-bar
+              type="indeterminate"
+              *ngIf="uploading"
+              color="primary"
+            ></ion-progress-bar>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row class="text-center" *ngIf="bulkAdd" style="height: 100%">
+        <ion-col class="m-auto">
+          <div>
+            <ion-text color="primary">
+              <h2 class="display-6 fw-bold">Step 1</h2>
+            </ion-text>
+            <p>
+              Download the Inventory Spreadsheet List. <br />
+              <ion-button
+                shape="round"
+                color="tertiary"
+                mode="ios"
+                (click)="downloadMasterListXslUpdate(items)"
+                download
+                >Download List</ion-button
+              >
+            </p>
+          </div>
+          <div class="my-5">
+            <ion-text color="primary">
+              <h2 class="display-6 fw-bold">Step 2</h2>
+            </ion-text>
+            <p>
+              To add items, enter a <strong>positive number</strong> in the
+              <strong>editQty</strong> column. <br />
+              To remove items, enter a <strong>negative number</strong> in the
+              <strong>editQty</strong> column. <br />
+              <ion-note color="danger" class="fw-bold">
+                The number you enter in the <strong>editQty</strong> column is
+                the quantity change – it does not represent the final total
+                quantity. <br />
+                <strong>Do not delete the ID column!</strong>
+              </ion-note>
+              <br /><br />
+              After making your updates, export to <strong>CSV</strong>. <br />
+            </p>
+          </div>
+          <div>
+            <ion-text color="primary">
+              <h2 class="display-6 fw-bold">Step 3</h2>
+            </ion-text>
+            <p>Upload the <strong>CSV</strong> here to update Inventory Qty.</p>
+            <ng-container *ngIf="!uploading">
+              <ion-button mode="ios" (click)="BulkAdd.click()" shape="round">
+                Upload CSV
+              </ion-button>
+              <input
+                style="display: none"
+                type="file"
+                accept=".csv"
+                (change)="onBulkAddChanged($event)"
+                #BulkAdd
+              />
+            </ng-container>
+            <p class="text-center mt-5" *ngIf="bulkAddUploading">
               <span class="fw-bold">{{uploadCounter}}</span> uploaded of
               <span class="fw-bold">{{uploadTotal}}</span>
             </p>

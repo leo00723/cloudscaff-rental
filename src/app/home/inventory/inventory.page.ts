@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { orderBy, where } from '@angular/fire/firestore';
+import { Component, inject, OnInit } from '@angular/core';
+import { arrayUnion, increment, orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import * as Papa from 'papaparse';
@@ -8,6 +8,7 @@ import { AddRequestComponent } from 'src/app/components/add-request/add-request.
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { AddStockitemComponent } from 'src/app/components/add-stockitem/add-stockitem.component';
 import { AddTransferComponent } from 'src/app/components/add-transfer/add-transfer.component';
+import { CalculatePipe } from 'src/app/components/calculate.pipe';
 import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-item/duplicate-stock-item.component';
 import { TransactionAdjustmentComponent } from 'src/app/components/transaction-adjustment/transaction-adjustment.component';
 import { TransactionReturnComponent } from 'src/app/components/transaction-return/transaction-return.component';
@@ -24,6 +25,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-inventory',
@@ -62,7 +64,9 @@ export class InventoryPage implements OnInit {
 
   active = 1;
   importing = false;
+  bulkAdd = false;
   uploading = false;
+  bulkAddUploading = false;
   uploadCounter = 0;
   uploadTotal = 0;
 
@@ -72,6 +76,10 @@ export class InventoryPage implements OnInit {
   matrix = [];
   items = [];
   sites = [];
+
+  private calcPipe = inject(CalculatePipe);
+  protected company: Company;
+
   constructor(
     private masterSvc: MasterService,
     private activatedRoute: ActivatedRoute
@@ -81,6 +89,100 @@ export class InventoryPage implements OnInit {
   }
   ngOnInit() {
     this.init();
+  }
+
+  onBulkAddChanged(event) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      const file: File = event.target.files[0];
+      const user = this.masterSvc.store().selectSnapshot(UserState.user);
+
+      if (file) {
+        Papa.parse(file, {
+          header: true,
+          worker: true,
+          dynamicTyping: true,
+
+          complete: async (result) => {
+            this.bulkAddUploading = true;
+            const data = result.data
+              .filter((item) => item.editQty != null)
+              .map((item) => ({
+                id: item.id,
+                yardQty: increment(+item.editQty),
+                availableQty: increment(+item.editQty),
+                log: arrayUnion({
+                  message: `${item.editQty > 0 ? 'Added' : 'Removed'} ${
+                    item.editQty
+                  } items to the yard.`,
+                  user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    image: user.image || '',
+                  },
+                  date: new Date(),
+                  status: item.editQty > 0 ? 'add' : 'remove',
+                  comment: 'Imported',
+                }),
+              }));
+            const company = this.masterSvc
+              .store()
+              .selectSnapshot(CompanyState.company).id;
+            this.uploadCounter = 0;
+            this.uploadTotal = data.length || 0;
+            const batch = this.masterSvc.edit().batch();
+            for (const item of data) {
+              try {
+                const doc = this.masterSvc
+                  .edit()
+                  .docRef(`company/${company}/stockItems`, item.id);
+                batch.update(doc, item);
+              } catch (error) {
+                console.log(error);
+              } finally {
+                this.uploadCounter++;
+              }
+            }
+            await batch.commit();
+
+            if (this.uploadCounter === this.uploadTotal) {
+              this.bulkAdd = false;
+              this.bulkAddUploading = false;
+              this.masterSvc
+                .notification()
+                .toast('Import Successful', 'success');
+            }
+          },
+
+          error: () => {
+            this.bulkAdd = false;
+            this.bulkAddUploading = false;
+            this.masterSvc
+              .notification()
+              .toast('Import Failed. Please try again.', 'danger');
+          },
+        });
+      }
+    });
+  }
+
+  downloadMasterListXslUpdate(items: InventoryItem[]) {
+    const ws = XLSX.utils.json_to_sheet(
+      items.map((item) => ({
+        id: item?.id,
+        code: item?.code,
+        category: item?.category,
+        size: item?.size,
+        name: item?.name,
+        location: item?.location,
+        totalQty: item?.yardQty,
+        availableQty: this.calcPipe.transform(item),
+        editQty: 0,
+      }))
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'list');
+    XLSX.writeFile(wb, `${this.company.name}-Update-Inventory-Masterlist.xlsx`);
   }
 
   downloadMasterlistMatrix() {
@@ -403,153 +505,155 @@ export class InventoryPage implements OnInit {
   }
 
   private init() {
-    const id = this.masterSvc.store().selectSnapshot(CompanyState.company)?.id;
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    setTimeout(() => {
-      if (id) {
-        this.inventoryItems$ = this.masterSvc
-          .edit()
-          .getCollectionOrdered(`company/${id}/stockItems`, 'code', 'asc');
-
-        // shipments
-        this.shipments$ = this.masterSvc
-          .edit()
-          .getCollectionFiltered(`company/${id}/shipments`, [
-            where('status', 'in', ['sent', 'received']),
-            orderBy('code', 'desc'),
-          ]);
-        this.pendingShipments$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/shipments`,
-            'status',
-            '==',
-            'pending',
-            'code',
-            'asc'
-          );
-        this.outboundShipments$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/shipments`,
-            'status',
-            '==',
-            'on-route',
-            'code',
-            'asc'
-          );
-        this.reservedShipments$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/shipments`,
-            'status',
-            '==',
-            'reserved',
-            'code',
-            'asc'
-          );
-        this.voidShipments$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/shipments`,
-            'status',
-            '==',
-            'void',
-            'code',
-            'asc'
-          );
-
-        // transfers
-        this.transfers$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/poTransfers`,
-            'status',
-            '==',
-            'sent',
-            'code',
-            'asc'
-          );
-        this.pendingTransfers$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/poTransfers`,
-            'status',
-            '==',
-            'pending',
-            'code',
-            'asc'
-          );
-        // requests
-        this.requests$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/requests`,
-            'status',
-            '==',
-            'approved',
-            'code',
-            'asc'
-          );
-        this.submittedRequests$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/requests`,
-            'status',
-            '==',
-            'submitted',
-            'code',
-            'asc'
-          );
-        this.partialRequests$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/requests`,
-            'status',
-            '==',
-            'partial shipment',
-            'code',
-            'asc'
-          );
-        // returns
-        this.returns$ = this.masterSvc
-          .edit()
-          .getCollectionFiltered(`company/${id}/returns`, [
-            where('status', 'in', ['sent', 'received']),
-            orderBy('code', 'desc'),
-          ]);
-        this.submittedReturns$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/returns`,
-            'status',
-            '==',
-            'submitted',
-            'code',
-            'desc'
-          );
-        this.outboundReturns$ = this.masterSvc
-          .edit()
-          .getCollectionFiltered(`company/${id}/returns`, [
-            where('status', 'in', ['on-route', 'collected']),
-            orderBy('code', 'desc'),
-          ]);
-        this.voidReturns$ = this.masterSvc
-          .edit()
-          .getCollectionWhereAndOrder(
-            `company/${id}/returns`,
-            'status',
-            '==',
-            'void',
-            'code',
-            'desc'
-          );
-      } else {
-        this.masterSvc.log(
-          '-----------------------try inventory----------------------'
-        );
+    if (!this.company) {
+      setTimeout(() => {
+        console.log('retry');
         this.init();
-      }
-    }, 200);
+      }, 200);
+    } else {
+      this.inventoryItems$ = this.masterSvc
+        .edit()
+        .getCollectionOrdered(
+          `company/${this.company.id}/stockItems`,
+          'code',
+          'asc'
+        );
+
+      // shipments
+      this.shipments$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/shipments`, [
+          where('status', 'in', ['sent', 'received']),
+          orderBy('code', 'desc'),
+        ]);
+      this.pendingShipments$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/shipments`,
+          'status',
+          '==',
+          'pending',
+          'code',
+          'asc'
+        );
+      this.outboundShipments$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/shipments`,
+          'status',
+          '==',
+          'on-route',
+          'code',
+          'asc'
+        );
+      this.reservedShipments$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/shipments`,
+          'status',
+          '==',
+          'reserved',
+          'code',
+          'asc'
+        );
+      this.voidShipments$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/shipments`,
+          'status',
+          '==',
+          'void',
+          'code',
+          'asc'
+        );
+
+      // transfers
+      this.transfers$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/poTransfers`,
+          'status',
+          '==',
+          'sent',
+          'code',
+          'asc'
+        );
+      this.pendingTransfers$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/poTransfers`,
+          'status',
+          '==',
+          'pending',
+          'code',
+          'asc'
+        );
+      // requests
+      this.requests$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/requests`,
+          'status',
+          '==',
+          'approved',
+          'code',
+          'asc'
+        );
+      this.submittedRequests$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/requests`,
+          'status',
+          '==',
+          'submitted',
+          'code',
+          'asc'
+        );
+      this.partialRequests$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/requests`,
+          'status',
+          '==',
+          'partial shipment',
+          'code',
+          'asc'
+        );
+      // returns
+      this.returns$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/returns`, [
+          where('status', 'in', ['sent', 'received']),
+          orderBy('code', 'desc'),
+        ]);
+      this.submittedReturns$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/returns`,
+          'status',
+          '==',
+          'submitted',
+          'code',
+          'desc'
+        );
+      this.outboundReturns$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/returns`, [
+          where('status', 'in', ['on-route', 'collected']),
+          orderBy('code', 'desc'),
+        ]);
+      this.voidReturns$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/returns`,
+          'status',
+          '==',
+          'void',
+          'code',
+          'desc'
+        );
+    }
   }
 }
