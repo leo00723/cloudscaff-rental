@@ -37,4 +37,5 @@ export interface InventoryItem {
   deficit?: number;
   duration?: number;
   uploads?: UploadedFile[];
+  forInvoice?: boolean;
 }

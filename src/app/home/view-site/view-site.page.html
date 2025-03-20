@@ -679,6 +679,18 @@
             </div>
           </ion-accordion>
         </ion-accordion-group>
+
+        <ion-fab
+          class="m-2"
+          vertical="bottom"
+          horizontal="end"
+          slot="fixed"
+          *ngIf="site.status !== 'closed'"
+        >
+          <ion-fab-button (click)="addPO(site)">
+            <ion-icon name="add"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
       </ng-container>
       <ng-container *ngSwitchCase="'invoices'">
         <ion-accordion-group

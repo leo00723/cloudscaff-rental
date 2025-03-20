@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { orderBy, where } from '@angular/fire/firestore';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { arrayUnion, increment, orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
@@ -27,6 +27,9 @@ import { InvoiceComponent } from '../invoices/invoice/invoice.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
 import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
 import { AddAdjustmentComponent } from 'src/app/components/add-adjustment/add-adjustment.component';
+import { EstimateV2 } from 'src/app/models/estimate-v2.model';
+import { UserState } from 'src/app/shared/user/user.state';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-view-site',
@@ -80,11 +83,13 @@ export class ViewSitePage implements OnDestroy {
   active = 'scaffolds';
   ids = [];
 
+  private alertController = inject(AlertController);
+  private masterSvc = inject(MasterService);
+  private activatedRoute = inject(ActivatedRoute);
+
   private subs = new Subscription();
-  constructor(
-    private masterSvc: MasterService,
-    private activatedRoute: ActivatedRoute
-  ) {
+
+  constructor() {
     this.ids = this.activatedRoute.snapshot.paramMap.get('id').split('-');
     this.site$ = this.masterSvc
       .edit()
@@ -389,6 +394,104 @@ export class ViewSitePage implements OnDestroy {
     });
 
     return modal.present();
+  }
+
+  async addPO(site: Site) {
+    const alert = await this.alertController.create({
+      header: 'Please enter PO number',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'OK',
+          role: 'confirm',
+        },
+      ],
+      inputs: [
+        {
+          type: 'text',
+          placeholder: 'PO number',
+          attributes: {
+            minlength: 1,
+          },
+        },
+      ],
+      mode: 'ios',
+    });
+
+    await alert.present();
+    const { role, data } = await alert.onDidDismiss();
+
+    if (role !== 'confirm') {
+      return;
+    }
+
+    const poNumber = data?.values[0];
+    if (poNumber) {
+      this.createPO(site, poNumber);
+    } else {
+      this.addPO(site);
+      this.masterSvc.notification().toast('Enter a valid PO number', 'danger');
+    }
+  }
+
+  createPO(site: Site, poNumber: string) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        const company = this.masterSvc
+          .store()
+          .selectSnapshot(CompanyState.company);
+        const user = this.masterSvc.store().selectSnapshot(UserState.user);
+        const estimate: EstimateV2 = {};
+        estimate.poNumber = poNumber;
+        estimate.siteId = site.id;
+        estimate.siteName = site.name;
+        estimate.customer = site.customer;
+        estimate.acceptedBy = user.name;
+        estimate.status = 'accepted';
+        estimate.items = [];
+
+        const po: PO = {};
+        const code = this.masterSvc
+          .edit()
+          .generateDocCode(company.totalPOs, 'PO');
+        Object.assign(po, {
+          estimate,
+          site,
+          createdBy: user.id,
+          createdByName: user.name,
+          poNumber,
+          code,
+          id: '',
+          date: new Date(),
+          status: 'pending',
+        });
+        await this.masterSvc
+          .edit()
+          .addDocument(`company/${company.id}/pos`, po);
+        await this.masterSvc.edit().updateDoc('company', company.id, {
+          totalPOs: increment(1),
+        });
+        await this.masterSvc
+          .edit()
+          .updateDoc(`company/${company.id}/sites`, site.id, {
+            poList: arrayUnion(poNumber),
+          });
+        this.masterSvc
+          .notification()
+          .toast('PO created successfully!', 'success');
+      } catch (err) {
+        this.masterSvc
+          .notification()
+          .toast(
+            'Something went wrong creating your po, try again!',
+            'danger',
+            2000
+          );
+      }
+    });
   }
 
   async viewPO(poData: PO, site: Site) {
