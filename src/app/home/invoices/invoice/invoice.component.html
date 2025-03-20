@@ -28,7 +28,7 @@
       <ng-container *ngIf="terms$ | async as terms; else noTerms">
         <ion-chip
           size="small"
-          (click)="download(terms)"
+          (click)="download(terms, QRCODE)"
           fill="clear"
           color="tertiary"
         >
@@ -36,7 +36,7 @@
         </ion-chip>
         <ion-chip
           size="small"
-          (click)="downloadDetailed(terms)"
+          (click)="downloadDetailed(terms, QRCODE)"
           fill="clear"
           color="primary"
         >
@@ -46,7 +46,7 @@
       <ng-template #noTerms>
         <ion-chip
           size="small"
-          (click)="download(null)"
+          (click)="download(null, QRCODE)"
           fill="clear"
           color="tertiary"
         >
@@ -54,13 +54,29 @@
         </ion-chip>
         <ion-chip
           size="small"
-          (click)="downloadDetailed(null)"
+          (click)="downloadDetailed(null, QRCODE)"
           fill="clear"
           color="primary"
         >
           Detailed Invoice
         </ion-chip>
       </ng-template>
+      <div class="qrcodeImage" [hidden]="true">
+        <!-- [imageSrc]="company?.replaceBranding || 'assets/logos/logo.svg'" -->
+        <qrcode
+          #QRCODE
+          [qrdata]="qrData"
+          [imageHeight]="75"
+          [imageWidth]="75"
+          [title]="invoice.code"
+          [allowEmptyString]="false"
+          [elementType]="'canvas'"
+          [errorCorrectionLevel]="'H'"
+          [margin]="4"
+          [scale]="1"
+          [width]="300"
+        ></qrcode>
+      </div>
     </ion-col>
     <ion-col size="6">
       <ion-label>

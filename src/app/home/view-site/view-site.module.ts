@@ -7,7 +7,7 @@ import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
 
 @NgModule({
-  imports: [ComponentsModule, ViewSitePageRoutingModule, QRCodeModule],
+  imports: [ComponentsModule, ViewSitePageRoutingModule],
   declarations: [
     ViewSitePage,
     SiteInventoryTableComponent,

@@ -12,6 +12,7 @@ import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { PdfService } from 'src/app/services/pdf.service';
+import { SaudiQrService } from 'src/app/services/saudi-qr.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
@@ -32,15 +33,17 @@ export class InvoiceComponent implements OnInit {
   protected invoice: TransactionInvoice = { creditTotal: 0, creditItems: [] };
   protected saving = false;
   protected user: User;
+  protected qrData: any;
 
   private editSvc = inject(EditService);
-  private fb = inject(FormBuilder);
+  private pdfSvc = inject(PdfService);
+  private saudiQrService = inject(SaudiQrService);
 
   private modalSvc = inject(ModalController);
   private notificationSvc = inject(NotificationService);
+  private fb = inject(FormBuilder);
   private store = inject(Store);
   private dateDiff = inject(DateDiffPipe);
-  private pdfSvc = inject(PdfService);
 
   constructor() {
     this.user = this.store.selectSnapshot(UserState.user);
@@ -71,24 +74,62 @@ export class InvoiceComponent implements OnInit {
       // If codes are equal, compare by transactionType
       return a.transactionType.localeCompare(b.transactionType);
     });
+
+    this.qrData = this.saudiQrService.generateQrCode(
+      this.company.name,
+      this.company.vatNum,
+      new Date().toISOString(),
+      this.invoice.total,
+      this.invoice.vat
+    );
   }
 
-  async downloadDetailed(terms: Term | null) {
+  async downloadDetailed(terms: Term | null, qrCode: any) {
+    // Only process the QR code if it exists
+    const dataUrl = qrCode ? await this.saveAsImage(qrCode) : null;
+
     const pdf = await this.pdfSvc.rentalInvoice(
       this.invoice,
       this.company,
-      terms
+      terms,
+      false,
+      dataUrl
     );
     await this.pdfSvc.handlePdf(pdf, this.invoice.code);
   }
 
-  async download(terms: Term | null) {
+  async download(terms: Term | null, qrCode?: any) {
+    // Only process the QR code if it exists
+    const dataUrl = qrCode ? await this.saveAsImage(qrCode) : null;
+
     const pdf = await this.pdfSvc.rentalInvoiceMerged(
       this.invoice,
       this.company,
-      terms
+      terms,
+      false,
+      dataUrl
     );
     await this.pdfSvc.handlePdf(pdf, this.invoice.code);
+  }
+
+  async saveAsImage(qrCode: any) {
+    if (!qrCode || !qrCode.qrcElement || !qrCode.qrcElement.nativeElement) {
+      return null;
+    }
+    try {
+      // Get the canvas element
+      const canvas = qrCode.qrcElement.nativeElement.querySelector('canvas');
+      if (!canvas) {
+        console.error('Canvas element not found in QR code');
+        return null;
+      }
+      // Get the data URL directly - this is what the PDF library expects
+      const dataUrl = canvas.toDataURL('image/png');
+      return dataUrl; // Return the data URL string directly
+    } catch (error) {
+      console.error('Error saving QR code as image:', error);
+      return null;
+    }
   }
 
   close() {

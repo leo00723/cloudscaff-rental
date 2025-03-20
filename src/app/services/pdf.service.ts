@@ -1118,7 +1118,8 @@ export class PdfService {
     invoice: TransactionInvoice,
     company: Company,
     terms: Term | null,
-    isdraft?: boolean
+    isdraft?: boolean,
+    dataUrl?: any
   ) {
     const estimateItems = [];
     const items = [];
@@ -1309,6 +1310,18 @@ export class PdfService {
           company,
           '',
           [
+            dataUrl
+              ? [
+                  '',
+                  '',
+                  {
+                    image: dataUrl,
+                    width: 100,
+                    rowSpan: 5,
+                  },
+                  '',
+                ]
+              : ['', '', '', ''], // Empty text if no image
             [
               { text: 'PO Number', style: 'h6b' },
               `${invoice?.poNumber || 'N/A'}`,
@@ -1320,7 +1333,6 @@ export class PdfService {
         hr,
         this.getCompanyInfo(invoice.estimate.customer, company),
         hr,
-        { text: invoice.estimate.scope },
 
         invoice.type !== 'Rental' ? [hr, estimateSummary] : [],
         hr,
@@ -1488,7 +1500,7 @@ export class PdfService {
           },
           layout: 'noBorders',
         },
-        await this.addUploads(invoice.estimate.uploads),
+        await this.addUploads(invoice.estimate.uploads || []),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
@@ -1507,7 +1519,8 @@ export class PdfService {
     invoice: TransactionInvoice,
     company: Company,
     terms: Term | null,
-    isdraft?: boolean
+    isdraft?: boolean,
+    dataUrl?: any
   ) {
     const estimateItems = [];
     const items = [];
@@ -1723,6 +1736,18 @@ export class PdfService {
           company,
           '',
           [
+            dataUrl
+              ? [
+                  '',
+                  '',
+                  {
+                    image: dataUrl,
+                    width: 100,
+                    rowSpan: 5,
+                  },
+                  '',
+                ]
+              : ['', '', '', ''], // Empty text if no image
             [
               { text: 'PO Number', style: 'h6b' },
               `${invoice?.poNumber || 'N/A'}`,
@@ -1902,7 +1927,7 @@ export class PdfService {
           },
           layout: 'noBorders',
         },
-        await this.addUploads(invoice.estimate.uploads),
+        await this.addUploads(invoice.estimate.uploads || []),
         {
           text: 'Terms & Conditions',
           style: ['h4b', 'm20'],
@@ -3569,10 +3594,11 @@ E-mail: Info@hayakel-ksa.com`,
             '',
             '',
           ],
+
           [{ text: title, style: 'header', colSpan: 2 }, '', '', ''],
+          ...data,
           [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
           [{ text: 'Project:', style: 'h6b' }, `${siteName}`, '', ''],
-          ...data,
           [
             { text: 'Date Issued:', style: 'h6b' },
             `${this.toDate(date)}`,

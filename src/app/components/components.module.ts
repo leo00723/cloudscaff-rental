@@ -84,6 +84,7 @@ import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
 import { AddAdjustmentComponent } from './add-adjustment/add-adjustment.component';
 import { PoCustomItemComponent } from './po-custom-item/po-custom-item.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -174,6 +175,7 @@ const IMPORTS = [
   SearchableSelectComponent,
   SignaturePadModule,
   SwiperModule,
+  QRCodeModule,
 ];
 
 @NgModule({
