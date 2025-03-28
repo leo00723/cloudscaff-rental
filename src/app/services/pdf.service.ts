@@ -3488,6 +3488,7 @@ E-mail: Info@hayakel-ksa.com`,
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
