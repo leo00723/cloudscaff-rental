@@ -1,4 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { Timestamp } from '@angular/fire/firestore';
+import { isSameDay } from 'date-fns';
 import differenceInDays from 'date-fns/differenceInDays';
 import parseISO from 'date-fns/parseISO';
 
@@ -11,8 +13,14 @@ export class DateDiffPipe implements PipeTransform {
     if (!date1 || !date2) {
       return 0;
     }
-    return noIso
-      ? differenceInDays(date2, date1) + 1
-      : differenceInDays(parseISO(date2), date1) + 1;
+
+    const newDate1 = Timestamp.fromDate(new Date(date1)).toDate();
+    const newDate2 = Timestamp.fromDate(new Date(date2)).toDate();
+
+    if (isSameDay(newDate2, newDate1)) {
+      return 1;
+    }
+
+    return differenceInDays(newDate2, newDate1) + 1;
   }
 }
