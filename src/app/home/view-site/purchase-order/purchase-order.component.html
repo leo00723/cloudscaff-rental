@@ -40,7 +40,7 @@
         size="small"
         (click)="downloadMixedDraft()"
         color="warning"
-        *ngIf="!saving && form.valid"
+        *ngIf="!saving && form.valid && po.mixedInvoice"
       >
         Mixed Invoice Draft
       </ion-chip>
