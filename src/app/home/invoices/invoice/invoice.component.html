@@ -250,7 +250,12 @@
           >
             <!-- Type (Delivery or Return) -->
             <td>
-              <ion-chip color="success" mode="ios" class="cursor-pointer">
+              <ion-chip
+                color="success"
+                mode="ios"
+                (click)="updateDate(transaction)"
+                class="cursor-pointer"
+              >
                 <ion-label>{{ transaction.deliveryCode }}</ion-label>
               </ion-chip>
             </td>
@@ -300,8 +305,8 @@
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
-            <td (click)="updateStartDate(transaction)" class="cursor-pointer">
-              {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
+            <td>
+              {{ transaction.invoiceEnd.toDate() | date : "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
@@ -344,7 +349,12 @@
           >
             <!-- Type (Delivery or Return) -->
             <td>
-              <ion-chip color="danger" mode="ios">
+              <ion-chip
+                color="danger"
+                mode="ios"
+                (click)="updateDate(transaction)"
+                class="cursor-pointer"
+              >
                 <ion-label>{{ transaction.returnCode }}</ion-label>
               </ion-chip>
             </td>
@@ -389,12 +399,14 @@
             </td>
 
             <!-- Start Date (delivery or return date) -->
-            <td (click)="updateStartDate(transaction)" class="cursor-pointer">
+            <td>
               {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
-            <td>{{ transaction.invoiceEnd.toDate() | date : "dd MMM yy" }}</td>
+            <td>
+              {{ transaction.invoiceEnd.toDate() | date : "dd MMM yy" }}
+            </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
             <td>

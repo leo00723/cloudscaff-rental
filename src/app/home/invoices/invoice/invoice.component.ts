@@ -216,7 +216,7 @@ export class InvoiceComponent implements OnInit {
     }
   }
 
-  async updateStartDate(transaction: TransactionItem) {
+  async updateDate(transaction: TransactionItem, isStart = true) {
     if (!this.allowEdit) {
       return;
     }
@@ -240,7 +240,9 @@ export class InvoiceComponent implements OnInit {
 
     this.invoice.items.forEach((item) => {
       if (item.deliveryCode === transaction.deliveryCode) {
-        item.invoiceStart = Timestamp.fromDate(new Date(date));
+        isStart
+          ? (item.invoiceStart = Timestamp.fromDate(new Date(date)))
+          : (item.invoiceEnd = Timestamp.fromDate(new Date(date)));
       }
     });
     this.calcTotal();
@@ -311,7 +313,13 @@ export class InvoiceComponent implements OnInit {
               item.invoiceStart.toDate(),
               this.invoice.endDate
             );
-      item.invoiceEnd = Timestamp.fromDate(new Date(this.invoice.endDate));
+      item.invoiceEnd = Timestamp.fromDate(
+        new Date(
+          item.transactionType === 'Return'
+            ? item.invoiceEnd.toDate()
+            : this.invoice.endDate
+        )
+      );
       item.months = +(item.days / 30).toFixed(2);
       item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
         2
