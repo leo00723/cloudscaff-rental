@@ -28,4 +28,7 @@ export interface TransactionItem {
   poNumber?: string;
   transactionType?: string;
   siteId?: string;
+  days?: number;
+  months?: number;
+  total?: number;
 }

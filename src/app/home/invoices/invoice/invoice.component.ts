@@ -84,6 +84,21 @@ export class InvoiceComponent implements OnInit {
     );
   }
 
+  async downloadDraft(isBasic?: boolean) {
+    const pdf = isBasic
+      ? await this.pdfSvc.rentalInvoiceMerged(
+          this.invoice,
+          this.company,
+          null,
+          true
+        )
+      : await this.pdfSvc.rentalInvoice(this.invoice, this.company, null, true);
+    this.pdfSvc.handlePdf(
+      pdf,
+      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`
+    );
+  }
+
   async downloadDetailed(terms: Term | null, qrCode: any) {
     // Only process the QR code if it exists
     const dataUrl = qrCode ? await this.saveAsImage(qrCode) : null;
@@ -199,8 +214,7 @@ export class InvoiceComponent implements OnInit {
             (item.transactionType === 'Return'
               ? +this.dateDiff.transform(
                   item.invoiceStart.toDate(),
-                  item.invoiceEnd.toDate(),
-                  true
+                  item.invoiceEnd.toDate()
                 )
               : +this.dateDiff.transform(
                   item.invoiceStart.toDate(),

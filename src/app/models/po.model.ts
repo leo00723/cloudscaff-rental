@@ -19,4 +19,5 @@ export interface PO {
   status?: string;
   type?: string;
   customInvoice?: boolean;
+  mixedInvoice?: boolean;
 }

@@ -1514,6 +1514,268 @@ export class PdfService {
     };
     return this.generatePdf(data);
   }
+
+  // INVOICE RENTAL PDF
+  async mixedInvoice(
+    invoice: TransactionInvoice,
+    company: Company,
+    terms: Term | null,
+    isdraft?: boolean,
+    dataUrl?: any
+  ) {
+    const items = [];
+
+    invoice.estimate.items
+      .filter((item) => item.forInvoice)
+      .forEach((item, i) => {
+        items.push(this.addRentalItemMixed(company, item));
+      });
+
+    invoice.items.forEach((item) => {
+      items.push(this.addRentalItem(company, item, invoice.endDate));
+    });
+
+    // Define table headers based on customInvoice flag
+    const summaryTableHeaders = [
+      { text: 'Docket', style: 'h4b', alignment: 'left' },
+      { text: 'Item Code', style: 'h4b', alignment: 'center' },
+      { text: 'Description', style: 'h4b', alignment: 'left' },
+      { text: 'Unit', style: 'h4b', alignment: 'center' },
+      { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
+      { text: 'Delivered', style: 'h4b', alignment: 'center' },
+      { text: 'Returned', style: 'h4b', alignment: 'center' },
+      { text: 'Balance', style: 'h4b', alignment: 'center' },
+      { text: 'Start Date', style: 'h4b', alignment: 'center' },
+      { text: 'End Date', style: 'h4b', alignment: 'center' },
+      { text: 'Days', style: 'h4b', alignment: 'center' },
+      { text: 'Months', style: 'h4b', alignment: 'center' },
+      { text: 'Montly Rent Rate', style: 'h4b', alignment: 'center' },
+      { text: 'Total', style: 'h4b', alignment: 'right' },
+    ];
+
+    // Define the table body, filtering out the columns based on customInvoice flag
+
+    const summary = {
+      table: {
+        headerRows: 1,
+        widths: [
+          'auto',
+          'auto',
+          '*',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          '*',
+          '*',
+        ],
+        body: [summaryTableHeaders, ...items],
+      },
+      layout: tLayout,
+    };
+
+    const data = {
+      header: this.getPageNumbers(),
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
+      content: [
+        await this.getBillingHeader(
+          isdraft ? 'Invoice Draft' : 'Invoice',
+          isdraft ? 'Invoice Draft' : invoice.code,
+          invoice.site.name,
+          isdraft ? invoice.date : invoice.date,
+          company,
+          '',
+          [
+            dataUrl
+              ? [
+                  '',
+                  '',
+                  {
+                    image: dataUrl,
+                    width: 100,
+                    rowSpan: 5,
+                  },
+                  '',
+                ]
+              : ['', '', '', ''], // Empty text if no image
+            [
+              { text: 'PO Number', style: 'h6b' },
+              `${invoice?.poNumber || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getCompanyInfo(invoice.estimate.customer, company),
+        hr,
+        { text: 'Invoice Items', style: 'h4b', pageBreak: 'before' },
+        summary,
+        {
+          table: {
+            widths: ['*', '*', '*', '*'],
+
+            body: [
+              [
+                {
+                  text: 'Banking Details',
+                  style: ['h4b'],
+                  alignment: 'left',
+                },
+                '',
+                '',
+                {
+                  text: 'Total Amount',
+                  style: ['h4b'],
+                  alignment: 'right',
+                },
+              ],
+
+              [
+                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
+                { text: company.bankName, alignment: 'left' },
+                {
+                  text: 'Subtotal:',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    invoice.subtotal
+                  )}`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
+                { text: company.name, alignment: 'left' },
+                {
+                  text: `Discount:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `- ${company.currency.symbol} ${this.format(
+                    invoice.discount
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
+                { text: `SA${company.accountNum}`, alignment: 'left' },
+                {
+                  text: `Contract Total:`,
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    invoice.subtotal - invoice.discount - invoice.creditTotal
+                  )}`,
+                  alignment: 'right',
+                  style: 'h6b',
+                },
+              ],
+              [
+                {
+                  text: company.branchCode ? 'Branch:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.branchCode ? company.branchCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
+                      : company.salesTax > 0
+                      ? `Tax (${company.salesTax}%):`
+                      : '',
+                  style: 'h6b',
+                  alignment: 'right',
+                },
+                {
+                  text:
+                    company.vat > 0
+                      ? `${company.currency.symbol} ${this.format(invoice.vat)}`
+                      : company.salesTax > 0
+                      ? `${company.currency.symbol} ${this.format(invoice.tax)}`
+                      : '',
+
+                  alignment: 'right',
+                  style: ['h6b', 'mt5'],
+                },
+              ],
+              [
+                {
+                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
+                  style: 'h6b',
+                  alignment: 'left',
+                },
+                {
+                  text: company.swiftCode ? company.swiftCode : '',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Grand Total:',
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+                {
+                  text: `${company.currency.symbol} ${this.format(
+                    invoice.total
+                  )}`,
+                  style: 'h3',
+                  alignment: 'right',
+                  margin: [0, 5],
+                },
+              ],
+              [
+                {
+                  text: 'Grand Total in words:',
+                  style: 'h4b',
+                  alignment: 'right',
+                  colSpan: 3,
+                },
+                '',
+                '',
+                {
+                  text: this.numberToWords(invoice.total),
+                  style: 'h4b',
+                },
+              ],
+            ],
+          },
+          margin: [0, 10, 0, 0],
+          layout: 'noBorders',
+        },
+        await this.addUploads(invoice.estimate.uploads || []),
+        {
+          text: 'Terms & Conditions',
+          style: ['h4b', 'm20'],
+          pageBreak: 'before',
+        },
+        { text: terms ? terms.terms : '' },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+    return this.generatePdf(data);
+  }
+
   // INVOICE RENTAL MERGED PDF
   async rentalInvoiceMerged(
     invoice: TransactionInvoice,
@@ -1631,7 +1893,7 @@ export class PdfService {
           { text: 'End Date', style: 'h4b', alignment: 'center' },
           { text: 'Days', style: 'h4b', alignment: 'center' },
           { text: 'Months', style: 'h4b', alignment: 'center' },
-          { text: 'Daily Rent Rate', style: 'h4b', alignment: 'center' },
+          { text: 'Monthly Rent Rate', style: 'h4b', alignment: 'center' },
           { text: 'Total', style: 'h4b', alignment: 'right' },
         ];
 
@@ -3863,6 +4125,91 @@ E-mail: Info@hayakel-ksa.com`,
     ];
   }
 
+  private addRentalItemMixed(company: Company, item: any) {
+    let start = null;
+    let end = null;
+    let days = null;
+    let code = null;
+
+    code = item.code;
+    start = item.startDate;
+    end = item.endDate;
+    days = +this.dateDiffPipe.transform(start, end);
+
+    const months = this.format(days / 30);
+    return [
+      {
+        text: code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.description,
+        style: 'h6',
+      },
+      {
+        text: item.unit,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.qty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: 0,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: 0,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: 0,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: this.toDate(start, true),
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: this.toDate(end, true),
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: days,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: months,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.rate)}`,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.total)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
+  }
+
   private addRentalItem(
     company: Company,
     item: TransactionItem,
@@ -3881,10 +4228,10 @@ E-mail: Info@hayakel-ksa.com`,
       code = item.returnCode;
       start = item.invoiceStart.toDate();
       end = item.invoiceEnd.toDate();
-      days = +this.dateDiffPipe.transform(start, end, true);
+      days = +this.dateDiffPipe.transform(start, end);
     }
-    const months = this.format(days / 30);
-    const total = +item.invoiceQty * +item.hireRate * days;
+    const months = +this.format(days / 30);
+    const total = +item.invoiceQty * +item.hireRate * months;
     return [
       {
         text: code,
@@ -3972,7 +4319,7 @@ E-mail: Info@hayakel-ksa.com`,
       code = item.returnCode;
       start = item.invoiceStart.toDate();
       end = item.invoiceEnd.toDate();
-      days = +this.dateDiffPipe.transform(start, end, true);
+      days = +this.dateDiffPipe.transform(start, end);
     }
     const months = this.format(days / 30);
     return [

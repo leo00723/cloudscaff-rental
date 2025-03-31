@@ -9,7 +9,7 @@ import parseISO from 'date-fns/parseISO';
   pure: true,
 })
 export class DateDiffPipe implements PipeTransform {
-  transform(date1: any, date2: any, noIso?: boolean) {
+  transform(date1: any, date2: any) {
     if (!date1 || !date2) {
       return 0;
     }

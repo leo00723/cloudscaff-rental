@@ -26,6 +26,9 @@
     </ion-col>
     <ion-col sizeMd="6" size="8" class="text-end">
       <ng-container *ngIf="terms$ | async as terms; else noTerms">
+        <ion-chip size="small" (click)="downloadDraft(true)" color="warning">
+          Basic Invoice Draft
+        </ion-chip>
         <ion-chip
           size="small"
           (click)="download(terms, QRCODE)"
@@ -34,16 +37,22 @@
         >
           Basic Invoice
         </ion-chip>
+        <ion-chip size="small" (click)="downloadDraft()" color="warning">
+          Detailed Invoice Draft
+        </ion-chip>
         <ion-chip
           size="small"
           (click)="downloadDetailed(terms, QRCODE)"
           fill="clear"
-          color="primary"
+          color="tertiary"
         >
           Detailed Invoice
         </ion-chip>
       </ng-container>
       <ng-template #noTerms>
+        <ion-chip size="small" (click)="downloadDraft(true)" color="warning">
+          Basic Invoice Draft
+        </ion-chip>
         <ion-chip
           size="small"
           (click)="download(null, QRCODE)"
@@ -51,6 +60,9 @@
           color="tertiary"
         >
           Basic Invoice
+        </ion-chip>
+        <ion-chip size="small" (click)="downloadDraft()" color="warning">
+          Detailed Invoice Draft
         </ion-chip>
         <ion-chip
           size="small"
@@ -292,7 +304,7 @@
             <td>
               {{
                 transaction.invoiceStart.toDate()
-                  | dateDiff : transaction.invoiceEnd.toDate() : true
+                  | dateDiff : transaction.invoiceEnd.toDate()
               }}
             </td>
 
@@ -300,7 +312,7 @@
             <td>
               {{
                 (transaction.invoiceStart.toDate()
-                  | dateDiff : transaction.invoiceEnd.toDate() : true) / 30
+                  | dateDiff : transaction.invoiceEnd.toDate()) / 30
                   | number : "0.2-2"
               }}
             </td>
@@ -327,7 +339,7 @@
                 transaction.invoiceQty *
                   transaction.hireRate *
                   (transaction.invoiceStart.toDate()
-                    | dateDiff : transaction.invoiceEnd.toDate() : true)
+                    | dateDiff : transaction.invoiceEnd.toDate())
                   | number : "0.2-2"
               }}
             </td>

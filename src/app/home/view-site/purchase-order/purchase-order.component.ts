@@ -52,6 +52,7 @@ export class PurchaseOrderComponent implements OnInit {
     tax: 0,
     vat: 0,
     customInvoice: false,
+    mixedInvoice: false,
   };
   protected saving = false;
   protected transactions: TransactionItem[] = [];
@@ -145,6 +146,7 @@ export class PurchaseOrderComponent implements OnInit {
       item.error = false;
       item.hireRate = +val.detail.target.value;
       item.siteId = this.po.site.id;
+
       try {
         this.saving = true;
         await this.editSvc.updateDoc(
@@ -175,6 +177,11 @@ export class PurchaseOrderComponent implements OnInit {
 
   enableCustomInvoice() {
     this.po.customInvoice = !this.po.customInvoice;
+    this.calcTotal();
+  }
+
+  enableMixedInvoice() {
+    this.po.mixedInvoice = !this.po.mixedInvoice;
     this.calcTotal();
   }
 
@@ -318,31 +325,47 @@ export class PurchaseOrderComponent implements OnInit {
       : await this.pdfSvc.rentalInvoice(invoice, this.company, null, true);
     this.pdfSvc.handlePdf(pdf, this.po.code);
   }
+  async downloadMixedDraft() {
+    const invoice: TransactionInvoice = {
+      ...this.po,
+      ...this.form.value,
+      status: 'pending',
+      items: this.transactions,
+      createdBy: this.user.id,
+      createdByName: this.user.name,
+      date: new Date(),
+      poId: this.po.id,
+      creditItems: [],
+      creditTotal: 0,
+    };
+    const pdf = await this.pdfSvc.mixedInvoice(
+      invoice,
+      this.company,
+      null,
+      true
+    );
+    this.pdfSvc.handlePdf(pdf, this.po.code);
+  }
 
   private async calcTotal() {
     this.po.subtotal = 0;
-    if (!this.po.customInvoice) {
-      this.transactions.forEach((item) => {
-        this.po.subtotal +=
-          +item.invoiceQty *
-          +item.hireRate *
-          (item.transactionType === 'Return'
-            ? +this.dateDiff.transform(
-                item.invoiceStart.toDate(),
-                item.invoiceEnd.toDate(),
-                true
-              )
-            : +this.dateDiff.transform(
-                item.invoiceStart.toDate(),
-                this.field('endDate').value
-              ));
-      });
-    } else {
+
+    // Calculate subtotal based on invoice type
+    if (this.po.customInvoice) {
+      // For both customInvoice cases (with or without mixedInvoice)
       this.po.estimate.items.forEach((item) => {
         if (item.forInvoice) {
           this.po.subtotal += item.total;
         }
       });
+
+      // Add transaction calculations only if mixedInvoice is true
+      if (this.po.mixedInvoice) {
+        this.calculateTransactionSubtotal();
+      }
+    } else {
+      // Only transaction calculations for non-customInvoice
+      this.calculateTransactionSubtotal();
     }
 
     this.po.discount = +this.field('discount').value;
@@ -374,6 +397,30 @@ export class PurchaseOrderComponent implements OnInit {
     } finally {
       this.saving = false;
     }
+  }
+
+  // Helper function to avoid duplicate code
+  private calculateTransactionSubtotal() {
+    this.transactions.forEach((item) => {
+      const days =
+        item.transactionType === 'Return'
+          ? +this.dateDiff.transform(
+              item.invoiceStart.toDate(),
+              item.invoiceEnd.toDate()
+            )
+          : +this.dateDiff.transform(
+              item.invoiceStart.toDate(),
+              this.field('endDate').value
+            );
+
+      item.days = days;
+      item.months = +(days / 30).toFixed(2);
+      item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
+        2
+      );
+
+      this.po.subtotal += item.total;
+    });
   }
 
   private init() {
