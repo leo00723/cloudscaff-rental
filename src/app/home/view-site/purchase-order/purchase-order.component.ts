@@ -402,7 +402,7 @@ export class PurchaseOrderComponent implements OnInit {
   // Helper function to avoid duplicate code
   private calculateTransactionSubtotal() {
     this.transactions.forEach((item) => {
-      const days =
+      item.days =
         item.transactionType === 'Return'
           ? +this.dateDiff.transform(
               item.invoiceStart.toDate(),
@@ -413,8 +413,7 @@ export class PurchaseOrderComponent implements OnInit {
               this.field('endDate').value
             );
 
-      item.days = days;
-      item.months = +(days / 30).toFixed(2);
+      item.months = +(item.days / 30).toFixed(2);
       item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
         2
       );

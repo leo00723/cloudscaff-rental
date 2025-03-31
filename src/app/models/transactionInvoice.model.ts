@@ -26,4 +26,5 @@ export interface TransactionInvoice {
   creditTotal?: number;
   type?: string;
   customInvoice?: boolean;
+  mixedInvoice?: boolean;
 }

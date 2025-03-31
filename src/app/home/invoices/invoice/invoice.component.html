@@ -9,68 +9,120 @@
         ></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title
-      >Invoice - {{ invoice?.code }}
+    <ion-title>
+      Invoice - {{ invoice?.code }}
       <ion-text *ngIf="saving">
         <i class="text-muted fs-6">(Saving...)</i>
-      </ion-text></ion-title
-    >
+      </ion-text>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        *ngIf="!allowEdit"
+        color="primary"
+        shape="round"
+        (click)="allowEdit = true"
+      >
+        Enable Edit
+      </ion-button>
+      <ion-button
+        *ngIf="allowEdit"
+        color="danger"
+        shape="round"
+        (click)="allowEdit = false"
+      >
+        Stop Edit
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
   <ion-row class="py-2">
-    <ion-col sizeMd="6" size="4">
+    <ion-col size="12">
       <ion-text>
         <h4>Rental Invoice</h4>
       </ion-text>
     </ion-col>
-    <ion-col sizeMd="6" size="8" class="text-end">
+    <ion-col size="12" class="text-end">
       <ng-container *ngIf="terms$ | async as terms; else noTerms">
-        <ion-chip size="small" (click)="downloadDraft(true)" color="warning">
+        <ion-chip size="small" (click)="downloadBasic()" color="warning">
           Basic Invoice Draft
         </ion-chip>
         <ion-chip
           size="small"
-          (click)="download(terms, QRCODE)"
+          (click)="downloadBasic(terms, false, QRCODE)"
           fill="clear"
           color="tertiary"
         >
           Basic Invoice
         </ion-chip>
-        <ion-chip size="small" (click)="downloadDraft()" color="warning">
+        <ion-chip size="small" (click)="downloadDetailed()" color="warning">
           Detailed Invoice Draft
         </ion-chip>
         <ion-chip
           size="small"
-          (click)="downloadDetailed(terms, QRCODE)"
+          (click)="downloadDetailed(terms, false, QRCODE)"
           fill="clear"
           color="tertiary"
         >
           Detailed Invoice
         </ion-chip>
+        <ion-chip
+          *ngIf="invoice.mixedInvoice"
+          size="small"
+          (click)="downloadMixed()"
+          color="warning"
+        >
+          Mixed Invoice Draft
+        </ion-chip>
+        <ion-chip
+          *ngIf="invoice.mixedInvoice"
+          size="small"
+          (click)="downloadMixed(terms, false, QRCODE)"
+          fill="clear"
+          color="tertiary"
+        >
+          Mixed Invoice
+        </ion-chip>
       </ng-container>
       <ng-template #noTerms>
-        <ion-chip size="small" (click)="downloadDraft(true)" color="warning">
+        <ion-chip size="small" (click)="downloadBasic()" color="warning">
           Basic Invoice Draft
         </ion-chip>
         <ion-chip
           size="small"
-          (click)="download(null, QRCODE)"
+          (click)="downloadBasic(null, false, QRCODE)"
           fill="clear"
           color="tertiary"
         >
           Basic Invoice
         </ion-chip>
-        <ion-chip size="small" (click)="downloadDraft()" color="warning">
+        <ion-chip size="small" (click)="downloadDetailed()" color="warning">
           Detailed Invoice Draft
         </ion-chip>
         <ion-chip
           size="small"
-          (click)="downloadDetailed(null, QRCODE)"
+          (click)="downloadDetailed(null, false, QRCODE)"
           fill="clear"
           color="primary"
         >
           Detailed Invoice
+        </ion-chip>
+        <ion-chip
+          *ngIf="invoice.mixedInvoice"
+          size="small"
+          (click)="downloadMixed()"
+          color="warning"
+        >
+          Mixed Invoice Draft
+        </ion-chip>
+        <ion-chip
+          *ngIf="invoice.mixedInvoice"
+          size="small"
+          (click)="downloadMixed(null, false, QRCODE)"
+          fill="clear"
+          color="primary"
+        >
+          Mixed Invoice
         </ion-chip>
       </ng-template>
       <div class="qrcodeImage" [hidden]="true">
@@ -90,48 +142,63 @@
         ></qrcode>
       </div>
     </ion-col>
-    <ion-col size="6">
-      <ion-label>
-        <h6>Code:</h6>
-        <h6>Site name:</h6>
-        <h6>Date Issued:</h6>
-      </ion-label>
-    </ion-col>
-    <ion-col size="6">
-      <ion-label>
-        <h6>
-          {{ invoice.code }}
-        </h6>
-        <h6>
-          {{ invoice.date | date }}
-        </h6>
-      </ion-label>
-    </ion-col>
   </ion-row>
-  <ion-item-divider mode="md"></ion-item-divider>
+
   <app-po-rental-summary
     [value]="invoice.estimate"
     *ngIf="invoice.type === 'Rental'; else default"
   ></app-po-rental-summary>
   <ng-template #default>
-    <app-po-summary
-      [value]="invoice.estimate"
-      [customInvoice]="invoice.customInvoice"
-      [isInvoice]="true"
-    ></app-po-summary>
+    <ng-container *ngIf="invoice.customInvoice && allowEdit; else summary">
+      <app-po-custom-item
+        [value]="invoice.estimate"
+        (update)="updatePOEstimate($event)"
+      ></app-po-custom-item>
+    </ng-container>
+    <ng-template #summary>
+      <app-po-summary
+        [value]="invoice.estimate"
+        [customInvoice]="invoice.customInvoice"
+      ></app-po-summary>
+    </ng-template>
   </ng-template>
+
   <ion-row>
-    <ion-col size="12">
+    <ion-col size="6">
       <ion-text color="medium">
         <h4>Billing Date</h4>
       </ion-text>
+    </ion-col>
+
+    <ion-col
+      size="6"
+      class="text-end my-auto align-middle d-flex gap-3"
+      style="width: 100%"
+      *ngIf="invoice.type !== 'Rental'"
+    >
+      <div class="ms-auto">
+        <ion-text color="medium"> <h6>Custom Invoice</h6> </ion-text>
+        <ion-toggle
+          [disabled]="!allowEdit"
+          [checked]="invoice.customInvoice"
+          (ionChange)="enableCustomInvoice()"
+        ></ion-toggle>
+      </div>
+      <div *ngIf="invoice.customInvoice">
+        <ion-text color="medium"> <h6>Mixed Invoice</h6> </ion-text>
+        <ion-toggle
+          [disabled]="!allowEdit"
+          [checked]="invoice.mixedInvoice"
+          (ionChange)="enableMixedInvoice()"
+        ></ion-toggle>
+      </div>
     </ion-col>
 
     <ion-col size="12">
       <app-input-text
         title="End Date"
         [value]="invoice.endDate"
-        [readonly]="true"
+        [readonly]="!allowEdit"
       ></app-input-text>
     </ion-col>
   </ion-row>
@@ -143,13 +210,27 @@
           <th rowspan="2">Item Code</th>
           <th class="text-start" rowspan="2">Description</th>
           <th rowspan="2">Unit</th>
-          <th rowspan="2" *ngIf="!invoice.customInvoice">Qty for Invoice</th>
+          <th
+            rowspan="2"
+            *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+          >
+            Qty for Invoice
+          </th>
           <th colspan="3">Actual Qty</th>
           <th colspan="2">Hire Period</th>
           <th rowspan="2">Days</th>
           <th rowspan="2">Months</th>
-          <th rowspan="2" *ngIf="!invoice.customInvoice">Daily Rent Rate</th>
-          <th class="text-end" rowspan="2" *ngIf="!invoice.customInvoice">
+          <th
+            rowspan="2"
+            *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+          >
+            Daily Rent Rate
+          </th>
+          <th
+            class="text-end"
+            rowspan="2"
+            *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+          >
             Amount
           </th>
         </tr>
@@ -169,7 +250,7 @@
           >
             <!-- Type (Delivery or Return) -->
             <td>
-              <ion-chip color="success" mode="ios">
+              <ion-chip color="success" mode="ios" class="cursor-pointer">
                 <ion-label>{{ transaction.deliveryCode }}</ion-label>
               </ion-chip>
             </td>
@@ -184,8 +265,18 @@
             <td>EA</td>
 
             <!-- Qty for Invoice -->
-            <td class="fw-bold" *ngIf="!invoice.customInvoice">
-              {{ transaction.invoiceQty }}
+            <td
+              class="fw-bold"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
+              <ion-input
+                debounce="300"
+                inputmode="numeric"
+                [color]="transaction.error ? 'danger' : 'default'"
+                [value]="transaction.invoiceQty"
+                (ionBlur)="updateRate($event, transaction, 'invoiceQty')"
+                [disabled]="!allowEdit"
+              ></ion-input>
             </td>
 
             <!-- Delivered Qty  -->
@@ -209,32 +300,29 @@
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
-            <td>{{ invoice.endDate | date : "dd MMM yy" }}</td>
+            <td (click)="updateStartDate(transaction)" class="cursor-pointer">
+              {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
+            </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
             <td>
-              {{
-                transaction.invoiceStart.toDate() | dateDiff : invoice.endDate
-              }}
+              {{ transaction.days }}
             </td>
 
             <!-- Months (converting days to months, assuming 30 days per month) -->
             <td>
-              {{
-                (transaction.invoiceStart.toDate()
-                  | dateDiff : invoice.endDate) / 30 | number : "0.2-2"
-              }}
+              {{ transaction.months }}
             </td>
 
             <!-- Daily Rent Rate -->
-            <td *ngIf="!invoice.customInvoice">
+            <td *ngIf="!invoice.customInvoice || invoice.mixedInvoice">
               <ion-input
                 debounce="300"
                 inputmode="numeric"
                 [color]="transaction.error ? 'danger' : 'default'"
                 [value]="transaction.hireRate"
-                (ionBlur)="updateRate($event, transaction)"
-                disabled="true"
+                (ionBlur)="updateRate($event, transaction, 'hireRate')"
+                [disabled]="!allowEdit"
               ></ion-input>
               <ion-label color="danger" *ngIf="transaction.error">
                 Enter a valid rate
@@ -242,14 +330,12 @@
             </td>
 
             <!-- Total Amount (qty * rate * days) -->
-            <td class="text-end" *ngIf="!invoice.customInvoice">
+            <td
+              class="text-end"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
               {{ company.currency.symbol }}
-              {{
-                transaction.invoiceQty *
-                  transaction.hireRate *
-                  (transaction.invoiceStart.toDate()
-                    | dateDiff : invoice.endDate) | number : "0.2-2"
-              }}
+              {{ transaction.total | number : "0.2-2" }}
             </td>
           </tr>
           <tr
@@ -273,8 +359,18 @@
             <td>EA</td>
 
             <!-- Qty for Invoice -->
-            <td class="fw-bold" *ngIf="!invoice.customInvoice">
-              {{ transaction.invoiceQty }}
+            <td
+              class="fw-bold"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
+              <ion-input
+                debounce="300"
+                inputmode="numeric"
+                [color]="transaction.error ? 'danger' : 'default'"
+                [value]="transaction.invoiceQty"
+                (ionBlur)="updateRate($event, transaction, 'invoiceQty')"
+                [disabled]="!allowEdit"
+              ></ion-input>
             </td>
 
             <!-- Delivered Qty  -->
@@ -293,7 +389,7 @@
             </td>
 
             <!-- Start Date (delivery or return date) -->
-            <td>
+            <td (click)="updateStartDate(transaction)" class="cursor-pointer">
               {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
             </td>
 
@@ -302,30 +398,23 @@
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
             <td>
-              {{
-                transaction.invoiceStart.toDate()
-                  | dateDiff : transaction.invoiceEnd.toDate()
-              }}
+              {{ transaction.days }}
             </td>
 
             <!-- Months (converting days to months, assuming 30 days per month) -->
             <td>
-              {{
-                (transaction.invoiceStart.toDate()
-                  | dateDiff : transaction.invoiceEnd.toDate()) / 30
-                  | number : "0.2-2"
-              }}
+              {{ transaction.months }}
             </td>
 
             <!-- Daily Rent Rate -->
-            <td *ngIf="!invoice.customInvoice">
+            <td *ngIf="!invoice.customInvoice || invoice.mixedInvoice">
               <ion-input
                 debounce="300"
                 inputmode="numeric"
                 [color]="transaction.error ? 'danger' : 'default'"
                 [value]="transaction.hireRate"
-                (ionBlur)="updateRate($event, transaction)"
-                disabled="true"
+                (ionBlur)="updateRate($event, transaction, 'hireRate')"
+                [disabled]="!allowEdit"
               ></ion-input>
               <ion-label color="danger" *ngIf="transaction.error">
                 Enter a valid rate
@@ -333,20 +422,19 @@
             </td>
 
             <!-- Total Amount (qty * rate * days) -->
-            <td class="text-end" *ngIf="!invoice.customInvoice">
+            <td
+              class="text-end"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
               {{ company.currency.symbol }}
-              {{
-                transaction.invoiceQty *
-                  transaction.hireRate *
-                  (transaction.invoiceStart.toDate()
-                    | dateDiff : transaction.invoiceEnd.toDate())
-                  | number : "0.2-2"
-              }}
+              {{ transaction.total | number : "0.2-2" }}
             </td>
           </tr>
         </ng-container>
         <tr>
-          <td [colSpan]="invoice.customInvoice ? 12 : 14">
+          <td
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 12 : 14"
+          >
             <app-title-block>Credit notes</app-title-block>
             <form [formGroup]="form">
               <ion-grid>
@@ -407,14 +495,14 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 9 : 11"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 9 : 11"
             scope="col"
           >
             Subtotal
           </th>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 2 : 3"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }}
@@ -424,31 +512,14 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 9 : 11"
-            scope="col"
-          >
-            Credit
-          </th>
-          <th
-            class="text-end text-danger"
-            [colSpan]="invoice.customInvoice ? 2 : 3"
-            scope="col"
-          >
-            - {{ company.currency.symbol }}
-            {{ invoice.creditTotal || 0 | number : "0.2-2" }}
-          </th>
-        </tr>
-        <tr>
-          <th
-            class="text-end"
-            [colSpan]="invoice.customInvoice ? 9 : 11"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 9 : 11"
             scope="col"
           >
             Discount
           </th>
           <th
             class="text-end text-danger"
-            [colSpan]="invoice.customInvoice ? 2 : 3"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
             - {{ company.currency.symbol }}
@@ -458,34 +529,31 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 9 : 11"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 9 : 11"
             scope="col"
           >
             Invoice Total
           </th>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 2 : 3"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{
-              invoice.subtotal - invoice.discount - invoice.creditTotal
-                | number : "0.2-2"
-            }}
+            {{ invoice.subtotal - invoice.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 9 : 11"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 9 : 11"
             scope="col"
           >
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 2 : 3"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }} {{ invoice.tax | number : "0.2-2" }}
@@ -494,14 +562,14 @@
         <tr *ngIf="company.vat > 0">
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 9 : 11"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 9 : 11"
             scope="col"
           >
             {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
           </th>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 2 : 3"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }} {{ invoice.vat | number : "0.2-2" }}
@@ -510,14 +578,14 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 9 : 11"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 9 : 11"
             scope="col"
           >
             Grand Total
           </th>
           <th
             class="text-end"
-            [colSpan]="invoice.customInvoice ? 2 : 3"
+            [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }}
