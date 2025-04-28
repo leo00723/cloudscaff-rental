@@ -425,6 +425,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       driverNo: [this.returnDoc?.driverNo, Validators.nullValidator],
       vehicleReg: [this.returnDoc?.vehicleReg, Validators.nullValidator],
       createdByName: [this.returnDoc?.createdByName || ''],
+      poNumber: ['BulkReturn'],
     });
     if (this.returnDoc.status === 'submitted') {
       this.subs.add(
@@ -466,6 +467,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       driverName: ['', Validators.nullValidator],
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],
+      poNumber: ['BulkReturn'],
     });
   }
 
