@@ -150,23 +150,18 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
     });
   }
 
-  protected getTransactions(value: any) {
-    const poNumber = this.field('poNumber').value;
-    if (!poNumber) {
-      return;
-    }
+  protected getTransactions() {
     this.subs.add(
       this.masterSvc
         .edit()
         .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
-          where('poNumber', '==', poNumber),
+          where('siteId', '==', this.field('site').value.id),
           orderBy('code', 'asc'),
         ])
         .pipe(take(1))
         .subscribe((data) => {
-          console.log(data);
           this.items = data;
         })
     );
@@ -430,7 +425,6 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       driverNo: [this.returnDoc?.driverNo, Validators.nullValidator],
       vehicleReg: [this.returnDoc?.vehicleReg, Validators.nullValidator],
       createdByName: [this.returnDoc?.createdByName || ''],
-      poNumber: [this.returnDoc?.poNumber, Validators.required],
     });
     if (this.returnDoc.status === 'submitted') {
       this.subs.add(
@@ -439,7 +433,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
-            where('poNumber', '==', this.returnDoc?.poNumber),
+            where('siteId', '==', this.returnDoc.site.id),
             orderBy('code', 'asc'),
           ])
           .subscribe((data) => {
@@ -472,7 +466,6 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       driverName: ['', Validators.nullValidator],
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],
-      poNumber: ['', Validators.required],
     });
   }
 
