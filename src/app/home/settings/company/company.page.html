@@ -82,6 +82,16 @@
           <ion-row>
             <ion-col size="12">
               <app-input-reactive
+                title="Rep Name"
+                type="text"
+                placeholder="Jane Doe"
+                controlName="rep"
+                [form]="form"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col size="12">
+              <app-input-reactive
                 title="Email address"
                 type="email"
                 placeholder="info@cloudscaff.com"
@@ -437,6 +447,16 @@
           </ion-col>
           <ion-col sizeLg="6" size="12">
             <ion-row>
+              <ion-col size="12">
+                <app-input-reactive
+                  title="Rep Name"
+                  type="text"
+                  placeholder="Jane Doe"
+                  controlName="rep"
+                  [form]="form"
+                >
+                </app-input-reactive>
+              </ion-col>
               <ion-col size="12">
                 <app-input-reactive
                   title="Email address"

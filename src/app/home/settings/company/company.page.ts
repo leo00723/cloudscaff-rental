@@ -34,6 +34,7 @@ export class CompanyPage implements OnDestroy {
   company: Company = {
     id: '',
     name: '',
+    rep: '',
     email: '',
     phone: '',
     address: '',
@@ -154,6 +155,7 @@ export class CompanyPage implements OnDestroy {
         );
         this.form = this.fb.group({
           name: [this.company.name, Validators.required],
+          rep: [this.company.rep],
           email: [this.company.email, [Validators.required, Validators.email]],
           phone: [this.company.phone, Validators.required],
           address: [this.company.address, Validators.required],
