@@ -75,7 +75,8 @@
               [data]="sites"
               itemTextField="name"
               itemTextField2="customer.name"
-              itemTextField3="code"              [add]="false"
+              itemTextField3="code"
+              [add]="false"
               (selectedChanged)="changeSite($event)"
               #select
             ></app-searchable-select>
@@ -295,7 +296,7 @@
                         <ion-input
                           #qty
                           debounce="200"
-                          type="number"
+                          inputmode="numeric"
                           [color]="item.error ? 'danger' : 'success'"
                           [clearOnEdit]="true"
                           [value]="item.shipmentQty"
