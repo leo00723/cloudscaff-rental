@@ -66,6 +66,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
 
   changeSite(event) {
     this.field('site').setValue(event[0]);
+    this.getTransactions();
   }
   createReturn() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
