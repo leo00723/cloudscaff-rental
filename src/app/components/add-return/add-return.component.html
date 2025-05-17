@@ -307,7 +307,11 @@
           <ion-item>
             <ion-label>Total weight</ion-label>
             <ion-label slot="end">
-              <!-- {{ returnDoc.items ? (returnDoc.items | weight : true) : [] }} -->
+              {{
+                returnDoc.items
+                  ? (returnDoc.items | weight : false : false : false : true)
+                  : []
+              }}
             </ion-label>
           </ion-item>
         </ion-col>

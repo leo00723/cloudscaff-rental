@@ -29,4 +29,5 @@ export interface TransactionReturn {
   signature2?: string;
   signatureRef2?: string;
   poNumber?: string;
+  overageItems?: InventoryItem[];
 }

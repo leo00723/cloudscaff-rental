@@ -18,6 +18,32 @@
       <table class="table table-bordered">
         <thead>
           <tr>
+            <th>Item Code</th>
+            <th>Name</th>
+            <th class="text-center">Total Qty</th>
+            <th class="text-center">Available Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              {{ item.code }}
+            </td>
+            <td>
+              {{ item.name }}
+            </td>
+            <td class="text-center">
+              {{ item.yardQty }}
+            </td>
+            <td class="text-center">
+              {{ item | calculate | number }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
             <th scope="col">Site Code</th>
             <th scope="col">Site Name</th>
             <th scope="col">Customer</th>

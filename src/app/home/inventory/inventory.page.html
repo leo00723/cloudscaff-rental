@@ -134,9 +134,27 @@
         <ion-chip
           type="button"
           color="tertiary"
+          class="me-2"
           (click)="downloadMasterlistMatrix()"
         >
-          Download PDF
+          Excel Site Matrix
+        </ion-chip>
+        <ion-chip
+          shape="round"
+          color="tertiary"
+          mode="ios"
+          (click)="downloadMasterListXsl(items)"
+          download
+        >
+          Excel Masterlist
+        </ion-chip>
+        <ion-chip
+          type="button"
+          color="tertiary"
+          class="me-2"
+          (click)="downloadMasterList(items)"
+        >
+          PDF Masterlist
         </ion-chip>
         <ion-chip
           type="button"

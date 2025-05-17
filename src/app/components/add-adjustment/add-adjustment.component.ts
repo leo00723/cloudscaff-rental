@@ -1,13 +1,7 @@
-import {
-  Component,
-  inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { increment, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { orderBy } from 'firebase/firestore';
 import cloneDeep from 'lodash/cloneDeep';
 import { Subscription, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
@@ -15,12 +9,10 @@ import { Site } from 'src/app/models/site.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { TransactionReturn } from 'src/app/models/transactionReturn.model';
 import { User } from 'src/app/models/user.model';
-import { ImgService } from 'src/app/services/img.service';
 import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
-import { orderBy } from 'firebase/firestore';
 @Component({
   selector: 'app-add-adjustment',
   templateUrl: './add-adjustment.component.html',

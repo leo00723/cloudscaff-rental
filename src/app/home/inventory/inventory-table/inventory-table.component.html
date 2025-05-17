@@ -90,7 +90,7 @@
               <ion-item [button]="true" [detail]="false" (click)="edit()">
                 <ion-label>Edit</ion-label>
               </ion-item>
-              <ion-item
+              <!-- <ion-item
                 [button]="true"
                 [detail]="false"
                 (click)="deleteItem(row)"
@@ -100,7 +100,7 @@
                 "
               >
                 <ion-label>Delete</ion-label>
-              </ion-item>
+              </ion-item> -->
               <ion-item [button]="true" [detail]="false" (click)="duplicate()">
                 <ion-label>Duplicate</ion-label>
               </ion-item>
@@ -250,9 +250,9 @@
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>
-<ion-item>
+<ion-item *ngIf="inventoryItems$ | async as items">
   <ion-label>Total weight</ion-label>
   <ion-label slot="end">
-    {{ itemsBackup ? (itemsBackup | weight) : [] }}
+    {{ items | weight }}
   </ion-label>
 </ion-item>

@@ -28,6 +28,7 @@ import { SaleInvoice } from '../models/sale-invoice.model';
 
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import { CalculatePipe } from '../components/calculate.pipe';
 
 // Configure the fonts
 (pdfMake as any).vfs = pdfFonts.vfs;
@@ -156,6 +157,7 @@ const defaultSubHeader = `https://firebasestorage.googleapis.com/v0/b/cloudscaff
 export class PdfService {
   private store = inject(Store);
   constructor(
+    private calcPipe: CalculatePipe,
     private dateDiffPipe: DateDiffPipe,
     private decimalPipe: DecimalPipe,
     private datePipe: DatePipe,
@@ -3752,6 +3754,150 @@ E-mail: Info@hayakel-ksa.com`,
       defaultStyle: defaultCS,
       pageOrientation: 'landscape',
     };
+    return this.generatePdf(data);
+  }
+
+  async masterInventoryList(
+    inventory: InventoryItem[],
+    location: string,
+    company: Company
+  ) {
+    const items = [];
+    inventory.forEach((item) => {
+      items.push([
+        { text: item.code, style: 'h4b', alignment: 'left' },
+        { text: item.category, style: 'h4b', alignment: 'left' },
+        { text: item.size, style: 'h4b', alignment: 'left' },
+        { text: item.name, style: 'h4b', alignment: 'left' },
+        { text: item.location, style: 'h4b', alignment: 'left' },
+        {
+          text: this.decimalPipe.transform(item.yardQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(this.calcPipe.transform(item)),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.inUseQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.reservedQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.inMaintenanceQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.damagedQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.lostQty),
+          style: 'h4b',
+          alignment: 'center',
+        },
+      ]);
+    });
+
+    // Optimize column widths based on content
+    const summary = {
+      table: {
+        headerRows: 1,
+        // Adjust column widths - use percentages and smaller widths for numeric columns
+        widths: [
+          '7%', // Code
+          '10%', // Category
+          '6%', // Size
+          '20%', // Name (flexible with *)
+          '10%', // Location
+          '7%', // Total Qty
+          '7%', // Available Qty
+          '7%', // In Use Qty
+          '7%', // Reserved Qty
+          '7%', // Maintenance Qty
+          '6%', // Damaged Qty
+          '6%', // Lost Qty
+        ],
+
+        body: [
+          [
+            { text: 'Code', style: 'h4b', alignment: 'left' },
+            { text: 'Category', style: 'h4b', alignment: 'left' },
+            { text: 'Size', style: 'h4b', alignment: 'left' },
+            { text: 'Name', style: 'h4b', alignment: 'left' },
+            { text: 'Location', style: 'h4b', alignment: 'left' },
+            { text: 'Total', style: 'h4b', alignment: 'center' }, // Shortened header text
+            { text: 'Available', style: 'h4b', alignment: 'center' }, // Shortened header text
+            { text: 'In Use', style: 'h4b', alignment: 'center' }, // Shortened header text
+            { text: 'Reserved', style: 'h4b', alignment: 'center' }, // Shortened header text
+            { text: 'Maint.', style: 'h4b', alignment: 'center' }, // Shortened header text
+            { text: 'Damaged', style: 'h4b', alignment: 'center' }, // Shortened header text
+            { text: 'Lost', style: 'h4b', alignment: 'center' }, // Shortened header text
+          ],
+          ...items,
+          [
+            {
+              text: 'Total Weight',
+              style: 'h4b',
+              alignment: 'right',
+              colSpan: 6,
+            },
+            { text: '' },
+            { text: '' },
+            { text: '' },
+            { text: '' },
+            { text: '' },
+            {
+              text: this.weightPipe.transform(inventory),
+              style: 'h4b',
+              alignment: 'left',
+              colSpan: 6,
+            },
+            { text: '' },
+            { text: '' },
+            { text: '' },
+            { text: '' },
+            { text: '' },
+          ],
+        ],
+      },
+      layout: tLayout,
+    };
+
+    // Add margins to ensure content fits within page bounds
+    const data = {
+      footer: await this.getFooter(),
+      content: [
+        await this.getHeader(
+          'Master Inventory List',
+          company.name,
+          location,
+          new Date(),
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          []
+        ),
+        hr,
+        summary,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+      // Add explicit page margins to give more space
+      pageMargins: [15, 40, 15, 40], // [left, top, right, bottom]
+    };
+
     return this.generatePdf(data);
   }
 

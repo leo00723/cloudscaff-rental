@@ -16,6 +16,7 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
 })
 export class ViewStockLocationsComponent {
   @Input() locations$: Observable<{ site: any; item: InventoryItem }[]>;
+  @Input() item: InventoryItem;
   constructor(private modalSvc: ModalController, private router: Router) {}
 
   close() {

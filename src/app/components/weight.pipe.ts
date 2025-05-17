@@ -20,18 +20,28 @@ export class WeightPipe implements PipeTransform {
     const symbol = this.store.selectSnapshot(CompanyState.company).mass.symbol;
     let weight = 0;
     for (const item of items) {
-      if (isSell) {
-        weight += isNaN(+item.weight) ? 0 : +item.weight * +item.sellQty;
-      } else if (isDelivery) {
-        weight += isNaN(+item.weight) ? 0 : +item.weight * +item.deliveredQty;
-      } else if (isReturn) {
-        weight += isNaN(+item.weight) ? 0 : +item.weight * +item.returnQty;
-      } else {
-        weight += isNaN(+item.weight)
-          ? 0
-          : +item.weight *
-            (isShipment ? +item.shipmentQty : +item.availableQty);
+      // Make sure item and item.weight exist
+      if (!item || typeof item.weight === 'undefined') {
+        continue;
       }
+
+      let qty = 0;
+      if (isSell) {
+        qty = +item.sellQty || 0;
+      } else if (isDelivery) {
+        qty = +item.deliveredQty || 0;
+      } else if (isReturn) {
+        qty = +item.returnQty || 0;
+      } else if (isShipment) {
+        qty = +item.shipmentQty || 0;
+      } else {
+        // For inventory calculation, use different properties
+        qty = +item.yardQty || 0; // Changed from availableQty to yardQty
+      }
+
+      // Convert item.weight to number and multiply by quantity
+      const itemWeight = +item.weight || 0;
+      weight += itemWeight * qty;
     }
     return `${this.decimalPipe.transform(weight.toFixed(2))} (${symbol})`;
   }
