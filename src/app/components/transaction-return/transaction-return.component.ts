@@ -530,12 +530,12 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           ])
           .subscribe((data) => {
             this.returnDoc.items.forEach((item) => {
-              const inventoryItem = data.find((i) => i.itemId === item.itemId);
+              const inventoryItem = data.find((i) => i.id === item.id);
               if (inventoryItem) {
-                inventoryItem.returnQty = +item.returnQty;
-                inventoryItem.inMaintenanceQty = +item.inMaintenanceQty;
-                inventoryItem.damagedQty = +item.damagedQty;
-                inventoryItem.lostQty = +item.lostQty;
+                inventoryItem.returnQty = +item.returnQty || null;
+                inventoryItem.inMaintenanceQty = +item.inMaintenanceQty || null;
+                inventoryItem.damagedQty = +item.damagedQty || null;
+                inventoryItem.lostQty = +item.lostQty || null;
               }
             });
             this.items = data;

@@ -9,7 +9,7 @@ import {
 import { increment, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import cloneDeep from 'lodash/cloneDeep';
-import { Subscription, take } from 'rxjs';
+import { lastValueFrom, map, Observable, Subscription, take } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { Site } from 'src/app/models/site.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
@@ -21,6 +21,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 import { orderBy } from 'firebase/firestore';
+import { InventoryItem } from 'src/app/models/inventoryItem.model';
 @Component({
   selector: 'app-add-return',
   templateUrl: './add-return.component.html',
@@ -32,18 +33,28 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   @Input() set value(val: TransactionReturn) {
     if (val) {
       Object.assign(this.returnDoc, val);
-      this.initEditForm();
     }
   }
+  inventoryItems$: Observable<InventoryItem[]>;
+
   returnDoc: TransactionReturn = { status: 'pending', uploads: [] };
   form: FormGroup;
   user: User;
   company: Company;
+
   items: TransactionItem[];
   itemBackup: TransactionItem[];
-  loading = false;
+
+  overageItems: InventoryItem[];
+  overageBackupItems: InventoryItem[];
+
   viewAll = true;
   searching = false;
+
+  viewAllOverages = true;
+  searchingOverages = false;
+
+  loading = false;
   error = false;
 
   blob: any;
@@ -54,13 +65,41 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    this.inventoryItems$ = this.masterSvc
+      .edit()
+      .getCollectionOrdered(
+        `company/${this.company.id}/stockItems`,
+        'code',
+        'asc'
+      )
+      .pipe(
+        take(1),
+        map((items) => {
+          items.forEach((item) => {
+            delete item.log;
+          });
+          return items;
+        })
+      );
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
-  ngOnInit() {
+  async ngOnInit() {
     if (!this.isEdit) {
+      this.overageItems = await lastValueFrom(
+        this.inventoryItems$.pipe(
+          map((items) => {
+            items.forEach((item) => {
+              item.shipmentQty = null;
+            });
+            return items;
+          })
+        )
+      );
       this.initForm();
+    } else {
+      this.initEditForm();
     }
   }
 
@@ -71,6 +110,12 @@ export class AddReturnComponent implements OnInit, OnDestroy {
         const returnDoc: TransactionReturn = { ...this.form.value };
         this.itemBackup ||= [...this.items];
         returnDoc.items = this.itemBackup.filter((item) => item.returnQty > 0);
+
+        this.overageBackupItems ||= [...this.overageItems];
+        returnDoc.overageItems = this.overageBackupItems.filter(
+          (item) => item.shipmentQty > 0
+        );
+
         this.company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
@@ -116,6 +161,12 @@ export class AddReturnComponent implements OnInit, OnDestroy {
         this.returnDoc.items = this.itemBackup.filter(
           (item) => item.returnQty > 0
         );
+
+        this.overageBackupItems ||= [...this.overageItems];
+        this.returnDoc.overageItems = this.overageBackupItems.filter(
+          (item) => item.shipmentQty > 0
+        );
+
         this.returnDoc.status = status;
         await this.upload();
 
@@ -343,6 +394,15 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateOverages(val, item: InventoryItem) {
+    if (isNaN(+val.detail.value)) {
+      return (item.error = true);
+    } else {
+      item.error = false;
+      item.shipmentQty = +val.detail.value;
+    }
+  }
+
   search(event) {
     this.searching = true;
     const val = event.detail.value.toLowerCase() as string;
@@ -359,6 +419,26 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     );
     if (!val) {
       this.searching = false;
+    }
+  }
+
+  searchOverages(event) {
+    this.searchingOverages = true;
+    const val = event.detail.value.toLowerCase() as string;
+    this.overageBackupItems = this.overageBackupItems
+      ? this.overageBackupItems
+      : [...this.overageItems];
+    this.overageItems = this.overageBackupItems.filter(
+      (item) =>
+        item?.code?.toString().toLowerCase().includes(val) ||
+        item?.name?.toString().toLowerCase().includes(val) ||
+        item?.category?.toString().toLowerCase().includes(val) ||
+        item?.size?.toString().toLowerCase().includes(val) ||
+        item?.location?.toString().toLowerCase().includes(val) ||
+        !val
+    );
+    if (!val) {
+      this.searchingOverages = false;
     }
   }
 
@@ -406,7 +486,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
   field(field: string) {
     return this.form.get(field) as FormControl;
   }
-  private initEditForm() {
+  private async initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.returnDoc.site, Validators.required],
       returnDate: [this.returnDoc?.returnDate, Validators.required],
@@ -434,21 +514,39 @@ export class AddReturnComponent implements OnInit, OnDestroy {
             where('siteId', '==', this.siteData.id),
             orderBy('code', 'asc'),
           ])
+          .pipe(take(1))
           .subscribe((data) => {
             this.returnDoc.items.forEach((item) => {
-              const inventoryItem = data.find((i) => i.itemId === item.itemId);
+              const inventoryItem = data.find((i) => i.id === item.id);
               if (inventoryItem) {
-                inventoryItem.returnQty = +item.returnQty;
-                inventoryItem.inMaintenanceQty = +item.inMaintenanceQty;
-                inventoryItem.damagedQty = +item.damagedQty;
-                inventoryItem.lostQty = +item.lostQty;
+                inventoryItem.returnQty = +item.returnQty || null;
+                inventoryItem.inMaintenanceQty = +item.inMaintenanceQty || null;
+                inventoryItem.damagedQty = +item.damagedQty || null;
+                inventoryItem.lostQty = +item.lostQty || null;
               }
             });
             this.items = data;
           })
       );
+      this.overageItems = await lastValueFrom(
+        this.inventoryItems$.pipe(
+          map((items) => {
+            items.forEach((item) => {
+              item.shipmentQty = null;
+            });
+            return items;
+          })
+        )
+      );
+      this.returnDoc.overageItems.forEach((item) => {
+        const inventoryItem = this.overageItems.find((i) => i.id === item.id);
+        if (inventoryItem) {
+          inventoryItem.shipmentQty = +item.shipmentQty;
+        }
+      });
     } else {
       this.items = this.returnDoc.items;
+      this.overageItems = this.returnDoc.overageItems;
     }
   }
   private initForm() {
