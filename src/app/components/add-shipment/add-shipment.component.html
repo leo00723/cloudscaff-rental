@@ -45,7 +45,6 @@
           Picklist
         </ion-chip>
         <ion-chip
-          *ngIf="shipment.status !== 'pending' && shipment.status !== 'void'"
           (click)="downloadPdf()"
           mode="ios"
           shape="round"
@@ -126,6 +125,75 @@
       <ion-row>
         <ion-col size="12">
           <ion-text color="medium">
+            <h4>Contact Information</h4>
+          </ion-text>
+        </ion-col>
+
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            [form]="form"
+            controlName="companyRepName"
+            [optional]="true"
+            title="Company Rep Name"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            [form]="form"
+            controlName="companyRepEmail"
+            [optional]="true"
+            title="Company Rep Email"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            [form]="form"
+            controlName="companyRepContact"
+            [optional]="true"
+            title="Company Rep Contact"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            [form]="form"
+            controlName="customerRepName"
+            [optional]="true"
+            title="Customer Rep Name"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            [form]="form"
+            controlName="customerRepEmail"
+            [optional]="true"
+            title="Customer Rep Email"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            [form]="form"
+            controlName="customerRepContact"
+            [optional]="true"
+            title="Customer Rep Contact"
+            [readonly]="shipment.status !== 'pending'"
+          >
+          </app-input-reactive>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12">
+          <ion-text color="medium">
             <h4>Delivery Information</h4>
           </ion-text>
         </ion-col>
@@ -156,6 +224,7 @@
           >
           </app-input-reactive>
         </ion-col>
+
         <ion-col size="12">
           <ion-text color="medium">
             <h4>Driver Information</h4>

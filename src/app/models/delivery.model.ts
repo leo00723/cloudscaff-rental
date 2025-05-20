@@ -28,4 +28,10 @@ export interface Delivery {
   signature2?: string;
   signatureRef2?: string;
   poNumber?: string;
+  companyRepName?: string;
+  companyRepEmail?: string;
+  companyRepContact?: string;
+  customerRepName?: string;
+  customerRepEmail?: string;
+  customerRepContact?: string;
 }

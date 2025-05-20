@@ -356,9 +356,18 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     if (!this.shipment.date) {
       this.shipment.date = new Date();
     }
+    const companyCopy = { ...this.company };
+    companyCopy.rep = this.shipment.companyRepName;
+    companyCopy.email = this.shipment.companyRepEmail;
+    companyCopy.phone = this.shipment.companyRepContact;
+
+    this.shipment.site.customer.rep = this.shipment.customerRepName;
+    this.shipment.site.customer.email = this.shipment.customerRepEmail;
+    this.shipment.site.customer.phone = this.shipment.customerRepContact;
+
     const pdf = await this.masterSvc
       .pdf()
-      .delivery(this.shipment, this.company, null);
+      .delivery(this.shipment, companyCopy, null);
     this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
   }
 
@@ -445,6 +454,12 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       vehicleReg: [this.shipment?.vehicleReg, Validators.nullValidator],
       notes: [this.shipment?.notes, Validators.nullValidator],
       poNumber: [this.shipment?.poNumber, Validators.required],
+      companyRepName: [this.shipment?.companyRepName],
+      companyRepEmail: [this.shipment?.companyRepEmail],
+      companyRepContact: [this.shipment?.companyRepContact],
+      customerRepName: [this.shipment?.customerRepName],
+      customerRepEmail: [this.shipment?.customerRepEmail],
+      customerRepContact: [this.shipment?.customerRepContact],
     });
     if (this.shipment.status === 'pending') {
       this.subs.add(
@@ -481,6 +496,12 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       vehicleReg: ['', Validators.nullValidator],
       notes: ['', Validators.nullValidator],
       poNumber: ['', Validators.required],
+      companyRepName: [''],
+      companyRepEmail: [''],
+      companyRepContact: [''],
+      customerRepName: [''],
+      customerRepEmail: [''],
+      customerRepContact: [''],
     });
   }
 
