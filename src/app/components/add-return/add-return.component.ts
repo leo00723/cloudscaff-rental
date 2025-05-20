@@ -349,7 +349,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
     this.items = this.itemBackup.filter(
       (item) =>
-        item?.poNumber?.toString().toLowerCase().includes(val) ||
+        item?.poNumber?.toString().toLowerCase() === val ||
         item?.code?.toString().toLowerCase().includes(val) ||
         item?.name?.toString().toLowerCase().includes(val) ||
         item?.category?.toString().toLowerCase().includes(val) ||

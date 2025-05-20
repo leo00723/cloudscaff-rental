@@ -435,7 +435,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
     this.items = this.itemBackup.filter(
       (item) =>
         item?.code?.toString().toLowerCase().includes(val) ||
-        item?.poNumber?.toString().toLowerCase().includes(val) ||
+        item?.poNumber?.toString().toLowerCase() === val ||
         item?.name?.toString().toLowerCase().includes(val) ||
         item?.category?.toString().toLowerCase().includes(val) ||
         item?.size?.toString().toLowerCase().includes(val) ||
