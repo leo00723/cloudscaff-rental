@@ -551,6 +551,7 @@
               </ion-item>
               <div class="ion-padding" slot="content">
                 <app-returns-table
+                  [allowReports]="true"
                   [value]="returns$"
                   (selectedItem)="viewReturn($event,site)"
                 ></app-returns-table>

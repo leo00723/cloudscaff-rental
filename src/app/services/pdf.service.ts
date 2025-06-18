@@ -3757,6 +3757,349 @@ E-mail: Info@hayakel-ksa.com`,
     return this.generatePdf(data);
   }
 
+  async overReturnedItemsReport(
+    returns: TransactionReturn[],
+    company: Company,
+    terms: Term | null
+  ) {
+    // Filter returns that have overage items
+    const returnsWithOverage = returns.filter(
+      (returnDoc) => returnDoc.overageItems && returnDoc.overageItems.length > 0
+    );
+
+    // Collect all overage items with return information
+    const allOverageItems: any[] = [];
+    returnsWithOverage.forEach((returnDoc) => {
+      returnDoc.overageItems.forEach((item) => {
+        allOverageItems.push({
+          ...item,
+          returnCode: returnDoc.code,
+          returnDate: returnDoc.returnDate,
+          siteName: returnDoc.site.name,
+          customerName: returnDoc.site.customer?.name,
+          poNumber: returnDoc.poNumber,
+          driverName: returnDoc.driverName,
+        });
+      });
+    });
+
+    // Calculate totals
+    const totalOverageQty = allOverageItems.reduce(
+      (sum, item) => sum + (item.shipmentQty || 0),
+      0
+    );
+    const totalOverageWeight = allOverageItems.reduce(
+      (sum, item) => sum + (item.shipmentQty || 0) * (item.weight || 0),
+      0
+    );
+    const totalOverageValue = allOverageItems.reduce(
+      (sum, item) => sum + (item.shipmentQty || 0) * (item.hireCost || 0),
+      0
+    );
+
+    // Create overage items table
+    const overageTableBody: any = [
+      // Header row
+      [
+        { text: 'Return Code', style: 'h6b', alignment: 'center' },
+        { text: 'Return Date', style: 'h6b', alignment: 'center' },
+        { text: 'Site Name', style: 'h6b', alignment: 'center' },
+        { text: 'Item Code', style: 'h6b', alignment: 'center' },
+        { text: 'Item Name', style: 'h6b', alignment: 'center' },
+        { text: 'Category', style: 'h6b', alignment: 'center' },
+        { text: 'Size', style: 'h6b', alignment: 'center' },
+        { text: 'Location', style: 'h6b', alignment: 'center' },
+        { text: 'Over Qty', style: 'h6b', alignment: 'center' },
+        { text: 'Weight (ea)', style: 'h6b', alignment: 'center' },
+        { text: 'Total Weight', style: 'h6b', alignment: 'center' },
+        { text: 'Hire Cost', style: 'h6b', alignment: 'center' },
+      ],
+    ];
+
+    // Add data rows
+    allOverageItems.forEach((item) => {
+      const totalWeight = (item.shipmentQty || 0) * (item.weight || 0);
+      overageTableBody.push([
+        { text: item.returnCode || 'N/A', style: 'h6' },
+        { text: item.returnDate || 'N/A', style: 'h6' },
+        { text: item.siteName || 'N/A', style: 'h6' },
+        { text: item.code || 'N/A', style: 'h6' },
+        { text: item.name || 'N/A', style: 'h6' },
+        { text: item.category || 'N/A', style: 'h6' },
+        { text: item.size || 'N/A', style: 'h6' },
+        { text: item.location || 'N/A', style: 'h6' },
+        {
+          text: (item.shipmentQty || 0).toString(),
+          style: 'h6',
+          alignment: 'center',
+        },
+        {
+          text: Number(item.weight || 0).toFixed(2),
+          style: 'h6',
+          alignment: 'center',
+        },
+        { text: totalWeight.toFixed(2), style: 'h6', alignment: 'center' },
+        {
+          text: `${company.currency?.symbol || '$'}${(
+            item.hireCost || 0
+          ).toFixed(2)}`,
+          style: 'h6',
+          alignment: 'center',
+        },
+      ]);
+    });
+
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-OverageReport-${currentDate}`),
+      content: [
+        await this.getHeader(
+          'Over-Returned Items Report',
+          `Generated: ${currentDate}`,
+          `${returnsWithOverage.length} Returns with Overage`,
+          currentDate,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          [
+            [
+              { text: 'Total Returns Processed:', style: 'h6b' },
+              `${returns.length}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Returns with Overage:', style: 'h6b' },
+              `${returnsWithOverage.length}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Total Overage Items:', style: 'h6b' },
+              `${allOverageItems.length}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Report Generated:', style: 'h6b' },
+              `${new Date().toLocaleString()}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+
+        {
+          text: 'OVER-RETURNED ITEMS SUMMARY',
+          style: 'h2b',
+          alignment: 'center',
+          margin: [0, 0, 0, 10],
+        },
+        {
+          text: `Analysis of ${allOverageItems.length} over-returned items from ${returnsWithOverage.length} return transactions`,
+          style: 'h4',
+          alignment: 'center',
+          margin: [0, 0, 0, 15],
+        },
+        // Overage items table
+        {
+          table: {
+            headerRows: 1,
+            widths: [
+              'auto',
+              'auto',
+              '*',
+              'auto',
+              '*',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+              'auto',
+            ],
+            body: overageTableBody,
+          },
+          layout: tLayout,
+          margin: [0, 10, 0, 10],
+        },
+        hr,
+        // Summary totals table
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', 'auto', 'auto', 'auto'],
+            body: [
+              [
+                { text: 'SUMMARY TOTALS', style: 'h4b', alignment: 'center' },
+                { text: 'Quantity', style: 'h4b', alignment: 'center' },
+                { text: 'Weight', style: 'h4b', alignment: 'center' },
+                { text: 'Value', style: 'h4b', alignment: 'center' },
+              ],
+              [
+                { text: 'Total Over-Returned Items', style: 'h4b' },
+                {
+                  text: totalOverageQty.toString(),
+                  style: 'h4',
+                  alignment: 'center',
+                },
+                {
+                  text: `${totalOverageWeight.toFixed(2)} ${
+                    company.mass?.symbol || 'kg'
+                  }`,
+                  style: 'h4',
+                  alignment: 'center',
+                },
+                {
+                  text: `${
+                    company.currency?.symbol || '$'
+                  }${totalOverageValue.toFixed(2)}`,
+                  style: 'h4',
+                  alignment: 'center',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+          margin: [0, 10, 0, 10],
+        },
+        // Action required section
+        {
+          text: 'ACTION REQUIRED',
+          style: 'h3b',
+          alignment: 'center',
+          margin: [0, 20, 0, 10],
+          color: 'red',
+        },
+        {
+          ul: [
+            'Review all over-returned items listed above by return code',
+            'Verify quantities and condition of returned items at each location',
+            'Update inventory records for over-returned items in system',
+            'Process any necessary adjustments or credits for affected customers',
+            'Contact site managers if clarification is needed for specific returns',
+            'Investigate patterns in over-returns to prevent future occurrences',
+          ],
+          margin: [20, 0, 0, 10],
+          style: 'h5',
+        },
+        // Processing checklist
+        {
+          text: 'PROCESSING CHECKLIST',
+          style: 'h4b',
+          margin: [0, 15, 0, 5],
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['auto', '*', 'auto'],
+            body: [
+              [
+                { text: '☐', style: 'h4b', alignment: 'center' },
+                {
+                  text: 'All overage items physically verified and counted',
+                  style: 'h5',
+                },
+                { text: 'Date: ________', style: 'h6' },
+              ],
+              [
+                { text: '☐', style: 'h4b', alignment: 'center' },
+                {
+                  text: 'Inventory system updated with overage quantities',
+                  style: 'h5',
+                },
+                { text: 'Date: ________', style: 'h6' },
+              ],
+              [
+                { text: '☐', style: 'h4b', alignment: 'center' },
+                {
+                  text: 'Customer notifications sent for significant overages',
+                  style: 'h5',
+                },
+                { text: 'Date: ________', style: 'h6' },
+              ],
+              [
+                { text: '☐', style: 'h4b', alignment: 'center' },
+                {
+                  text: 'Credits/adjustments processed as required',
+                  style: 'h5',
+                },
+                { text: 'Date: ________', style: 'h6' },
+              ],
+              [
+                { text: '☐', style: 'h4b', alignment: 'center' },
+                {
+                  text: 'Report reviewed and approved by supervisor',
+                  style: 'h5',
+                },
+                { text: 'Date: ________', style: 'h6' },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+          margin: [0, 5, 0, 10],
+        },
+        // Signature section
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', '*', '*'],
+            body: [
+              [
+                {
+                  text: 'Processed By:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Reviewed By:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Date Completed:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: '____________________',
+                  style: 'h4',
+                  alignment: 'left',
+                  margin: [0, 20, 0, 0],
+                },
+                {
+                  text: '____________________',
+                  style: 'h4',
+                  alignment: 'left',
+                  margin: [0, 20, 0, 0],
+                },
+                {
+                  text: '____________________',
+                  style: 'h4',
+                  alignment: 'left',
+                  margin: [0, 20, 0, 0],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+          margin: [0, 20, 0, 0],
+        },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+
+    return this.generatePdf(data);
+  }
+
   async masterInventoryList(
     inventory: InventoryItem[],
     location: string,

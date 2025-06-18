@@ -2,17 +2,21 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Input,
   Output,
   ViewChild,
 } from '@angular/core';
+import { Store } from '@ngxs/store';
 import {
   DatatableComponent,
   SelectionType,
   SortType,
 } from '@swimlane/ngx-datatable';
-import { Observable, map } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
 import { TransactionReturn } from 'src/app/models/transactionReturn.model';
+import { PdfService } from 'src/app/services/pdf.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 
 @Component({
   selector: 'app-returns-table',
@@ -26,12 +30,15 @@ export class ReturnsTableComponent {
   temp$: Observable<TransactionReturn[]>;
   @Input() set value(returns: Observable<TransactionReturn[]>) {
     this.temp$ = returns;
-    this.returns$ = returns;
+    this.returns$ = returns.pipe(take(1));
   }
+  @Input() allowReports = false;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
 
+  private pdfService = inject(PdfService);
+  private store = inject(Store);
   constructor() {
     this.temp$ = this.returns$;
   }
@@ -81,5 +88,21 @@ export class ReturnsTableComponent {
     );
 
     this.table.offset = 0;
+  }
+
+  async downloadOverReturnPDF(returns: TransactionReturn[]) {
+    try {
+      const company = this.store.selectSnapshot(CompanyState.company);
+
+      const pdf = await this.pdfService.overReturnedItemsReport(
+        returns.filter((data) => data.poNumber),
+        company,
+        null
+      );
+      this.pdfService.handlePdf(pdf, new Date().toString());
+    } catch (error) {
+      console.log(error);
+    }
+    return;
   }
 }

@@ -1,3 +1,10 @@
+<ion-item *ngIf="allowReports" lines="none">
+  <ion-buttons slot="end" *ngIf="returns$ | async as returns">
+    <ion-chip (click)="downloadOverReturnPDF(returns)" color="tertiary">
+      Over Return Report
+    </ion-chip>
+  </ion-buttons>
+</ion-item>
 <ion-searchbar
   debounce="250"
   mode="ios"

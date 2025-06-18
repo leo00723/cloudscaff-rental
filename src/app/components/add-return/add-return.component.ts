@@ -341,6 +341,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     if (!this.returnDoc.date) {
       this.returnDoc.date = new Date();
     }
+    console.log(this.returnDoc);
     const pdf = await this.masterSvc
       .pdf()
       .returnDoc(this.returnDoc, this.company, null);

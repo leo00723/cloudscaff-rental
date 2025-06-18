@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { arrayUnion, increment, orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Select } from '@ngxs/store';
-import { Observable, Subscription } from 'rxjs';
+import { lastValueFrom, Observable, Subscription } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { AddInstructionComponent } from 'src/app/components/add-instruction/add-instruction.component';
 import { AddRequestComponent } from 'src/app/components/add-request/add-request.component';
@@ -572,10 +572,10 @@ export class ViewSitePage implements OnDestroy {
     this.active = ev.detail.value;
   }
 
-  downloadPDF(items: InventoryItem[], site: Site) {
+  async downloadPDF(items: InventoryItem[], site: Site) {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    this.subs.add(
+    const data = await lastValueFrom(
       this.masterSvc
         .edit()
         .getCollectionFiltered(`company/${company.id}/transactionLog`, [
@@ -583,39 +583,38 @@ export class ViewSitePage implements OnDestroy {
           where('transactionType', '==', 'Delivery'),
         ])
         .pipe(take(1))
-        .subscribe(async (data) => {
-          const groupedData = data.reduce((acc, item) => {
-            const { itemId, deliveredQty, balanceQty, returnTotal } = item;
-
-            // If the itemId is not in the accumulator, initialize it
-            if (!acc[itemId]) {
-              acc[itemId] = {
-                ...item,
-                deliveredQty: 0,
-                balanceQty: 0,
-                returnTotal: 0,
-              };
-            }
-
-            // Sum the quantities
-            acc[itemId].deliveredQty += deliveredQty || 0;
-            acc[itemId].balanceQty += balanceQty || 0;
-            acc[itemId].returnTotal += returnTotal || 0;
-
-            return acc;
-          }, {});
-
-          // Convert the grouped object back to an array
-          const groupedList = Object.values(groupedData);
-
-          const pdf = await this.masterSvc
-            .pdf()
-            .inventoryTransactionList(site, groupedList, company);
-          this.masterSvc
-            .pdf()
-            .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
-        })
     );
+
+    const groupedData = data.reduce((acc, item) => {
+      const { itemId, deliveredQty, balanceQty, returnTotal } = item;
+
+      // If the itemId is not in the accumulator, initialize it
+      if (!acc[itemId]) {
+        acc[itemId] = {
+          ...item,
+          deliveredQty: 0,
+          balanceQty: 0,
+          returnTotal: 0,
+        };
+      }
+
+      // Sum the quantities
+      acc[itemId].deliveredQty += deliveredQty || 0;
+      acc[itemId].balanceQty += balanceQty || 0;
+      acc[itemId].returnTotal += returnTotal || 0;
+
+      return acc;
+    }, {});
+
+    // Convert the grouped object back to an array
+    const groupedList = Object.values(groupedData);
+
+    const pdf = await this.masterSvc
+      .pdf()
+      .inventoryTransactionList(site, groupedList, company);
+    this.masterSvc
+      .pdf()
+      .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
   }
 
   async saveAsImage(parent: any, site: string) {
