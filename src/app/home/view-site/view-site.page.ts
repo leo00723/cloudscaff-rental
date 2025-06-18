@@ -575,18 +575,34 @@ export class ViewSitePage implements OnDestroy {
   async downloadPDF(items: InventoryItem[], site: Site) {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    const data = await lastValueFrom(
-      this.masterSvc
-        .edit()
-        .getCollectionFiltered(`company/${company.id}/transactionLog`, [
-          where('siteId', '==', site.id),
-          where('transactionType', '==', 'Delivery'),
-        ])
-        .pipe(take(1))
-    );
+    // Get both delivery and overage return transactions
+    const [deliveryData, overageData] = await Promise.all([
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Delivery'),
+          ])
+          .pipe(take(1))
+      ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Overage Return'),
+          ])
+          .pipe(take(1))
+      ),
+    ]);
 
-    const groupedData = data.reduce((acc, item) => {
-      const { itemId, deliveredQty, balanceQty, returnTotal } = item;
+    // Combine delivery and overage data
+    const allData = [...deliveryData, ...overageData];
+
+    const groupedData = allData.reduce((acc, item) => {
+      const { itemId, deliveredQty, balanceQty, returnTotal, transactionType } =
+        item;
 
       // If the itemId is not in the accumulator, initialize it
       if (!acc[itemId]) {
@@ -595,13 +611,19 @@ export class ViewSitePage implements OnDestroy {
           deliveredQty: 0,
           balanceQty: 0,
           returnTotal: 0,
+          overageReturnTotal: 0, // Track overage returns separately
         };
       }
 
-      // Sum the quantities
-      acc[itemId].deliveredQty += deliveredQty || 0;
-      acc[itemId].balanceQty += balanceQty || 0;
-      acc[itemId].returnTotal += returnTotal || 0;
+      // Sum the quantities based on transaction type
+      if (transactionType === 'Delivery') {
+        acc[itemId].deliveredQty += deliveredQty || 0;
+        acc[itemId].balanceQty += balanceQty || 0;
+        acc[itemId].returnTotal += returnTotal || 0;
+      } else if (transactionType === 'Overage Return') {
+        // For overage returns, add to a separate counter
+        acc[itemId].overageReturnTotal += returnTotal || 0;
+      }
 
       return acc;
     }, {});

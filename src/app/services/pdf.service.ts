@@ -3395,6 +3395,10 @@ E-mail: Info@hayakel-ksa.com`,
   ) {
     const items = [];
     inventory.forEach((item, i) => {
+      // Calculate total returns (regular + overage)
+      const totalReturns =
+        (item.returnTotal || 0) + (item.overageReturnTotal || 0);
+
       items.push([
         { text: i + 1, style: 'h4b', alignment: 'left' },
         { text: item.code, style: 'h4b', alignment: 'left' },
@@ -3405,7 +3409,17 @@ E-mail: Info@hayakel-ksa.com`,
           alignment: 'center',
         },
         {
-          text: this.decimalPipe.transform(item.returnTotal),
+          text: this.decimalPipe.transform(item.returnTotal || 0),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(item.overageReturnTotal || 0),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
+          text: this.decimalPipe.transform(totalReturns),
           style: 'h4b',
           alignment: 'center',
         },
@@ -3416,12 +3430,13 @@ E-mail: Info@hayakel-ksa.com`,
         },
       ]);
     });
+
     const summary = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
 
         body: [
           [
@@ -3430,6 +3445,8 @@ E-mail: Info@hayakel-ksa.com`,
             { text: 'Description', style: 'h4b', alignment: 'left' },
             { text: 'Delivered', style: 'h4b', alignment: 'center' },
             { text: 'Returned', style: 'h4b', alignment: 'center' },
+            { text: 'Overage', style: 'h4b', alignment: 'center' },
+            { text: 'Total Ret.', style: 'h4b', alignment: 'center' },
             { text: 'Balance', style: 'h4b', alignment: 'center' },
           ],
           ...items,
@@ -3437,6 +3454,7 @@ E-mail: Info@hayakel-ksa.com`,
       },
       layout: tLayout,
     };
+
     const data = {
       footer: await this.getFooter(),
       // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),

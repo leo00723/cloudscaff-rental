@@ -31,4 +31,5 @@ export interface TransactionItem {
   days?: number;
   months?: number;
   total?: number;
+  overageReturnTotal?: number;
 }
