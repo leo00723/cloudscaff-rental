@@ -113,7 +113,6 @@ export class AddInstructionComponent implements OnInit {
     });
     this.form.get('notes').setValue(this.siteInstruction?.notes || '');
     if (this.siteInstruction.id) {
-      console.log(this.siteInstruction.id);
       this.scaffolds$ = this.masterSvc
         .edit()
         .getCollectionFiltered(`company/${company.id}/scaffolds`, [
@@ -324,7 +323,6 @@ export class AddInstructionComponent implements OnInit {
   }
 
   deleteInstruction() {
-    console.log(this.siteInstruction);
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
       try {
