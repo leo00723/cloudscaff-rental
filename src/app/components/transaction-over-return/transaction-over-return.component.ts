@@ -313,7 +313,6 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
     this.overReturn.overageItems.forEach((item) => {
       if (item.returnQty > 0) {
         item.reversedQty = (+item.reversedQty || 0) + (+item.returnQty || 0);
-        item.returnQty = 0;
       }
     });
     await this.masterSvc

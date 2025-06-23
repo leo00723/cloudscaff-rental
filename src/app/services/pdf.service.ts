@@ -3662,7 +3662,69 @@ E-mail: Info@hayakel-ksa.com`,
           alignment: 'Right',
           color: 'red',
         };
+
     const summary = this.createTransactionReturnTable(returnDoc.items);
+
+    // Create overage items table if overage items exist
+    const overageSection =
+      returnDoc.overageItems && returnDoc.overageItems.length > 0
+        ? [
+            hr,
+            {
+              text: 'Overage Items',
+              style: 'h2',
+              alignment: 'left',
+              margin: [0, 10, 0, 5],
+            },
+            {
+              table: {
+                headerRows: 1,
+                widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                body: [
+                  // Header row
+                  [
+                    { text: 'Code', style: 'h5b' },
+                    { text: 'Name', style: 'h5b' },
+                    { text: 'Category', style: 'h5b' },
+                    { text: 'Size', style: 'h5b' },
+                    { text: 'Location', style: 'h5b' },
+                    { text: 'Overage Qty', style: 'h5b' },
+                    { text: 'Weight (kg)', style: 'h5b' },
+                  ],
+                  // Data rows
+                  ...returnDoc.overageItems.map((item) => [
+                    { text: item.code || 'N/A', style: 'h6' },
+                    { text: item.name || 'N/A', style: 'h6' },
+                    { text: item.category || 'N/A', style: 'h6' },
+                    { text: item.size || 'N/A', style: 'h6' },
+                    { text: item.location || 'N/A', style: 'h6' },
+                    {
+                      text: item.shipmentQty?.toString() || '0',
+                      style: 'h6',
+                      alignment: 'right',
+                    },
+                    {
+                      text: item.weight?.toString() || '0',
+                      style: 'h6',
+                      alignment: 'right',
+                    },
+                  ]),
+                ],
+              },
+              layout: tLayout,
+              margin: [0, 5, 0, 10],
+            },
+            {
+              text: `Total Overage Weight: ${returnDoc.overageItems
+                .reduce((sum, item) => sum + (item.weight || 0), 0)
+                .toFixed(2)} kg`,
+              style: 'h4',
+              alignment: 'right',
+              margin: [0, 5, 0, 0],
+            },
+          ]
+        : [];
+
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
@@ -3707,6 +3769,7 @@ E-mail: Info@hayakel-ksa.com`,
         this.getCompanyInfo(company, returnDoc.site.customer),
         hr,
         summary,
+        ...overageSection, // Add overage section here
         hr,
         {
           text: `Total Weight : ${this.weightPipe.transform(
@@ -3721,8 +3784,6 @@ E-mail: Info@hayakel-ksa.com`,
         },
         {
           table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
             headerRows: 1,
             widths: ['*', 'auto'],
             body: [
@@ -3770,7 +3831,7 @@ E-mail: Info@hayakel-ksa.com`,
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
     };
     return this.generatePdf(data);
   }
