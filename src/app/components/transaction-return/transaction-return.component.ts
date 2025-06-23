@@ -251,6 +251,8 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           this.returnDoc.id,
           this.returnDoc
         );
+
+      await this.createOverReturn();
       await this.downloadPdf();
       this.masterSvc
         .notification()
@@ -267,6 +269,25 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
     } finally {
       this.loading = false;
     }
+  }
+
+  async createOverReturn() {
+    const overReturn = cloneDeep(this.returnDoc);
+    delete overReturn.id;
+    delete overReturn.items;
+
+    overReturn.code = this.masterSvc
+      .edit()
+      .generateDocCode(this.company.totalOverReturns, 'OR');
+    overReturn.status = 'pending';
+
+    const doc = await this.masterSvc
+      .edit()
+      .addDocument(`company/${this.company.id}/overReturns`, overReturn);
+
+    await this.masterSvc.edit().updateDoc('company', this.company.id, {
+      totalOverReturns: increment(1),
+    });
   }
 
   protected async logCollection() {

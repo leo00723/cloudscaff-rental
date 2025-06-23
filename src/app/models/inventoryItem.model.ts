@@ -28,6 +28,8 @@ export interface InventoryItem {
   lostQty?: number;
   shipmentQty?: number;
   reservedQty?: number;
+  reversedQty?: number;
+  returnQty?: number;
   crossHire?: CrossHire[];
   sellQty?: number;
   error?: boolean;
@@ -38,4 +40,5 @@ export interface InventoryItem {
   duration?: number;
   uploads?: UploadedFile[];
   forInvoice?: boolean;
+  total?: number;
 }

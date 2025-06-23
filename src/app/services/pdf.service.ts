@@ -3775,6 +3775,148 @@ E-mail: Info@hayakel-ksa.com`,
     return this.generatePdf(data);
   }
 
+  async overReturnDoc(
+    returnDoc: TransactionReturn,
+    company: Company,
+    terms: Term | null
+  ) {
+    const signature1 = returnDoc.signature
+      ? {
+          image: await this.getBase64ImageFromURL(returnDoc.signature),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
+    const signature2 = returnDoc.signature2
+      ? {
+          image: await this.getBase64ImageFromURL(returnDoc.signature2),
+          width: 100,
+          alignment: 'right',
+        }
+      : {
+          text: 'Needs Signature',
+          style: 'h4b',
+          alignment: 'Right',
+          color: 'red',
+        };
+    const summary = this.createTransactionReturnTable(returnDoc.items);
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
+      content: [
+        await this.getHeader(
+          'Over Return Note',
+          returnDoc.code,
+          returnDoc.site.name,
+          returnDoc.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          [
+            [
+              { text: 'Site Name', style: 'h6b' },
+              `${returnDoc?.site.name || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Driver:', style: 'h6b' },
+              `${returnDoc?.driverName || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Driver Contact:', style: 'h6b' },
+              `${returnDoc?.driverNo || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Vehicle Reg:', style: 'h6b' },
+              `${returnDoc?.vehicleReg || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getCompanyInfo(company, returnDoc.site.customer),
+        hr,
+        summary,
+        hr,
+        {
+          text: `Total Weight : ${this.weightPipe.transform(
+            returnDoc.items,
+            false,
+            false,
+            false,
+            true
+          )}`,
+          style: 'h3',
+          alignment: 'right',
+        },
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Status',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: returnDoc.status,
+                  style: 'h4b',
+                  alignment: 'center',
+                },
+              ],
+              [
+                {
+                  text: `Sent By ${returnDoc?.signedBy || 'N/A'}`,
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature1,
+              ],
+              [
+                {
+                  text: `Received By ${returnDoc?.signedBy2 || 'N/A'}`,
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                signature2,
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
+        {
+          text: `If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
+After received this material please sign and seal this delivery note and return a copy to us.
+E-mail: Info@hayakel-ksa.com`,
+          alignment: 'center',
+          margin: [0, 10, 0, 0],
+          style: 'hb4',
+        },
+        await this.addUploads(returnDoc.uploads),
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+    return this.generatePdf(data);
+  }
+
   async overReturnedItemsReport(
     returns: TransactionReturn[],
     company: Company,

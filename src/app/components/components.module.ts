@@ -85,6 +85,7 @@ import { WeightPipe } from './weight.pipe';
 import { AddAdjustmentComponent } from './add-adjustment/add-adjustment.component';
 import { PoCustomItemComponent } from './po-custom-item/po-custom-item.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { TransactionOverReturnComponent } from './transaction-over-return/transaction-over-return.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -152,6 +153,7 @@ const COMPONENTS = [
   SkeletonTextComponent,
   TitleBlockComponent,
   TransactionReturnComponent,
+  TransactionOverReturnComponent,
   TransactionAdjustmentComponent,
   TutorialGalleryComponent,
   UploadTaskComponent,

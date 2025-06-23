@@ -49,6 +49,7 @@ export interface Company {
   totalPaymentApplications?: number;
   totalRequests?: number;
   totalReturns?: number;
+  totalOverReturns?: number;
   totalAdjustments?: number;
   totalShipments?: number;
   totalSites?: number;

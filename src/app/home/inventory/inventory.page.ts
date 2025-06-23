@@ -12,6 +12,7 @@ import { AddTransferComponent } from 'src/app/components/add-transfer/add-transf
 import { CalculatePipe } from 'src/app/components/calculate.pipe';
 import { DuplicateStockItemComponent } from 'src/app/components/duplicate-stock-item/duplicate-stock-item.component';
 import { TransactionAdjustmentComponent } from 'src/app/components/transaction-adjustment/transaction-adjustment.component';
+import { TransactionOverReturnComponent } from 'src/app/components/transaction-over-return/transaction-over-return.component';
 import { TransactionReturnComponent } from 'src/app/components/transaction-return/transaction-return.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { ViewStockLogComponent } from 'src/app/components/view-stock-log/view-stock-log.component';
@@ -62,6 +63,10 @@ export class InventoryPage implements OnInit {
   submittedReturns$: Observable<TransactionReturn[]>;
   outboundReturns$: Observable<TransactionReturn[]>;
   voidReturns$: Observable<TransactionReturn[]>;
+
+  pendingOverReturns$: Observable<TransactionReturn[]>;
+  reversedOverReturns$: Observable<TransactionReturn[]>;
+  approvedOverReturns$: Observable<TransactionReturn[]>;
 
   active = 1;
   importing = false;
@@ -671,6 +676,30 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async viewOverReturn(returnData: TransactionReturn) {
+    const modal = await this.masterSvc.modal().create({
+      component: TransactionOverReturnComponent,
+      componentProps: {
+        allowSend: true,
+        isEdit: true,
+        value: returnData,
+        inventoryItems$: this.inventoryItems$.pipe(
+          take(1),
+          map((items) => {
+            items.forEach((item) => {
+              delete item.log;
+            });
+            return items;
+          })
+        ),
+      },
+      showBackdrop: false,
+      id: 'viewOverReturn',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
   async addAdjustment() {
     const modal = await this.masterSvc.modal().create({
       component: TransactionAdjustmentComponent,
@@ -967,6 +996,24 @@ export class InventoryPage implements OnInit {
           'code',
           'desc'
         );
+      this.pendingOverReturns$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/overReturns`, [
+          where('status', 'in', ['pending']),
+          orderBy('code', 'desc'),
+        ]);
+      this.reversedOverReturns$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/overReturns`, [
+          where('status', 'in', ['reversed']),
+          orderBy('code', 'desc'),
+        ]);
+      this.approvedOverReturns$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/overReturns`, [
+          where('status', 'in', ['approved']),
+          orderBy('code', 'desc'),
+        ]);
     }
   }
 }
