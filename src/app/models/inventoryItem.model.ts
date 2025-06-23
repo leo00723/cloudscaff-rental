@@ -29,6 +29,7 @@ export interface InventoryItem {
   shipmentQty?: number;
   reservedQty?: number;
   reversedQty?: number;
+  overageBalanceQty?: number;
   returnQty?: number;
   crossHire?: CrossHire[];
   sellQty?: number;

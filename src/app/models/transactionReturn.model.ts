@@ -30,4 +30,6 @@ export interface TransactionReturn {
   signatureRef2?: string;
   poNumber?: string;
   overageItems?: InventoryItem[];
+  isReversal?: boolean;
+  totalReversals?: number;
 }

@@ -3769,7 +3769,6 @@ E-mail: Info@hayakel-ksa.com`,
         this.getCompanyInfo(company, returnDoc.site.customer),
         hr,
         summary,
-        ...overageSection, // Add overage section here
         hr,
         {
           text: `Total Weight : ${this.weightPipe.transform(
@@ -3782,6 +3781,7 @@ E-mail: Info@hayakel-ksa.com`,
           style: 'h3',
           alignment: 'right',
         },
+        ...overageSection, // Add overage section here
         {
           table: {
             headerRows: 1,
@@ -3837,13 +3837,13 @@ E-mail: Info@hayakel-ksa.com`,
   }
 
   async overReturnDoc(
-    returnDoc: TransactionReturn,
+    overReturnDoc: TransactionReturn,
     company: Company,
     terms: Term | null
   ) {
-    const signature1 = returnDoc.signature
+    const signature1 = overReturnDoc.signature
       ? {
-          image: await this.getBase64ImageFromURL(returnDoc.signature),
+          image: await this.getBase64ImageFromURL(overReturnDoc.signature),
           width: 100,
           alignment: 'right',
         }
@@ -3853,9 +3853,9 @@ E-mail: Info@hayakel-ksa.com`,
           alignment: 'Right',
           color: 'red',
         };
-    const signature2 = returnDoc.signature2
+    const signature2 = overReturnDoc.signature2
       ? {
-          image: await this.getBase64ImageFromURL(returnDoc.signature2),
+          image: await this.getBase64ImageFromURL(overReturnDoc.signature2),
           width: 100,
           alignment: 'right',
         }
@@ -3865,16 +3865,144 @@ E-mail: Info@hayakel-ksa.com`,
           alignment: 'Right',
           color: 'red',
         };
-    const summary = this.createTransactionReturnTable(returnDoc.items);
+
+    // Create overage items table - this is the main content for over returns
+    const overageSection =
+      overReturnDoc.overageItems && overReturnDoc.overageItems.length > 0
+        ? [
+            {
+              text: 'Over Return Items',
+              style: 'h2',
+              alignment: 'left',
+              margin: [0, 10, 0, 5],
+            },
+            {
+              table: {
+                headerRows: 1,
+                widths: overReturnDoc.isReversal
+                  ? ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto']
+                  : [
+                      'auto',
+                      '*',
+                      'auto',
+                      'auto',
+                      'auto',
+                      'auto',
+                      'auto',
+                      'auto',
+                      'auto',
+                    ],
+                body: [
+                  // Header row
+                  overReturnDoc.isReversal
+                    ? [
+                        { text: 'Code', style: 'h5b' },
+                        { text: 'Name', style: 'h5b' },
+                        { text: 'Category', style: 'h5b' },
+                        { text: 'Size', style: 'h5b' },
+                        { text: 'Location', style: 'h5b' },
+                        { text: 'Weight (kg)', style: 'h5b' },
+                        { text: 'Return Qty', style: 'h5b' },
+                      ]
+                    : [
+                        { text: 'Code', style: 'h5b' },
+                        { text: 'Name', style: 'h5b' },
+                        { text: 'Category', style: 'h5b' },
+                        { text: 'Size', style: 'h5b' },
+                        { text: 'Location', style: 'h5b' },
+                        { text: 'Weight (kg)', style: 'h5b' },
+                        { text: 'Overage Qty', style: 'h5b' },
+                        { text: 'Reversed Qty', style: 'h5b' },
+                        { text: 'Balance', style: 'h5b' },
+                      ],
+                  // Data rows
+                  ...overReturnDoc.overageItems.map((item) =>
+                    overReturnDoc.isReversal
+                      ? [
+                          { text: item.code || 'N/A', style: 'h6' },
+                          { text: item.name || 'N/A', style: 'h6' },
+                          { text: item.category || 'N/A', style: 'h6' },
+                          { text: item.size || 'N/A', style: 'h6' },
+                          { text: item.location || 'N/A', style: 'h6' },
+                          {
+                            text: item.weight?.toString() || '0',
+                            style: 'h6',
+                            alignment: 'right',
+                          },
+                          {
+                            text: item.returnQty?.toString() || '0',
+                            style: 'h6',
+                            alignment: 'right',
+                          },
+                        ]
+                      : [
+                          { text: item.code || 'N/A', style: 'h6' },
+                          { text: item.name || 'N/A', style: 'h6' },
+                          { text: item.category || 'N/A', style: 'h6' },
+                          { text: item.size || 'N/A', style: 'h6' },
+                          { text: item.location || 'N/A', style: 'h6' },
+                          {
+                            text: item.weight?.toString() || '0',
+                            style: 'h6',
+                            alignment: 'right',
+                          },
+                          {
+                            text: item.shipmentQty?.toString() || '0',
+                            style: 'h6',
+                            alignment: 'right',
+                          },
+                          {
+                            text: item.reversedQty?.toString() || '0',
+                            style: 'h6',
+                            alignment: 'right',
+                          },
+                          {
+                            text: item.overageBalanceQty?.toString() || '0',
+                            style: 'h6',
+                            alignment: 'right',
+                          },
+                        ]
+                  ),
+                ],
+              },
+              layout: tLayout,
+              margin: [0, 5, 0, 10],
+            },
+            {
+              text: `Total Over Return Weight: ${overReturnDoc.overageItems
+                .reduce((sum, item) => {
+                  const qty = overReturnDoc.isReversal
+                    ? item.returnQty || 0
+                    : item.overageBalanceQty || 0;
+                  return sum + qty * (item.weight || 0);
+                }, 0)
+                .toFixed(2)} kg`,
+              style: 'h3',
+              alignment: 'right',
+              margin: [0, 5, 0, 0],
+            },
+          ]
+        : [
+            {
+              text: 'No over return items found',
+              style: 'h4',
+              alignment: 'center',
+              margin: [0, 20, 0, 20],
+              color: 'red',
+            },
+          ];
+
     const data = {
       footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
+      info: this.getMetaData(
+        `${company.name}-OverReturn-${overReturnDoc.code}`
+      ),
       content: [
         await this.getHeader(
           'Over Return Note',
-          returnDoc.code,
-          returnDoc.site.name,
-          returnDoc.date,
+          overReturnDoc.code,
+          overReturnDoc.site.name,
+          overReturnDoc.date,
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/default.webp',
@@ -3882,50 +4010,43 @@ E-mail: Info@hayakel-ksa.com`,
           [
             [
               { text: 'Site Name', style: 'h6b' },
-              `${returnDoc?.site.name || 'N/A'}`,
+              `${overReturnDoc?.site.name || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'Driver:', style: 'h6b' },
-              `${returnDoc?.driverName || 'N/A'}`,
+              `${overReturnDoc?.driverName || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'Driver Contact:', style: 'h6b' },
-              `${returnDoc?.driverNo || 'N/A'}`,
+              `${overReturnDoc?.driverNo || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'Vehicle Reg:', style: 'h6b' },
-              `${returnDoc?.vehicleReg || 'N/A'}`,
+              `${overReturnDoc?.vehicleReg || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Return Date:', style: 'h6b' },
+              `${overReturnDoc?.returnDate || 'N/A'}`,
               '',
               '',
             ],
           ]
         ),
         hr,
-        this.getCompanyInfo(company, returnDoc.site.customer),
+        this.getCompanyInfo(company, overReturnDoc.site.customer),
         hr,
-        summary,
+        ...overageSection, // Main content - over return items
         hr,
-        {
-          text: `Total Weight : ${this.weightPipe.transform(
-            returnDoc.items,
-            false,
-            false,
-            false,
-            true
-          )}`,
-          style: 'h3',
-          alignment: 'right',
-        },
         {
           table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
             headerRows: 1,
             widths: ['*', 'auto'],
             body: [
@@ -3936,14 +4057,14 @@ E-mail: Info@hayakel-ksa.com`,
                   alignment: 'left',
                 },
                 {
-                  text: returnDoc.status,
+                  text: overReturnDoc.status,
                   style: 'h4b',
                   alignment: 'center',
                 },
               ],
               [
                 {
-                  text: `Sent By ${returnDoc?.signedBy || 'N/A'}`,
+                  text: `Sent By ${overReturnDoc?.signedBy || 'N/A'}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -3951,7 +4072,7 @@ E-mail: Info@hayakel-ksa.com`,
               ],
               [
                 {
-                  text: `Received By ${returnDoc?.signedBy2 || 'N/A'}`,
+                  text: `Received By ${overReturnDoc?.signedBy2 || 'N/A'}`,
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -3962,18 +4083,19 @@ E-mail: Info@hayakel-ksa.com`,
           layout: tLayout,
         },
         {
-          text: `If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
-After received this material please sign and seal this delivery note and return a copy to us.
+          text: `This document confirms the over return of materials to the yard.
+Please verify all quantities and conditions before signing.
+If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
 E-mail: Info@hayakel-ksa.com`,
           alignment: 'center',
           margin: [0, 10, 0, 0],
           style: 'hb4',
         },
-        await this.addUploads(returnDoc.uploads),
+        await this.addUploads(overReturnDoc.uploads),
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
     };
     return this.generatePdf(data);
   }

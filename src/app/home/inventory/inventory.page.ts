@@ -64,9 +64,9 @@ export class InventoryPage implements OnInit {
   outboundReturns$: Observable<TransactionReturn[]>;
   voidReturns$: Observable<TransactionReturn[]>;
 
-  pendingOverReturns$: Observable<TransactionReturn[]>;
+  openOverReturns$: Observable<TransactionReturn[]>;
   reversedOverReturns$: Observable<TransactionReturn[]>;
-  approvedOverReturns$: Observable<TransactionReturn[]>;
+  closedOverReturns$: Observable<TransactionReturn[]>;
 
   active = 1;
   importing = false;
@@ -996,10 +996,10 @@ export class InventoryPage implements OnInit {
           'code',
           'desc'
         );
-      this.pendingOverReturns$ = this.masterSvc
+      this.openOverReturns$ = this.masterSvc
         .edit()
         .getCollectionFiltered(`company/${this.company.id}/overReturns`, [
-          where('status', 'in', ['pending']),
+          where('status', 'in', ['open']),
           orderBy('code', 'desc'),
         ]);
       this.reversedOverReturns$ = this.masterSvc
@@ -1008,10 +1008,10 @@ export class InventoryPage implements OnInit {
           where('status', 'in', ['reversed']),
           orderBy('code', 'desc'),
         ]);
-      this.approvedOverReturns$ = this.masterSvc
+      this.closedOverReturns$ = this.masterSvc
         .edit()
         .getCollectionFiltered(`company/${this.company.id}/overReturns`, [
-          where('status', 'in', ['approved']),
+          where('status', 'in', ['closed']),
           orderBy('code', 'desc'),
         ]);
     }

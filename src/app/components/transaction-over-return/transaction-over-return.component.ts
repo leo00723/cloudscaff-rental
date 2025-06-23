@@ -35,6 +35,7 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
   @Input() inventoryItems$: Observable<InventoryItem[]>;
 
   overReturn: TransactionReturn = {
+    isReversal: false,
     status: 'submitted',
     uploads: [],
     overageItems: [],
@@ -197,15 +198,26 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
     }
   }
 
+  get canReverse() {
+    return this.overageItems.filter((item) => (item?.returnQty || 0) > 0)
+      .length > 0
+      ? true
+      : false;
+  }
+
   async createReversal() {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
+
       try {
-        await this.updateTotals();
         const overReturn = cloneDeep({
           ...this.overReturn,
-          code: `${this.overReturn.code}-R`,
-          overageItems: this.overageItems,
+          code: `${this.overReturn.code}-R${
+            (this.overReturn?.totalReversals || 0) + 1
+          }`,
+          overageItems: this.overageItems.filter(
+            (item) => (item?.returnQty || 0) > 0
+          ),
           parentId: this.overReturn.id,
           isReversal: true,
           createdBy: this.user.id,
@@ -213,11 +225,20 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
           returnDate: new Date().toISOString(),
           status: 'reversed',
         });
+        overReturn.overageItems.forEach((item) => {
+          if (item.returnQty > 0) {
+            item.reversedQty =
+              (+item.reversedQty || 0) + (+item.returnQty || 0);
+            item.overageBalanceQty = +item.shipmentQty - +item.reversedQty;
+          }
+        });
         delete overReturn.id;
 
         const doc = await this.masterSvc
           .edit()
           .addDocument(`company/${this.company.id}/overReturns`, overReturn);
+
+        await this.updateTotals();
 
         this.close();
         this.masterSvc
@@ -265,7 +286,7 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
 
     const pdf = await this.masterSvc
       .pdf()
-      .returnDoc(this.overReturn, this.company, null);
+      .overReturnDoc(this.overReturn, this.company, null);
     this.masterSvc.pdf().handlePdf(pdf, this.overReturn.code);
   }
 
@@ -313,15 +334,17 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
     this.overReturn.overageItems.forEach((item) => {
       if (item.returnQty > 0) {
         item.reversedQty = (+item.reversedQty || 0) + (+item.returnQty || 0);
+        item.overageBalanceQty = +item.shipmentQty - +item.reversedQty;
+        item.returnQty = 0;
       }
     });
+
     await this.masterSvc
       .edit()
-      .updateDoc(
-        `company/${this.company.id}/overReturns`,
-        this.overReturn.id,
-        this.overReturn
-      );
+      .updateDoc(`company/${this.company.id}/overReturns`, this.overReturn.id, {
+        ...this.overReturn,
+        totalReversals: increment(1),
+      });
   }
   private async initEditForm() {
     this.form = this.masterSvc.fb().group({

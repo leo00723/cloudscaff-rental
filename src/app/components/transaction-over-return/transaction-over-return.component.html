@@ -93,7 +93,7 @@
             controlName="notes"
             [form]="form"
             [textarea]="true"
-            [readonly]="overReturn.status !== 'pending'"
+            [readonly]="overReturn.status !== 'open'"
           >
           </app-input-reactive>
         </ion-col>
@@ -108,7 +108,7 @@
               title="Driver Name"
               controlName="driverName"
               [form]="form"
-              [readonly]="overReturn.status !== 'pending'"
+              [readonly]="overReturn.status !== 'open'"
             >
             </app-input-reactive>
           </ion-col>
@@ -117,7 +117,7 @@
               title="Driver Phone No"
               controlName="driverNo"
               [form]="form"
-              [readonly]="overReturn.status !== 'pending'"
+              [readonly]="overReturn.status !== 'open'"
             >
             </app-input-reactive>
           </ion-col>
@@ -126,7 +126,7 @@
               title="Vehicle Registration"
               controlName="vehicleReg"
               [form]="form"
-              [readonly]="overReturn.status !== 'pending'"
+              [readonly]="overReturn.status !== 'open'"
             >
             </app-input-reactive>
           </ion-col>
@@ -168,22 +168,21 @@
                   <th scope="col">Size</th>
                   <th scope="col">Name</th>
                   <th scope="col" class="text-center">Location</th>
-                  <th scope="col" class="text-center">
-                    Weight ({{ company.mass.symbol }})
-                  </th>
-                  <th scope="col" class="text-center text-danger">
-                    Overage Qty
-                  </th>
-                  <th scope="col" class="text-center text-success">
-                    Reversed Qty
-                  </th>
-                  <th scope="col" class="text-center text-warning">
-                    Balance Qty
-                  </th>
+                  <ng-container *ngIf="!overReturn.isReversal">
+                    <th scope="col" class="text-center text-danger">
+                      Overage Qty
+                    </th>
+                    <th scope="col" class="text-center text-success">
+                      Reversed Qty
+                    </th>
+                    <th scope="col" class="text-center text-warning">
+                      Balance Qty
+                    </th>
+                  </ng-container>
                   <th
                     scope="col"
                     class="text-center"
-                    *ngIf="overReturn.status === 'pending'"
+                    *ngIf="['open', 'reversed'].includes(overReturn.status)"
                   >
                     Reverse Qty
                   </th>
@@ -204,21 +203,20 @@
                     <td>{{ item.size }}</td>
                     <td>{{ item.name }}</td>
                     <td class="text-center">{{ item?.location }}</td>
-                    <td class="text-center">
-                      {{ item.shipmentQty * item.weight | number }}
-                    </td>
-                    <td class="text-center">
-                      {{ item.shipmentQty }}
-                    </td>
-                    <td class="text-center">
-                      {{ item?.reversedQty || 0 }}
-                    </td>
-                    <td class="text-center">
-                      {{ +item.shipmentQty - (+item?.reversedQty || 0) }}
-                    </td>
+                    <ng-container *ngIf="!overReturn.isReversal">
+                      <td class="text-center">
+                        {{ item.shipmentQty }}
+                      </td>
+                      <td class="text-center">
+                        {{ item?.reversedQty || 0 }}
+                      </td>
+                      <td class="text-center">
+                        {{ item?.overageBalanceQty || 0 }}
+                      </td>
+                    </ng-container>
                     <td
                       class="text-center"
-                      *ngIf="overReturn.status === 'pending'"
+                      *ngIf="['open', 'reversed'].includes(overReturn.status)"
                     >
                       <ion-input
                         #qty
@@ -228,7 +226,7 @@
                         [clearOnEdit]="true"
                         [value]="item.returnQty"
                         (ionChange)="updateOverages($event, item)"
-                        [readonly]="item.reversedQty === item.shipmentQty"
+                        [readonly]="item.overageBalanceQty === 0"
                       >
                       </ion-input>
                       <ion-label color="danger" *ngIf="item.error">
@@ -246,7 +244,7 @@
               {{ overReturn.overageItems ? overReturn.overageItems.length : 0 }}
             </ion-label>
           </ion-item>
-          <ion-item>
+          <!-- <ion-item>
             <ion-label>Total weight</ion-label>
             <ion-label slot="end">
               {{
@@ -255,7 +253,7 @@
                   : []
               }}
             </ion-label>
-          </ion-item>
+          </ion-item> -->
         </ion-col>
       </ion-row>
       <ion-row class="card-outline mb-3" *ngIf="field('site').value">
@@ -284,7 +282,7 @@
           size="12"
           *ngIf="
             (overReturn?.signedBy || overReturn?.signedBy2) &&
-            overReturn.status === 'pending'
+            overReturn.status === 'open'
           "
         >
           <app-title-block> Signatures </app-title-block>
@@ -323,7 +321,7 @@
           *ngIf="
             isEdit &&
             overReturn.status !== 'reversed' &&
-            overReturn.status !== 'approved' &&
+            overReturn.status !== 'closed' &&
             overReturn.status !== 'void'
           "
         >
@@ -357,51 +355,51 @@
           >
             delete
           </ion-button> -->
+        <ion-button
+          shape="round"
+          *ngIf="isEdit && !loading && ['open'].includes(overReturn.status)"
+          color="danger"
+          (click)="updateReversal('closed')"
+          [disabled]="this.error"
+        >
+          Close
+        </ion-button>
       </ion-col>
       <ion-col size="10.5" class="text-end">
-        <ng-container *ngIf="overReturn.status === 'pending'">
+        <ng-container *ngIf="overReturn.status === 'open'">
           <ion-button
             shape="round"
             *ngIf="isEdit && !loading"
             color="primary"
-            (click)="updateReversal('pending')"
+            (click)="updateReversal('open')"
             [disabled]="this.error"
           >
             Update
           </ion-button>
           <ion-button
             shape="round"
-            *ngIf="isEdit && !loading"
+            *ngIf="isEdit && !loading && canReverse"
             color="tertiary"
             (click)="createReversal()"
             [disabled]="this.error"
           >
             Reverse
           </ion-button>
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading"
-            color="success"
-            (click)="updateReversal('approved')"
-            [disabled]="this.error"
-          >
-            Approve
-          </ion-button>
         </ng-container>
         <ng-container
           *ngIf="
             user.permissionsList.includes('Inventory Admin') &&
-            overReturn.status === 'approved'
+            overReturn.status === 'closed'
           "
         >
           <ion-button
             shape="round"
             *ngIf="isEdit && !loading"
-            color="tertiary"
-            (click)="updateReversal('pending')"
+            color="success"
+            (click)="updateReversal('open')"
             [disabled]="this.error"
           >
-            Create Reversal
+            Open
           </ion-button>
         </ng-container>
       </ion-col>

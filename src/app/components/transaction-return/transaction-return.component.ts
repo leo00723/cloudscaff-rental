@@ -279,7 +279,11 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
     overReturn.code = this.masterSvc
       .edit()
       .generateDocCode(this.company.totalOverReturns, 'OR');
-    overReturn.status = 'pending';
+    overReturn.status = 'open';
+    overReturn.overageItems.map((item) => ({
+      ...item,
+      overageBalanceQty: item.shipmentQty,
+    }));
 
     const doc = await this.masterSvc
       .edit()

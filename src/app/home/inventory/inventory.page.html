@@ -102,7 +102,19 @@
           value="9"
           *ngIf="user.permissionsList.includes('Inventory Over Returns') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
         >
-          <ion-label>Over Returns </ion-label>
+          <ion-label>
+            Over Returns
+            <ng-container *ngIf="openOverReturns$ | async as openReturns">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="success"
+                *ngIf="openReturns.length > 0"
+              >
+                {{openReturns.length}}
+              </ion-badge>
+            </ng-container>
+          </ion-label>
         </ion-segment-button>
         <!-- <ion-segment-button
           value="7"
@@ -616,47 +628,50 @@
       mode="ios"
       class="rounded-lg overflow-hidden"
       [multiple]="true"
-      [value]="['pending']"
+      [value]="['open']"
     >
-      <ng-container *ngIf="pendingOverReturns$ | async as por else loading">
-        <ion-accordion value="pending">
-          <ion-item slot="header" color="light">
-            <ion-label color="primary">Pending ({{por.length}})</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-returns-table
-              [value]="pendingOverReturns$"
-              (selectedItem)="viewOverReturn($event)"
-            ></app-returns-table>
-          </div>
-        </ion-accordion>
-      </ng-container>
-      <ng-container *ngIf="reversedOverReturns$ | async as ror else loading">
-        <ion-accordion value="reversed">
-          <ion-item slot="header" color="light">
-            <ion-label color="tertiary">Reversed ({{ror.length}})</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-returns-table
-              [value]="reversedOverReturns$"
-              (selectedItem)="viewOverReturn($event)"
-            ></app-returns-table>
-          </div>
-        </ion-accordion>
-      </ng-container>
-      <ng-container *ngIf="approvedOverReturns$ | async as aor else loading">
-        <ion-accordion value="approved">
-          <ion-item slot="header" color="light">
-            <ion-label color="success">Approved ({{aor.length}})</ion-label>
-          </ion-item>
-          <div class="ion-padding" slot="content">
-            <app-returns-table
-              [value]="approvedOverReturns$"
-              (selectedItem)="viewOverReturn($event)"
-            ></app-returns-table>
-          </div>
-        </ion-accordion>
-      </ng-container>
+      <ion-accordion
+        value="pending"
+        *ngIf="openOverReturns$ | async as oor else loading"
+      >
+        <ion-item slot="header" color="light">
+          <ion-label color="success">Open ({{oor.length}})</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-returns-table
+            [value]="openOverReturns$"
+            (selectedItem)="viewOverReturn($event)"
+          ></app-returns-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion
+        value="reversed"
+        *ngIf="reversedOverReturns$ | async as ror else loading"
+      >
+        <ion-item slot="header" color="light">
+          <ion-label color="tertiary">Reversed ({{ror.length}})</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-returns-table
+            [value]="reversedOverReturns$"
+            (selectedItem)="viewOverReturn($event)"
+          ></app-returns-table>
+        </div>
+      </ion-accordion>
+      <ion-accordion
+        value="approved"
+        *ngIf="closedOverReturns$ | async as cor else loading"
+      >
+        <ion-item slot="header" color="light">
+          <ion-label color="danger">Closed ({{cor.length}})</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          <app-returns-table
+            [value]="closedOverReturns$"
+            (selectedItem)="viewOverReturn($event)"
+          ></app-returns-table>
+        </div>
+      </ion-accordion>
       <!-- <ng-container *ngIf="outboundReturns$ | async as or else loading">
         <ion-accordion value="outbound">
           <ion-item slot="header" color="light">
