@@ -15,7 +15,7 @@ import {
   SelectionType,
   SortType,
 } from '@swimlane/ngx-datatable';
-import { map, Observable, Subscription } from 'rxjs';
+import { lastValueFrom, map, Observable, Subscription, take } from 'rxjs';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
@@ -155,26 +155,21 @@ export class InventoryTableComponent implements OnInit, OnDestroy {
   export() {}
 
   reset() {
-    this.notificationService.presentAlertConfirm(() => {
-      const sub = this.inventoryItems$.subscribe(
-        async (items: InventoryItem[]) => {
-          const batch = this.editService.batch();
-          const company = this.store.selectSnapshot(CompanyState.company).id;
+    this.notificationService.presentAlertConfirm(async () => {
+      const items = await lastValueFrom(this.inventoryItems$.pipe(take(1)));
+      const batch = this.editService.batch();
+      const company = this.store.selectSnapshot(CompanyState.company).id;
 
-          for (const item of items) {
-            const doc = this.editService.docRef(
-              `company/${company}/stockItems`,
-              item.id
-            );
-            item.yardQty = 0;
-            item.availableQty = 0;
-            batch.update(doc, { ...item });
-          }
-          await batch.commit();
-          this.notificationService.toast('Reset Complete', 'success');
-          sub.unsubscribe();
-        }
-      );
+      for (const item of items) {
+        const doc = this.editService.docRef(
+          `company/${company}/stockItems`,
+          item.id
+        );
+        item.inUseQty = 0;
+        batch.update(doc, { ...item });
+      }
+      await batch.commit();
+      this.notificationService.toast('Reset Complete', 'success');
     });
   }
 
