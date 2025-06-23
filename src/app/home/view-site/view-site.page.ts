@@ -576,7 +576,7 @@ export class ViewSitePage implements OnDestroy {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
     // Get both delivery and overage return transactions
-    const [deliveryData, overageData] = await Promise.all([
+    const [deliveryData, overageData, reversalData] = await Promise.all([
       lastValueFrom(
         this.masterSvc
           .edit()
@@ -595,10 +595,20 @@ export class ViewSitePage implements OnDestroy {
           ])
           .pipe(take(1))
       ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Overage Return Reversal'),
+          ])
+          .pipe(take(1))
+      ),
     ]);
 
     // Combine delivery and overage data
-    const allData = [...deliveryData, ...overageData];
+    const allData = [...deliveryData, ...overageData, ...reversalData];
+    console.log(reversalData);
 
     const groupedData = allData.reduce((acc, item) => {
       const { itemId, deliveredQty, balanceQty, returnTotal, transactionType } =
