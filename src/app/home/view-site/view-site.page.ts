@@ -608,7 +608,6 @@ export class ViewSitePage implements OnDestroy {
 
     // Combine delivery and overage data
     const allData = [...deliveryData, ...overageData, ...reversalData];
-    console.log(reversalData);
 
     const groupedData = allData.reduce((acc, item) => {
       const { itemId, deliveredQty, balanceQty, returnTotal, transactionType } =
@@ -633,6 +632,10 @@ export class ViewSitePage implements OnDestroy {
       } else if (transactionType === 'Overage Return') {
         // For overage returns, add to a separate counter
         acc[itemId].overageReturnTotal += returnTotal || 0;
+      } else if (transactionType === 'Overage Return Reversal') {
+        // For overage return reversals, subtract from overage returns
+        // This effectively cancels out the overage return
+        acc[itemId].overageReturnTotal -= returnTotal || 0;
       }
 
       return acc;
