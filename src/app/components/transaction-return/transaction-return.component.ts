@@ -252,7 +252,9 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           this.returnDoc
         );
 
-      await this.createOverReturn();
+      if (this.returnDoc.overageItems.length > 0) {
+        await this.createOverReturn();
+      }
       await this.downloadPdf();
       this.masterSvc
         .notification()
