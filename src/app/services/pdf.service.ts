@@ -249,7 +249,7 @@ export class PdfService {
         await this.getBillingHeader(
           'Quotation',
           estimate.code,
-          estimate.siteName,
+          `${estimate.code} - ${estimate.siteName}`,
           estimate.date,
           company,
           '',
@@ -707,7 +707,7 @@ export class PdfService {
         await this.getBillingHeader(
           'Sale Quotation',
           estimate.code,
-          'N/A',
+          estimate.siteName,
           estimate.date,
           company,
           '',
@@ -934,7 +934,7 @@ export class PdfService {
         await this.getBillingHeader(
           isdraft ? 'Invoice Draft' : 'Invoice',
           isdraft ? 'Invoice Draft' : invoice.code,
-          'N/A',
+          invoice.estimate.siteName,
           isdraft ? invoice.date : invoice.date,
           company,
           '',
