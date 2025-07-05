@@ -3212,6 +3212,7 @@ E-mail: Info@hayakel-ksa.com`,
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
@@ -5241,7 +5242,7 @@ E-mail: Info@hayakel-ksa.com`,
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', '*', 'auto', 'auto'],
+        widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
 
         body: [
           [
