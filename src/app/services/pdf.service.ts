@@ -3832,7 +3832,7 @@ E-mail: Info@hayakel-ksa.com`,
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'portrait',
+      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
@@ -4096,7 +4096,7 @@ E-mail: Info@hayakel-ksa.com`,
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'portrait',
+      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
