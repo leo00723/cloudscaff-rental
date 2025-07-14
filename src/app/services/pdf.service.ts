@@ -4800,25 +4800,130 @@ E-mail: Info@hayakel-ksa.com`,
   }
 
   private async addUploads(uploads: UploadedFile[]) {
-    if (uploads.length === 0) {
+    // Return empty array if uploads is undefined or empty
+    if (!uploads || uploads.length === 0) {
       return [];
     }
+
     const data: any[] = [
       {
-        text: 'Uploads',
+        text: 'Attachments',
         style: ['h4b', 'm20'],
-        pageBreak: 'before',
       },
     ];
+
+    // Add table listing all uploads with download options
+    const tableBody: any = [
+      // Table header
+      [
+        { text: 'File Name', style: 'tableHeader', bold: true },
+        { text: 'Type', style: 'tableHeader', bold: true },
+        { text: 'Download', style: 'tableHeader', bold: true },
+      ],
+    ];
+
+    // Add all uploads to the table
     for (const upload of uploads) {
-      if (upload.type.startsWith('image')) {
-        const img = {
-          image: await this.getBase64ImageFromURL(upload.downloadUrl),
-          width: 400,
-        };
-        data.push(img);
+      tableBody.push([
+        { text: upload.file || 'Unnamed File' },
+        { text: upload.type || 'Unknown' },
+        {
+          text: 'Download',
+          link: upload.downloadUrl,
+          color: 'blue',
+          decoration: 'underline',
+        },
+      ]);
+    }
+
+    // Add the table to data
+    data.push({
+      table: {
+        headerRows: 1,
+        widths: ['*', 'auto', 'auto'],
+        body: tableBody,
+      },
+      margin: [0, 0, 0, 20],
+      layout: tLayout,
+    });
+
+    // Separate image uploads from other files
+    const imageUploads = uploads.filter((upload) =>
+      upload.type?.startsWith('image')
+    );
+
+    // Process image uploads with better page break handling
+    if (imageUploads.length > 0) {
+      // Process images in groups of 3 for landscape layout
+      const batchSize = 3;
+
+      for (let i = 0; i < imageUploads.length; i += batchSize) {
+        const batch = imageUploads.slice(i, i + batchSize);
+        const imageRow: any[] = [];
+
+        // Process each image in the batch
+        for (const upload of batch) {
+          try {
+            const imgObj = {
+              stack: [
+                {
+                  image: await this.getBase64ImageFromURL(upload.downloadUrl),
+                  width: 180, // Reduced width for 3-column landscape layout
+                  alignment: 'center',
+                  margin: [0, 0, 0, 5],
+                },
+                {
+                  text: upload.file || 'Attachment',
+                  style: 'h6',
+                  alignment: 'center',
+                  margin: [0, 5, 0, 10],
+                },
+              ],
+              margin: [5, 5, 5, 10],
+              width: '*',
+            };
+
+            imageRow.push(imgObj);
+          } catch (error) {
+            console.error('Error loading image:', error);
+            // Add error placeholder instead of failing
+            imageRow.push({
+              stack: [
+                {
+                  text: 'Image not available',
+                  style: 'h6',
+                  color: 'red',
+                  alignment: 'center',
+                  margin: [0, 20, 0, 5],
+                },
+                {
+                  text: upload.file || 'Attachment',
+                  style: 'h6',
+                  alignment: 'center',
+                  margin: [0, 5, 0, 10],
+                },
+              ],
+              margin: [5, 5, 5, 10],
+              width: '*',
+            });
+          }
+        }
+
+        // Fill remaining slots with empty columns for consistent layout
+        while (imageRow.length < 3) {
+          imageRow.push({ text: '', width: '*' });
+        }
+
+        // Add the row with page break control
+        data.push({
+          columns: imageRow,
+          margin: [0, 0, 0, 10],
+          unbreakable: true, // Keep image rows together
+          pageBreak: 'auto', // Allow natural page breaks between rows
+        });
       }
     }
+
     return data;
   }
 
