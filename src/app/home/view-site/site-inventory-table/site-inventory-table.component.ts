@@ -16,6 +16,7 @@ import { InventoryItem } from 'src/app/models/inventoryItem.model';
 })
 export class SiteInventoryTableComponent {
   @Output() download = new EventEmitter<InventoryItem[]>();
+  @Output() downloadHistoryExcel = new EventEmitter<InventoryItem[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;
   inventoryItems: InventoryItem[] = [];
   temp: InventoryItem[] = [];

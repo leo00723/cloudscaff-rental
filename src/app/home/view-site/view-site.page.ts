@@ -29,7 +29,8 @@ import { PurchaseOrderComponent } from './purchase-order/purchase-order.componen
 import { AddAdjustmentComponent } from 'src/app/components/add-adjustment/add-adjustment.component';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { UserState } from 'src/app/shared/user/user.state';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-view-site',
@@ -44,7 +45,7 @@ import { AlertController } from '@ionic/angular';
     `,
   ],
 })
-export class ViewSitePage implements OnDestroy {
+export class ViewSitePage implements OnInit, OnDestroy {
   @Select() company$: Observable<Company>;
   @Select() user$: Observable<User>;
   site$: Observable<Site>;
@@ -83,7 +84,10 @@ export class ViewSitePage implements OnDestroy {
   active = 'scaffolds';
   ids = [];
 
+  private loading: any;
+
   private alertController = inject(AlertController);
+  private loadingCtrl = inject(LoadingController);
   private masterSvc = inject(MasterService);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -260,6 +264,13 @@ export class ViewSitePage implements OnDestroy {
         where('site.id', '==', this.ids[1]),
         orderBy('code', 'desc'),
       ]) as Observable<any[]>;
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+      mode: 'ios',
+    });
   }
 
   ngOnDestroy(): void {
@@ -660,6 +671,79 @@ export class ViewSitePage implements OnDestroy {
       .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
   }
 
+  async downloadHistoryExcel(site: Site) {
+    this.loading.present();
+    const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+
+    // Get all transaction types (excluding transfers as they are detected from delivery/return pairs)
+    const [
+      deliveryData,
+      adjustmentData,
+      returnData,
+      overageData,
+      reversalData,
+    ] = await Promise.all([
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Delivery'),
+          ])
+          .pipe(take(1))
+      ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Adjustment'),
+          ])
+          .pipe(take(1))
+      ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Return'),
+          ])
+          .pipe(take(1))
+      ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Overage Return'),
+          ])
+          .pipe(take(1))
+      ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Overage Return Reversal'),
+          ])
+          .pipe(take(1))
+      ),
+    ]);
+
+    // Combine all transaction data (excluding transfers to avoid double counting)
+    const allData = [
+      ...deliveryData,
+      ...adjustmentData,
+      ...returnData,
+      ...overageData,
+      ...reversalData,
+    ];
+
+    // Generate Excel file
+    await this.generateExcelHistory(allData, site);
+    this.loading.dismiss();
+  }
+
   async saveAsImage(parent: any, site: string) {
     let parentElement = null;
     // fetches base 64 data from canvas
@@ -685,5 +769,326 @@ export class ViewSitePage implements OnDestroy {
     this.masterSvc
       .router()
       .navigateByUrl('/dashboard/settings/tutorial?ch=6&vid=0');
+  }
+
+  async generateExcelHistory(allData: any[], site: Site) {
+    // Group and consolidate data by item code and date
+    const timelineData = this.createTimelineData(allData);
+
+    // Create Excel workbook
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = [];
+
+    // Add header information
+    worksheetData.push([`Project Name: ${site.name}`]);
+    worksheetData.push([]);
+    worksheetData.push(['Site Inventory Movement History']);
+    worksheetData.push([]);
+
+    // Add table headers - simplified
+    worksheetData.push([
+      'SL NO',
+      'Date',
+      'Item Code',
+      'Description',
+      'Qty In',
+      'Qty Out',
+      'Balance',
+      'Transaction Type',
+      'Reference Code',
+      'Location',
+    ]);
+
+    let slNo = 1;
+
+    // Process timeline data
+    timelineData.forEach((entry) => {
+      worksheetData.push([
+        slNo++,
+        this.formatDate(entry.date),
+        entry.code,
+        entry.name,
+        entry.qtyIn || '',
+        entry.qtyOut || '',
+        entry.balance || '',
+        entry.transactionType,
+        entry.referenceCode || '',
+        entry.location || '',
+      ]);
+    });
+
+    // Add summary section
+    worksheetData.push([]);
+    worksheetData.push(['SUMMARY']);
+    worksheetData.push([]);
+
+    const uniqueItems = [...new Set(timelineData.map((item) => item.code))];
+    const totalQtyIn = timelineData.reduce(
+      (sum, item) => sum + (item.qtyIn || 0),
+      0
+    );
+    const totalQtyOut = timelineData.reduce(
+      (sum, item) => sum + (item.qtyOut || 0),
+      0
+    );
+
+    worksheetData.push(['Total Items:', uniqueItems.length]);
+    worksheetData.push(['Total Movements:', timelineData.length]);
+    worksheetData.push(['Total Qty In:', totalQtyIn]);
+    worksheetData.push(['Total Qty Out:', totalQtyOut]);
+    worksheetData.push(['Net Balance:', totalQtyIn - totalQtyOut]);
+
+    // Create worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+    // Set column widths
+    const columnWidths = [
+      { wch: 8 }, // SL NO
+      { wch: 12 }, // Date
+      { wch: 15 }, // Item Code
+      { wch: 35 }, // Description
+      { wch: 12 }, // Qty In
+      { wch: 12 }, // Qty Out
+      { wch: 12 }, // Balance
+      { wch: 20 }, // Transaction Type
+      { wch: 18 }, // Reference Code
+      { wch: 15 }, // Location
+    ];
+    worksheet['!cols'] = columnWidths;
+
+    // Add some basic styling
+    const headerRange = XLSX.utils.decode_range(worksheet['!ref']);
+
+    // Style header row (row 5, index 4)
+    for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 4, c: col });
+      if (!worksheet[cellAddress]) {
+        continue;
+      }
+      worksheet[cellAddress].s = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: 'CCCCCC' } },
+        alignment: { horizontal: 'center' },
+      };
+    }
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Site History');
+
+    // Generate and download the file
+    const fileName = `${site.code}-${site.name}-Movement-History.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  }
+
+  private createTimelineData(allData: any[]): any[] {
+    const timeline = {};
+
+    // First, identify transfer transactions by matching delivery and return codes
+    const transferCodes = new Set();
+    const deliveryTransactions = allData.filter(
+      (item) => item.transactionType === 'Delivery'
+    );
+    const returnTransactions = allData.filter(
+      (item) => item.transactionType === 'Return'
+    );
+
+    // Find matching delivery and return codes (indicating transfers)
+    deliveryTransactions.forEach((delivery) => {
+      const matchingReturn = returnTransactions.find(
+        (returnItem) =>
+          returnItem.returnCode === delivery.deliveryCode &&
+          returnItem.itemId === delivery.itemId
+      );
+      if (matchingReturn) {
+        transferCodes.add(delivery.deliveryCode);
+      }
+    });
+
+    // Sort data by date first
+    const sortedData = allData.sort((a, b) => {
+      const dateA = a.deliveryDate || a.returnDate || a.adjustmentDate;
+      const dateB = b.deliveryDate || b.returnDate || b.adjustmentDate;
+      return this.getTimestamp(dateA) - this.getTimestamp(dateB);
+    });
+
+    sortedData.forEach((item) => {
+      const date = item.deliveryDate || item.returnDate || item.adjustmentDate;
+      const dateKey = this.formatDate(date);
+
+      // Use delivery/return codes as reference
+      const referenceCode =
+        item.deliveryCode || item.returnCode || item.adjustmentCode || 'N/A';
+      const key = `${item.code}-${dateKey}-${referenceCode}`;
+
+      if (!timeline[key]) {
+        timeline[key] = {
+          code: item.code,
+          name: item.name,
+          date,
+          qtyIn: 0,
+          qtyOut: 0,
+          balance: 0,
+          transactionType: item.transactionType,
+          referenceCode,
+          location: item.location,
+          category: item.category,
+          size: item.size,
+          weight: item.weight,
+          hireRate: item.hireRate,
+        };
+      }
+
+      // Update balance to latest value (since sorted by date)
+      timeline[key].balance = item.balanceQty || 0;
+
+      // Update other fields with latest values
+      timeline[key].referenceCode = referenceCode;
+      timeline[key].location = item.location || timeline[key].location;
+      timeline[key].transactionType = item.transactionType;
+
+      // Check if this is a transfer transaction
+      const isTransfer =
+        (item.transactionType === 'Delivery' &&
+          transferCodes.has(item.deliveryCode)) ||
+        (item.transactionType === 'Return' &&
+          transferCodes.has(item.returnCode));
+
+      // Skip transfer transactions since they're counted as both delivery and return
+      if (isTransfer) {
+        return; // Skip this iteration
+      }
+
+      // Simplify quantities - either in or out
+      switch (item.transactionType) {
+        case 'Delivery':
+          timeline[key].qtyIn += item.deliveredQty || 0;
+          break;
+        case 'Return':
+        case 'Overage Return':
+          timeline[key].qtyOut += item.returnQty || 0;
+          break;
+        case 'Overage Return Reversal':
+          timeline[key].qtyIn += item.returnQty || 0; // Reversal adds back
+          break;
+        case 'Adjustment':
+          const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
+          if (adjustmentQty > 0) {
+            timeline[key].qtyIn += adjustmentQty;
+          } else {
+            timeline[key].qtyOut += Math.abs(adjustmentQty);
+          }
+          break;
+      }
+    });
+
+    // Convert to array and sort by date then by item code
+    return Object.values(timeline).sort((a: any, b: any) => {
+      const dateCompare = this.getTimestamp(a.date) - this.getTimestamp(b.date);
+      if (dateCompare !== 0) {
+        return dateCompare;
+      }
+      const codeCompare = a.code.localeCompare(b.code);
+      if (codeCompare !== 0) {
+        return codeCompare;
+      }
+      return (a.referenceCode || '').localeCompare(b.referenceCode || '');
+    });
+  }
+
+  private consolidateTransactionData(allData: any[]): any {
+    const consolidated = {};
+
+    // Sort data by date to ensure we get the latest balance
+    const sortedData = allData.sort((a, b) => {
+      const dateA = a.deliveryDate || a.returnDate || a.adjustmentDate;
+      const dateB = b.deliveryDate || b.returnDate || b.adjustmentDate;
+      return this.getTimestamp(dateA) - this.getTimestamp(dateB);
+    });
+
+    sortedData.forEach((item) => {
+      const key = item.code;
+
+      if (!consolidated[key]) {
+        consolidated[key] = {
+          code: item.code,
+          name: item.name,
+          currentBalance: 0,
+          totalDelivered: 0,
+          totalReturned: 0,
+          totalAdjustments: 0,
+          poNumber: item.poNumber,
+          location: item.location,
+          category: item.category,
+          size: item.size,
+          weight: item.weight,
+          hireRate: item.hireRate,
+        };
+      }
+
+      // Always update to the latest balance (sorted by date)
+      consolidated[key].currentBalance = item.balanceQty || 0;
+
+      // Update other fields with latest values
+      consolidated[key].poNumber = item.poNumber || consolidated[key].poNumber;
+      consolidated[key].location = item.location || consolidated[key].location;
+
+      // Accumulate totals based on transaction type
+      switch (item.transactionType) {
+        case 'Delivery':
+          consolidated[key].totalDelivered += item.deliveredQty || 0;
+          break;
+        case 'Return':
+        case 'Overage Return':
+          consolidated[key].totalReturned += item.returnQty || 0;
+          break;
+        case 'Adjustment':
+          consolidated[key].totalAdjustments +=
+            item.adjustmentTotal || item.returnQty || 0;
+          break;
+      }
+    });
+
+    return consolidated;
+  }
+
+  private getTimestamp(timestamp: any): number {
+    if (!timestamp) {
+      return 0;
+    }
+
+    if (timestamp.seconds) {
+      return timestamp.seconds * 1000;
+    } else if (timestamp instanceof Date) {
+      return timestamp.getTime();
+    } else {
+      return new Date(timestamp).getTime();
+    }
+  }
+
+  private formatDate(timestamp: any): string {
+    if (!timestamp) {
+      return '';
+    }
+
+    let date: Date;
+    if (timestamp.seconds) {
+      // Firestore timestamp
+      date = new Date(timestamp.seconds * 1000);
+    } else if (timestamp instanceof Date) {
+      date = timestamp;
+    } else {
+      date = new Date(timestamp);
+    }
+
+    // Handle invalid dates
+    if (isNaN(date.getTime())) {
+      return '';
+    }
+
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
   }
 }
