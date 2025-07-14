@@ -610,14 +610,21 @@ export class ViewSitePage implements OnDestroy {
     const allData = [...deliveryData, ...overageData, ...reversalData];
 
     const groupedData = allData.reduce((acc, item) => {
-      const { itemId, deliveredQty, balanceQty, returnTotal, transactionType } =
-        item;
+      const {
+        itemId,
+        deliveredQty,
+        adjustmentTotal,
+        balanceQty,
+        returnTotal,
+        transactionType,
+      } = item;
 
       // If the itemId is not in the accumulator, initialize it
       if (!acc[itemId]) {
         acc[itemId] = {
           ...item,
           deliveredQty: 0,
+          adjustmentTotal: 0,
           balanceQty: 0,
           returnTotal: 0,
           overageReturnTotal: 0, // Track overage returns separately
@@ -627,6 +634,7 @@ export class ViewSitePage implements OnDestroy {
       // Sum the quantities based on transaction type
       if (transactionType === 'Delivery') {
         acc[itemId].deliveredQty += deliveredQty || 0;
+        acc[itemId].adjustmentTotal += adjustmentTotal || 0;
         acc[itemId].balanceQty += balanceQty || 0;
         acc[itemId].returnTotal += returnTotal || 0;
       } else if (transactionType === 'Overage Return') {

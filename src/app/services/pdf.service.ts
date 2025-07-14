@@ -3416,6 +3416,11 @@ E-mail: Info@hayakel-ksa.com`,
           alignment: 'center',
         },
         {
+          text: this.decimalPipe.transform(item.adjustmentTotal),
+          style: 'h4b',
+          alignment: 'center',
+        },
+        {
           text: this.decimalPipe.transform(item.returnTotal || 0),
           style: 'h4b',
           alignment: 'center',
@@ -3443,7 +3448,17 @@ E-mail: Info@hayakel-ksa.com`,
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+        widths: [
+          'auto',
+          'auto',
+          '*',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+        ],
 
         body: [
           [
@@ -3451,6 +3466,7 @@ E-mail: Info@hayakel-ksa.com`,
             { text: 'Code', style: 'h4b', alignment: 'left' },
             { text: 'Description', style: 'h4b', alignment: 'left' },
             { text: 'Delivered', style: 'h4b', alignment: 'center' },
+            { text: 'Adjusted', style: 'h4b', alignment: 'center' },
             { text: 'Returned', style: 'h4b', alignment: 'center' },
             { text: 'Overage', style: 'h4b', alignment: 'center' },
             { text: 'Total Ret.', style: 'h4b', alignment: 'center' },
