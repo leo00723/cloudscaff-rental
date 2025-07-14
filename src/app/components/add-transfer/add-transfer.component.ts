@@ -207,6 +207,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
           where('poNumber', '==', poNumber),
+          where('siteId', '==', this.field('fromSite').value.id),
         ])
         .pipe(take(1))
         .subscribe((data) => {
@@ -236,6 +237,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
             where('poNumber', '==', this.transfer.fromPO),
+            where('siteId', '==', this.transfer.fromSite.id),
           ])
           .pipe(take(1))
           .subscribe((data) => {

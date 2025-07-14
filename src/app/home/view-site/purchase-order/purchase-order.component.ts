@@ -427,6 +427,7 @@ export class PurchaseOrderComponent implements OnInit {
     this.editSvc
       .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
         where('poNumber', '==', this.po.poNumber),
+        where('siteId', '==', this.po.site.id),
         where('status', '==', 'active'),
         orderBy('code', 'asc'),
         orderBy('transactionType', 'asc'),

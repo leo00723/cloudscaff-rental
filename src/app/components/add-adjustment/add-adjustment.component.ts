@@ -380,6 +380,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
           where('poNumber', '==', poNumber),
+          where('siteId', '==', this.field('site').value.id),
           orderBy('code', 'asc'),
         ])
         .pipe(take(1))
@@ -414,6 +415,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
             where('poNumber', '==', this.adjustmentDoc?.poNumber),
+            where('siteId', '==', this.adjustmentDoc?.site.id),
             orderBy('code', 'asc'),
           ])
           .subscribe((data) => {

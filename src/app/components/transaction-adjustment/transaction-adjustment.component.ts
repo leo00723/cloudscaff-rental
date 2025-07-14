@@ -162,6 +162,7 @@ export class TransactionAdjustmentComponent implements OnInit, OnDestroy {
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
           where('poNumber', '==', poNumber),
+          where('siteId', '==', this.field('site').value.id),
         ])
         .pipe(take(1))
         .subscribe((data) => {
@@ -440,6 +441,7 @@ export class TransactionAdjustmentComponent implements OnInit, OnDestroy {
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
             where('poNumber', '==', this.adjustmentDoc?.poNumber),
+            where('siteId', '==', this.adjustmentDoc?.site.id),
           ])
           .subscribe((data) => {
             this.adjustmentDoc.items.forEach((item) => {
