@@ -3123,6 +3123,12 @@ export class PdfService {
               '',
             ],
             [
+              { text: 'PO Number:', style: 'h6b' },
+              `${delivery?.poNumber || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
               { text: 'Driver:', style: 'h6b' },
               `${delivery?.driverName || 'N/A'}`,
               '',
