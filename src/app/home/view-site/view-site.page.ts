@@ -739,7 +739,6 @@ export class ViewSitePage implements OnInit, OnDestroy {
       ...reversalData,
     ];
 
-    console.log(allData);
     // Generate Excel file
     await this.generateExcelHistory(allData, site);
     this.loading.dismiss();
