@@ -806,12 +806,10 @@ export class ViewSitePage implements OnInit, OnDestroy {
             (item) =>
               (item.transactionType === 'Delivery' && item.deliveryDate) ||
               (item.transactionType === 'Adjustment' &&
-                item.adjustmentDate &&
+                item.returnDate &&
                 (item.adjustmentTotal || item.returnQty || 0) > 0)
           )
-          .map((item) =>
-            this.formatDate(item.deliveryDate || item.adjustmentDate)
-          )
+          .map((item) => this.formatDate(item.deliveryDate || item.returnDate))
           .filter((date) => date)
       ),
     ].sort();
@@ -826,12 +824,10 @@ export class ViewSitePage implements OnInit, OnDestroy {
                 item.transactionType === 'Overage Return Reversal') &&
                 item.returnDate) ||
               (item.transactionType === 'Adjustment' &&
-                item.adjustmentDate &&
+                item.returnDate &&
                 (item.adjustmentTotal || item.returnQty || 0) < 0)
           )
-          .map((item) =>
-            this.formatDate(item.returnDate || item.adjustmentDate)
-          )
+          .map((item) => this.formatDate(item.returnDate))
           .filter((date) => date)
       ),
     ].sort();
@@ -856,7 +852,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
       headers.push(date);
     });
 
-    headers.push('Total Returned To Hayakel Company');
+    headers.push('Total Returned from Project');
 
     worksheetData.push(headers);
 
@@ -891,7 +887,22 @@ export class ViewSitePage implements OnInit, OnDestroy {
         .map((item) => item.returnCode)
         .filter((code, index, self) => code && self.indexOf(code) === index)
         .join(', ');
-      referenceRow.push(returnForDate);
+
+      const adjustmentForDate = allData
+        .filter(
+          (item) =>
+            item.transactionType === 'Adjustment' &&
+            this.formatDate(item.returnDate) === date
+        )
+        .map((item) => item.adjustmentCode || item.returnCode)
+        .filter((code, index, self) => code && self.indexOf(code) === index)
+        .join(', ');
+
+      const combinedCodes = [returnForDate, adjustmentForDate]
+        .filter((code) => code)
+        .join(', ');
+
+      referenceRow.push(combinedCodes);
     });
 
     referenceRow.push(''); // Empty cell for "Total Returned To Hayakel Company"
@@ -1082,7 +1093,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
             break;
           case 'Adjustment':
             const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
-            const adjustmentDate = this.formatDate(item.returnDate); // Use returnDate, not adjustmentDate
+            const adjustmentDate = this.formatDate(item.returnDate);
 
             // Treat adjustments as returns (they reduce inventory)
             if (adjustmentDate) {
