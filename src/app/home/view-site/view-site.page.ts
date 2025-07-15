@@ -1014,8 +1014,8 @@ export class ViewSitePage implements OnInit, OnDestroy {
 
     // Sort data by date to ensure we get the latest balance
     const sortedData = allData.sort((a, b) => {
-      const dateA = a.deliveryDate || a.returnDate || a.adjustmentDate;
-      const dateB = b.deliveryDate || b.returnDate || b.adjustmentDate;
+      const dateA = a.deliveryDate || a.returnDate;
+      const dateB = b.deliveryDate || b.returnDate;
       return this.getTimestamp(dateA) - this.getTimestamp(dateB);
     });
 
@@ -1037,9 +1037,6 @@ export class ViewSitePage implements OnInit, OnDestroy {
           weight: item.weight,
         };
       }
-
-      // Always update to the latest balance (sorted by date)
-      items[key].currentBalance = item.balanceQty || 0;
 
       // Update other fields with latest values
       items[key].location = item.location || items[key].location;
@@ -1085,393 +1082,29 @@ export class ViewSitePage implements OnInit, OnDestroy {
             break;
           case 'Adjustment':
             const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
-            const adjustmentDate = this.formatDate(item.adjustmentDate);
-            if (adjustmentQty > 0) {
-              if (adjustmentDate) {
-                items[key].deliveryMovements[adjustmentDate] =
-                  (items[key].deliveryMovements[adjustmentDate] || 0) +
-                  adjustmentQty;
-              }
-              items[key].totalDelivered += adjustmentQty;
-            } else {
-              if (adjustmentDate) {
-                items[key].returnMovements[adjustmentDate] =
-                  (items[key].returnMovements[adjustmentDate] || 0) +
-                  Math.abs(adjustmentQty);
-              }
-              items[key].totalReturned += Math.abs(adjustmentQty);
+            const adjustmentDate = this.formatDate(item.returnDate); // Use returnDate, not adjustmentDate
+
+            // Treat adjustments as returns (they reduce inventory)
+            if (adjustmentDate) {
+              items[key].returnMovements[adjustmentDate] =
+                (items[key].returnMovements[adjustmentDate] || 0) +
+                Math.abs(adjustmentQty);
             }
+            items[key].totalReturned += Math.abs(adjustmentQty);
             break;
         }
       }
+    });
+
+    // Calculate the current balance for each item
+    Object.keys(items).forEach((key) => {
+      // Simple calculation: Balance = Delivered - Returned
+      items[key].currentBalance =
+        items[key].totalDelivered - items[key].totalReturned;
     });
 
     return items;
   }
-
-  private createMatrixData(allData: any[]): any {
-    const items = {};
-    const dates = new Set<string>();
-
-    // First, identify transfer transactions by matching delivery and return codes
-    const transferCodes = new Set();
-    const deliveryTransactions = allData.filter(
-      (item) => item.transactionType === 'Delivery'
-    );
-    const returnTransactions = allData.filter(
-      (item) => item.transactionType === 'Return'
-    );
-
-    // Find matching delivery and return codes (indicating same-site transfers)
-    // When deliveryCode equals returnCode, it indicates a same-site transfer
-    deliveryTransactions.forEach((delivery) => {
-      const matchingReturn = returnTransactions.find(
-        (returnItem) =>
-          returnItem.returnCode === delivery.deliveryCode &&
-          returnItem.itemId === delivery.itemId
-      );
-      if (matchingReturn) {
-        transferCodes.add(delivery.deliveryCode);
-      }
-    });
-
-    // Sort data by date first
-    const sortedData = allData.sort((a, b) => {
-      const dateA = a.deliveryDate || a.returnDate;
-      const dateB = b.deliveryDate || b.returnDate;
-      return this.getTimestamp(dateA) - this.getTimestamp(dateB);
-    });
-
-    sortedData.forEach((item) => {
-      // Use deliveryDate for deliveries and returnDate for returns
-      const date = item.deliveryDate || item.returnDate;
-      const dateKey = this.formatDate(date);
-
-      if (!dateKey) {
-        return;
-      }
-
-      // Always add the date to our collection
-      dates.add(dateKey);
-
-      // Check if this is a same-site transfer (deliveryCode equals returnCode)
-      const isTransfer =
-        (item.transactionType === 'Delivery' &&
-          transferCodes.has(item.deliveryCode)) ||
-        (item.transactionType === 'Return' &&
-          transferCodes.has(item.returnCode));
-
-      // For transfers, we still want to show the date but not double-count quantities
-      // Initialize item if not exists
-      if (!items[item.code]) {
-        items[item.code] = {
-          code: item.code,
-          name: item.name,
-          location: item.location,
-          category: item.category,
-          size: item.size,
-          weight: item.weight,
-          movements: {},
-          currentBalance: 0,
-        };
-      }
-
-      // Initialize date movement if not exists
-      if (!items[item.code].movements[dateKey]) {
-        items[item.code].movements[dateKey] = {
-          qtyIn: 0,
-          qtyOut: 0,
-          transactions: [],
-        };
-      }
-
-      // Update current balance to latest value (since sorted by date)
-      items[item.code].currentBalance = item.balanceQty || 0;
-
-      // Update location to latest value
-      items[item.code].location = item.location || items[item.code].location;
-
-      // Add transaction details
-      const referenceCode = item.deliveryCode || item.returnCode || 'N/A';
-      items[item.code].movements[dateKey].transactions.push({
-        type: item.transactionType,
-        reference: referenceCode,
-        qty: item.deliveredQty || item.returnQty || 0,
-      });
-
-      // Skip same-site transfers for quantity calculation to avoid double counting
-      if (isTransfer) {
-        return;
-      }
-
-      // Accumulate quantities - simplified to just in/out
-      switch (item.transactionType) {
-        case 'Delivery':
-          items[item.code].movements[dateKey].qtyIn += item.deliveredQty || 0;
-          break;
-        case 'Return':
-        case 'Overage Return':
-          items[item.code].movements[dateKey].qtyOut += item.returnQty || 0;
-          break;
-        case 'Overage Return Reversal':
-          items[item.code].movements[dateKey].qtyIn += item.returnQty || 0; // Reversal adds back
-          break;
-        case 'Adjustment':
-          const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
-          if (adjustmentQty > 0) {
-            items[item.code].movements[dateKey].qtyIn += adjustmentQty;
-          } else {
-            items[item.code].movements[dateKey].qtyOut +=
-              Math.abs(adjustmentQty);
-          }
-          break;
-      }
-    });
-
-    // Sort dates chronologically
-    const sortedDates = Array.from(dates).sort((a, b) => {
-      // Parse dates in DD MMM YYYY format (e.g., "15 Jul 2025")
-      const parseDate = (dateStr) => {
-        const [day, month, year] = dateStr.split(' ');
-        const monthNames = [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec',
-        ];
-        const monthIndex = monthNames.indexOf(month);
-        return new Date(parseInt(year, 10), monthIndex, parseInt(day, 10));
-      };
-
-      const dateA = parseDate(a);
-      const dateB = parseDate(b);
-      return dateA.getTime() - dateB.getTime();
-    });
-
-    return {
-      items,
-      dates: sortedDates,
-    };
-  }
-
-  private createTimelineData(allData: any[]): any[] {
-    const timeline = {};
-
-    // First, identify transfer transactions by matching delivery and return codes
-    const transferCodes = new Set();
-    const deliveryTransactions = allData.filter(
-      (item) => item.transactionType === 'Delivery'
-    );
-    const returnTransactions = allData.filter(
-      (item) => item.transactionType === 'Return'
-    );
-
-    // Find matching delivery and return codes (indicating transfers)
-    deliveryTransactions.forEach((delivery) => {
-      const matchingReturn = returnTransactions.find(
-        (returnItem) =>
-          returnItem.returnCode === delivery.deliveryCode &&
-          returnItem.itemId === delivery.itemId
-      );
-      if (matchingReturn) {
-        transferCodes.add(delivery.deliveryCode);
-      }
-    });
-
-    // Sort data by date first
-    const sortedData = allData.sort((a, b) => {
-      const dateA = a.deliveryDate || a.returnDate || a.adjustmentDate;
-      const dateB = b.deliveryDate || b.returnDate || b.adjustmentDate;
-      return this.getTimestamp(dateA) - this.getTimestamp(dateB);
-    });
-
-    sortedData.forEach((item) => {
-      const date = item.deliveryDate || item.returnDate || item.adjustmentDate;
-      const dateKey = this.formatDate(date);
-
-      // Use delivery/return codes as reference
-      const referenceCode =
-        item.deliveryCode || item.returnCode || item.adjustmentCode || 'N/A';
-      const key = `${item.code}-${dateKey}-${referenceCode}`;
-
-      if (!timeline[key]) {
-        timeline[key] = {
-          code: item.code,
-          name: item.name,
-          date,
-          qtyIn: 0,
-          qtyOut: 0,
-          balance: 0,
-          transactionType: item.transactionType,
-          referenceCode,
-          location: item.location,
-          category: item.category,
-          size: item.size,
-          weight: item.weight,
-          hireRate: item.hireRate,
-        };
-      }
-
-      // Update balance to latest value (since sorted by date)
-      timeline[key].balance = item.balanceQty || 0;
-
-      // Update other fields with latest values
-      timeline[key].referenceCode = referenceCode;
-      timeline[key].location = item.location || timeline[key].location;
-      timeline[key].transactionType = item.transactionType;
-
-      // Check if this is a transfer transaction
-      const isTransfer =
-        (item.transactionType === 'Delivery' &&
-          transferCodes.has(item.deliveryCode)) ||
-        (item.transactionType === 'Return' &&
-          transferCodes.has(item.returnCode));
-
-      // Skip transfer transactions since they're counted as both delivery and return
-      if (isTransfer) {
-        return; // Skip this iteration
-      }
-
-      // Simplify quantities - either in or out
-      switch (item.transactionType) {
-        case 'Delivery':
-          timeline[key].qtyIn += item.deliveredQty || 0;
-          break;
-        case 'Return':
-        case 'Overage Return':
-          timeline[key].qtyOut += item.returnQty || 0;
-          break;
-        case 'Overage Return Reversal':
-          timeline[key].qtyIn += item.returnQty || 0; // Reversal adds back
-          break;
-        case 'Adjustment':
-          const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
-          if (adjustmentQty > 0) {
-            timeline[key].qtyIn += adjustmentQty;
-          } else {
-            timeline[key].qtyOut += Math.abs(adjustmentQty);
-          }
-          break;
-      }
-    });
-
-    // Convert to array and sort by date then by item code
-    return Object.values(timeline).sort((a: any, b: any) => {
-      const dateCompare = this.getTimestamp(a.date) - this.getTimestamp(b.date);
-      if (dateCompare !== 0) {
-        return dateCompare;
-      }
-      const codeCompare = a.code.localeCompare(b.code);
-      if (codeCompare !== 0) {
-        return codeCompare;
-      }
-      return (a.referenceCode || '').localeCompare(b.referenceCode || '');
-    });
-  }
-
-  private consolidateTransactionData(allData: any[]): any {
-    const consolidated = {};
-
-    // First, identify transfer transactions by matching delivery and return codes
-    const transferCodes = new Set();
-    const deliveryTransactions = allData.filter(
-      (item) => item.transactionType === 'Delivery'
-    );
-    const returnTransactions = allData.filter(
-      (item) => item.transactionType === 'Return'
-    );
-
-    // Find matching delivery and return codes (indicating inter-site transfers)
-    deliveryTransactions.forEach((delivery) => {
-      const matchingReturn = returnTransactions.find(
-        (returnItem) =>
-          returnItem.returnCode === delivery.deliveryCode &&
-          returnItem.itemId === delivery.itemId
-      );
-      if (matchingReturn) {
-        transferCodes.add(delivery.deliveryCode);
-      }
-    });
-
-    // Sort data by date to ensure we get the latest balance
-    const sortedData = allData.sort((a, b) => {
-      const dateA = a.deliveryDate || a.returnDate || a.adjustmentDate;
-      const dateB = b.deliveryDate || b.returnDate || b.adjustmentDate;
-      return this.getTimestamp(dateA) - this.getTimestamp(dateB);
-    });
-
-    sortedData.forEach((item) => {
-      const key = item.code;
-
-      if (!consolidated[key]) {
-        consolidated[key] = {
-          code: item.code,
-          name: item.name,
-          currentBalance: 0,
-          totalDelivered: 0,
-          totalReturned: 0,
-          totalAdjustments: 0,
-          poNumber: item.poNumber,
-          location: item.location,
-          category: item.category,
-          size: item.size,
-          weight: item.weight,
-          hireRate: item.hireRate,
-        };
-      }
-
-      // Always update to the latest balance (sorted by date)
-      consolidated[key].currentBalance = item.balanceQty || 0;
-
-      // Update other fields with latest values
-      consolidated[key].poNumber = item.poNumber || consolidated[key].poNumber;
-      consolidated[key].location = item.location || consolidated[key].location;
-
-      // Check if this is an inter-site transfer
-      const isTransfer =
-        (item.transactionType === 'Delivery' &&
-          transferCodes.has(item.deliveryCode)) ||
-        (item.transactionType === 'Return' &&
-          transferCodes.has(item.returnCode));
-
-      // Skip inter-site transfers to avoid double counting
-      if (!isTransfer) {
-        // Accumulate totals based on transaction type
-        switch (item.transactionType) {
-          case 'Delivery':
-            consolidated[key].totalDelivered += item.deliveredQty || 0;
-            break;
-          case 'Return':
-          case 'Overage Return':
-            consolidated[key].totalReturned += item.returnQty || 0;
-            break;
-          case 'Overage Return Reversal':
-            consolidated[key].totalReturned -= item.returnQty || 0; // Subtract reversal
-            break;
-          case 'Adjustment':
-            const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
-            if (adjustmentQty > 0) {
-              consolidated[key].totalDelivered += adjustmentQty;
-            } else {
-              consolidated[key].totalReturned += Math.abs(adjustmentQty);
-            }
-            consolidated[key].totalAdjustments += adjustmentQty;
-            break;
-        }
-      }
-    });
-
-    return consolidated;
-  }
-
   private getTimestamp(timestamp: any): number {
     if (!timestamp) {
       return 0;
