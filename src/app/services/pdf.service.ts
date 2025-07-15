@@ -9,26 +9,27 @@ import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { Term } from 'src/app/models/term.model';
 import { environment } from 'src/environments/environment';
+import { DateDiffPipe } from '../components/dateDiff.pipe';
 import { WeightPipe } from '../components/weight.pipe';
+import { Delivery } from '../models/delivery.model';
+import { EstimateV2 } from '../models/estimate-v2.model';
 import { Handover } from '../models/handover.model';
 import { Inspection } from '../models/inspection.model';
+import { InventoryEstimateRent } from '../models/inventory-estimate-rent.model';
+import { InventoryEstimateSell } from '../models/inventory-estimate-sell.model';
 import { InventoryItem } from '../models/inventoryItem.model';
-import { Delivery } from '../models/delivery.model';
+import { SaleInvoice } from '../models/sale-invoice.model';
 import { Site } from '../models/site.model';
+import { TransactionInvoice } from '../models/transactionInvoice.model';
+import { TransactionItem } from '../models/transactionItem.model';
 import { TransactionReturn } from '../models/transactionReturn.model';
 import { UploadedFile } from '../models/uploadedFile.model';
 import { CompanyState } from '../shared/company/company.state';
-import { TransactionItem } from '../models/transactionItem.model';
-import { EstimateV2 } from '../models/estimate-v2.model';
-import { InventoryEstimateRent } from '../models/inventory-estimate-rent.model';
-import { InventoryEstimateSell } from '../models/inventory-estimate-sell.model';
-import { TransactionInvoice } from '../models/transactionInvoice.model';
-import { DateDiffPipe } from '../components/dateDiff.pipe';
-import { SaleInvoice } from '../models/sale-invoice.model';
 
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { CalculatePipe } from '../components/calculate.pipe';
+import { Transfer } from '../models/transfer.model';
 
 // Configure the fonts
 (pdfMake as any).vfs = pdfFonts.vfs;
@@ -3859,6 +3860,124 @@ E-mail: Info@hayakel-ksa.com`,
     return this.generatePdf(data);
   }
 
+  async transferDoc(
+    transferDoc: Transfer,
+    company: Company,
+    terms: Term | null
+  ) {
+    const summary = this.createTransactionReturnTable(transferDoc.items);
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Transfer-${transferDoc.code}`),
+      content: [
+        await this.getHeader(
+          'Transfer Note',
+          transferDoc.code,
+          transferDoc.fromSite?.code || 'N/A',
+          transferDoc.date,
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          [
+            [
+              { text: 'Transfer Date', style: 'h6b' },
+              `${
+                transferDoc?.transferDate
+                  ? transferDoc.transferDate.seconds
+                    ? new Date(
+                        transferDoc.transferDate.seconds * 1000
+                      ).toLocaleDateString()
+                    : new Date(transferDoc.transferDate).toLocaleDateString()
+                  : 'N/A'
+              }`,
+              '',
+              '',
+            ],
+            [
+              { text: 'From PO:', style: 'h6b' },
+              `${transferDoc?.fromPO || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'To PO:', style: 'h6b' },
+              `${transferDoc?.toPO || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Created By:', style: 'h6b' },
+              `${transferDoc?.createdByName || 'N/A'}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        this.getCompanyInfo(
+          transferDoc.toSite?.customer,
+          transferDoc.fromSite?.customer
+        ),
+
+        hr,
+        { text: transferDoc.notes || '', style: 'h6', margin: [0, 10, 0, 10] },
+        hr,
+        summary,
+        hr,
+        {
+          text: `Total Weight : ${this.weightPipe.transform(
+            transferDoc.items,
+            false,
+            false,
+            false,
+            true
+          )}`,
+          style: 'h3',
+          alignment: 'right',
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                {
+                  text: 'Status',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: transferDoc.status,
+                  style: 'h4b',
+                  alignment: 'center',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
+        {
+          text: `This transfer note confirms the movement of materials from ${
+            transferDoc.fromSite?.name || 'N/A'
+          } to ${transferDoc.toSite?.name || 'N/A'}.
+Please verify all quantities and conditions before accepting the transfer.
+If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
+E-mail: Info@hayakel-ksa.com`,
+          alignment: 'center',
+          margin: [0, 10, 0, 0],
+          style: 'hb4',
+        },
+        await this.addUploads(transferDoc.uploads),
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+    };
+    return this.generatePdf(data);
+  }
+
   async overReturnDoc(
     overReturnDoc: TransactionReturn,
     company: Company,
@@ -5382,7 +5501,7 @@ E-mail: Info@hayakel-ksa.com`,
             },
             { text: 'Size', style: 'h4b', alignment: 'center' },
             { text: 'Name', style: 'h4b', alignment: 'left' },
-            { text: 'Shipment Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Item Qty', style: 'h4b', alignment: 'center' },
             { text: 'Weight', style: 'h4b', alignment: 'center' },
           ],
           ...items,
@@ -5435,7 +5554,7 @@ E-mail: Info@hayakel-ksa.com`,
             },
             { text: 'Size', style: 'h4b', alignment: 'center' },
             { text: 'Name', style: 'h4b', alignment: 'left' },
-            { text: 'Returned Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Item Qty', style: 'h4b', alignment: 'center' },
             { text: 'Weight', style: 'h4b', alignment: 'center' },
           ],
           ...items,

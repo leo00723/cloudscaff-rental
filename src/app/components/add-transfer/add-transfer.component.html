@@ -10,6 +10,27 @@
       </ion-button>
     </ion-buttons>
     <ion-title>{{ !isEdit ? "Add Transfer" : "Edit Transfer" }} </ion-title>
+    <ion-buttons slot="end">
+      <!-- <ion-chip
+        (click)="downloadPicklist()"
+        mode="ios"
+        shape="round"
+        size="small"
+        color="primary"
+      >
+        Picklist
+      </ion-chip> -->
+      <ion-chip
+        *ngIf="isEdit && transfer.status !== 'void'"
+        (click)="downloadPdf()"
+        mode="ios"
+        shape="round"
+        size="small"
+        color="tertiary"
+      >
+        Transfer Note
+      </ion-chip>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">

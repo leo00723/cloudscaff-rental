@@ -136,6 +136,15 @@ export class AddTransferComponent implements OnInit, OnDestroy {
     const newFiles = await this.uploader.startUpload();
     this.transfer.uploads.push(...newFiles);
   }
+  async downloadPdf() {
+    if (!this.transfer.date) {
+      this.transfer.date = new Date();
+    }
+    const pdf = await this.masterSvc
+      .pdf()
+      .transferDoc(this.transfer, this.company, null);
+    this.masterSvc.pdf().handlePdf(pdf, this.transfer.code);
+  }
 
   delete() {
     // this.masterSvc.notification().presentAlertConfirm(async () => {
