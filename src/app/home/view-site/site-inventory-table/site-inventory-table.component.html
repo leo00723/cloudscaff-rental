@@ -19,28 +19,83 @@
   >
     Inventory PDF
   </ion-button>
+  <!-- Download button is the only active one here -->
 </div>
-<ion-searchbar
-  debounce="250"
-  mode="ios"
-  placeholder="Search by code, category, name or quantities"
-  (ionChange)="updateFilter($event)"
+
+<!-- Weight summary section -->
+<ng-container
+  *ngIf="
+    inventoryItems?.length && !user.permissionsList.includes('Hide Weight')
+  "
 >
-</ion-searchbar>
-<ion-item lines="none" mode="ios">
-  <ion-select
-    #rows
-    slot="start"
-    placeholder="7"
-    interface="popover"
-    [value]="7"
-  >
-    <ion-select-option value="7">7</ion-select-option>
-    <ion-select-option value="10">10</ion-select-option>
-    <ion-select-option value="50">50</ion-select-option>
-    <ion-select-option value="100">100</ion-select-option>
-  </ion-select>
-</ion-item>
+  <ion-list class="card-outline mt-3 mb-5">
+    <!-- Total weight -->
+    <ion-item>
+      <ion-label>Total weight</ion-label>
+      <ion-label slot="end"
+        >{{ getTotalWeight() | number }}
+        {{ company?.mass?.symbol }}
+      </ion-label>
+    </ion-item>
+
+    <!-- Location-based weight breakdown -->
+    <ion-list-header>
+      <ion-label>Weight by Location</ion-label>
+    </ion-list-header>
+
+    <!-- No weights message -->
+    <ion-item *ngIf="!hasLocationWeights">
+      <ion-label class="ion-text-center"
+        >No items with weight information</ion-label
+      >
+    </ion-item>
+
+    <!-- Location weight items -->
+    <ion-item
+      *ngFor="let locationWeight of locationWeights; trackBy: trackByLocation"
+    >
+      <ion-label>{{ locationWeight.location }}</ion-label>
+      <ion-label slot="end">
+        {{ locationWeight.weight | number }}
+        {{ company?.mass?.symbol }}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ng-container>
+
+<!-- Search and page size controls -->
+<ion-grid>
+  <ion-row>
+    <ion-col size="12">
+      <ion-searchbar
+        debounce="250"
+        mode="ios"
+        placeholder="Search by code, category, name or quantities"
+        (ionChange)="updateFilter($event)"
+      >
+      </ion-searchbar>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item lines="none" mode="ios">
+        <ion-select
+          #rows
+          slot="start"
+          [placeholder]="defaultRowLimit.toString()"
+          interface="popover"
+          [value]="defaultRowLimit"
+        >
+          <ion-select-option *ngFor="let option of rowOptions" [value]="option">
+            {{ option }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+<!-- Datatable for inventory items -->
 <ngx-datatable
   class="bootstrap striped rounded-lg"
   [limit]="rows.value"
@@ -53,6 +108,7 @@
   trackByProp="code"
   [scrollbarH]="true"
 >
+  <!-- Table columns -->
   <ngx-datatable-column
     name="Code"
     [checkboxable]="false"
@@ -65,38 +121,45 @@
     headerClass="text-center"
   ></ngx-datatable-column>
   <ngx-datatable-column
+    name="Supplier"
+    cellClass="text-center"
+    headerClass="text-center"
+  ></ngx-datatable-column>
+  <ngx-datatable-column
     name="Total Qty"
     prop="availableQty"
     cellClass="text-center"
     headerClass="text-center"
   ></ngx-datatable-column>
-  <!-- <ngx-datatable-column
-    name="Available Qty"
+  <!-- Only show weight column if user has permission -->
+  <ngx-datatable-column
+    *ngIf="!user.permissionsList.includes('Hide Weight')"
+    name="Weight"
     cellClass="text-center"
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ row.availableQty - row.inUseQty }}
+      {{ row.weight }}{{ company?.mass?.symbol }}
     </ng-template>
-  </ngx-datatable-column> -->
-  <!-- <ngx-datatable-column
-    name="In Use Qty"
-    cellClass="text-center"
-    headerClass="text-center"
-  ></ngx-datatable-column> -->
-  <!-- <ngx-datatable-column
-    name="Reserved Qty"
-    cellClass="text-center"
-    headerClass="text-center"
-  ></ngx-datatable-column> -->
+  </ngx-datatable-column>
   <ngx-datatable-column
-    name="Weight"
+    *ngIf="!user.permissionsList.includes('Hide Weight')"
+    name="Total Weight"
+    prop="weight"
     cellClass="text-center"
     headerClass="text-center"
-  ></ngx-datatable-column>
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      {{ row.availableQty * value }}{{ company?.mass?.symbol }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Type"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-badge mode="ios" color="tertiary">{{ value }}</ion-badge>
+    </ng-template>
+  </ngx-datatable-column>
 </ngx-datatable>
-
-<ion-item>
-  <ion-label>Total weight</ion-label>
-  <ion-label slot="end">{{ inventoryItems | weight }}</ion-label>
-</ion-item>

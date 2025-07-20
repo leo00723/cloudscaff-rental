@@ -337,14 +337,16 @@
       </ng-container>
       <ng-container *ngSwitchCase="'inventory'">
         <app-site-inventory-table
-          [value]="items.items"
+          [value]="{items:items.items,ids}"
           (download)="downloadPDF($event, site)"
           (downloadHistoryExcel)="downloadHistoryExcel(site)"
           *ngIf="inventoryItems$ | async as items else empty"
         ></app-site-inventory-table>
         <ng-template #empty>
-          <app-site-inventory-table [value]="[]"></app-site-inventory-table
-        ></ng-template>
+          <app-site-inventory-table
+            [value]="{items:[],ids:[]}"
+          ></app-site-inventory-table>
+        </ng-template>
       </ng-container>
       <ng-container *ngSwitchCase="'requests'">
         <ion-accordion-group

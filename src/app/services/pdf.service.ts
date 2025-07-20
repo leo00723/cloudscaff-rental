@@ -3437,7 +3437,9 @@ E-mail: Info@hayakel-ksa.com`,
           alignment: 'center',
         },
         {
-          text: this.decimalPipe.transform(item.balanceQty),
+          text: this.decimalPipe.transform(
+            (item.balanceQty || 0) - (item.overageReturnTotal || 0)
+          ),
           style: 'h4b',
           alignment: 'center',
         },
@@ -3499,6 +3501,7 @@ E-mail: Info@hayakel-ksa.com`,
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
