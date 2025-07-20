@@ -3506,6 +3506,163 @@ E-mail: Info@hayakel-ksa.com`,
     return this.generatePdf(data);
   }
 
+  // STOCK LOCATIONS PDF
+  async stockLocations(
+    item: InventoryItem,
+    locations: { site: any; item: InventoryItem }[],
+    company: Company
+  ) {
+    // Create locations table
+    const locationsTable = {
+      table: {
+        headerRows: 1,
+        widths: ['auto', '*', '*', 'auto', 'auto', 'auto'],
+        body: [
+          // Header row
+          [
+            { text: 'Site Code', style: 'h4b', alignment: 'left' },
+            { text: 'Site Name', style: 'h4b', alignment: 'left' },
+            { text: 'Customer', style: 'h4b', alignment: 'left' },
+            { text: 'Item Code', style: 'h4b', alignment: 'center' },
+            { text: 'Name', style: 'h4b', alignment: 'left' },
+            { text: 'Available Qty', style: 'h4b', alignment: 'center' },
+          ],
+          // Data rows
+          ...locations.map((location) => [
+            { text: location.site.code || 'N/A', style: 'h6' },
+            { text: location.site.name || 'N/A', style: 'h6' },
+            { text: location.site.customer?.name || 'N/A', style: 'h6' },
+            {
+              text: location.item.code || 'N/A',
+              style: 'h6',
+              alignment: 'center',
+            },
+            { text: location.item.name || 'N/A', style: 'h6' },
+            {
+              text: location.item.availableQty?.toString() || '0',
+              style: 'h6',
+              alignment: 'center',
+            },
+          ]),
+        ],
+      },
+      layout: tLayout,
+    };
+
+    // Calculate totals
+    const totalAvailableQty = locations.reduce(
+      (sum, location) => sum + (location.item.availableQty || 0),
+      0
+    );
+
+    const data = {
+      footer: await this.getFooter(),
+      info: this.getMetaData(`${company.name}-Stock-Locations-${item.code}`),
+      content: [
+        await this.getHeader(
+          'Item Locations Report',
+          item.code,
+          'Stock Locations',
+          new Date(),
+          company.logoUrl.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          undefined,
+          [
+            [
+              { text: 'Total Locations:', style: 'h6b' },
+              `${locations.length}`,
+              '',
+              '',
+            ],
+          ]
+        ),
+        hr,
+        // Item summary table
+        {
+          table: {
+            headerRows: 1,
+            widths: ['auto', '*', 'auto', 'auto'],
+            body: [
+              [
+                { text: 'Item Code', style: 'h4b', alignment: 'left' },
+                { text: 'Name', style: 'h4b', alignment: 'left' },
+                { text: 'Total Qty', style: 'h4b', alignment: 'center' },
+                { text: 'Available Qty', style: 'h4b', alignment: 'center' },
+              ],
+              [
+                { text: item.code, style: 'h6' },
+                { text: item.name, style: 'h6' },
+                {
+                  text: item.yardQty?.toString() || '0',
+                  style: 'h6',
+                  alignment: 'center',
+                },
+                {
+                  text: this.calcPipe.transform(item)?.toString() || '0',
+                  style: 'h6',
+                  alignment: 'center',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+          margin: [0, 0, 0, 20],
+        },
+        // Locations section
+        {
+          text: 'Location Details',
+          style: 'h2',
+          alignment: 'left',
+          margin: [0, 10, 0, 10],
+        },
+        locationsTable,
+        hr,
+        // Summary section
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*', 'auto'],
+            body: [
+              [
+                { text: 'Total Locations', style: 'h4b', alignment: 'left' },
+                {
+                  text: locations.length.toString(),
+                  style: 'h4b',
+                  alignment: 'right',
+                },
+              ],
+              [
+                {
+                  text: 'Total Available Quantity',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: totalAvailableQty.toString(),
+                  style: 'h4b',
+                  alignment: 'right',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+          margin: [0, 10, 0, 10],
+        },
+        {
+          text: `Generated on ${this.toDate(new Date())}`,
+          style: 'h6G',
+          alignment: 'center',
+          margin: [0, 20, 0, 0],
+        },
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+    };
+
+    return this.generatePdf(data);
+  }
+
   // DELIVERY PICKLIST PDF
   async pickList(
     docData: Delivery | TransactionReturn,

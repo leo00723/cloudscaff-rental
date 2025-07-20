@@ -10,6 +10,17 @@
       </ion-button>
     </ion-buttons>
     <ion-title>Item Locations</ion-title>
+    <ion-buttons slot="end">
+      <ion-chip
+        (click)="downloadPdf()"
+        mode="ios"
+        shape="round"
+        size="small"
+        color="primary"
+      >
+        Download PDF
+      </ion-chip>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
