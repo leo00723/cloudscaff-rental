@@ -586,14 +586,38 @@ export class ViewSitePage implements OnInit, OnDestroy {
   async downloadPDF(items: InventoryItem[], site: Site) {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
-    // Get both delivery and overage return transactions
-    const [deliveryData, overageData, reversalData] = await Promise.all([
+    // Get all transaction types (same as downloadHistoryExcel)
+    const [
+      deliveryData,
+      adjustmentData,
+      returnData,
+      overageData,
+      reversalData,
+    ] = await Promise.all([
       lastValueFrom(
         this.masterSvc
           .edit()
           .getCollectionFiltered(`company/${company.id}/transactionLog`, [
             where('siteId', '==', site.id),
             where('transactionType', '==', 'Delivery'),
+          ])
+          .pipe(take(1))
+      ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Adjustment'),
+          ])
+          .pipe(take(1))
+      ),
+      lastValueFrom(
+        this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${company.id}/transactionLog`, [
+            where('siteId', '==', site.id),
+            where('transactionType', '==', 'Return'),
           ])
           .pipe(take(1))
       ),
@@ -617,51 +641,29 @@ export class ViewSitePage implements OnInit, OnDestroy {
       ),
     ]);
 
-    // Combine delivery and overage data
-    const allData = [...deliveryData, ...overageData, ...reversalData];
+    // Combine all transaction data (same as downloadHistoryExcel)
+    const allData = [
+      ...deliveryData,
+      ...adjustmentData,
+      ...returnData,
+      ...overageData,
+      ...reversalData,
+    ];
 
-    const groupedData = allData.reduce((acc, item) => {
-      const {
-        itemId,
-        deliveredQty,
-        adjustmentTotal,
-        balanceQty,
-        returnTotal,
-        transactionType,
-      } = item;
+    // Use the same consolidation logic as downloadHistoryExcel
+    const consolidatedItemsData = this.consolidateItemData(allData);
 
-      // If the itemId is not in the accumulator, initialize it
-      if (!acc[itemId]) {
-        acc[itemId] = {
-          ...item,
-          deliveredQty: 0,
-          adjustmentTotal: 0,
-          balanceQty: 0,
-          returnTotal: 0,
-          overageReturnTotal: 0, // Track overage returns separately
-        };
-      }
-
-      // Sum the quantities based on transaction type
-      if (transactionType === 'Delivery') {
-        acc[itemId].deliveredQty += deliveredQty || 0;
-        acc[itemId].adjustmentTotal += adjustmentTotal || 0;
-        acc[itemId].balanceQty += balanceQty || 0;
-        acc[itemId].returnTotal += returnTotal || 0;
-      } else if (transactionType === 'Overage Return') {
-        // For overage returns, add to a separate counter
-        acc[itemId].overageReturnTotal += returnTotal || 0;
-      } else if (transactionType === 'Overage Return Reversal') {
-        // For overage return reversals, subtract from overage returns
-        // This effectively cancels out the overage return
-        acc[itemId].overageReturnTotal -= returnTotal || 0;
-      }
-
-      return acc;
-    }, {});
-
-    // Convert the grouped object back to an array
-    const groupedList = Object.values(groupedData);
+    // Convert the consolidated data to the format expected by the PDF service
+    const groupedList = Object.values(consolidatedItemsData).map(
+      (item: any) => ({
+        ...item,
+        deliveredQty: item.totalDelivered,
+        returnTotal: item.totalReturned,
+        balanceQty: item.currentBalance,
+        adjustmentTotal: 0, // Adjustments are already factored into totalReturned
+        overageReturnTotal: 0, // Overage returns are already factored into totalReturned
+      })
+    );
 
     const pdf = await this.masterSvc
       .pdf()
