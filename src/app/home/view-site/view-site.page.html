@@ -345,6 +345,8 @@
         <ng-template #empty>
           <app-site-inventory-table
             [value]="{items:[],ids:[]}"
+            (download)="downloadPDF($event, site)"
+            (downloadHistoryExcel)="downloadHistoryExcel(site)"
           ></app-site-inventory-table>
         </ng-template>
       </ng-container>
