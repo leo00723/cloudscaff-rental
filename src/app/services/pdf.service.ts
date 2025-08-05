@@ -2362,7 +2362,13 @@ export class PdfService {
 
     const signature = inspection.signature
       ? {
-          image: await this.getBase64ImageFromURL(inspection.signature),
+          image: await this.getBase64ImageFromURL(
+            inspection.signature,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -2636,7 +2642,13 @@ export class PdfService {
 
     const signature = handover.signature
       ? {
-          image: await this.getBase64ImageFromURL(handover.signature),
+          image: await this.getBase64ImageFromURL(
+            handover.signature,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -2949,7 +2961,13 @@ export class PdfService {
 
     const signature = dismantle.signature
       ? {
-          image: await this.getBase64ImageFromURL(dismantle.signature),
+          image: await this.getBase64ImageFromURL(
+            dismantle.signature,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -3081,7 +3099,13 @@ export class PdfService {
     const summary = this.createShipmentTable(delivery.items);
     const signature1 = delivery.signature
       ? {
-          image: await this.getBase64ImageFromURL(delivery.signature),
+          image: await this.getBase64ImageFromURL(
+            delivery.signature,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -3093,7 +3117,13 @@ export class PdfService {
         };
     const signature2 = delivery.signature2
       ? {
-          image: await this.getBase64ImageFromURL(delivery.signature2),
+          image: await this.getBase64ImageFromURL(
+            delivery.signature2,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -3373,7 +3403,10 @@ E-mail: Info@hayakel-ksa.com`,
                   image: await this.getBase64ImageFromURL(
                     company.logoUrl.length > 0
                       ? company.logoUrl
-                      : 'assets/icon/default.webp'
+                      : 'assets/icon/default.webp',
+                    400,
+                    300,
+                    0.8
                   ),
                   alignment: 'right',
                 },
@@ -3822,7 +3855,13 @@ E-mail: Info@hayakel-ksa.com`,
   ) {
     const signature1 = returnDoc.signature
       ? {
-          image: await this.getBase64ImageFromURL(returnDoc.signature),
+          image: await this.getBase64ImageFromURL(
+            returnDoc.signature,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -3834,7 +3873,13 @@ E-mail: Info@hayakel-ksa.com`,
         };
     const signature2 = returnDoc.signature2
       ? {
-          image: await this.getBase64ImageFromURL(returnDoc.signature2),
+          image: await this.getBase64ImageFromURL(
+            returnDoc.signature2,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -4143,7 +4188,13 @@ E-mail: Info@hayakel-ksa.com`,
   ) {
     const signature1 = overReturnDoc.signature
       ? {
-          image: await this.getBase64ImageFromURL(overReturnDoc.signature),
+          image: await this.getBase64ImageFromURL(
+            overReturnDoc.signature,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -4155,7 +4206,13 @@ E-mail: Info@hayakel-ksa.com`,
         };
     const signature2 = overReturnDoc.signature2
       ? {
-          image: await this.getBase64ImageFromURL(overReturnDoc.signature2),
+          image: await this.getBase64ImageFromURL(
+            overReturnDoc.signature2,
+            300,
+            200,
+            0.6,
+            true
+          ),
           width: 100,
           alignment: 'right',
         }
@@ -4928,7 +4985,7 @@ E-mail: Info@hayakel-ksa.com`,
               colSpan: 2,
               rowSpan: 5,
               width: 100,
-              image: await this.getBase64ImageFromURL(url),
+              image: await this.getBase64ImageFromURL(url, 400, 300, 0.8),
               alignment: 'right',
             },
             '',
@@ -4981,7 +5038,10 @@ E-mail: Info@hayakel-ksa.com`,
             {
               fit: [760, 200],
               image: await this.getBase64ImageFromURL(
-                company.subHeaderUrl || defaultSubHeader
+                company.subHeaderUrl || defaultSubHeader,
+                760,
+                200,
+                0.8
               ),
               colSpan: 4,
             },
@@ -5166,7 +5226,12 @@ E-mail: Info@hayakel-ksa.com`,
             const imgObj = {
               stack: [
                 {
-                  image: await this.getBase64ImageFromURL(upload.downloadUrl),
+                  image: await this.getBase64ImageFromURL(
+                    upload.downloadUrl,
+                    400,
+                    300,
+                    0.6
+                  ),
                   width: 180, // Reduced width for 3-column landscape layout
                   alignment: 'center',
                   margin: [0, 0, 0, 5],
@@ -5825,7 +5890,12 @@ E-mail: Info@hayakel-ksa.com`,
     } else if (replaceBranding) {
       footerCS.push([
         {
-          image: await this.getBase64ImageFromURL(replaceBranding),
+          image: await this.getBase64ImageFromURL(
+            replaceBranding,
+            300,
+            200,
+            0.8
+          ),
           width: 100,
           alignment: 'right',
           margin: [0, -10, 20, 0],
@@ -5861,20 +5931,68 @@ E-mail: Info@hayakel-ksa.com`,
     };
     return info;
   }
-  private async getBase64ImageFromURL(url) {
+  /**
+   * Converts an image URL to base64 with compression and resizing
+   *
+   * @param url - Image URL to process
+   * @param maxWidth - Maximum width (default: 800px)
+   * @param maxHeight - Maximum height (default: 600px)
+   * @param quality - JPEG quality 0-1 (default: 0.7)
+   * @param preserveTransparency - Whether to preserve transparency (default: false)
+   * @returns Promise<string> - Base64 encoded image
+   */
+  private async getBase64ImageFromURL(
+    url,
+    maxWidth = 800,
+    maxHeight = 600,
+    quality = 0.7,
+    preserveTransparency = false
+  ) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.setAttribute('crossOrigin', 'anonymous');
 
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+
+        // Calculate new dimensions maintaining aspect ratio
+        let { width, height } = img;
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
 
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
 
-        const dataURL = canvas.toDataURL('image/jpg');
+        // Use better image smoothing
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Choose format based on transparency needs
+        let dataURL;
+        if (
+          preserveTransparency ||
+          url.toLowerCase().includes('.png') ||
+          url.toLowerCase().includes('logo') ||
+          url.toLowerCase().includes('signature')
+        ) {
+          // Use PNG for logos, signatures, and when transparency is needed
+          dataURL = canvas.toDataURL('image/png');
+        } else {
+          // Use JPEG with compression for photos and other images
+          dataURL = canvas.toDataURL('image/jpeg', quality);
+        }
 
         resolve(dataURL);
       };

@@ -21,6 +21,7 @@ import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 import { ImgService } from 'src/app/services/img.service';
 import * as Papa from 'papaparse';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-add-shipment',
@@ -50,6 +51,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   blob: any;
   uploading = false;
 
+  private loadingCtrl = inject(LoadingController);
   private imgService = inject(ImgService);
   private subs = new Subscription();
 
@@ -364,11 +366,21 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.shipment.site.customer.rep = this.shipment.customerRepName;
     this.shipment.site.customer.email = this.shipment.customerRepEmail;
     this.shipment.site.customer.phone = this.shipment.customerRepContact;
-
-    const pdf = await this.masterSvc
-      .pdf()
-      .delivery(this.shipment, companyCopy, null);
-    this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
+    const loader = await this.loadingCtrl.create({
+      message: 'Please wait',
+      mode: 'ios',
+    });
+    try {
+      loader.present();
+      const pdf = await this.masterSvc
+        .pdf()
+        .delivery(this.shipment, companyCopy, null);
+      this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
+    } catch (error) {
+      console.error('Error in downloading PDF:', error);
+    } finally {
+      loader.dismiss();
+    }
   }
 
   protected async sign(ev: { signature: string; name: string }) {
