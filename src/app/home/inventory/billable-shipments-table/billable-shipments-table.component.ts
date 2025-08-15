@@ -12,7 +12,6 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
-import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 
 @Component({
   selector: 'app-billable-shipments-table',
@@ -21,10 +20,10 @@ import { InventoryEstimate } from 'src/app/models/inventoryEstimate.model';
 })
 export class BillableShipmentsTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<InventoryEstimate>();
-  shipments$: Observable<InventoryEstimate[]>;
-  temp$: Observable<InventoryEstimate[]>;
-  @Input() set value(estimates: Observable<InventoryEstimate[]>) {
+  @Output() selectedItem = new EventEmitter<any>();
+  shipments$: Observable<any[]>;
+  temp$: Observable<any[]>;
+  @Input() set value(estimates: Observable<any[]>) {
     this.temp$ = estimates;
     this.shipments$ = estimates;
   }

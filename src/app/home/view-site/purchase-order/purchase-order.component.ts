@@ -13,7 +13,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { take } from 'rxjs';
 import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
@@ -27,6 +27,7 @@ import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { PdfService } from 'src/app/services/pdf.service';
+import { POUpdateService } from 'src/app/services/po-update.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
@@ -57,6 +58,7 @@ export class PurchaseOrderComponent implements OnInit {
   protected saving = false;
   protected transactions: TransactionItem[] = [];
   protected user: User;
+  protected updatingPONumber = false;
 
   private editSvc = inject(EditService);
   private fb = inject(FormBuilder);
@@ -65,6 +67,8 @@ export class PurchaseOrderComponent implements OnInit {
   private store = inject(Store);
   private dateDiff = inject(DateDiffPipe);
   private pdfSvc = inject(PdfService);
+  private alertCtrl = inject(AlertController);
+  private poUpdateSvc = inject(POUpdateService);
 
   constructor() {
     this.user = this.store.selectSnapshot(UserState.user);
@@ -347,6 +351,118 @@ export class PurchaseOrderComponent implements OnInit {
     this.pdfSvc.handlePdf(pdf, this.po.code);
   }
 
+  async updatePONumber() {
+    try {
+      // First, get count of affected records
+      const updateCounts = await this.poUpdateSvc.getUpdateCount(
+        this.company.id,
+        this.po.site.id,
+        this.po.poNumber
+      );
+
+      const alert = await this.alertCtrl.create({
+        header: 'Update PO Number',
+        message: `This will update ${updateCounts.total} related records including:
+        • ${updateCounts.transactionLogs} transaction logs
+        • ${updateCounts.shipments} shipments
+        • ${updateCounts.adjustments} adjustments
+        • ${updateCounts.returns} returns
+        • ${updateCounts.invoices} invoices
+        • ${updateCounts.transfers} transfers`,
+        inputs: [
+          {
+            name: 'newPONumber',
+            type: 'text',
+            placeholder: 'Enter new PO number',
+            value: this.po.poNumber,
+            attributes: {
+              minlength: 1,
+              required: true,
+            },
+          },
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+          },
+          {
+            text: 'Update',
+            handler: (data) => {
+              if (data.newPONumber && data.newPONumber !== this.po.poNumber) {
+                this.performPONumberUpdate(data.newPONumber);
+              }
+            },
+          },
+        ],
+        mode: 'ios',
+      });
+
+      await alert.present();
+    } catch (error) {
+      console.error('Error getting update count:', error);
+      this.notificationSvc.toast(
+        'Failed to load update information. Please try again.',
+        'danger'
+      );
+    }
+  }
+
+  private async performPONumberUpdate(newPONumber: string) {
+    this.notificationSvc.presentAlertConfirm(
+      async () => {
+        try {
+          this.updatingPONumber = true;
+          await this.poUpdateSvc.updatePONumberAcrossCollections(
+            this.company.id,
+            this.po.site.id,
+            this.po.poNumber,
+            newPONumber,
+            this.po.id
+          );
+          this.po.poNumber = newPONumber;
+          this.notificationSvc.toast(
+            'PO number updated successfully!',
+            'success'
+          );
+        } catch (error) {
+          console.error('Error updating PO number:', error);
+          this.notificationSvc.toast(
+            error.message || 'Failed to update PO number. Please try again.',
+            'danger'
+          );
+        } finally {
+          this.updatingPONumber = false;
+        }
+      },
+      'This action will update the PO number across all related records including ' +
+        'transaction logs, shipments, adjustments, and returns. This cannot be undone.',
+      'Update PO Number'
+    );
+  }
+
+  private calculateTransactionSubtotal() {
+    this.transactions.forEach((item) => {
+      item.days =
+        item.transactionType === 'Return'
+          ? +this.dateDiff.transform(
+              item.invoiceStart.toDate(),
+              item.invoiceEnd.toDate()
+            )
+          : +this.dateDiff.transform(
+              item.invoiceStart.toDate(),
+              this.field('endDate').value
+            );
+
+      item.months = +(item.days / 30).toFixed(2);
+      item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
+        2
+      );
+
+      this.po.subtotal += item.total;
+    });
+  }
+
   private async calcTotal() {
     this.po.subtotal = 0;
 
@@ -397,29 +513,6 @@ export class PurchaseOrderComponent implements OnInit {
     } finally {
       this.saving = false;
     }
-  }
-
-  // Helper function to avoid duplicate code
-  private calculateTransactionSubtotal() {
-    this.transactions.forEach((item) => {
-      item.days =
-        item.transactionType === 'Return'
-          ? +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              item.invoiceEnd.toDate()
-            )
-          : +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              this.field('endDate').value
-            );
-
-      item.months = +(item.days / 30).toFixed(2);
-      item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
-        2
-      );
-
-      this.po.subtotal += item.total;
-    });
   }
 
   private init() {

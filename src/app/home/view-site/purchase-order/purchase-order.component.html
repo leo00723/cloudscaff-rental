@@ -22,6 +22,19 @@
     <ion-col size="12" class="text-end">
       <ion-chip
         size="small"
+        (click)="updatePONumber()"
+        color="primary"
+        *ngIf="!saving && !updatingPONumber"
+      >
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        Edit PO Number
+      </ion-chip>
+      <ion-chip size="small" color="medium" *ngIf="updatingPONumber">
+        <ion-spinner name="dots" size="small"></ion-spinner>
+        Updating...
+      </ion-chip>
+      <ion-chip
+        size="small"
         (click)="downloadDraft(true)"
         color="warning"
         *ngIf="!saving && form.valid"

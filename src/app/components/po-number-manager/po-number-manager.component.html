@@ -1,0 +1,119 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Manage PO Numbers</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="!selectedPO">
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      placeholder="Search PO numbers..."
+      (ionInput)="filterPOs()"
+    >
+    </ion-searchbar>
+
+    <ion-list>
+      <ion-item button *ngFor="let po of filteredPOs" (click)="selectPO(po)">
+        <ion-label>
+          <h3>{{ po.poNumber }}</h3>
+          <p>{{ po.code }} - {{ po.status }}</p>
+          <p>Site: {{ po.site?.name }}</p>
+        </ion-label>
+        <ion-chip slot="end" [color]="getStatusColor(po.status)">
+          {{ po.status }}
+        </ion-chip>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div *ngIf="selectedPO">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ selectedPO.poNumber }}</ion-card-title>
+        <ion-card-subtitle>{{ selectedPO.code }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Site:</strong> {{ selectedPO.site?.name }}</p>
+        <p><strong>Status:</strong> {{ selectedPO.status }}</p>
+        <p><strong>Total:</strong> {{ selectedPO.total | currency }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="updateCounts">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Records that will be updated</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label>Transaction Logs</ion-label>
+            <ion-badge slot="end">{{ updateCounts.transactionLogs }}</ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-label>Shipments</ion-label>
+            <ion-badge slot="end">{{ updateCounts.shipments }}</ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-label>Adjustments</ion-label>
+            <ion-badge slot="end">{{ updateCounts.adjustments }}</ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-label>Returns</ion-label>
+            <ion-badge slot="end">{{ updateCounts.returns }}</ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-label>Invoices</ion-label>
+            <ion-badge slot="end">{{ updateCounts.invoices }}</ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-label>Transfers</ion-label>
+            <ion-badge slot="end">{{ updateCounts.transfers }}</ion-badge>
+          </ion-item>
+          <ion-item>
+            <ion-label><strong>Total Records</strong></ion-label>
+            <ion-badge slot="end" color="primary">{{
+              updateCounts.total
+            }}</ion-badge>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ion-item>
+      <ion-label position="stacked">New PO Number</ion-label>
+      <ion-input
+        [(ngModel)]="newPONumber"
+        placeholder="Enter new PO number"
+        [disabled]="updating"
+      >
+      </ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      (click)="updatePONumber()"
+      [disabled]="
+        !newPONumber || newPONumber === selectedPO.poNumber || updating
+      "
+      color="primary"
+    >
+      <ion-spinner *ngIf="updating" size="small"></ion-spinner>
+      {{ updating ? "Updating..." : "Update PO Number" }}
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      (click)="goBack()"
+      [disabled]="updating"
+    >
+      Back to List
+    </ion-button>
+  </div>
+</ion-content>
