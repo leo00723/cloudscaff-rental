@@ -2,5 +2,18 @@
 	"appId": "io.ionic.starter",
 	"appName": "Cloudscaff",
 	"webDir": "www",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"server": {
+		"androidScheme": "https"
+	},
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 2000,
+			"backgroundColor": "#ffffff",
+			"showSpinner": false
+		},
+		"Keyboard": {
+			"resize": "body"
+		}
+	}
 }
