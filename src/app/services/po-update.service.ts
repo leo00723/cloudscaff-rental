@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { arrayRemove, arrayUnion, where } from '@angular/fire/firestore';
-import { take } from 'rxjs';
+import { take, firstValueFrom } from 'rxjs';
 import { EditService } from './edit.service';
 import { NotificationService } from './notification.service';
 
@@ -81,13 +81,14 @@ export class POUpdateService {
     });
 
     // 2. Transaction logs
-    const transactionLogs = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/transactionLog`, [
-        where('poNumber', '==', oldPONumber),
-        where('siteId', '==', siteId),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const transactionLogs = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/transactionLog`, [
+          where('poNumber', '==', oldPONumber),
+          where('siteId', '==', siteId),
+        ])
+        .pipe(take(1))
+    );
 
     if (transactionLogs) {
       transactionLogs.forEach((log) => {
@@ -100,13 +101,14 @@ export class POUpdateService {
     }
 
     // 3. Shipments/deliveries
-    const shipments = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/shipments`, [
-        where('poNumber', '==', oldPONumber),
-        where('site.id', '==', siteId),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const shipments = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/shipments`, [
+          where('poNumber', '==', oldPONumber),
+          where('site.id', '==', siteId),
+        ])
+        .pipe(take(1))
+    );
 
     if (shipments) {
       shipments.forEach((shipment) => {
@@ -119,13 +121,14 @@ export class POUpdateService {
     }
 
     // 4. Adjustments
-    const adjustments = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/adjustments`, [
-        where('poNumber', '==', oldPONumber),
-        where('site.id', '==', siteId),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const adjustments = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/adjustments`, [
+          where('poNumber', '==', oldPONumber),
+          where('site.id', '==', siteId),
+        ])
+        .pipe(take(1))
+    );
 
     if (adjustments) {
       adjustments.forEach((adjustment) => {
@@ -138,13 +141,14 @@ export class POUpdateService {
     }
 
     // 5. Returns
-    const returns = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/returns`, [
-        where('poNumber', '==', oldPONumber),
-        where('site.id', '==', siteId),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const returns = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/returns`, [
+          where('poNumber', '==', oldPONumber),
+          where('site.id', '==', siteId),
+        ])
+        .pipe(take(1))
+    );
 
     if (returns) {
       returns.forEach((returnDoc) => {
@@ -157,13 +161,14 @@ export class POUpdateService {
     }
 
     // 6. Transaction invoices
-    const invoices = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/transactionInvoices`, [
-        where('poNumber', '==', oldPONumber),
-        where('site.id', '==', siteId),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const invoices = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/transactionInvoices`, [
+          where('poNumber', '==', oldPONumber),
+          where('site.id', '==', siteId),
+        ])
+        .pipe(take(1))
+    );
 
     if (invoices) {
       invoices.forEach((invoice) => {
@@ -176,18 +181,19 @@ export class POUpdateService {
     }
 
     // 7. Transfers (from)
-    const fromTransfers = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/transfers`, [
-        where('fromPO', '==', oldPONumber),
-        where('fromSite.id', '==', siteId),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const fromTransfers = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+          where('fromPO', '==', oldPONumber),
+          where('fromSite.id', '==', siteId),
+        ])
+        .pipe(take(1))
+    );
 
     if (fromTransfers) {
       fromTransfers.forEach((transfer) => {
         updates.push({
-          collection: `company/${companyId}/transfers`,
+          collection: `company/${companyId}/poTransfers`,
           docId: transfer.id,
           updateData: { fromPO: newPONumber },
         });
@@ -195,18 +201,19 @@ export class POUpdateService {
     }
 
     // 8. Transfers (to)
-    const toTransfers = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/transfers`, [
-        where('toPO', '==', oldPONumber),
-        where('toSite.id', '==', siteId),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const toTransfers = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+          where('toPO', '==', oldPONumber),
+          where('toSite.id', '==', siteId),
+        ])
+        .pipe(take(1))
+    );
 
     if (toTransfers) {
       toTransfers.forEach((transfer) => {
         updates.push({
-          collection: `company/${companyId}/transfers`,
+          collection: `company/${companyId}/poTransfers`,
           docId: transfer.id,
           updateData: { toPO: newPONumber },
         });
@@ -290,13 +297,14 @@ export class POUpdateService {
     siteId: string,
     newPONumber: string
   ): Promise<void> {
-    const existingPOs = await this.editSvc
-      .getCollectionFiltered(`company/${companyId}/pos`, [
-        where('site.id', '==', siteId),
-        where('poNumber', '==', newPONumber),
-      ])
-      .pipe(take(1))
-      .toPromise();
+    const existingPOs = await firstValueFrom(
+      this.editSvc
+        .getCollectionFiltered(`company/${companyId}/pos`, [
+          where('site.id', '==', siteId),
+          where('poNumber', '==', newPONumber),
+        ])
+        .pipe(take(1))
+    );
 
     if (existingPOs && existingPOs.length > 0) {
       throw new Error('PO number already exists for this site');
@@ -329,55 +337,62 @@ export class POUpdateService {
       fromTransfers,
       toTransfers,
     ] = await Promise.all([
-      this.editSvc
-        .getCollectionFiltered(`company/${companyId}/transactionLog`, [
-          where('poNumber', '==', poNumber),
-          where('siteId', '==', siteId),
-        ])
-        .pipe(take(1))
-        .toPromise(),
-      this.editSvc
-        .getCollectionFiltered(`company/${companyId}/shipments`, [
-          where('poNumber', '==', poNumber),
-          where('site.id', '==', siteId),
-        ])
-        .pipe(take(1))
-        .toPromise(),
-      this.editSvc
-        .getCollectionFiltered(`company/${companyId}/adjustments`, [
-          where('poNumber', '==', poNumber),
-          where('site.id', '==', siteId),
-        ])
-        .pipe(take(1))
-        .toPromise(),
-      this.editSvc
-        .getCollectionFiltered(`company/${companyId}/returns`, [
-          where('poNumber', '==', poNumber),
-          where('site.id', '==', siteId),
-        ])
-        .pipe(take(1))
-        .toPromise(),
-      this.editSvc
-        .getCollectionFiltered(`company/${companyId}/transactionInvoices`, [
-          where('poNumber', '==', poNumber),
-          where('site.id', '==', siteId),
-        ])
-        .pipe(take(1))
-        .toPromise(),
-      this.editSvc
-        .getCollectionFiltered(`company/${companyId}/transfers`, [
-          where('fromPO', '==', poNumber),
-          where('fromSite.id', '==', siteId),
-        ])
-        .pipe(take(1))
-        .toPromise(),
-      this.editSvc
-        .getCollectionFiltered(`company/${companyId}/transfers`, [
-          where('toPO', '==', poNumber),
-          where('toSite.id', '==', siteId),
-        ])
-        .pipe(take(1))
-        .toPromise(),
+      firstValueFrom(
+        this.editSvc
+          .getCollectionFiltered(`company/${companyId}/transactionLog`, [
+            where('poNumber', '==', poNumber),
+            where('siteId', '==', siteId),
+          ])
+          .pipe(take(1))
+      ),
+      firstValueFrom(
+        this.editSvc
+          .getCollectionFiltered(`company/${companyId}/shipments`, [
+            where('poNumber', '==', poNumber),
+            where('site.id', '==', siteId),
+          ])
+          .pipe(take(1))
+      ),
+      firstValueFrom(
+        this.editSvc
+          .getCollectionFiltered(`company/${companyId}/adjustments`, [
+            where('poNumber', '==', poNumber),
+            where('site.id', '==', siteId),
+          ])
+          .pipe(take(1))
+      ),
+      firstValueFrom(
+        this.editSvc
+          .getCollectionFiltered(`company/${companyId}/returns`, [
+            where('poNumber', '==', poNumber),
+            where('site.id', '==', siteId),
+          ])
+          .pipe(take(1))
+      ),
+      firstValueFrom(
+        this.editSvc
+          .getCollectionFiltered(`company/${companyId}/transactionInvoices`, [
+            where('poNumber', '==', poNumber),
+            where('site.id', '==', siteId),
+          ])
+          .pipe(take(1))
+      ),
+      firstValueFrom(
+        this.editSvc
+          .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+            where('fromPO', '==', poNumber),
+            where('fromSite.id', '==', siteId),
+          ])
+          .pipe(take(1))
+      ),
+      firstValueFrom(
+        this.editSvc
+          .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+            where('toPO', '==', poNumber),
+            where('toSite.id', '==', siteId),
+          ])
+          .pipe(take(1))
+      ),
     ]);
 
     const counts = {
