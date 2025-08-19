@@ -5,7 +5,7 @@
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
-<ion-item lines="none" mode="ios">
+<!-- <ion-item lines="none" mode="ios">
   <ion-select
     #rows
     slot="start"
@@ -18,10 +18,9 @@
     <ion-select-option value="50">50</ion-select-option>
     <ion-select-option value="100">100</ion-select-option>
   </ion-select>
-</ion-item>
+</ion-item> -->
 <ngx-datatable
   class="bootstrap striped rounded-lg mb-5"
-  [limit]="rows.value"
   [rows]="temp$ | async"
   [rowHeight]="50"
   [columnMode]="'force'"

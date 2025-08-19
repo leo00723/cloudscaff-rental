@@ -86,6 +86,7 @@ import { AddAdjustmentComponent } from './add-adjustment/add-adjustment.componen
 import { PoCustomItemComponent } from './po-custom-item/po-custom-item.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { TransactionOverReturnComponent } from './transaction-over-return/transaction-over-return.component';
+import { PONumberManagerComponent } from './po-number-manager/po-number-manager.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -164,6 +165,7 @@ const COMPONENTS = [
   ViewStockLogComponent,
   ViewTermsComponent,
   WeightPipe,
+  PONumberManagerComponent,
 ];
 const IMPORTS = [
   CommonModule,
