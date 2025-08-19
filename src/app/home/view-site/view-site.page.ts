@@ -673,6 +673,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         balanceQty: item.currentBalance,
         adjustmentTotal: item.totalAdjusted,
         overageReturnTotal: item.totalOverReturned,
+        weight: item.weight, // Explicitly include weight for PDF
       })
     );
 
