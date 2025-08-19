@@ -586,6 +586,14 @@ export class ViewSitePage implements OnInit, OnDestroy {
   async downloadPDF(items: InventoryItem[], site: Site) {
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
 
+    // Get all stock items from masterlist
+    const stockItems: InventoryItem[] = await lastValueFrom(
+      this.masterSvc
+        .edit()
+        .getCollectionOrdered(`company/${company.id}/stockItems`, 'code', 'asc')
+        .pipe(take(1))
+    );
+
     // Get all transaction types (same as downloadHistoryExcel)
     const [
       deliveryData,
@@ -651,7 +659,10 @@ export class ViewSitePage implements OnInit, OnDestroy {
     ];
 
     // Use the same consolidation logic as downloadHistoryExcel
-    const consolidatedItemsData = this.consolidateItemDataPDF(allData);
+    const consolidatedItemsData = this.consolidateItemDataPDF(
+      allData,
+      stockItems
+    );
 
     // Convert the consolidated data to the format expected by the PDF service
     const groupedList = Object.values(consolidatedItemsData).map(
@@ -668,7 +679,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
     const pdf = await this.masterSvc
       .pdf()
       .inventoryTransactionList(site, groupedList, company);
-    this.masterSvc
+    await this.masterSvc
       .pdf()
       .handlePdf(pdf, `${site.code}-${site.name}-Inventory List`);
   }
@@ -676,6 +687,14 @@ export class ViewSitePage implements OnInit, OnDestroy {
   async downloadHistoryExcel(site: Site) {
     this.loading.present();
     const company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+
+    // Get all stock items from masterlist
+    const stockItems: InventoryItem[] = await lastValueFrom(
+      this.masterSvc
+        .edit()
+        .getCollectionOrdered(`company/${company.id}/stockItems`, 'code', 'asc')
+        .pipe(take(1))
+    );
 
     // Get all transaction types (excluding transfers as they are detected from delivery/return pairs)
     const [
@@ -742,7 +761,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
     ];
 
     // Generate Excel file
-    await this.generateExcelHistory(allData, site);
+    await this.generateExcelHistory(allData, site, stockItems);
     this.loading.dismiss();
   }
 
@@ -773,7 +792,11 @@ export class ViewSitePage implements OnInit, OnDestroy {
       .navigateByUrl('/dashboard/settings/tutorial?ch=6&vid=0');
   }
 
-  async generateExcelHistory(allData: any[], site: Site) {
+  async generateExcelHistory(
+    allData: any[],
+    site: Site,
+    stockItems: InventoryItem[]
+  ) {
     // Create Excel workbook
     const workbook = XLSX.utils.book_new();
     const worksheetData = [];
@@ -838,6 +861,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
       'SL NO',
       'Item Code',
       'Description',
+      'Weight (kg)',
       'Total Balance In Project',
     ];
 
@@ -858,7 +882,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
     worksheetData.push(headers);
 
     // Create reference row - Row 5
-    const referenceRow = ['Reference', '', '', ''];
+    const referenceRow = ['Reference', '', '', '', ''];
 
     // Add delivery codes for each delivery date
     deliveryDates.forEach((date) => {
@@ -911,11 +935,17 @@ export class ViewSitePage implements OnInit, OnDestroy {
     worksheetData.push(referenceRow);
 
     // Process items data
-    const itemsData = this.consolidateItemData(allData);
+    const itemsData = this.consolidateItemData(allData, stockItems);
     let slNo = 1;
 
     Object.values(itemsData).forEach((item: any) => {
-      const row = [slNo++, item.code, item.name, item.currentBalance || 0];
+      const row = [
+        slNo++,
+        item.code,
+        item.name,
+        item.weight || '',
+        item.currentBalance || 0,
+      ];
 
       // Add quantities for each delivery date
       deliveryDates.forEach((date) => {
@@ -944,6 +974,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
       { wch: 8 }, // SL NO
       { wch: 15 }, // Item Code
       { wch: 35 }, // Description
+      { wch: 12 }, // Weight (kg)
       { wch: 20 }, // Total Balance In Project
     ];
 
@@ -1000,8 +1031,17 @@ export class ViewSitePage implements OnInit, OnDestroy {
     XLSX.writeFile(workbook, fileName);
   }
 
-  private consolidateItemData(allData: any[]): any {
+  private consolidateItemData(
+    allData: any[],
+    stockItems: InventoryItem[]
+  ): any {
     const items = {};
+
+    // Create a lookup map for stockItems by code for efficient weight mapping
+    const stockItemsMap = new Map();
+    stockItems.forEach((stockItem) => {
+      stockItemsMap.set(stockItem.code, stockItem);
+    });
 
     // First, identify transfer transactions by matching delivery and return codes
     const transferCodes = new Set();
@@ -1035,6 +1075,10 @@ export class ViewSitePage implements OnInit, OnDestroy {
       const key = item.code;
 
       if (!items[key]) {
+        // Get weight from stockItems lookup, fallback to transaction item weight
+        const masterStockItem = stockItemsMap.get(item.code);
+        const weight = masterStockItem?.weight || item.weight;
+
         items[key] = {
           code: item.code,
           name: item.name,
@@ -1046,12 +1090,19 @@ export class ViewSitePage implements OnInit, OnDestroy {
           location: item.location,
           category: item.category,
           size: item.size,
-          weight: item.weight,
+          weight,
         };
       }
 
       // Update other fields with latest values
       items[key].location = item.location || items[key].location;
+      // Update weight from stockItems if available
+      const stockItem = stockItemsMap.get(item.code);
+      if (stockItem?.weight) {
+        items[key].weight = stockItem.weight;
+      } else if (item.weight) {
+        items[key].weight = item.weight;
+      }
 
       // Check if this is a same-site transfer
       const isTransfer =
@@ -1118,8 +1169,17 @@ export class ViewSitePage implements OnInit, OnDestroy {
     return items;
   }
 
-  private consolidateItemDataPDF(allData: any[]): any {
+  private consolidateItemDataPDF(
+    allData: any[],
+    stockItems: InventoryItem[]
+  ): any {
     const items = {};
+
+    // Create a lookup map for stockItems by code for efficient weight mapping
+    const stockItemsMap = new Map();
+    stockItems.forEach((stockItem) => {
+      stockItemsMap.set(stockItem.code, stockItem);
+    });
 
     // First, identify transfer transactions by matching delivery and return codes
     const transferCodes = new Set();
@@ -1153,6 +1213,10 @@ export class ViewSitePage implements OnInit, OnDestroy {
       const key = item.code;
 
       if (!items[key]) {
+        // Get weight from stockItems lookup, fallback to transaction item weight
+        const masterStockItem = stockItemsMap.get(item.code);
+        const weight = masterStockItem?.weight || item.weight;
+
         items[key] = {
           code: item.code,
           name: item.name,
@@ -1166,12 +1230,19 @@ export class ViewSitePage implements OnInit, OnDestroy {
           location: item.location,
           category: item.category,
           size: item.size,
-          weight: item.weight,
+          weight,
         };
       }
 
       // Update other fields with latest values
       items[key].location = item.location || items[key].location;
+      // Update weight from stockItems if available
+      const stockItem = stockItemsMap.get(item.code);
+      if (stockItem?.weight) {
+        items[key].weight = stockItem.weight;
+      } else if (item.weight) {
+        items[key].weight = item.weight;
+      }
 
       // Check if this is a same-site transfer
       const isTransfer =
