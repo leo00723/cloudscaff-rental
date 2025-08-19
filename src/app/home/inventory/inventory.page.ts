@@ -387,7 +387,6 @@ export class InventoryPage implements OnInit {
 
     matrix.forEach((row) => {
       const itemId = row.item.id;
-      console.log(row.item.weight);
       if (!itemMap.has(itemId)) {
         itemMap.set(itemId, {
           id: itemId,
