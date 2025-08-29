@@ -771,72 +771,107 @@ export class InventoryPage implements OnInit {
       const user = this.masterSvc.store().selectSnapshot(UserState.user);
 
       if (file) {
+        // Set uploading state before parsing
+        this.uploading = true;
+
+        // Optimize CSV parsing with worker and chunk processing
         Papa.parse(file, {
           header: true,
-          worker: true,
+          worker: true, // Use a web worker for parsing
           dynamicTyping: true,
+          skipEmptyLines: true, // Skip empty lines for better performance
+          chunkSize: 1024 * 1024, // Process in chunks of 1MB
 
           complete: async (result) => {
-            this.uploading = true;
-            const data = result.data.map((item) => ({
-              code: item.Code || '',
-              category: item.Category || '',
-              size: item.Size || '',
-              name: item.Description || '',
-              location: item.Location || '',
-              yardQty: +item.Yard_Qty || 0,
-              availableQty: +item.Yard_Qty || 0,
-              weight: parseFloat(item.Weight) || 0,
-              inMaintenanceQty: 0,
-              inUseQty: 0,
-              damagedQty: 0,
-              lostQty: 0,
-              hireCost: parseFloat(item.Hire_Cost) || 0,
-              replacementCost: parseFloat(item.Replacement_Cost) || 0,
-              sellingCost: parseFloat(item.Selling_Cost) || 0,
-              log: [
-                {
-                  message: `${user.name} added ${item.Yard_Qty} items to the yard.`,
-                  user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    image: user.image || '',
+            // Process data in chunks to avoid UI freezing
+            const processChunk = async (startIdx, endIdx) => {
+              const chunk = result.data.slice(startIdx, endIdx);
+              const mappedChunk = chunk.map((item) => ({
+                code: item.Code || '',
+                category: item.Category || '',
+                size: item.Size || '',
+                name: item.Description || '',
+                location: item.Location || '',
+                supplier: item.Supplier || '',
+                yardQty: +item.Yard_Qty || 0,
+                availableQty: +item.Yard_Qty || 0,
+                weight: parseFloat(item.Weight) || 0,
+                inMaintenanceQty: 0,
+                lowPercentage: parseFloat(item.Inventory_Alert_Percentage) || 0,
+                inUseQty: 0,
+                damagedQty: 0,
+                lostQty: 0,
+                hireCost: parseFloat(item.Hire_Cost) || 0,
+                replacementCost: parseFloat(item.Replacement_Cost) || 0,
+                sellingCost: parseFloat(item.Selling_Cost) || 0,
+                log: [
+                  {
+                    message: `${user.name} added ${item.Yard_Qty} items to the yard.`,
+                    user: {
+                      id: user.id,
+                      name: user.name,
+                      email: user.email,
+                      image: user.image || '',
+                    },
+                    date: new Date(),
+                    status: 'add',
+                    comment: 'Imported',
                   },
-                  date: new Date(),
-                  status: 'add',
-                  comment: 'Imported',
-                },
-              ],
-            }));
-            const company = this.masterSvc
-              .store()
-              .selectSnapshot(CompanyState.company).id;
-            this.uploadCounter = 0;
-            this.uploadTotal = data.length || 0;
-            for (const item of data) {
-              try {
-                await this.masterSvc
-                  .edit()
-                  .addDocument(`company/${company}/stockItems`, item);
-              } catch (error) {
-                console.log(error);
-              } finally {
-                this.uploadCounter++;
+                ],
+              }));
+
+              const company = this.masterSvc
+                .store()
+                .selectSnapshot(CompanyState.company).id;
+
+              const batch = this.masterSvc.edit().batch();
+              for (const item of mappedChunk) {
+                try {
+                  const doc = this.masterSvc
+                    .edit()
+                    .docRef(
+                      `company/${company}/stockItems`,
+                      this.masterSvc
+                        .edit()
+                        .createUID(`company/${company}/stockItems`)
+                    );
+                  batch.set(doc, item);
+                } catch (error) {
+                  console.log(error);
+                } finally {
+                  this.uploadCounter++;
+                  if (this.uploadCounter % 10 === 0) {
+                    // Update UI periodically
+                  }
+                }
               }
+              await batch.commit();
+            };
+
+            this.uploadCounter = 0;
+            this.uploadTotal = result.data.length || 0;
+
+            // Process in chunks of 50 items
+            const chunkSize = 50;
+            for (let i = 0; i < result.data.length; i += chunkSize) {
+              await processChunk(
+                i,
+                Math.min(i + chunkSize, result.data.length)
+              );
+              // Use setTimeout to yield to the browser's event loop
+              await new Promise((resolve) => setTimeout(resolve, 0));
             }
-            if (this.uploadCounter === this.uploadTotal) {
-              this.importing = false;
-              this.uploading = false;
-              this.masterSvc
-                .notification()
-                .toast('Import Successful', 'success');
-            }
+
+            this.importing = false;
+            this.uploading = false;
+
+            this.masterSvc.notification().toast('Import Successful', 'success');
           },
 
           error: () => {
             this.importing = false;
             this.uploading = false;
+
             this.masterSvc
               .notification()
               .toast('Import Failed. Please try again.', 'danger');
