@@ -547,14 +547,14 @@
             (click)="updateShipment('pending')"
             >Update Delivery</ion-button
           >
-          <!-- <ion-button
+          <ion-button
             shape="round"
             *ngIf="isEdit && !loading && shipment.status === 'pending'"
             color="success"
             [disabled]="!blob || (!shipment.signedBy && form.invalid)"
             (click)="sendDelivery()"
             >Send Delivery</ion-button
-          > -->
+          >
 
           <ion-button
             shape="round"
