@@ -396,20 +396,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
-              [
-                {
-                  text: 'Grand Total in words:',
-                  style: 'h4b',
-                  alignment: 'right',
-                  colSpan: 3,
-                },
-                '',
-                '',
-                {
-                  text: this.numberToWords(estimate.total),
-                  style: 'h4b',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Grand Total in words:',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     colSpan: 3,
+              //   },
+              //   '',
+              //   '',
+              //   {
+              //     text: this.numberToWords(estimate.total),
+              //     style: 'h4b',
+              //   },
+              // ],
             ],
           },
           layout: 'noBorders',
@@ -625,20 +625,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
-              [
-                {
-                  text: 'Grand Total in words:',
-                  style: 'h4b',
-                  alignment: 'right',
-                  colSpan: 3,
-                },
-                '',
-                '',
-                {
-                  text: this.numberToWords(estimate.total),
-                  style: 'h4b',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Grand Total in words:',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     colSpan: 3,
+              //   },
+              //   '',
+              //   '',
+              //   {
+              //     text: this.numberToWords(estimate.total),
+              //     style: 'h4b',
+              //   },
+              // ],
             ],
           },
           layout: 'noBorders',
@@ -849,20 +849,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
-              [
-                {
-                  text: 'Grand Total in words:',
-                  style: 'h4b',
-                  alignment: 'right',
-                  colSpan: 3,
-                },
-                '',
-                '',
-                {
-                  text: this.numberToWords(estimate.total),
-                  style: 'h4b',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Grand Total in words:',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     colSpan: 3,
+              //   },
+              //   '',
+              //   '',
+              //   {
+              //     text: this.numberToWords(estimate.total),
+              //     style: 'h4b',
+              //   },
+              // ],
             ],
           },
           layout: 'noBorders',
@@ -1083,20 +1083,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
-              [
-                {
-                  text: 'Grand Total in words:',
-                  style: 'h4b',
-                  alignment: 'right',
-                  colSpan: 3,
-                },
-                '',
-                '',
-                {
-                  text: this.numberToWords(invoice.estimate.total),
-                  style: 'h4b',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Grand Total in words:',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     colSpan: 3,
+              //   },
+              //   '',
+              //   '',
+              //   {
+              //     text: this.numberToWords(invoice.estimate.total),
+              //     style: 'h4b',
+              //   },
+              // ],
             ],
           },
           layout: 'noBorders',
@@ -1485,20 +1485,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
-              [
-                {
-                  text: 'Grand Total in words:',
-                  style: 'h4b',
-                  alignment: 'right',
-                  colSpan: 3,
-                },
-                '',
-                '',
-                {
-                  text: this.numberToWords(invoice.total),
-                  style: 'h4b',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Grand Total in words:',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     colSpan: 3,
+              //   },
+              //   '',
+              //   '',
+              //   {
+              //     text: this.numberToWords(invoice.total),
+              //     style: 'h4b',
+              //   },
+              // ],
             ],
           },
           layout: 'noBorders',
@@ -1745,20 +1745,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
-              [
-                {
-                  text: 'Grand Total in words:',
-                  style: 'h4b',
-                  alignment: 'right',
-                  colSpan: 3,
-                },
-                '',
-                '',
-                {
-                  text: this.numberToWords(invoice.total),
-                  style: 'h4b',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Grand Total in words:',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     colSpan: 3,
+              //   },
+              //   '',
+              //   '',
+              //   {
+              //     text: this.numberToWords(invoice.total),
+              //     style: 'h4b',
+              //   },
+              // ],
             ],
           },
           margin: [0, 10, 0, 0],
@@ -2174,20 +2174,20 @@ export class PdfService {
                   margin: [0, 5],
                 },
               ],
-              [
-                {
-                  text: 'Grand Total in words:',
-                  style: 'h4b',
-                  alignment: 'right',
-                  colSpan: 3,
-                },
-                '',
-                '',
-                {
-                  text: this.numberToWords(invoice.total),
-                  style: 'h4b',
-                },
-              ],
+              // [
+              //   {
+              //     text: 'Grand Total in words:',
+              //     style: 'h4b',
+              //     alignment: 'right',
+              //     colSpan: 3,
+              //   },
+              //   '',
+              //   '',
+              //   {
+              //     text: this.numberToWords(invoice.total),
+              //     style: 'h4b',
+              //   },
+              // ],
             ],
           },
           layout: 'noBorders',
@@ -3237,14 +3237,7 @@ export class PdfService {
           },
           layout: tLayout,
         },
-        {
-          text: `If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
-After received this material please sign and seal this delivery note and return a copy to us.
-E-mail: Info@hayakel-ksa.com`,
-          alignment: 'center',
-          margin: [0, 10, 0, 0],
-          style: 'hb4',
-        },
+
         await this.addUploads(delivery.uploads),
       ],
       styles: stylesCS,
@@ -4053,14 +4046,7 @@ E-mail: Info@hayakel-ksa.com`,
           },
           layout: tLayout,
         },
-        {
-          text: `If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
-After received this material please sign and seal this delivery note and return a copy to us.
-E-mail: Info@hayakel-ksa.com`,
-          alignment: 'center',
-          margin: [0, 10, 0, 0],
-          style: 'hb4',
-        },
+
         await this.addUploads(returnDoc.uploads),
       ],
       styles: stylesCS,
@@ -4168,17 +4154,7 @@ E-mail: Info@hayakel-ksa.com`,
           },
           layout: tLayout,
         },
-        {
-          text: `This transfer note confirms the movement of materials from ${
-            transferDoc.fromSite?.name || 'N/A'
-          } to ${transferDoc.toSite?.name || 'N/A'}.
-Please verify all quantities and conditions before accepting the transfer.
-If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
-E-mail: Info@hayakel-ksa.com`,
-          alignment: 'center',
-          margin: [0, 10, 0, 0],
-          style: 'hb4',
-        },
+
         await this.addUploads(transferDoc.uploads),
       ],
       styles: stylesCS,
@@ -4446,15 +4422,7 @@ E-mail: Info@hayakel-ksa.com`,
           },
           layout: tLayout,
         },
-        {
-          text: `This document confirms the over return of materials to the yard.
-Please verify all quantities and conditions before signing.
-If you found any difference in items or quantity please inform us on the mention Email or mobile Contact.
-E-mail: Info@hayakel-ksa.com`,
-          alignment: 'center',
-          margin: [0, 10, 0, 0],
-          style: 'hb4',
-        },
+
         await this.addUploads(overReturnDoc.uploads),
       ],
       styles: stylesCS,
