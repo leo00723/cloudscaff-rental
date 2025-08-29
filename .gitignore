@@ -17,7 +17,6 @@ $RECYCLE.BIN/
 log.txt
 npm-debug.log*
 
-/functions
 /.angular
 /.idea
 /.ionic
@@ -36,48 +35,6 @@ npm-debug.log*
 .firebase
 *-debug.log
 .runtimeconfig.json
-
-# Ionic/Capacitor specific
-.ionic/
-ios/
-android/
-www/
-dist/
-
-# Environment files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Editor directories and files
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Dependencies
-package-lock.json
-yarn.lock
-
-# Build outputs
-www/build/
-build/
-dist/
-
-# Capacitor
-/ios
-/android
+.emulator-data
+src/app/home/reports/function.ts
+src/app/home/reports/pdf.ts
