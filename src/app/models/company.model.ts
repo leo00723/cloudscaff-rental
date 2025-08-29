@@ -20,6 +20,7 @@ export interface Company {
   logoRef?: string;
   logoUrl?: string;
   subHeaderUrl?: string;
+  subHeaderRef?: string;
   mass?: UnitData;
   measurement?: UnitData;
   name?: string;

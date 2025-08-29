@@ -30,11 +30,23 @@
                 <h6>Upload Business Logo</h6>
               </ion-text>
               <app-img-upload
-                [image]="company.logoUrl ? company.logoUrl : ''"
-                [deleteRef]="company.logoRef ? company.logoRef : ''"
+                [image]="company.logoUrl || ''"
+                [deleteRef]="company.logoRef || ''"
                 path="company/{{company.id}}/logo"
                 icon="cloud-upload-outline"
-                (result)="uploadImage($event)"
+                (res)="uploadImage($event)"
+              ></app-img-upload>
+            </ion-col>
+            <ion-col size="12">
+              <ion-text>
+                <h6>Upload Billing Header</h6>
+              </ion-text>
+              <app-img-upload
+                [image]="company.subHeaderUrl || ''"
+                [deleteRef]="company.subHeaderRef || ''"
+                path="company/{{company.id}}/subheader"
+                icon="cloud-upload-outline"
+                (res)="uploadImage($event, 'subheader')"
               ></app-img-upload>
             </ion-col>
             <ion-col size="12">
@@ -388,11 +400,23 @@
                   <h6>Upload Business Logo</h6>
                 </ion-text>
                 <app-img-upload
-                  [image]="company.logoUrl ? company.logoUrl : ''"
-                  [deleteRef]="company.logoRef ? company.logoRef : ''"
+                  [image]="company.logoUrl ||''"
+                  [deleteRef]="company.logoRef || ''"
                   path="company/{{company.id}}/logo"
                   icon="cloud-upload-outline"
-                  (result)="uploadImage($event)"
+                  (res)="uploadImage($event)"
+                ></app-img-upload>
+              </ion-col>
+              <ion-col size="12">
+                <ion-text>
+                  <h6>Upload Billing Header</h6>
+                </ion-text>
+                <app-img-upload
+                  [image]="company.subHeaderUrl || ''"
+                  [deleteRef]="company.subHeaderRef || ''"
+                  path="company/{{company.id}}/subheader"
+                  icon="cloud-upload-outline"
+                  (res)="uploadImage($event, 'subheader')"
                 ></app-img-upload>
               </ion-col>
               <ion-col size="12">

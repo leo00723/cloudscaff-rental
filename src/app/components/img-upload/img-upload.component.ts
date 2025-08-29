@@ -26,7 +26,7 @@ export class ImgUploadComponent {
       this.url = val;
     }
   }
-  @Output() result = new EventEmitter<any>();
+  @Output() res = new EventEmitter<any>();
   url = '';
   loading = false;
   constructor(
@@ -60,7 +60,7 @@ export class ImgUploadComponent {
         );
         if (res) {
           this.url = res.url;
-          this.result.emit(res);
+          this.res.emit(res);
         } else {
           this.notificationSvc.toast(
             'Something went wrong selecting your image. Please try again!',
@@ -82,7 +82,7 @@ export class ImgUploadComponent {
       await this.imgSvc.deleteFile(`${this.deleteRef}_1280x720.webp`);
       this.url = '';
       this.deleteRef = '';
-      this.result.emit({ url: '', ref: '' });
+      this.res.emit({ url: '', ref: '' });
       this.loading = false;
     } catch (e) {
       console.error(e);

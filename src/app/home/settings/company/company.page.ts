@@ -59,6 +59,8 @@ export class CompanyPage implements OnDestroy {
     vatNum: '',
     logoUrl: '',
     logoRef: '',
+    subHeaderUrl: '',
+    subHeaderRef: '',
     regNumber: '',
   };
   currencies = new Currencies().currencies;
@@ -122,15 +124,24 @@ export class CompanyPage implements OnDestroy {
   next(i: number) {
     this.page += i;
   }
-  async uploadImage(data: any) {
+  async uploadImage(data: any, type = 'logo') {
     try {
-      this.company.logoUrl = data.url;
-      this.company.logoRef = data.ref;
-      await this.masterSvc.edit().updateDoc('company', this.company.id, {
-        thumb: data.url,
-        logoUrl: data.url,
-        logoRef: data.ref,
-      });
+      if (type === 'logo') {
+        this.company.logoUrl = data.url;
+        this.company.logoRef = data.ref;
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          logoUrl: data.url,
+          logoRef: data.ref,
+        });
+      } else {
+        this.company.subHeaderUrl = data.url;
+        this.company.subHeaderRef = data.ref;
+        await this.masterSvc.edit().updateDoc('company', this.company.id, {
+          subHeaderUrl: data.url,
+          subHeaderRef: data.ref,
+        });
+      }
+
       this.masterSvc
         .notification()
         .toast('Image uploaded successfully', 'success');
