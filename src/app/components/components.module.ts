@@ -87,6 +87,7 @@ import { PoCustomItemComponent } from './po-custom-item/po-custom-item.component
 import { QRCodeModule } from 'angularx-qrcode';
 import { TransactionOverReturnComponent } from './transaction-over-return/transaction-over-return.component';
 import { PONumberManagerComponent } from './po-number-manager/po-number-manager.component';
+import { DateFormatPipe } from './date-format.pipe';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -166,6 +167,7 @@ const COMPONENTS = [
   ViewTermsComponent,
   WeightPipe,
   PONumberManagerComponent,
+  DateFormatPipe,
 ];
 const IMPORTS = [
   CommonModule,
