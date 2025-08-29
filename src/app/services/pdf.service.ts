@@ -320,8 +320,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
-                { text: `SA${company.accountNum}`, alignment: 'left' },
+                { text: 'Account No:', style: 'h6b', alignment: 'left' },
+                { text: `${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -549,8 +549,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
-                { text: `SA${company.accountNum}`, alignment: 'left' },
+                { text: 'Account No:', style: 'h6b', alignment: 'left' },
+                { text: `${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -773,8 +773,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
-                { text: `SA${company.accountNum}`, alignment: 'left' },
+                { text: 'Account No:', style: 'h6b', alignment: 'left' },
+                { text: `${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -1007,8 +1007,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
-                { text: `SA${company.accountNum}`, alignment: 'left' },
+                { text: 'Account No:', style: 'h6b', alignment: 'left' },
+                { text: `${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -1413,8 +1413,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
-                { text: `SA${company.accountNum}`, alignment: 'left' },
+                { text: 'Account No:', style: 'h6b', alignment: 'left' },
+                { text: `${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -1673,8 +1673,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
-                { text: `SA${company.accountNum}`, alignment: 'left' },
+                { text: 'Account No:', style: 'h6b', alignment: 'left' },
+                { text: `${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
@@ -2102,8 +2102,8 @@ export class PdfService {
                 },
               ],
               [
-                { text: 'IBAN:', style: 'h6b', alignment: 'left' },
-                { text: `SA${company.accountNum}`, alignment: 'left' },
+                { text: 'Account No:', style: 'h6b', alignment: 'left' },
+                { text: `${company.accountNum}`, alignment: 'left' },
                 {
                   text: `Contract Total:`,
                   style: 'h6b',
