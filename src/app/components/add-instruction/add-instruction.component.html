@@ -50,7 +50,7 @@
           <h6>{{ siteInstruction.site?.name }}</h6>
           <h6>{{ utilitySvc.getAddress(siteInstruction?.customer) }}</h6>
           <h6>{{ siteInstruction.customer?.name }}</h6>
-          <h6>{{ siteInstruction.date | date }}</h6>
+          <h6>{{ siteInstruction.date | dateFormat | date }}</h6>
           <h6>{{ siteInstruction.createdByName }}</h6>
         </ion-label>
       </ion-col>

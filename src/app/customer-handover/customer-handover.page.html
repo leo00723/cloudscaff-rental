@@ -35,7 +35,7 @@
           <h6>{{ handover.handover.code }}</h6>
           <h6>{{ handover.handover.scaffold.code }}</h6>
           <h6>{{ handover.handover.scaffold.siteCode }}</h6>
-          <h6>{{ handover.handover.date.toDate() | date }}</h6>
+          <h6>{{ handover.handover.date| dateFormat | date }}</h6>
         </ion-label>
       </ion-col>
     </ion-row>

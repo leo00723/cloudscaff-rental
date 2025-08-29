@@ -493,6 +493,7 @@
                         <ion-text color="medium">
                           {{
                             (item.date.toDate ? item.date.toDate() : item.date)
+                              | dateFormat
                               | date : "dd MMM yyyy HH:mm"
                           }}
                         </ion-text>

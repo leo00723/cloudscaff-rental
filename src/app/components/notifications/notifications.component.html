@@ -27,7 +27,7 @@
   <ion-list [inset]="true" mode="ios" color="dark">
     <ng-container *ngFor="let item of [].constructor(10)">
       <ion-item>
-        <ion-label> {{ date | date }} - Notification </ion-label>
+        <ion-label> {{ date | dateFormat | date }} - Notification </ion-label>
       </ion-item>
     </ng-container>
   </ion-list>

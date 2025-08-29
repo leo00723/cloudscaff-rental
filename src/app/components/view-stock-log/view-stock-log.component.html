@@ -36,7 +36,7 @@
               </td>
               <td>{{ log.siteName }}</td>
               <td>{{ log.customerName }}</td>
-              <td>{{ log.date | date : "short" }}</td>
+              <td>{{ log.date | dateFormat | date : "short" }}</td>
               <td>
                 <ion-text
                   [color]="log.type === 'Delivery' ? 'danger' : 'success'"

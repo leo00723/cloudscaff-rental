@@ -51,7 +51,7 @@
       headerClass="text-center"
     >
       <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-        {{ value | date : "dd MMM yyyy" }}
+        {{ value | dateFormat | date : "dd MMM yyyy" }}
       </ng-template>
     </ngx-datatable-column>
     <ngx-datatable-column
@@ -60,7 +60,7 @@
       headerClass="text-center"
     >
       <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-        {{ value | date : "dd MMM yyyy" }}
+        {{ value | dateFormat | date : "dd MMM yyyy" }}
       </ng-template>
     </ngx-datatable-column>
     <ngx-datatable-column
@@ -172,7 +172,7 @@
                 size="small"
                 color="success"
                 (click)="downloadHandover(scaffold.latestHandover)"
-                >{{ scaffold.latestHandover.date.toDate() | date }}
+                >{{ scaffold.latestHandover.date | dateFormat | date }}
               </ion-chip>
               <br />
               {{ scaffold.latestHandover.createdByName }}
@@ -185,7 +185,7 @@
                 size="small"
                 color="primary"
                 (click)="downloadInspection(scaffold.latestInspection)"
-                >{{ scaffold.latestInspection.date.toDate() | date }}
+                >{{ scaffold.latestInspection.date | dateFormat | date }}
               </ion-chip>
               <br />
               {{ scaffold?.latestInspection?.createdByName }}
@@ -198,7 +198,9 @@
                 color="danger"
                 (click)="downloadDismantle(scaffold.latestDismantle)"
               >
-                {{ scaffold.latestDismantle.date.toDate() | date }}</ion-chip
+                {{
+                  scaffold.latestDismantle.date | dateFormat | date
+                }}</ion-chip
               >
               <br />
               {{ scaffold?.latestDismantle?.createdByName }}

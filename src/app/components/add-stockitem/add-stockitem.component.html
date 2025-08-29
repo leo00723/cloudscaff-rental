@@ -343,10 +343,7 @@
                       </td>
                       <td>{{ log.user.name }}</td>
                       <td>
-                        {{
-                          (log.date.toDate ? log.date.toDate() : log.date)
-                            | date : "dd/MM/yy HH:mm"
-                        }}
+                        {{ log.date | dateFormat | date : "dd/MM/yy HH:mm" }}
                       </td>
                     </tr>
                   </ng-container>

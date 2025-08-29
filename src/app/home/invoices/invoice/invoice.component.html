@@ -301,12 +301,12 @@
 
             <!-- Start Date (delivery or return date) -->
             <td>
-              {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
+              {{ transaction.invoiceStart | dateFormat | date : "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
             <td>
-              {{ transaction.invoiceEnd.toDate() | date : "dd MMM yy" }}
+              {{ transaction.invoiceEnd | dateFormat | date : "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
@@ -400,12 +400,12 @@
 
             <!-- Start Date (delivery or return date) -->
             <td>
-              {{ transaction.invoiceStart.toDate() | date : "dd MMM yy" }}
+              {{ transaction.invoiceStart | dateFormat | date : "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
             <td>
-              {{ transaction.invoiceEnd.toDate() | date : "dd MMM yy" }}
+              {{ transaction.invoiceEnd | dateFormat | date : "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->

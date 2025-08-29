@@ -46,7 +46,7 @@
   <ngx-datatable-column name="PO Number" prop="poNumber"></ngx-datatable-column>
   <ngx-datatable-column name="Date" prop="date">
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date : "dd MMM yyyy" }}
+      {{ value | dateFormat | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -82,7 +82,7 @@
         {{ row.comments[row.comments.length - 1]?.message }}
         <br />
         <br />
-        {{ row.comments[row.comments.length - 1]?.date.toDate() | date }}
+        {{ row.comments[row.comments.length - 1]?.date | dateFormatFormat }}
       </ng-container>
     </ng-template>
   </ngx-datatable-column>

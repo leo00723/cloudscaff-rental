@@ -71,7 +71,9 @@
           <h6>{{ handover.code }}</h6>
           <h6>{{ handover.scaffold.code }}</h6>
           <h6>{{ handover.scaffold.siteCode }}</h6>
-          <h6>{{ handover.date | date : "dd MMM yyyy (HH:mm)" }}</h6>
+          <h6>
+            {{ handover.date | dateFormat | date : "dd MMM yyyy (HH:mm)" }}
+          </h6>
         </ion-label>
       </ion-col>
     </ion-row>

@@ -67,9 +67,9 @@
             <ion-label>
               <h6>{{ scaffold.code }}</h6>
               <h6>{{ scaffold.siteCode }}</h6>
-              <h6>{{ scaffold.date | date }}</h6>
-              <h6>{{ scaffold.startDate | date }}</h6>
-              <h6>{{ scaffold.endDate | date }}</h6>
+              <h6>{{ scaffold.date | dateFormat | date }}</h6>
+              <h6>{{ scaffold.startDate | dateFormat | date }}</h6>
+              <h6>{{ scaffold.endDate | dateFormat | date }}</h6>
               <h6>{{ scaffold.createdByName }}</h6>
             </ion-label>
           </ion-col>

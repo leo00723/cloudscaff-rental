@@ -55,7 +55,7 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date : "dd MMM yyyy" }}
+      {{ value | dateFormat | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -64,7 +64,7 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | date : "dd MMM yyyy" }}
+      {{ value | dateFormat | date : "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -99,6 +99,7 @@
         <br />
         {{
           row.estimate.comments[row.estimate.comments.length - 1].date.toDate()
+            | dateFormat
             | date
         }}
       </ng-container>

@@ -55,9 +55,9 @@
 
           <ng-container *ngIf="customInvoice">
             <td>
-              {{ item.startDate | date }}
+              {{ item.startDate | dateFormat | date }}
             </td>
-            <td>{{ item.endDate | date }}</td>
+            <td>{{ item.endDate | dateFormat | date }}</td>
           </ng-container>
 
           <td class="text-center">
