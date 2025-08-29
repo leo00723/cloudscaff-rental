@@ -34,8 +34,8 @@ export class EditprofileComponent implements OnInit {
   async uploadImage(data: any) {
     try {
       await this.masterSvc.edit().updateDoc('users', this.user.id, {
-        thumb: data.url1,
-        image: data.url2,
+        thumb: data.url,
+        image: data.url,
         imageRef: data.ref,
       });
       this.user = this.masterSvc.store().selectSnapshot(UserState.user);

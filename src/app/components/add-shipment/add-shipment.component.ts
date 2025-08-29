@@ -209,7 +209,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           ''
         );
         if (res) {
-          this.shipment.signature = res.url2;
+          this.shipment.signature = res.url;
           this.shipment.signatureRef = res.ref;
         }
 
@@ -259,10 +259,10 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           );
           if (res) {
             if (isAdmin) {
-              this.shipment.signature = res.url2;
+              this.shipment.signature = res.url;
               this.shipment.signatureRef = res.ref;
             } else {
-              this.shipment.signature2 = res.url2;
+              this.shipment.signature2 = res.url;
               this.shipment.signatureRef2 = res.ref;
             }
           }

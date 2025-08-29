@@ -296,13 +296,13 @@ export class AddInstructionComponent implements OnInit {
         );
       this.siteInstruction.signatures
         ? this.siteInstruction.signatures.push({
-            signature: res.url2,
+            signature: res.url,
             signatureRef: res.ref,
             signedBy: data.name,
           })
         : (this.siteInstruction.signatures = [
             {
-              signature: res.url2,
+              signature: res.url,
               signatureRef: res.ref,
               signedBy: data.name,
             },

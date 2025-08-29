@@ -159,7 +159,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
   //         ''
   //       );
   //       if (res) {
-  //         this.adjustmentDoc.signature2 = res.url2;
+  //         this.adjustmentDoc.signature2 = res.url;
   //         this.adjustmentDoc.signatureRef2 = res.ref;
   //       }
   //     }
@@ -206,7 +206,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
   //       ''
   //     );
   //     if (res) {
-  //       this.adjustmentDoc.signature = res.url2;
+  //       this.adjustmentDoc.signature = res.url;
   //       this.adjustmentDoc.signatureRef = res.ref;
   //     }
 

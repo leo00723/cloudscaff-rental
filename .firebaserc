@@ -1,4 +1,7 @@
 {
+  "projects": {
+    "default": "cloudscaff-rental"
+  },
   "targets": {
     "cloudscaff-rental": {
       "hosting": {
@@ -8,7 +11,12 @@
       }
     }
   },
-  "projects": {
-    "default": "cloudscaff-rental"
+  "etags": {
+    "cloudscaff-rental": {
+      "extensionInstances": {
+        "delete-user-data": "894383367c1d35b27c977d6b8fade023e3195c4dc45592bb9899f9c12761235a",
+        "storage-resize-images": "60292c1a894f5b873bc21011ad417153b34bbdfb84f8afad8100dec9cee40993"
+      }
+    }
   }
 }

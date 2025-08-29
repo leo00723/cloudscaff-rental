@@ -80,7 +80,7 @@ export class CustomerDismantlePage {
         ''
       );
       if (res) {
-        dismantle.signature = res.url2;
+        dismantle.signature = res.url;
         dismantle.signatureRef = res.ref;
         dismantle.status = 'Signed';
         dismantle.signedBy = ev.name;

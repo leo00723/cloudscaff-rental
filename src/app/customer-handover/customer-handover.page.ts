@@ -80,7 +80,7 @@ export class CustomerHandoverPage {
         ''
       );
       if (res) {
-        handover.signature = res.url2;
+        handover.signature = res.url;
         handover.signatureRef = res.ref;
         handover.status = 'active-Signed';
         handover.signedBy = ev.name;

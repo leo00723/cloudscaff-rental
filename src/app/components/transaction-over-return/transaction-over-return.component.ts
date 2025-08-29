@@ -167,7 +167,7 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
           ''
         );
         if (res) {
-          this.overReturn.signature2 = res.url2;
+          this.overReturn.signature2 = res.url;
           this.overReturn.signatureRef2 = res.ref;
         }
       }

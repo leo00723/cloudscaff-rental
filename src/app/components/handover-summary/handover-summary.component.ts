@@ -55,7 +55,7 @@ export class HandoverSummaryComponent {
         ''
       );
       if (res) {
-        this.handover.signature = res.url2;
+        this.handover.signature = res.url;
         this.handover.signatureRef = res.ref;
         this.handover.status = 'active-Signed';
         this.handover.signedBy = ev.name;

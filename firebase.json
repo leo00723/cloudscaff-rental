@@ -80,5 +80,9 @@
   },
   "storage": {
     "rules": "storage.rules"
+  },
+  "extensions": {
+    "delete-user-data": "firebase/delete-user-data@0.1.24",
+    "storage-resize-images": "firebase/storage-resize-images@0.2.10"
   }
 }

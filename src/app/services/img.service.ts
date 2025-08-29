@@ -33,29 +33,23 @@ export class ImgService {
   async uploadBlob(image: Blob, path: string, deleteRef?: string) {
     try {
       if (deleteRef.length > 0) {
-        await this.deleteFile(`${deleteRef}_100x100.webp`);
-        await this.deleteFile(`${deleteRef}_300x100.webp`);
+        await this.deleteFile(`${deleteRef}_1280x720.webp`);
       }
 
       await uploadBytes(ref(this.storage, `${path}.webp`), image);
 
-      let url1: string;
-      let url2: string;
+      let url: string;
 
-      while (!url1 && !url2) {
+      while (!url) {
         try {
-          url1 = await getDownloadURL(
-            ref(this.storage, `${path}_100x100.webp`)
-          );
-          url2 = await getDownloadURL(
-            ref(this.storage, `${path}_300x100.webp`)
+          url = await getDownloadURL(
+            ref(this.storage, `${path}_1280x720.webp`)
           );
         } catch (e) {}
       }
 
       const data = {
-        url1,
-        url2,
+        url,
         ref: path,
       };
       return data;

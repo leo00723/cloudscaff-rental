@@ -55,7 +55,7 @@ export class DismantleSummaryComponent {
         ''
       );
       if (res) {
-        this.dismantle.signature = res.url2;
+        this.dismantle.signature = res.url;
         this.dismantle.signatureRef = res.ref;
         this.dismantle.status = 'Signed';
         this.dismantle.signedBy = ev.name;

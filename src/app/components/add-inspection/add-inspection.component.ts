@@ -95,7 +95,7 @@ export class AddInspectionComponent implements OnInit {
           ''
         );
         if (res) {
-          this.inspection.signature = res.url2;
+          this.inspection.signature = res.url;
           this.inspection.signatureRef = res.ref;
           await this.masterSvc
             .edit()

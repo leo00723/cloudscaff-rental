@@ -239,7 +239,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           ''
         );
         if (res) {
-          this.returnDoc.signature2 = res.url2;
+          this.returnDoc.signature2 = res.url;
           this.returnDoc.signatureRef2 = res.ref;
         }
       }
@@ -318,7 +318,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         ''
       );
       if (res) {
-        this.returnDoc.signature = res.url2;
+        this.returnDoc.signature = res.url;
         this.returnDoc.signatureRef = res.ref;
       }
 

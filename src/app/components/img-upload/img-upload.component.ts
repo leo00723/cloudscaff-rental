@@ -22,7 +22,9 @@ export class ImgUploadComponent {
   @Input() path: string;
   @Input() deleteRef: string;
   @Input() set image(val: string) {
-    if (val) this.url = val;
+    if (val) {
+      this.url = val;
+    }
   }
   @Output() result = new EventEmitter<any>();
   url = '';
@@ -57,7 +59,7 @@ export class ImgUploadComponent {
           this.deleteRef
         );
         if (res) {
-          this.url = res.url1;
+          this.url = res.url;
           this.result.emit(res);
         } else {
           this.notificationSvc.toast(
@@ -77,11 +79,10 @@ export class ImgUploadComponent {
   async removeImage() {
     try {
       this.loading = true;
-      await this.imgSvc.deleteFile(`${this.deleteRef}_100x100.webp`);
-      await this.imgSvc.deleteFile(`${this.deleteRef}_300x100.webp`);
+      await this.imgSvc.deleteFile(`${this.deleteRef}_1280x720.webp`);
       this.url = '';
       this.deleteRef = '';
-      this.result.emit({ url1: '', url2: '', ref: '' });
+      this.result.emit({ url: '', ref: '' });
       this.loading = false;
     } catch (e) {
       console.error(e);
