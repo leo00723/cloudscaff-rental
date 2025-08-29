@@ -3,12 +3,12 @@
 
 /** Ionic CSS Variables **/
 :root {
-  --ion-color-primary: #feb508;
-  --ion-color-primary-rgb: 254, 181, 8;
-  --ion-color-primary-contrast: #191919;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #e09f07;
-  --ion-color-primary-tint: #febc21;
+  --ion-color-warning: #feb508;
+  --ion-color-warning-rgb: 254, 181, 8;
+  --ion-color-warning-contrast: #191919;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e09f07;
+  --ion-color-warning-tint: #febc21;
 
   --ion-color-secondary: #707070;
   --ion-color-secondary-rgb: 112, 112, 112;
@@ -31,12 +31,12 @@
   --ion-color-success-shade: #1d7000;
   --ion-color-success-tint: #378c1a;
 
-  --ion-color-warning: #ff7b00;
-  --ion-color-warning-rgb: 255, 123, 0;
-  --ion-color-warning-contrast: #191919;
-  --ion-color-warning-contrast-rgb: 0, 0, 0;
-  --ion-color-warning-shade: #e06c00;
-  --ion-color-warning-tint: #ff881a;
+  --ion-color-primary: #ff7b00;
+  --ion-color-primary-rgb: 255, 123, 0;
+  --ion-color-primary-contrast: #191919;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #e06c00;
+  --ion-color-primary-tint: #ff881a;
 
   --ion-color-danger: #bd081c;
   --ion-color-danger-rgb: 189, 8, 28;
@@ -77,12 +77,12 @@
    */
 
   body {
-    --ion-color-primary: #feb508;
-    --ion-color-primary-rgb: 254, 181, 8;
-    --ion-color-primary-contrast: #191919;
-    --ion-color-primary-contrast-rgb: 0, 0, 0;
-    --ion-color-primary-shade: #e09f07;
-    --ion-color-primary-tint: #febc21;
+    --ion-color-warning: #feb508;
+    --ion-color-warning-rgb: 254, 181, 8;
+    --ion-color-warning-contrast: #191919;
+    --ion-color-warning-contrast-rgb: 0, 0, 0;
+    --ion-color-warning-shade: #e09f07;
+    --ion-color-warning-tint: #febc21;
 
     --ion-color-secondary: #707070;
     --ion-color-secondary-rgb: 112, 112, 112;
@@ -105,12 +105,12 @@
     --ion-color-success-shade: #1d7000;
     --ion-color-success-tint: #378c1a;
 
-    --ion-color-warning: #ff7b00;
-    --ion-color-warning-rgb: 255, 123, 0;
-    --ion-color-warning-contrast: #191919;
-    --ion-color-warning-contrast-rgb: 0, 0, 0;
-    --ion-color-warning-shade: #e06c00;
-    --ion-color-warning-tint: #ff881a;
+    --ion-color-primary: #ff7b00;
+    --ion-color-primary-rgb: 255, 123, 0;
+    --ion-color-primary-contrast: #191919;
+    --ion-color-primary-contrast-rgb: 0, 0, 0;
+    --ion-color-primary-shade: #e06c00;
+    --ion-color-primary-tint: #ff881a;
 
     --ion-color-danger: #bd081c;
     --ion-color-danger-rgb: 189, 8, 28;

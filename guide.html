@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Scaffold Rental Color Palette</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+      }
+      .color {
+        border-radius: 12px;
+        padding: 20px;
+        color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+      }
+      .color:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      .label {
+        font-weight: bold;
+        margin-top: 10px;
+        display: block;
+      }
+      .hex {
+        font-size: 0.9em;
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Scaffold Rental & Asset Management Color Palette</h1>
+    <div class="palette">
+      <div class="color" style="background: #2f5d8c">
+        <span class="label">Primary</span><span class="hex">#2F5D8C</span>
+      </div>
+      <div class="color" style="background: #f26522">
+        <span class="label">Accent</span><span class="hex">#F26522</span>
+      </div>
+      <div class="color" style="background: #6e7b8b">
+        <span class="label">Secondary</span><span class="hex">#6E7B8B</span>
+      </div>
+      <div class="color" style="background: #2b2b2b">
+        <span class="label">Dark</span><span class="hex">#2B2B2B</span>
+      </div>
+      <div class="color" style="background: #191919">
+        <span class="label">Darker</span><span class="hex">#191919</span>
+      </div>
+      <div class="color" style="background: #f5f7fa; color: #000">
+        <span class="label">Light</span><span class="hex">#F5F7FA</span>
+      </div>
+      <div class="color" style="background: #ffffff; color: #000">
+        <span class="label">White</span><span class="hex">#FFFFFF</span>
+      </div>
+      <div class="color" style="background: #4caf50">
+        <span class="label">Success</span><span class="hex">#4CAF50</span>
+      </div>
+      <div class="color" style="background: #fbc02d; color: #000">
+        <span class="label">Warning</span><span class="hex">#FBC02D</span>
+      </div>
+      <div class="color" style="background: #d62518">
+        <span class="label">Danger</span><span class="hex">#D62518</span>
+      </div>
+      <div class="color" style="background: #bdd5df; color: #000">
+        <span class="label">Info</span><span class="hex">#BDD5DF</span>
+      </div>
+      <div class="color" style="background: #ffeee5; color: #000">
+        <span class="label">Accent Light</span><span class="hex">#FFEEE5</span>
+      </div>
+    </div>
+  </body>
+</html>
