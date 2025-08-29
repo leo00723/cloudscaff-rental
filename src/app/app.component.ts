@@ -19,7 +19,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (environment.production) {
       this.splash();
     }
-    this.masterSvc.store().dispatch(new GetVersion('hayakel'));
+    this.masterSvc.store().dispatch(new GetVersion('global'));
   }
 
   async splash() {

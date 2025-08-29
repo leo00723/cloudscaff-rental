@@ -931,7 +931,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
       referenceRow.push(combinedCodes);
     });
 
-    referenceRow.push(''); // Empty cell for "Total Returned To Hayakel Company"
+    referenceRow.push(''); // Empty cell for "Total Returned To Company"
 
     worksheetData.push(referenceRow);
 
@@ -991,7 +991,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
       columnWidths.push({ wch: 12 });
     });
 
-    columnWidths.push({ wch: 25 }); // Total Returned To Hayakel Company
+    columnWidths.push({ wch: 25 }); // Total Returned To Company
 
     worksheet['!cols'] = columnWidths;
 
