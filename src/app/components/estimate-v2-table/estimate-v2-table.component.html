@@ -82,7 +82,7 @@
         {{ row.comments[row.comments.length - 1]?.message }}
         <br />
         <br />
-        {{ row.comments[row.comments.length - 1]?.date | dateFormatFormat }}
+        {{ row.comments[row.comments.length - 1]?.date | dateFormat | date }}
       </ng-container>
     </ng-template>
   </ngx-datatable-column>
