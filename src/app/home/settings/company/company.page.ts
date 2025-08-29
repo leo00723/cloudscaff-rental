@@ -124,11 +124,11 @@ export class CompanyPage implements OnDestroy {
   }
   async uploadImage(data: any) {
     try {
-      this.company.logoUrl = data.url2;
+      this.company.logoUrl = data.url;
       this.company.logoRef = data.ref;
       await this.masterSvc.edit().updateDoc('company', this.company.id, {
-        thumb: data.url1,
-        logoUrl: data.url2,
+        thumb: data.url,
+        logoUrl: data.url,
         logoRef: data.ref,
       });
       this.masterSvc
