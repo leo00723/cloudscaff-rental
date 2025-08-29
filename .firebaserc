@@ -1,14 +1,14 @@
 {
   "targets": {
-    "cloudscaff-178c8": {
+    "cloudscaff-rental": {
       "hosting": {
         "app": [
-          "hayakel-cloudscaff"
+          "cloudscaff-rental"
         ]
       }
     }
   },
   "projects": {
-    "default": "cloudscaff-178c8"
+    "default": "cloudscaff-rental"
   }
 }
