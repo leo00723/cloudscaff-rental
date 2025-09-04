@@ -25,7 +25,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { InvoiceComponent } from '../invoices/invoice/invoice.component';
 import { AddSiteComponent } from '../sites/add-site/add-site.component';
-import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
+import { JobReferenceComponent } from './job-reference/job-reference.component';
 import { AddAdjustmentComponent } from 'src/app/components/add-adjustment/add-adjustment.component';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { UserState } from 'src/app/shared/user/user.state';
@@ -74,7 +74,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
   signedInstructions$: Observable<SI[]>;
   instructions$: Observable<SI[]>;
 
-  purchaseOrders$: Observable<JobReference[]>;
+  JobReferences$: Observable<JobReference[]>;
   completedJobReference$: Observable<JobReference[]>;
 
   transactionInvoices$: Observable<TransactionInvoice[]>;
@@ -244,7 +244,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         orderBy('code', 'desc'),
       ]) as Observable<TransactionReturn[]>;
 
-    this.purchaseOrders$ = this.masterSvc
+    this.JobReferences$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/jobReferences`, [
         where('site.id', '==', this.ids[1]),
@@ -511,7 +511,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
 
   async viewJobReference(poData: JobReference, site: Site) {
     const modal = await this.masterSvc.modal().create({
-      component: PurchaseOrderComponent,
+      component: JobReferenceComponent,
       componentProps: { value: poData, site },
       showBackdrop: false,
       id: 'viewJobReference',

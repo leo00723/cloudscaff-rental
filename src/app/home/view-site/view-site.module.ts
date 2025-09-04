@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { QRCodeModule } from 'angularx-qrcode';
 import { ComponentsModule } from 'src/app/components/components.module';
-import { PurchaseOrderComponent } from './purchase-order/purchase-order.component';
+import { JobReferenceComponent } from './job-reference/job-reference.component';
 import { SiteInventoryTableComponent } from './site-inventory-table/site-inventory-table.component';
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
@@ -11,7 +11,7 @@ import { ViewSitePage } from './view-site.page';
   declarations: [
     ViewSitePage,
     SiteInventoryTableComponent,
-    PurchaseOrderComponent,
+    JobReferenceComponent,
   ],
   exports: [],
   providers: [],

@@ -32,11 +32,11 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
-  selector: 'app-purchase-order',
-  templateUrl: './purchase-order.component.html',
+  selector: 'app-job-reference',
+  templateUrl: './job-reference.component.html',
   styles: [],
 })
-export class PurchaseOrderComponent implements OnInit {
+export class JobReferenceComponent implements OnInit {
   @Input() set value(val: JobReference) {
     if (val) {
       Object.assign(this.jr, val);

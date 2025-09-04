@@ -112,7 +112,7 @@
           >
             <ion-label
               >Job References
-              <ng-container *ngIf="purchaseOrders$ | async as pos">
+              <ng-container *ngIf="JobReferences$ | async as pos">
                 <ion-badge
                   shape="round"
                   mode="ios"
@@ -654,7 +654,7 @@
         >
           <ion-accordion
             value="pending"
-            *ngIf="purchaseOrders$ | async as pos else loading"
+            *ngIf="JobReferences$ | async as pos else loading"
           >
             <ion-item slot="header" color="light">
               <ion-label color="primary"
@@ -663,7 +663,7 @@
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-job-reference-table
-                [value]="purchaseOrders$"
+                [value]="JobReferences$"
                 (selectedItem)="viewJobReference($event,site)"
               ></app-job-reference-table>
             </div>
