@@ -246,14 +246,14 @@ export class ViewSitePage implements OnInit, OnDestroy {
 
     this.purchaseOrders$ = this.masterSvc
       .edit()
-      .getCollectionFiltered(`company/${this.ids[0]}/pos`, [
+      .getCollectionFiltered(`company/${this.ids[0]}/jobReferences`, [
         where('site.id', '==', this.ids[1]),
         where('status', '==', 'pending'),
         orderBy('code', 'desc'),
       ]) as Observable<any[]>;
     this.completedJobReference$ = this.masterSvc
       .edit()
-      .getCollectionFiltered(`company/${this.ids[0]}/pos`, [
+      .getCollectionFiltered(`company/${this.ids[0]}/jobReferences`, [
         where('site.id', '==', this.ids[1]),
         where('status', '==', 'completed'),
         orderBy('code', 'desc'),
@@ -410,6 +410,8 @@ export class ViewSitePage implements OnInit, OnDestroy {
   async addJobReference(site: Site) {
     const alert = await this.alertController.create({
       header: 'Please enter Job Reference',
+      subHeader:
+        'This can be a PO number, Work Area, Work Zone, Phase, Job Tracking Number, or Invoice Number.',
       buttons: [
         {
           text: 'Cancel',
@@ -483,14 +485,14 @@ export class ViewSitePage implements OnInit, OnDestroy {
         });
         await this.masterSvc
           .edit()
-          .addDocument(`company/${company.id}/pos`, jr);
+          .addDocument(`company/${company.id}/jobReferences`, jr);
         await this.masterSvc.edit().updateDoc('company', company.id, {
           totalJobReferences: increment(1),
         });
         await this.masterSvc
           .edit()
           .updateDoc(`company/${company.id}/sites`, site.id, {
-            JobReferenceList: arrayUnion(jobReference),
+            jobReferenceList: arrayUnion(jobReference),
           });
         this.masterSvc
           .notification()

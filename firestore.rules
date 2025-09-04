@@ -141,7 +141,7 @@ service cloud.firestore {
         allow read, write: if canReadWrite();
       }
 
-      match /pos/{id} {
+      match /jobReferences/{id} {
         allow read, write: if canReadWrite();
       }
 

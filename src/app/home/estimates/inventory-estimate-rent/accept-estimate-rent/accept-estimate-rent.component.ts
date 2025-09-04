@@ -110,7 +110,10 @@ export class AcceptEstimateRentComponent implements OnInit {
           type: 'Rental',
         });
 
-        await this.editSvc.addDocument(`company/${this.company.id}/pos`, jr);
+        await this.editSvc.addDocument(
+          `company/${this.company.id}/jobReferences`,
+          jr
+        );
         await this.editSvc.updateDoc('company', this.company.id, {
           totalJobReferences: increment(1),
         });
@@ -123,7 +126,7 @@ export class AcceptEstimateRentComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.site.id,
           {
-            JobReferenceList: arrayUnion(this.estimate.jobReference),
+            jobReferenceList: arrayUnion(this.estimate.jobReference),
           }
         );
 

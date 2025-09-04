@@ -119,7 +119,7 @@
             (ionChange)="getTransactions($event)"
           >
             <ng-container
-              *ngFor="let jr of field('site').value.JobReferenceList"
+              *ngFor="let jr of field('site').value.jobReferenceList"
             >
               <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
             </ng-container>

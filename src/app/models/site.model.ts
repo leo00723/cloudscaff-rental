@@ -27,5 +27,5 @@ export interface Site {
   previousGross?: number;
   uploads?: UploadedFile[];
   userIDS?: string[];
-  JobReferenceList?: string[];
+  jobReferenceList?: string[];
 }

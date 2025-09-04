@@ -97,7 +97,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
 
         await this.masterSvc
           .edit()
-          .addDocument(`company/${this.company.id}/pos`, jr);
+          .addDocument(`company/${this.company.id}/jobReferences`, jr);
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalJobReferences: increment(1),
         });
@@ -111,7 +111,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
         await this.masterSvc
           .edit()
           .updateDoc(`company/${this.company.id}/sites`, this.site.id, {
-            JobReferenceList: arrayUnion(this.estimate.jobReference),
+            jobReferenceList: arrayUnion(this.estimate.jobReference),
           });
         // if (this.estimate.enquiryId.length > 0) {
         //   await this.masterSvc

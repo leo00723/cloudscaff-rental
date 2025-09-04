@@ -222,7 +222,7 @@ export class PurchaseOrderComponent implements OnInit {
         );
 
         await this.editSvc.updateDoc(
-          `company/${this.company.id}/pos`,
+          `company/${this.company.id}/jobReferences`,
           this.jr.id,
           {
             lastInvoiceTotal: this.jr.total,
@@ -248,7 +248,7 @@ export class PurchaseOrderComponent implements OnInit {
         this.saving = true;
 
         await this.editSvc.updateDoc(
-          `company/${this.company.id}/pos`,
+          `company/${this.company.id}/jobReferences`,
           this.jr.id,
           {
             status: 'completed',
@@ -259,7 +259,7 @@ export class PurchaseOrderComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.jr.site.id,
           {
-            JobReferenceList: arrayRemove(this.jr.jobReference),
+            jobReferenceList: arrayRemove(this.jr.jobReference),
           }
         );
 
@@ -285,7 +285,7 @@ export class PurchaseOrderComponent implements OnInit {
         this.saving = true;
 
         await this.editSvc.updateDoc(
-          `company/${this.company.id}/pos`,
+          `company/${this.company.id}/jobReferences`,
           this.jr.id,
           {
             status: 'pending',
@@ -296,7 +296,7 @@ export class PurchaseOrderComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.jr.site.id,
           {
-            JobReferenceList: arrayUnion(this.jr.jobReference),
+            jobReferenceList: arrayUnion(this.jr.jobReference),
           }
         );
 
@@ -510,7 +510,7 @@ export class PurchaseOrderComponent implements OnInit {
     try {
       this.saving = true;
       await this.editSvc.updateDoc(
-        `company/${this.company.id}/pos`,
+        `company/${this.company.id}/jobReferences`,
         this.jr.id,
         this.jr
       );

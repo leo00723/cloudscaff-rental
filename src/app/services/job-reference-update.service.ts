@@ -153,7 +153,7 @@ export class JobReferenceUpdateService {
 
     // 1. Job Reference document itself
     updates.push({
-      collection: `company/${companyId}/pos`,
+      collection: `company/${companyId}/jobReferences`,
       docId: poId,
       updateData: { jobReference: newJobReference },
     });
@@ -298,17 +298,17 @@ export class JobReferenceUpdateService {
       });
     }
 
-    // 9. Site's JobReferenceList array (requires two operations: remove old, add new)
+    // 9. Site's jobReferenceList array (requires two operations: remove old, add new)
     updates.push({
       collection: `company/${companyId}/sites`,
       docId: siteId,
-      updateData: { JobReferenceList: arrayRemove(oldJobReference) },
+      updateData: { jobReferenceList: arrayRemove(oldJobReference) },
     });
 
     updates.push({
       collection: `company/${companyId}/sites`,
       docId: siteId,
-      updateData: { JobReferenceList: arrayUnion(newJobReference) },
+      updateData: { jobReferenceList: arrayUnion(newJobReference) },
     });
 
     return updates;
@@ -455,7 +455,7 @@ export class JobReferenceUpdateService {
     );
     await this.processSingleBatch([
       {
-        collection: `company/${companyId}/pos`,
+        collection: `company/${companyId}/jobReferences`,
         docId: poId,
         updateData: { jobReference: newJobReference },
       },
@@ -485,22 +485,22 @@ export class JobReferenceUpdateService {
       totalProcessed += processed;
     }
 
-    // 3. Update site JobReferenceList
+    // 3. Update site jobReferenceList
     progressCallback?.(
       totalProcessed,
       estimatedTotal,
-      'Updating site JobReferenceList'
+      'Updating site jobReferenceList'
     );
     await this.processSingleBatch([
       {
         collection: `company/${companyId}/sites`,
         docId: siteId,
-        updateData: { JobReferenceList: arrayRemove(oldJobReference) },
+        updateData: { jobReferenceList: arrayRemove(oldJobReference) },
       },
       {
         collection: `company/${companyId}/sites`,
         docId: siteId,
-        updateData: { JobReferenceList: arrayUnion(newJobReference) },
+        updateData: { jobReferenceList: arrayUnion(newJobReference) },
       },
     ]);
     totalProcessed += 2;
@@ -689,7 +689,7 @@ export class JobReferenceUpdateService {
   ): Promise<void> {
     const existingJobReferences = await firstValueFrom(
       this.editSvc
-        .getCollectionFiltered(`company/${companyId}/pos`, [
+        .getCollectionFiltered(`company/${companyId}/jobReferences`, [
           where('site.id', '==', siteId),
           where('jobReference', '==', newJobReference),
         ])
@@ -794,7 +794,7 @@ export class JobReferenceUpdateService {
       counts.returns +
       counts.invoices +
       counts.transfers +
-      2; // +2 for the site JobReferenceList operations
+      2; // +2 for the site jobReferenceList operations
 
     return counts;
   }
