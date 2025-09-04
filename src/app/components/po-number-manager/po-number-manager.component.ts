@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { POUpdateService } from 'src/app/services/po-update.service';
 import { NotificationService } from 'src/app/services/notification.service';
-import { PO } from 'src/app/models/po.model';
+import { Job Reference } from 'src/app/models/po.model';
 
 @Component({
   selector: 'app-po-number-manager',
@@ -10,12 +10,12 @@ import { PO } from 'src/app/models/po.model';
   styleUrls: ['./po-number-manager.component.scss'],
 })
 export class PONumberManagerComponent implements OnInit {
-  @Input() pos: PO[] = [];
+  @Input() pos: Job Reference[] = [];
   @Input() companyId: string;
 
   searchTerm = '';
-  filteredPOs: PO[] = [];
-  selectedPO: PO | null = null;
+  filteredPOs: Job Reference[] = [];
+  selectedPO: Job Reference | null = null;
   newPONumber = '';
   updating = false;
   updateCounts: any = null;
@@ -46,7 +46,7 @@ export class PONumberManagerComponent implements OnInit {
     );
   }
 
-  async selectPO(po: PO) {
+  async selectPO(po: Job Reference) {
     this.selectedPO = po;
     this.newPONumber = po.jobReference || '';
 
@@ -89,24 +89,25 @@ export class PONumberManagerComponent implements OnInit {
             this.selectedPO.id
           );
 
-          // Update the local PO object
+          // Update the local Job Reference object
           this.selectedPO.jobReference = this.newPONumber;
 
-          // Update the PO in the list
+          // Update the Job Reference in the list
           const index = this.pos.findIndex((p) => p.id === this.selectedPO.id);
           if (index > -1) {
             this.pos[index].jobReference = this.newPONumber;
           }
 
           this.notificationSvc.toast(
-            'PO number updated successfully!',
+            'Job Reference updated successfully!',
             'success'
           );
           this.close();
         } catch (error) {
-          console.error('Error updating PO number:', error);
+          console.error('Error updating Job Reference:', error);
           this.notificationSvc.toast(
-            error.message || 'Failed to update PO number. Please try again.',
+            error.message ||
+              'Failed to update Job Reference. Please try again.',
             'danger'
           );
         } finally {

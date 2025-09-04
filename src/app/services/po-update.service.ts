@@ -39,13 +39,13 @@ export class POUpdateService {
   private cancellationToken = { cancelled: false };
 
   /**
-   * Updates a PO number across all related collections with progress tracking
+   * Updates a Job Reference across all related collections with progress tracking
    *
    * @param companyId The company ID
    * @param siteId The site ID
-   * @param oldPONumber The current PO number
-   * @param newPONumber The new PO number
-   * @param poId The PO document ID
+   * @param oldPONumber The current Job Reference
+   * @param newPONumber The new Job Reference
+   * @param poId The Job Reference document ID
    * @param progressCallback Optional callback for progress updates
    * @returns Promise<void>
    */
@@ -68,9 +68,9 @@ export class POUpdateService {
         oldPONumber
       );
 
-      progressCallback?.(0, estimatedCount, 'Validating PO number');
+      progressCallback?.(0, estimatedCount, 'Validating Job Reference');
 
-      // Validation: Check if new PO number already exists for this site
+      // Validation: Check if new Job Reference already exists for this site
       await this.validateNewPONumber(companyId, siteId, newPONumber);
 
       if (estimatedCount > this.streamThreshold) {
@@ -95,7 +95,7 @@ export class POUpdateService {
 
       progressCallback?.(estimatedCount, estimatedCount, 'Completed');
       console.log(
-        `PO number update completed. Updated ${estimatedCount} records.`
+        `Job Reference update completed. Updated ${estimatedCount} records.`
       );
     } catch (error) {
       if (this.cancellationToken.cancelled) {
@@ -151,7 +151,7 @@ export class POUpdateService {
   ): Promise<UpdateOperation[]> {
     const updates: UpdateOperation[] = [];
 
-    // 1. PO document itself
+    // 1. Job Reference document itself
     updates.push({
       collection: `company/${companyId}/pos`,
       docId: poId,
@@ -447,8 +447,12 @@ export class POUpdateService {
       { name: 'poTransfers', count: 0 },
     ];
 
-    // 1. Update PO document first
-    progressCallback?.(totalProcessed, estimatedTotal, 'Updating PO document');
+    // 1. Update Job Reference document first
+    progressCallback?.(
+      totalProcessed,
+      estimatedTotal,
+      'Updating Job Reference document'
+    );
     await this.processSingleBatch([
       {
         collection: `company/${companyId}/pos`,
@@ -689,12 +693,12 @@ export class POUpdateService {
     );
 
     if (existingPOs && existingPOs.length > 0) {
-      throw new Error('PO number already exists for this site');
+      throw new Error('Job Reference already exists for this site');
     }
   }
 
   /**
-   * Get count of records that would be affected by PO number change
+   * Get count of records that would be affected by Job Reference change
    * Useful for showing user how many records will be updated
    */
   async getUpdateCount(

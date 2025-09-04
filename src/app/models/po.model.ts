@@ -2,7 +2,7 @@ import { EstimateV2 } from './estimate-v2.model';
 import { InventoryEstimateRent } from './inventory-estimate-rent.model';
 import { Site } from './site.model';
 
-export interface PO {
+export interface Job Reference {
   id?: string;
   site?: Site;
   estimate?: EstimateV2 | InventoryEstimateRent;

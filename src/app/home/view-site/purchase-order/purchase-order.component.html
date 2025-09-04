@@ -481,7 +481,7 @@
         color="danger"
         *ngIf="!saving && transactions.length <= 0 && po.status !== 'completed'"
       >
-        Close PO
+        Close Job Reference
       </ion-button></ion-col
     >
     <ion-col size="6" class="text-end">
@@ -491,7 +491,7 @@
         color="success"
         *ngIf="!saving && transactions.length <= 0 && po.status === 'completed'"
       >
-        Open PO
+        Open Job Reference
       </ion-button>
       <ion-button
         *ngIf="!saving"

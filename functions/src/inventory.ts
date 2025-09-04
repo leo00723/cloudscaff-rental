@@ -57,7 +57,7 @@ exports.manageTransfer = functions.firestore
       ) {
         const transfer = change.after.data();
 
-        // Check if this is a same-site transfer (different PO numbers)
+        // Check if this is a same-site transfer (different Job References)
         if (transfer.fromSite.id === transfer.toSite.id) {
           // For same-site transfers, we only need to handle transactions
           // No inventory movement is needed as items stay at the same site
@@ -500,7 +500,7 @@ exports.managePOTransfer = functions.firestore
       ) {
         const transfer = change.after.data();
 
-        // Check if this is a same-site transfer (different PO numbers)
+        // Check if this is a same-site transfer (different Job References)
         if (transfer.fromSite.id === transfer.toSite.id) {
           // For same-site transfers, we only need to handle transactions
           // No inventory movement is needed as items stay at the same site
@@ -656,7 +656,7 @@ exports.managePOTransfer = functions.firestore
         await transferReturnTransaction(transfer);
         await transferDeliveryTransaction(transfer);
 
-        // Add logs for PO transfer movements (only for different sites)
+        // Add logs for Job Reference transfer movements (only for different sites)
         const batch = admin.firestore().batch();
 
         transfer.items.forEach((item: any) => {
@@ -669,7 +669,7 @@ exports.managePOTransfer = functions.firestore
             transfer.fromSite.name,
             transfer.fromSite.customer.name,
             item.returnQty,
-            'PO Transfer Out'
+            'Job Reference Transfer Out'
           );
 
           // Log as delivery to destination site
@@ -681,7 +681,7 @@ exports.managePOTransfer = functions.firestore
             transfer.toSite.name,
             transfer.toSite.customer.name,
             item.returnQty,
-            'PO Transfer In'
+            'Job Reference Transfer In'
           );
         });
 
@@ -1519,7 +1519,7 @@ const returnItems = async (
           );
         }
 
-        // Add site movement tracking for returns (only for non-PO returns)
+        // Add site movement tracking for returns (only for non-Job Reference returns)
         items.forEach((item: any) => {
           const inventoryItem = oldInventory.find((i: any) => i.id === item.id);
 
@@ -2031,7 +2031,7 @@ const returnTransaction = async (
           invoiceStart: Timestamp.fromDate(returnDate), // Start billing from return date
           invoiceEnd: Timestamp.fromDate(returnDate), // End immediately for overage
           hireRate: item.hireCost || 0,
-          jobReference: returnDoc.jobReference, // Use the return's PO number
+          jobReference: returnDoc.jobReference, // Use the return's Job Reference
           transactionType: 'Overage Return',
           siteId: returnDoc.site.id,
           status: 'completed', // Overage items are immediately completed
@@ -2364,7 +2364,7 @@ const overageReversalTransaction = async (
           invoiceStart: Timestamp.fromDate(returnDate), // Start billing from return date
           invoiceEnd: Timestamp.fromDate(returnDate), // End immediately for overage
           hireRate: item.hireCost || 0,
-          jobReference: returnDoc.jobReference, // Use the return's PO number
+          jobReference: returnDoc.jobReference, // Use the return's Job Reference
           transactionType: 'Overage Return Reversal',
           siteId: returnDoc.site.id,
           status: 'completed', // Overage items are immediately completed

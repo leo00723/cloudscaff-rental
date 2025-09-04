@@ -11,7 +11,7 @@ import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffo
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
-import { PO } from 'src/app/models/po.model';
+import { Job Reference } from 'src/app/models/po.model';
 import { Request } from 'src/app/models/request.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Delivery } from 'src/app/models/delivery.model';
@@ -74,8 +74,8 @@ export class ViewSitePage implements OnInit, OnDestroy {
   signedInstructions$: Observable<SI[]>;
   instructions$: Observable<SI[]>;
 
-  purchaseOrders$: Observable<PO[]>;
-  completedPO$: Observable<PO[]>;
+  purchaseOrders$: Observable<Job Reference[]>;
+  completedPO$: Observable<Job Reference[]>;
 
   transactionInvoices$: Observable<TransactionInvoice[]>;
 
@@ -409,7 +409,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
 
   async addPO(site: Site) {
     const alert = await this.alertController.create({
-      header: 'Please enter PO number',
+      header: 'Please enter Job Reference',
       buttons: [
         {
           text: 'Cancel',
@@ -423,7 +423,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
       inputs: [
         {
           type: 'text',
-          placeholder: 'PO number',
+          placeholder: 'Job Reference',
           attributes: {
             minlength: 1,
           },
@@ -444,7 +444,9 @@ export class ViewSitePage implements OnInit, OnDestroy {
       this.createPO(site, jobReference);
     } else {
       this.addPO(site);
-      this.masterSvc.notification().toast('Enter a valid PO number', 'danger');
+      this.masterSvc
+        .notification()
+        .toast('Enter a valid Job Reference', 'danger');
     }
   }
 
@@ -464,10 +466,10 @@ export class ViewSitePage implements OnInit, OnDestroy {
         estimate.status = 'accepted';
         estimate.items = [];
 
-        const po: PO = {};
+        const po: Job Reference = {};
         const code = this.masterSvc
           .edit()
-          .generateDocCode(company.totalPOs, 'PO');
+          .generateDocCode(company.totalPOs, 'Job Reference');
         Object.assign(po, {
           estimate,
           site,
@@ -492,7 +494,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
           });
         this.masterSvc
           .notification()
-          .toast('PO created successfully!', 'success');
+          .toast('Job Reference created successfully!', 'success');
       } catch (err) {
         this.masterSvc
           .notification()
@@ -505,7 +507,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
     });
   }
 
-  async viewPO(poData: PO, site: Site) {
+  async viewPO(poData: Job Reference, site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: PurchaseOrderComponent,
       componentProps: { value: poData, site },

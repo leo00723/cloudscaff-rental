@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
-import { PO } from 'src/app/models/po.model';
+import { Job Reference } from 'src/app/models/po.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
@@ -92,8 +92,8 @@ export class AcceptEstimateRentComponent implements OnInit {
         this.estimate.status = 'accepted';
 
         const company = this.store.selectSnapshot(CompanyState.company);
-        const po: PO = {};
-        const code = this.editSvc.generateDocCode(company.totalPOs, 'PO');
+        const po: Job Reference = {};
+        const code = this.editSvc.generateDocCode(company.totalPOs, 'Job Reference');
         Object.assign(po, {
           estimate: this.estimate,
           site: this.site,

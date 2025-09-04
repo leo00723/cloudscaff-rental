@@ -20,7 +20,7 @@ import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
 import { DatepickerComponent } from 'src/app/components/datepicker/datepicker.component';
 import { Company } from 'src/app/models/company.model';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
-import { PO } from 'src/app/models/po.model';
+import { Job Reference } from 'src/app/models/po.model';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { User } from 'src/app/models/user.model';
@@ -37,7 +37,7 @@ import { UserState } from 'src/app/shared/user/user.state';
   styles: [],
 })
 export class PurchaseOrderComponent implements OnInit {
-  @Input() set value(val: PO) {
+  @Input() set value(val: Job Reference) {
     if (val) {
       Object.assign(this.po, val);
       this.init();
@@ -46,7 +46,7 @@ export class PurchaseOrderComponent implements OnInit {
 
   protected company: Company;
   protected form: FormGroup;
-  protected po: PO = {
+  protected po: Job Reference = {
     subtotal: 0,
     discount: 0,
     total: 0,
@@ -263,7 +263,7 @@ export class PurchaseOrderComponent implements OnInit {
           }
         );
 
-        this.notificationSvc.toast('PO closed successfully.', 'success');
+        this.notificationSvc.toast('Job Reference closed successfully.', 'success');
         this.close();
       } catch (e) {
         console.log(e);
@@ -297,7 +297,7 @@ export class PurchaseOrderComponent implements OnInit {
           }
         );
 
-        this.notificationSvc.toast('PO open successfully.', 'success');
+        this.notificationSvc.toast('Job Reference open successfully.', 'success');
         this.close();
       } catch (e) {
         console.log(e);
@@ -373,7 +373,7 @@ export class PurchaseOrderComponent implements OnInit {
           {
             name: 'newPONumber',
             type: 'text',
-            placeholder: 'Enter new PO number',
+            placeholder: 'Enter new Job Reference',
             value: this.po.jobReference,
             attributes: {
               minlength: 1,
@@ -425,20 +425,21 @@ export class PurchaseOrderComponent implements OnInit {
           );
           this.po.jobReference = newPONumber;
           this.notificationSvc.toast(
-            'PO number updated successfully!',
+            'Job Reference updated successfully!',
             'success'
           );
         } catch (error) {
-          console.error('Error updating PO number:', error);
+          console.error('Error updating Job Reference:', error);
           this.notificationSvc.toast(
-            error.message || 'Failed to update PO number. Please try again.',
+            error.message ||
+              'Failed to update Job Reference. Please try again.',
             'danger'
           );
         } finally {
           this.updatingPONumber = false;
         }
       },
-      'This action will update the PO number across all related records including ' +
+      'This action will update the Job Reference across all related records including ' +
         'transaction logs, shipments, adjustments, and returns. This cannot be undone.',
       'Update Job Reference'
     );
@@ -510,7 +511,7 @@ export class PurchaseOrderComponent implements OnInit {
     } catch (e) {
       console.log(e);
       this.notificationSvc.toast(
-        'Something went wrong saving PO, please try again',
+        'Something went wrong saving Job Reference, please try again',
         'danger'
       );
     } finally {

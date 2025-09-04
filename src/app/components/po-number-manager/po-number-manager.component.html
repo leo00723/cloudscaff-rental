@@ -13,7 +13,7 @@
   <div *ngIf="!selectedPO">
     <ion-searchbar
       [(ngModel)]="searchTerm"
-      placeholder="Search PO numbers..."
+      placeholder="Search Job References..."
       (ionInput)="filterPOs()"
     >
     </ion-searchbar>
@@ -89,7 +89,7 @@
       <ion-label position="stacked">New Job Reference</ion-label>
       <ion-input
         [(ngModel)]="newPONumber"
-        placeholder="Enter new PO number"
+        placeholder="Enter new Job Reference"
         [disabled]="updating"
       >
       </ion-input>
