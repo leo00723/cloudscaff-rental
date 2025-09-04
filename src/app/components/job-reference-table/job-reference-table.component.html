@@ -1,7 +1,7 @@
 <ion-searchbar
   debounce="250"
   mode="ios"
-  placeholder="Search by code, site name or customer"
+  placeholder="Search by code, site address or customer"
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
@@ -40,7 +40,7 @@
     prop="jobReference"
   ></ngx-datatable-column>
   <ngx-datatable-column
-    name="Site Name"
+    name="Site Address"
     prop="site.name"
   ></ngx-datatable-column>
   <ngx-datatable-column

@@ -29,7 +29,7 @@
         <ion-col *ngIf="field('site').value as site">
           <app-input-text
             *ngIf="request.status !== 'pending'"
-            title="Site Name"
+            title="Site Address"
             [value]="site.name"
             [readonly]="true"
           >

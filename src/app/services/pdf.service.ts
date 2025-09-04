@@ -2395,7 +2395,7 @@ export class PdfService {
           `https://app.cloudscaff.com/viewInspection/${company.id}-${inspection.id}`,
           [
             [
-              { text: 'Site Name', style: 'h6b' },
+              { text: 'Site Address', style: 'h6b' },
               `${inspection?.scaffold?.siteName || 'N/A'}`,
               '',
               '',
@@ -2675,7 +2675,7 @@ export class PdfService {
           `https://app.cloudscaff.com/viewHandover/${company.id}-${handover.id}`,
           [
             [
-              { text: 'Site Name', style: 'h6b' },
+              { text: 'Site Address', style: 'h6b' },
               `${handover?.scaffold?.siteName || 'N/A'}`,
               '',
               '',
@@ -3149,7 +3149,7 @@ export class PdfService {
           null,
           [
             [
-              { text: 'Site Name', style: 'h6b' },
+              { text: 'Site Address', style: 'h6b' },
               `${delivery?.site.name || 'N/A'}`,
               '',
               '',
@@ -3318,7 +3318,7 @@ export class PdfService {
   async inventoryMatrix(
     company: Company,
     matrix: any[], // Data transformed from downloadMasterlistMatrix
-    sites: any[] // Array of all unique site names
+    sites: any[] // Array of all unique site addresss
   ) {
     const items = [];
 
@@ -3553,7 +3553,7 @@ export class PdfService {
           // Header row
           [
             { text: 'Site Code', style: 'h4b', alignment: 'left' },
-            { text: 'Site Name', style: 'h4b', alignment: 'left' },
+            { text: 'Site Address', style: 'h4b', alignment: 'left' },
             { text: 'Customer', style: 'h4b', alignment: 'left' },
             { text: 'Item Code', style: 'h4b', alignment: 'center' },
             { text: 'Name', style: 'h4b', alignment: 'left' },
@@ -3968,7 +3968,7 @@ export class PdfService {
           null,
           [
             [
-              { text: 'Site Name', style: 'h6b' },
+              { text: 'Site Address', style: 'h6b' },
               `${returnDoc?.site.name || 'N/A'}`,
               '',
               '',
@@ -4350,7 +4350,7 @@ export class PdfService {
           null,
           [
             [
-              { text: 'Site Name', style: 'h6b' },
+              { text: 'Site Address', style: 'h6b' },
               `${overReturnDoc?.site.name || 'N/A'}`,
               '',
               '',
@@ -4479,7 +4479,7 @@ export class PdfService {
       [
         { text: 'Return Code', style: 'h6b', alignment: 'center' },
         { text: 'Return Date', style: 'h6b', alignment: 'center' },
-        { text: 'Site Name', style: 'h6b', alignment: 'center' },
+        { text: 'Site Address', style: 'h6b', alignment: 'center' },
         { text: 'Item Code', style: 'h6b', alignment: 'center' },
         { text: 'Item Name', style: 'h6b', alignment: 'center' },
         { text: 'Category', style: 'h6b', alignment: 'center' },

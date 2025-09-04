@@ -60,7 +60,7 @@
         <ion-col *ngIf="field('fromSite').value as site">
           <app-input-text
             *ngIf="isEdit"
-            title="Site Name"
+            title="Site Address"
             [value]="site.name"
             [readonly]="true"
           >
@@ -128,7 +128,7 @@
         <ion-col *ngIf="field('toSite').value as site">
           <app-input-text
             *ngIf="isEdit"
-            title="Site Name"
+            title="Site Address"
             [value]="site.name"
             [readonly]="true"
           >
