@@ -74,7 +74,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
   signedInstructions$: Observable<SI[]>;
   instructions$: Observable<SI[]>;
 
-  JobReferences$: Observable<JobReference[]>;
+  jobReferences$: Observable<JobReference[]>;
   completedJobReference$: Observable<JobReference[]>;
 
   transactionInvoices$: Observable<TransactionInvoice[]>;
@@ -244,7 +244,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         orderBy('code', 'desc'),
       ]) as Observable<TransactionReturn[]>;
 
-    this.JobReferences$ = this.masterSvc
+    this.jobReferences$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/jobReferences`, [
         where('site.id', '==', this.ids[1]),

@@ -107,19 +107,19 @@
             >
           </ion-segment-button>
           <ion-segment-button
-            value="JobReferenceS"
+            value="JobReferences"
             *ngIf="user.permissionsList.includes('Job References') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
           >
             <ion-label
               >Job References
-              <ng-container *ngIf="JobReferences$ | async as pos">
+              <ng-container *ngIf="jobReferences$ | async as jrs">
                 <ion-badge
                   shape="round"
                   mode="ios"
                   color="danger"
-                  *ngIf="pos.length > 0"
+                  *ngIf="jrs.length > 0"
                 >
-                  {{pos.length}}
+                  {{jrs.length}}
                 </ion-badge>
               </ng-container>
             </ion-label>
@@ -645,7 +645,7 @@
           </ion-fab-button>
         </ion-fab>
       </ng-container>
-      <ng-container *ngSwitchCase="'JobReferenceS'">
+      <ng-container *ngSwitchCase="'JobReferences'">
         <ion-accordion-group
           mode="ios"
           class="rounded-lg overflow-hidden mb-5"
@@ -654,16 +654,16 @@
         >
           <ion-accordion
             value="pending"
-            *ngIf="JobReferences$ | async as pos else loading"
+            *ngIf="jobReferences$ | async as jrs else loading"
           >
             <ion-item slot="header" color="light">
               <ion-label color="primary"
-                >Pending Job Reference's ({{pos.length}})</ion-label
+                >Pending Job Reference's ({{jrs.length}})</ion-label
               >
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-job-reference-table
-                [value]="JobReferences$"
+                [value]="jobReferences$"
                 (selectedItem)="viewJobReference($event,site)"
               ></app-job-reference-table>
             </div>
