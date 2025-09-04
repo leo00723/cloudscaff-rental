@@ -151,7 +151,8 @@ const defaultCS = {
   // alignment: 'justify'
 };
 
-const defaultSubHeader = `https://firebasestorage.googleapis.com/v0/b/cloudscaff-178c8.appspot.com/o/company%2FQy4PqIjiTdzOfIeDzsa3%2Fuploads%2Fsubheader.png?alt=media&token=80281f49-c195-44d4-968d-0a850bb36219`;
+const defaultSubHeader =
+  'https://placehold.co/1122x80?text=Billing+Header+Placeholder&font=roboto';
 @Injectable({
   providedIn: 'root',
 })
