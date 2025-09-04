@@ -383,6 +383,32 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
 
+  async setUploads(uploads) {
+    this.shipment.uploads
+      ? this.shipment.uploads.push(...uploads)
+      : (this.shipment.uploads = [...uploads]);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.shipment.company.id}/shipments`,
+          this.shipment.id,
+          { uploads: this.shipment.uploads }
+        );
+      this.masterSvc
+        .notification()
+        .toast('Files uploaded successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong uploading files. Please try again.',
+          'danger'
+        );
+    }
+  }
+
   protected async sign(ev: { signature: string; name: string }) {
     if (ev.signature) {
       this.blob = await (await fetch(ev.signature)).blob();

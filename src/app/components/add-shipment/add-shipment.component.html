@@ -406,15 +406,11 @@
             </ion-label>
           </ion-item>
         </ion-col>
-        <ion-col
-          size="12"
-          *ngIf="
-            shipment.status !== 'sent' &&
-            shipment.status !== 'void' &&
-            shipment.status !== 'received'
-          "
-        >
-          <app-multiuploader></app-multiuploader>
+        <ion-col size="12">
+          <app-multiuploader
+            [autoupload]="true"
+            (uploaded)="setUploads($event)"
+          ></app-multiuploader>
         </ion-col>
         <ion-col size="12" *ngIf="shipment?.uploads?.length > 0">
           <app-title-block> Uploaded Files </app-title-block>
@@ -485,53 +481,54 @@
             (res)="sign($event)"
           ></app-signature-pad>
         </ion-col>
-        <ion-col size="12" *ngIf="loading">
-          <ion-progress-bar type="indeterminate"></ion-progress-bar>
-        </ion-col>
       </ion-row>
-      <ion-row
-        class="mt-3"
-        *ngIf="
-          shipment.status !== 'void' &&
-          shipment.status !== 'sent' &&
-          shipment.status !== 'received'
-        "
+    </ion-grid>
+  </form>
+</ion-content>
+<ion-footer
+  *ngIf="
+    shipment.status !== 'void' &&
+    shipment.status !== 'sent' &&
+    shipment.status !== 'received'
+  "
+>
+  <ion-toolbar>
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+    <ion-buttons slot="start">
+      <ion-button
+        shape="round"
+        *ngIf="isEdit && !loading"
+        color="danger"
+        [disabled]="form.invalid"
+        (click)="updateShipment('void')"
+        >Void Delivery</ion-button
       >
-        <ion-col size="6">
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading"
-            color="danger"
-            [disabled]="form.invalid"
-            (click)="updateShipment('void')"
-            >Void Delivery</ion-button
-          >
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading && shipment.status === 'pending'"
-            color="tertiary"
-            [disabled]="form.invalid"
-            (click)="updateShipment('reserved')"
-            >Reserve Delivery</ion-button
-          >
-        </ion-col>
-        <ion-col size="6" class="text-end">
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading && shipment.status === 'reserved'"
-            color="primary"
-            [disabled]="form.invalid"
-            (click)="updateShipment('pending')"
-            >Unreserve Delivery</ion-button
-          >
-          <ion-button
-            shape="round"
-            [disabled]="form.invalid || error"
-            *ngIf="!isEdit && !loading"
-            (click)="createShipment()"
-            >Create Delivery</ion-button
-          >
-          <!-- <ion-button
+      <ion-button
+        shape="round"
+        *ngIf="isEdit && !loading && shipment.status === 'pending'"
+        color="tertiary"
+        [disabled]="form.invalid"
+        (click)="updateShipment('reserved')"
+        >Reserve Delivery</ion-button
+      >
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button
+        shape="round"
+        *ngIf="isEdit && !loading && shipment.status === 'reserved'"
+        color="primary"
+        [disabled]="form.invalid"
+        (click)="updateShipment('pending')"
+        >Unreserve Delivery</ion-button
+      >
+      <ion-button
+        shape="round"
+        [disabled]="form.invalid || error"
+        *ngIf="!isEdit && !loading"
+        (click)="createShipment()"
+        >Create Delivery</ion-button
+      >
+      <!-- <ion-button
             shape="round"
             *ngIf="isEdit && !loading && shipment.status !== 'reserved'"
             color="warning"
@@ -540,45 +537,43 @@
             >Reserve Shipment</ion-button
           > -->
 
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading && shipment.status === 'pending'"
-            [disabled]="form.invalid"
-            (click)="updateShipment('pending')"
-            >Update Delivery</ion-button
-          >
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading && shipment.status === 'pending'"
-            color="success"
-            [disabled]="!blob || (!shipment.signedBy && form.invalid)"
-            (click)="sendDelivery()"
-            >Send Delivery</ion-button
-          >
+      <ion-button
+        shape="round"
+        *ngIf="isEdit && !loading && shipment.status === 'pending'"
+        [disabled]="form.invalid"
+        (click)="updateShipment('pending')"
+        >Update Delivery</ion-button
+      >
+      <ion-button
+        shape="round"
+        *ngIf="isEdit && !loading && shipment.status === 'pending'"
+        color="success"
+        [disabled]="!blob || (!shipment.signedBy && form.invalid)"
+        (click)="sendDelivery()"
+        >Send Delivery</ion-button
+      >
 
-          <ion-button
-            shape="round"
-            *ngIf="isEdit && !loading && shipment.status === 'on-route'"
-            color="success"
-            [disabled]="!blob || (!shipment.signedBy2 && form.invalid)"
-            (click)="receiveDelivery()"
-            >Receive Delivery</ion-button
-          >
+      <ion-button
+        shape="round"
+        *ngIf="isEdit && !loading && shipment.status === 'on-route'"
+        color="success"
+        [disabled]="!blob || (!shipment.signedBy2 && form.invalid)"
+        (click)="receiveDelivery()"
+        >Receive Delivery</ion-button
+      >
 
-          <ng-container
-            *ngIf="user.permissionsList.includes('Inventory Admin')"
-          >
-            <ion-button
-              shape="round"
-              fill="outline"
-              *ngIf="isEdit && !loading && shipment.status === 'pending'"
-              color="tertiary"
-              [disabled]="!blob || !shipment.signedBy || form.invalid"
-              (click)="receiveDelivery(true)"
-              >Send Immediately</ion-button
-            >
-          </ng-container>
-          <!-- <ion-button
+      <ng-container *ngIf="user.permissionsList.includes('Inventory Admin')">
+        <ion-button
+          shape="round"
+          fill="outline"
+          *ngIf="isEdit && !loading && shipment.status === 'pending'"
+          color="tertiary"
+          [disabled]="!blob || !shipment.signedBy || form.invalid"
+          (click)="receiveDelivery(true)"
+          >Send Immediately</ion-button
+        >
+      </ng-container>
+      <!-- <ion-button
             shape="round"
             color="danger"
             *ngIf="isEdit && !loading && shipment.status === 'pending'"
@@ -586,8 +581,6 @@
             (click)="delete()"
             >Delete Shipment</ion-button
           > -->
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </form>
-</ion-content>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

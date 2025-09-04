@@ -81,7 +81,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
 
   inventoryItems$: Observable<any>;
 
-  active = 'scaffolds';
+  active = 'inventory';
   ids = [];
 
   private loading: any;
