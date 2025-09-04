@@ -114,7 +114,7 @@ export class PONumberManagerComponent implements OnInit {
         }
       },
       message,
-      'Confirm PO Number Update'
+      'Confirm Job Reference Update'
     );
   }
 

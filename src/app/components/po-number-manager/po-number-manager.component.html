@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Manage PO Numbers</ion-title>
+    <ion-title>Manage Job References</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="close()">
         <ion-icon name="close"></ion-icon>
@@ -86,7 +86,7 @@
     </div>
 
     <ion-item>
-      <ion-label position="stacked">New PO Number</ion-label>
+      <ion-label position="stacked">New Job Reference</ion-label>
       <ion-input
         [(ngModel)]="newPONumber"
         placeholder="Enter new PO number"
@@ -104,7 +104,7 @@
       color="primary"
     >
       <ion-spinner *ngIf="updating" size="small"></ion-spinner>
-      {{ updating ? "Updating..." : "Update PO Number" }}
+      {{ updating ? "Updating..." : "Update Job Reference" }}
     </ion-button>
 
     <ion-button

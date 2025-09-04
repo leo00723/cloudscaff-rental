@@ -942,7 +942,7 @@ export class PdfService {
           '',
           [
             [
-              { text: 'PO Number', style: 'h6b' },
+              { text: 'Job Reference', style: 'h6b' },
               `${invoice.jobReference || 'N/A'}`,
               '',
               '',
@@ -1327,7 +1327,7 @@ export class PdfService {
                 ]
               : ['', '', '', ''], // Empty text if no image
             [
-              { text: 'PO Number', style: 'h6b' },
+              { text: 'Job Reference', style: 'h6b' },
               `${invoice?.jobReference || 'N/A'}`,
               '',
               '',
@@ -1609,7 +1609,7 @@ export class PdfService {
                 ]
               : ['', '', '', ''], // Empty text if no image
             [
-              { text: 'PO Number', style: 'h6b' },
+              { text: 'Job Reference', style: 'h6b' },
               `${invoice?.jobReference || 'N/A'}`,
               '',
               '',
@@ -2015,7 +2015,7 @@ export class PdfService {
                 ]
               : ['', '', '', ''], // Empty text if no image
             [
-              { text: 'PO Number', style: 'h6b' },
+              { text: 'Job Reference', style: 'h6b' },
               `${invoice?.jobReference || 'N/A'}`,
               '',
               '',
@@ -3155,7 +3155,7 @@ export class PdfService {
               '',
             ],
             [
-              { text: 'PO Number:', style: 'h6b' },
+              { text: 'Job Reference:', style: 'h6b' },
               `${delivery?.jobReference || 'N/A'}`,
               '',
               '',

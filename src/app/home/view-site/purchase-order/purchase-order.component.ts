@@ -361,7 +361,7 @@ export class PurchaseOrderComponent implements OnInit {
       );
 
       const alert = await this.alertCtrl.create({
-        header: 'Update PO Number',
+        header: 'Update Job Reference',
         message: `This will update ${updateCounts.total} related records including:
         • ${updateCounts.transactionLogs} transaction logs
         • ${updateCounts.shipments} shipments
@@ -440,7 +440,7 @@ export class PurchaseOrderComponent implements OnInit {
       },
       'This action will update the PO number across all related records including ' +
         'transaction logs, shipments, adjustments, and returns. This cannot be undone.',
-      'Update PO Number'
+      'Update Job Reference'
     );
   }
 
