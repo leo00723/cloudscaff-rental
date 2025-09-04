@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { arrayUnion, increment, orderBy, where } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 import { Select } from '@ngxs/store';
 import * as Papa from 'papaparse';
 import { Observable, lastValueFrom, map, take } from 'rxjs';
@@ -85,6 +86,7 @@ export class InventoryPage implements OnInit {
 
   private calcPipe = inject(CalculatePipe);
   protected company: Company;
+  private menuController = inject(MenuController);
 
   constructor(
     private masterSvc: MasterService,
@@ -629,7 +631,16 @@ export class InventoryPage implements OnInit {
       showBackdrop: false,
       id: 'editShipment',
     });
-    return await modal.present();
+    await modal.present();
+
+    // Add this to handle menu refresh after modal dismissal
+    await modal.onDidDismiss();
+
+    setTimeout(async () => {
+      await this.menuController.enable(true, 'home'); // or inject MenuController
+    }, 100);
+
+    return modal;
   }
 
   async addReturn() {
