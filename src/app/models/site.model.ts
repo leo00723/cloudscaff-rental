@@ -28,4 +28,8 @@ export interface Site {
   uploads?: UploadedFile[];
   userIDS?: string[];
   jobReferenceList?: string[];
+  foremanContact?: string;
+  foremanName?: string;
+  repContact?: string;
+  repName?: string;
 }

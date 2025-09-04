@@ -43,6 +43,10 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     updatedBy: '',
     users: [],
     zip: '',
+    foremanContact: '',
+    foremanName: '',
+    repContact: '',
+    repName: '',
   };
   @Output() newSite = new EventEmitter<Site>();
   @Output() oldSite = new EventEmitter<Site>();
@@ -67,6 +71,10 @@ export class SiteFormComponent implements OnInit, OnDestroy {
         country: [this.site.country],
         billingCycle: [this.site.billingCycle],
         billable: [this.site.billable],
+        foremanName: [this.site.foremanName],
+        foremanContact: [this.site.foremanContact],
+        repName: [this.site.repName],
+        repContact: [this.site.repContact],
       });
     }
   }
@@ -291,6 +299,10 @@ export class SiteFormComponent implements OnInit, OnDestroy {
       endDate: [''],
       billingCycle: [''],
       billable: [''],
+      foremanName: [''],
+      foremanContact: [''],
+      repName: [''],
+      repContact: [''],
     });
   }
 }

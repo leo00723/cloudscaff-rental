@@ -1,11 +1,39 @@
 <form [formGroup]="form">
   <app-title-block>Site Details</app-title-block>
   <ion-row class="card-outline mb-3">
-    <ion-col sizeXl="4" size="12">
+    <ion-col size="12">
       <app-input-reactive
         title="Site Address"
         [form]="form"
         controlName="name"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="6">
+      <app-input-reactive
+        title="Site Main Contact"
+        [form]="form"
+        controlName="repName"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="6">
+      <app-input-reactive
+        title="Phone No."
+        [form]="form"
+        controlName="repContact"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="6">
+      <app-input-reactive
+        title="Site Forman"
+        [form]="form"
+        controlName="foremanName"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="6">
+      <app-input-reactive
+        title="Phone No."
+        [form]="form"
+        controlName="foremanContact"
       ></app-input-reactive>
     </ion-col>
   </ion-row>
