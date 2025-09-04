@@ -3,24 +3,10 @@
   <ion-row class="card-outline mb-3">
     <ion-col sizeXl="4" size="12">
       <app-input-reactive
-        title="Site name"
+        title="Site Address"
         [form]="form"
         controlName="name"
       ></app-input-reactive>
-    </ion-col>
-    <ion-col sizeXl="4" size="12">
-      <app-input-date
-        title="Start Date"
-        [form]="form"
-        controlName="startDate"
-      ></app-input-date>
-    </ion-col>
-    <ion-col sizeXl="4" size="12">
-      <app-input-date
-        title="End Date"
-        [form]="form"
-        controlName="endDate"
-      ></app-input-date>
     </ion-col>
   </ion-row>
   <!-- <ng-container>
@@ -60,36 +46,7 @@
       </ng-container>
     </ion-row>
   </ng-container> -->
-  <app-title-block>Users</app-title-block>
-  <ion-row class="card-outline mb-3">
-    <ion-col>
-      <ion-item *ngFor="let user of site.users; let i = index">
-        <ion-avatar slot="start">
-          <img [src]="user.thumb ? user.thumb : 'assets/icons/user.svg'" />
-        </ion-avatar>
-        <ion-label>
-          {{ user.name }}
-          <ion-badge color="light" mode="ios">
-            {{ user?.title }}
-          </ion-badge>
-        </ion-label>
-        <ion-buttons slot="end">
-          <ion-button color="danger" shape="round" (click)="removeUser(i)">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-fab-button
-        size="small"
-        class="m-auto mt-3"
-        color="success"
-        (click)="add()"
-      >
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-col>
-  </ion-row>
-  <app-title-block>Site Address</app-title-block>
+  <app-title-block>Physical Address</app-title-block>
 
   <ion-row class="card-outline mb-3">
     <ion-col size="12">
