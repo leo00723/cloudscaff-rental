@@ -26,6 +26,14 @@ import { LoadingController } from '@ionic/angular';
 @Component({
   selector: 'app-add-shipment',
   templateUrl: './add-shipment.component.html',
+  styles: [
+    `
+      ion-split-pane {
+        --side-width: 35%;
+        --side-max-width: 35%;
+      }
+    `,
+  ],
 })
 export class AddShipmentComponent implements OnInit, OnDestroy {
   @ViewChild(MultiuploaderComponent) uploader: MultiuploaderComponent;
@@ -342,6 +350,28 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   async upload() {
     const newFiles = await this.uploader.startUpload();
     this.shipment.uploads.push(...newFiles);
+  }
+
+  async removeUpload(index: number) {
+    this.shipment.uploads.splice(index, 1);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(`company/${this.company.id}/shipments`, this.shipment.id, {
+          uploads: this.shipment.uploads,
+        });
+      this.masterSvc
+        .notification()
+        .toast('Files deleted successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong deleting file. Please try again.',
+          'danger'
+        );
+    }
   }
 
   async delete() {

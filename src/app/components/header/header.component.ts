@@ -54,4 +54,8 @@ export class HeaderComponent {
       this.updatedIcon.emit(true);
     }
   }
+
+  toggleMenu() {
+    console.log('muni');
+  }
 }

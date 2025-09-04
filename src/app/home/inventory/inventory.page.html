@@ -1,4 +1,4 @@
-<app-header title="Inventory" btnName="help" (updated)="help()">
+<app-header title="Inventory" btnName="" (updated)="help()" [showMenu]="true">
   <ng-container *ngIf="inventoryItems$ | async as items">
     <ion-toolbar *ngIf="items.length > 0">
       <ion-segment
