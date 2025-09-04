@@ -83,7 +83,7 @@ export class InvoiceComponent implements OnInit {
     this.setQrData();
   }
 
-  updatePOEstimate(estimate: EstimateV2) {
+  updateJobReferenceEstimate(estimate: EstimateV2) {
     this.invoice.estimate = estimate;
     this.calcTotal();
   }

@@ -160,12 +160,12 @@ export class AddTransferComponent implements OnInit, OnDestroy {
 
   changeFromSite(event) {
     this.field('fromSite').setValue(event[0]);
-    this.field('fromPO').setValue('');
+    this.field('fromJobReference').setValue('');
     this.items = [];
   }
   changeToSite(event) {
     this.field('toSite').setValue(event[0]);
-    this.field('toPO').setValue('');
+    this.field('toJobReference').setValue('');
   }
 
   update(val, item: TransactionItem) {
@@ -205,7 +205,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   }
 
   protected getTransactions(value: any) {
-    const jobReference = this.field('fromPO').value;
+    const jobReference = this.field('fromJobReference').value;
     if (!jobReference) {
       return;
     }
@@ -228,9 +228,9 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   private initEditForm() {
     this.form = this.masterSvc.fb().group({
       fromSite: [this.transfer.fromSite, Validators.required],
-      fromPO: [this.transfer.fromPO, Validators.required],
+      fromJobReference: [this.transfer.fromJobReference, Validators.required],
       toSite: [this.transfer.toSite, Validators.required],
-      toPO: [this.transfer.toPO, Validators.required],
+      toJobReference: [this.transfer.toJobReference, Validators.required],
       transferDate: [this.transfer.transferDate, Validators.required],
       notes: [this.transfer.notes, Validators.nullValidator],
       updatedBy: [this.user.id],
@@ -245,7 +245,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
           .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
-            where('jobReference', '==', this.transfer.fromPO),
+            where('jobReference', '==', this.transfer.fromJobReference),
             where('siteId', '==', this.transfer.fromSite.id),
           ])
           .pipe(take(1))
@@ -266,9 +266,9 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       fromSite: ['', Validators.required],
-      fromPO: ['', Validators.required],
+      fromJobReference: ['', Validators.required],
       toSite: ['', Validators.required],
-      toPO: ['', Validators.required],
+      toJobReference: ['', Validators.required],
       transferDate: ['', Validators.required],
       notes: ['', Validators.nullValidator],
       createdBy: [this.user.id],

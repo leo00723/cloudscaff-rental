@@ -16,7 +16,7 @@ import cloneDeep from 'lodash/cloneDeep';
   templateUrl: './job-reference-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class POSummaryComponent {
+export class JobReferenceSummaryComponent {
   @Input() set value(val: EstimateV2) {
     if (val) {
       this.estimate = cloneDeep(val);

@@ -107,11 +107,11 @@
             >
           </ion-segment-button>
           <ion-segment-button
-            value="POS"
-            *ngIf="user.permissionsList.includes('Purchase Orders') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+            value="JobReferenceS"
+            *ngIf="user.permissionsList.includes('Job References') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
           >
             <ion-label
-              >Purchase Orders
+              >Job References
               <ng-container *ngIf="purchaseOrders$ | async as pos">
                 <ion-badge
                   shape="round"
@@ -645,7 +645,7 @@
           </ion-fab-button>
         </ion-fab>
       </ng-container>
-      <ng-container *ngSwitchCase="'POS'">
+      <ng-container *ngSwitchCase="'JobReferenceS'">
         <ion-accordion-group
           mode="ios"
           class="rounded-lg overflow-hidden mb-5"
@@ -664,13 +664,13 @@
             <div class="ion-padding" slot="content">
               <app-job-reference-table
                 [value]="purchaseOrders$"
-                (selectedItem)="viewPO($event,site)"
+                (selectedItem)="viewJobReference($event,site)"
               ></app-job-reference-table>
             </div>
           </ion-accordion>
           <ion-accordion
             value="completed"
-            *ngIf="completedPO$ | async as cpos else loading"
+            *ngIf="completedJobReference$ | async as cpos else loading"
           >
             <ion-item slot="header" color="light">
               <ion-label color="success"
@@ -679,8 +679,8 @@
             </ion-item>
             <div class="ion-padding" slot="content">
               <app-job-reference-table
-                [value]="completedPO$"
-                (selectedItem)="viewPO($event,site)"
+                [value]="completedJobReference$"
+                (selectedItem)="viewJobReference($event,site)"
               ></app-job-reference-table>
             </div>
           </ion-accordion>
@@ -693,7 +693,7 @@
           slot="fixed"
           *ngIf="site.status !== 'closed'"
         >
-          <ion-fab-button (click)="addPO(site)">
+          <ion-fab-button (click)="addJobReference(site)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
         </ion-fab>

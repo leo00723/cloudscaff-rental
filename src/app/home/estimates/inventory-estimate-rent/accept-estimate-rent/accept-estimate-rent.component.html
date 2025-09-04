@@ -18,15 +18,15 @@
     <ion-row *ngSwitchDefault>
       <ion-col size="12">
         <ion-text color="medium">
-          <h4>Attach Purchase Order</h4>
+          <h4>Attach Job Reference</h4>
         </ion-text>
       </ion-col>
       <ion-col size="12">
         <app-input-reactive
-          title="Purchase Order"
+          title="Job Reference"
           controlName="jobReference"
           [form]="form"
-          placeholder="Enter Purchase Order Number"
+          placeholder="Enter Job Reference Number"
         >
         </app-input-reactive>
       </ion-col>
@@ -110,7 +110,7 @@
         <app-input-text title="Site Name" [value]="site.name" [readonly]="true">
         </app-input-text>
         <app-input-reactive
-          title="Purchase Order"
+          title="Job Reference"
           controlName="jobReference"
           [form]="form"
           [readonly]="true"

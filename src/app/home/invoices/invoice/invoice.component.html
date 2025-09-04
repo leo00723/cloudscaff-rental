@@ -152,7 +152,7 @@
     <ng-container *ngIf="invoice.customInvoice && allowEdit; else summary">
       <app-job-reference-custom-item
         [value]="invoice.estimate"
-        (update)="updatePOEstimate($event)"
+        (update)="updateJobReferenceEstimate($event)"
       ></app-job-reference-custom-item>
     </ng-container>
     <ng-template #summary>

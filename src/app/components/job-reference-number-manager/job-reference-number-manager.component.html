@@ -10,16 +10,20 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div *ngIf="!selectedPO">
+  <div *ngIf="!selectedJobReference">
     <ion-searchbar
       [(ngModel)]="searchTerm"
       placeholder="Search Job References..."
-      (ionInput)="filterPOs()"
+      (ionInput)="filterJobReferences()"
     >
     </ion-searchbar>
 
     <ion-list>
-      <ion-item button *ngFor="let jr of filteredPOs" (click)="selectPO(jr)">
+      <ion-item
+        button
+        *ngFor="let jr of filteredJobReferences"
+        (click)="selectJobReference(jr)"
+      >
         <ion-label>
           <h3>{{ jr.jobReference }}</h3>
           <p>{{ jr.code }} - {{ jr.status }}</p>
@@ -32,16 +36,18 @@
     </ion-list>
   </div>
 
-  <div *ngIf="selectedPO">
+  <div *ngIf="selectedJobReference">
     <ion-card>
       <ion-card-header>
-        <ion-card-title>{{ selectedPO.jobReference }}</ion-card-title>
-        <ion-card-subtitle>{{ selectedPO.code }}</ion-card-subtitle>
+        <ion-card-title>{{ selectedJobReference.jobReference }}</ion-card-title>
+        <ion-card-subtitle>{{ selectedJobReference.code }}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <p><strong>Site:</strong> {{ selectedPO.site?.name }}</p>
-        <p><strong>Status:</strong> {{ selectedPO.status }}</p>
-        <p><strong>Total:</strong> {{ selectedPO.total | currency }}</p>
+        <p><strong>Site:</strong> {{ selectedJobReference.site?.name }}</p>
+        <p><strong>Status:</strong> {{ selectedJobReference.status }}</p>
+        <p>
+          <strong>Total:</strong> {{ selectedJobReference.total | currency }}
+        </p>
       </ion-card-content>
     </ion-card>
 
@@ -100,7 +106,7 @@
       (click)="updateJobReference()"
       [disabled]="
         !newJobReference ||
-        newJobReference === selectedPO.jobReference ||
+        newJobReference === selectedJobReference.jobReference ||
         updating
       "
       color="primary"

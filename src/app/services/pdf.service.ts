@@ -4094,13 +4094,13 @@ export class PdfService {
             ],
             [
               { text: 'From Job Reference:', style: 'h6b' },
-              `${transferDoc?.fromPO || 'N/A'}`,
+              `${transferDoc?.fromJobReference || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'To Job Reference:', style: 'h6b' },
-              `${transferDoc?.toPO || 'N/A'}`,
+              `${transferDoc?.toJobReference || 'N/A'}`,
               '',
               '',
             ],

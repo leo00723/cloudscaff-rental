@@ -94,7 +94,7 @@ export class AcceptEstimateRentComponent implements OnInit {
         const company = this.store.selectSnapshot(CompanyState.company);
         const jr: JobReference = {};
         const code = this.editSvc.generateDocCode(
-          company.totalPOs,
+          company.totalJobReferences,
           'Job Reference'
         );
         Object.assign(jr, {
@@ -112,7 +112,7 @@ export class AcceptEstimateRentComponent implements OnInit {
 
         await this.editSvc.addDocument(`company/${this.company.id}/pos`, jr);
         await this.editSvc.updateDoc('company', this.company.id, {
-          totalPOs: increment(1),
+          totalJobReferences: increment(1),
         });
         await this.editSvc.updateDoc(
           `company/${this.company.id}/inventoryEstimatesRent`,
@@ -123,7 +123,7 @@ export class AcceptEstimateRentComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.site.id,
           {
-            poList: arrayUnion(this.estimate.jobReference),
+            JobReferenceList: arrayUnion(this.estimate.jobReference),
           }
         );
 

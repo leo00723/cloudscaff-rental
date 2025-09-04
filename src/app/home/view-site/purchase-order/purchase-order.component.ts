@@ -189,7 +189,7 @@ export class PurchaseOrderComponent implements OnInit {
     this.calcTotal();
   }
 
-  updatePOEstimate(estimate: EstimateV2) {
+  updateJobReferenceEstimate(estimate: EstimateV2) {
     this.jr.estimate = estimate;
     this.calcTotal();
   }
@@ -242,7 +242,7 @@ export class PurchaseOrderComponent implements OnInit {
       }
     });
   }
-  closePO() {
+  closeJobReference() {
     this.notificationSvc.presentAlertConfirm(async () => {
       try {
         this.saving = true;
@@ -259,7 +259,7 @@ export class PurchaseOrderComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.jr.site.id,
           {
-            poList: arrayRemove(this.jr.jobReference),
+            JobReferenceList: arrayRemove(this.jr.jobReference),
           }
         );
 
@@ -279,7 +279,7 @@ export class PurchaseOrderComponent implements OnInit {
       }
     });
   }
-  openPO() {
+  openJobReference() {
     this.notificationSvc.presentAlertConfirm(async () => {
       try {
         this.saving = true;
@@ -296,7 +296,7 @@ export class PurchaseOrderComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.jr.site.id,
           {
-            poList: arrayUnion(this.jr.jobReference),
+            JobReferenceList: arrayUnion(this.jr.jobReference),
           }
         );
 

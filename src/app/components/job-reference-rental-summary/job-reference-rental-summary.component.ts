@@ -15,7 +15,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
   templateUrl: './job-reference-rental-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PORentalSummaryComponent {
+export class JobReferenceRentalSummaryComponent {
   @Input() set value(val: InventoryEstimateRent) {
     if (val) {
       this.estimate = val;

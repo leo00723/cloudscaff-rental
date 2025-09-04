@@ -88,18 +88,23 @@
           <app-input-select-reactive
             title="Job Reference"
             placeholder="Select Job Reference"
-            controlName="fromPO"
+            controlName="fromJobReference"
             [form]="form"
-            [selectedText]="field('fromPO').value"
+            [selectedText]="field('fromJobReference').value"
             (ionChange)="getTransactions($event)"
           >
-            <ng-container *ngFor="let jr of field('fromSite').value.poList">
+            <ng-container
+              *ngFor="let jr of field('fromSite').value.JobReferenceList"
+            >
               <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
             </ng-container>
           </app-input-select-reactive>
         </ion-col>
       </ion-row>
-      <ion-row class="card-outline mb-3" *ngIf="field('fromPO').value">
+      <ion-row
+        class="card-outline mb-3"
+        *ngIf="field('fromJobReference').value"
+      >
         <ion-col size="12">
           <ion-text color="medium">
             <h4>Transfer To</h4>
@@ -151,17 +156,19 @@
           <app-input-select-reactive
             title="Job Reference"
             placeholder="Select Job Reference"
-            controlName="toPO"
+            controlName="toJobReference"
             [form]="form"
-            [selectedText]="field('toPO').value"
+            [selectedText]="field('toJobReference').value"
           >
-            <ng-container *ngFor="let jr of field('toSite').value.poList">
+            <ng-container
+              *ngFor="let jr of field('toSite').value.JobReferenceList"
+            >
               <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
             </ng-container>
           </app-input-select-reactive>
         </ion-col>
       </ion-row>
-      <ion-row *ngIf="items.length > 0 && field('toPO').value">
+      <ion-row *ngIf="items.length > 0 && field('toJobReference').value">
         <ion-col size="12">
           <ion-text color="medium">
             <h4>Transfer Information</h4>

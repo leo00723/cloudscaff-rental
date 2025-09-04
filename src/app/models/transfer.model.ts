@@ -7,9 +7,9 @@ export interface Transfer {
   id?: string;
   code?: string;
   fromSite?: Site;
-  fromPO?: string;
+  fromJobReference?: string;
   toSite?: Site;
-  toPO?: string;
+  toJobReference?: string;
   company?: Company;
   items?: TransactionItem[];
   transferDate?: any;

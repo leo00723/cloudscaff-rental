@@ -262,7 +262,7 @@ export class JobReferenceUpdateService {
     const fromTransfers = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-          where('fromPO', '==', oldJobReference),
+          where('fromJobReference', '==', oldJobReference),
           where('fromSite.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -273,7 +273,7 @@ export class JobReferenceUpdateService {
         updates.push({
           collection: `company/${companyId}/poTransfers`,
           docId: transfer.id,
-          updateData: { fromPO: newJobReference },
+          updateData: { fromJobReference: newJobReference },
         });
       });
     }
@@ -282,7 +282,7 @@ export class JobReferenceUpdateService {
     const toTransfers = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-          where('toPO', '==', oldJobReference),
+          where('toJobReference', '==', oldJobReference),
           where('toSite.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -293,22 +293,22 @@ export class JobReferenceUpdateService {
         updates.push({
           collection: `company/${companyId}/poTransfers`,
           docId: transfer.id,
-          updateData: { toPO: newJobReference },
+          updateData: { toJobReference: newJobReference },
         });
       });
     }
 
-    // 9. Site's poList array (requires two operations: remove old, add new)
+    // 9. Site's JobReferenceList array (requires two operations: remove old, add new)
     updates.push({
       collection: `company/${companyId}/sites`,
       docId: siteId,
-      updateData: { poList: arrayRemove(oldJobReference) },
+      updateData: { JobReferenceList: arrayRemove(oldJobReference) },
     });
 
     updates.push({
       collection: `company/${companyId}/sites`,
       docId: siteId,
-      updateData: { poList: arrayUnion(newJobReference) },
+      updateData: { JobReferenceList: arrayUnion(newJobReference) },
     });
 
     return updates;
@@ -485,18 +485,22 @@ export class JobReferenceUpdateService {
       totalProcessed += processed;
     }
 
-    // 3. Update site poList
-    progressCallback?.(totalProcessed, estimatedTotal, 'Updating site poList');
+    // 3. Update site JobReferenceList
+    progressCallback?.(
+      totalProcessed,
+      estimatedTotal,
+      'Updating site JobReferenceList'
+    );
     await this.processSingleBatch([
       {
         collection: `company/${companyId}/sites`,
         docId: siteId,
-        updateData: { poList: arrayRemove(oldJobReference) },
+        updateData: { JobReferenceList: arrayRemove(oldJobReference) },
       },
       {
         collection: `company/${companyId}/sites`,
         docId: siteId,
-        updateData: { poList: arrayUnion(newJobReference) },
+        updateData: { JobReferenceList: arrayUnion(newJobReference) },
       },
     ]);
     totalProcessed += 2;
@@ -622,10 +626,10 @@ export class JobReferenceUpdateService {
           where('site.id', '==', siteId),
         ];
       case 'poTransfers':
-        // Note: This would need two separate queries for fromPO and toPO
-        // For simplicity, handling fromPO first
+        // Note: This would need two separate queries for fromJobReference and toJobReference
+        // For simplicity, handling fromJobReference first
         return [
-          where('fromPO', '==', jobReference),
+          where('fromJobReference', '==', jobReference),
           where('fromSite.id', '==', siteId),
         ];
       default:
@@ -647,18 +651,18 @@ export class JobReferenceUpdateService {
 
     switch (collectionName) {
       case 'poTransfers':
-        // Handle both fromPO and toPO cases
+        // Handle both fromJobReference and toJobReference cases
         if (doc.fromSite?.id === siteId) {
           return {
             collection,
             docId: doc.id,
-            updateData: { fromPO: newJobReference },
+            updateData: { fromJobReference: newJobReference },
           };
         } else if (doc.toSite?.id === siteId) {
           return {
             collection,
             docId: doc.id,
-            updateData: { toPO: newJobReference },
+            updateData: { toJobReference: newJobReference },
           };
         }
         return null;
@@ -683,7 +687,7 @@ export class JobReferenceUpdateService {
     siteId: string,
     newJobReference: string
   ): Promise<void> {
-    const existingPOs = await firstValueFrom(
+    const existingJobReferences = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/pos`, [
           where('site.id', '==', siteId),
@@ -692,7 +696,7 @@ export class JobReferenceUpdateService {
         .pipe(take(1))
     );
 
-    if (existingPOs && existingPOs.length > 0) {
+    if (existingJobReferences && existingJobReferences.length > 0) {
       throw new Error('Job Reference already exists for this site');
     }
   }
@@ -758,7 +762,7 @@ export class JobReferenceUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-            where('fromPO', '==', jobReference),
+            where('fromJobReference', '==', jobReference),
             where('fromSite.id', '==', siteId),
           ])
           .pipe(take(1))
@@ -766,7 +770,7 @@ export class JobReferenceUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-            where('toPO', '==', jobReference),
+            where('toJobReference', '==', jobReference),
             where('toSite.id', '==', siteId),
           ])
           .pipe(take(1))
@@ -790,7 +794,7 @@ export class JobReferenceUpdateService {
       counts.returns +
       counts.invoices +
       counts.transfers +
-      2; // +2 for the site poList operations
+      2; // +2 for the site JobReferenceList operations
 
     return counts;
   }

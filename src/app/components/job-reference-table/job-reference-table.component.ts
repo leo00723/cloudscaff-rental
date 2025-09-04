@@ -19,7 +19,7 @@ import { JobReference } from 'src/app/models/jr.model';
   templateUrl: './job-reference-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class POTableComponent {
+export class JobReferenceTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<JobReference>();
   @Input() set value(data: Observable<JobReference[]>) {

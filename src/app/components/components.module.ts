@@ -54,9 +54,9 @@ import { UploadTaskComponent } from './multiuploader/upload-task/upload-task.com
 import { NotificationsComponent } from './notifications/notifications.component';
 import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
 import { PermissionsSelectComponent } from './permissions-select/permissions-select.component';
-import { PORentalSummaryComponent } from './job-reference-rental-summary/job-reference-rental-summary.component';
-import { POSummaryComponent } from './job-reference-summary/job-reference-summary.component';
-import { POTableComponent } from './job-reference-table/job-reference-table.component';
+import { JobReferenceRentalSummaryComponent } from './job-reference-rental-summary/job-reference-rental-summary.component';
+import { JobReferenceSummaryComponent } from './job-reference-summary/job-reference-summary.component';
+import { JobReferenceTableComponent } from './job-reference-table/job-reference-table.component';
 import { RepurposeInventoryComponent } from './repurpose-inventory/repurpose-inventory.component';
 import { RequestsTableComponent } from './requests-table/requests-table.component';
 import { ReturnsTableComponent } from './returns-table/returns-table.component';
@@ -135,9 +135,9 @@ const COMPONENTS = [
   MultiuploaderComponent,
   NotificationsComponent,
   JobReferenceCustomItemComponent,
-  POSummaryComponent,
-  PORentalSummaryComponent,
-  POTableComponent,
+  JobReferenceSummaryComponent,
+  JobReferenceRentalSummaryComponent,
+  JobReferenceTableComponent,
   PagePlaceholderComponent,
   RepurposeInventoryComponent,
   RequestsTableComponent,

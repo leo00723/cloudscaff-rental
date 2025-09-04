@@ -82,7 +82,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
         const jr: JobReference = {};
         const code = this.masterSvc
           .edit()
-          .generateDocCode(company.totalPOs, 'Job Reference');
+          .generateDocCode(company.totalJobReferences, 'Job Reference');
         Object.assign(jr, {
           estimate: this.estimate,
           site: this.site,
@@ -99,7 +99,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
           .edit()
           .addDocument(`company/${this.company.id}/pos`, jr);
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
-          totalPOs: increment(1),
+          totalJobReferences: increment(1),
         });
         await this.masterSvc
           .edit()
@@ -111,7 +111,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
         await this.masterSvc
           .edit()
           .updateDoc(`company/${this.company.id}/sites`, this.site.id, {
-            poList: arrayUnion(this.estimate.jobReference),
+            JobReferenceList: arrayUnion(this.estimate.jobReference),
           });
         // if (this.estimate.enquiryId.length > 0) {
         //   await this.masterSvc

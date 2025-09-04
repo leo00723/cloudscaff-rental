@@ -14,8 +14,8 @@ export class JobReferenceManagerComponent implements OnInit {
   @Input() companyId: string;
 
   searchTerm = '';
-  filteredPOs: JobReference[] = [];
-  selectedPO: JobReference | null = null;
+  filteredJobReferences: JobReference[] = [];
+  selectedJobReference: JobReference | null = null;
   newJobReference = '';
   updating = false;
   updateCounts: any = null;
@@ -27,16 +27,16 @@ export class JobReferenceManagerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.filteredPOs = [...this.pos];
+    this.filteredJobReferences = [...this.pos];
   }
 
-  filterPOs() {
+  filterJobReferences() {
     if (!this.searchTerm) {
-      this.filteredPOs = [...this.pos];
+      this.filteredJobReferences = [...this.pos];
       return;
     }
 
-    this.filteredPOs = this.pos.filter(
+    this.filteredJobReferences = this.pos.filter(
       (jr) =>
         jr.jobReference
           ?.toLowerCase()
@@ -46,8 +46,8 @@ export class JobReferenceManagerComponent implements OnInit {
     );
   }
 
-  async selectPO(jr: JobReference) {
-    this.selectedPO = jr;
+  async selectJobReference(jr: JobReference) {
+    this.selectedJobReference = jr;
     this.newJobReference = jr.jobReference || '';
 
     try {
@@ -63,13 +63,13 @@ export class JobReferenceManagerComponent implements OnInit {
   }
 
   goBack() {
-    this.selectedPO = null;
+    this.selectedJobReference = null;
     this.newJobReference = '';
     this.updateCounts = null;
   }
 
   async updateJobReference() {
-    if (!this.selectedPO || !this.newJobReference) {
+    if (!this.selectedJobReference || !this.newJobReference) {
       return;
     }
 
@@ -83,17 +83,19 @@ export class JobReferenceManagerComponent implements OnInit {
           this.updating = true;
           await this.jobReferenceUpdateSvc.updateJobReferenceAcrossCollections(
             this.companyId,
-            this.selectedPO.site.id,
-            this.selectedPO.jobReference,
+            this.selectedJobReference.site.id,
+            this.selectedJobReference.jobReference,
             this.newJobReference,
-            this.selectedPO.id
+            this.selectedJobReference.id
           );
 
           // Update the local Job Reference object
-          this.selectedPO.jobReference = this.newJobReference;
+          this.selectedJobReference.jobReference = this.newJobReference;
 
           // Update the Job Reference in the list
-          const index = this.pos.findIndex((p) => p.id === this.selectedPO.id);
+          const index = this.pos.findIndex(
+            (p) => p.id === this.selectedJobReference.id
+          );
           if (index > -1) {
             this.pos[index].jobReference = this.newJobReference;
           }

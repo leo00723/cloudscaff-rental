@@ -10,7 +10,7 @@
       </ion-button>
     </ion-buttons>
     <ion-title>
-      Purchase Order - {{ jr?.code }} - {{ jr?.jobReference }}
+      Job Reference - {{ jr?.code }} - {{ jr?.jobReference }}
       <ion-text *ngIf="saving">
         <i class="text-muted fs-6">(Saving...)</i>
       </ion-text>
@@ -67,13 +67,13 @@
     <ng-container *ngIf="jr.customInvoice; else summary">
       <app-job-reference-custom-item
         [value]="jr.estimate"
-        (update)="updatePOEstimate($event)"
+        (update)="updateJobReferenceEstimate($event)"
       ></app-job-reference-custom-item>
     </ng-container>
     <ng-template #summary>
       <app-job-reference-summary
         [value]="jr.estimate"
-        (update)="updatePOEstimate($event)"
+        (update)="updateJobReferenceEstimate($event)"
       ></app-job-reference-summary>
     </ng-template>
   </ng-template>
@@ -476,7 +476,7 @@
     </ion-col>
     <ion-col size="6">
       <ion-button
-        (click)="closePO()"
+        (click)="closeJobReference()"
         shape="round"
         color="danger"
         *ngIf="!saving && transactions.length <= 0 && jr.status !== 'completed'"
@@ -486,7 +486,7 @@
     >
     <ion-col size="6" class="text-end">
       <ion-button
-        (click)="openPO()"
+        (click)="openJobReference()"
         shape="round"
         color="success"
         *ngIf="!saving && transactions.length <= 0 && jr.status === 'completed'"

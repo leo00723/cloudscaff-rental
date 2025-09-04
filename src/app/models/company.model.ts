@@ -56,7 +56,7 @@ export interface Company {
   totalSites?: number;
   totalSIs?: number;
   totalTransfers?: number;
-  totalPOs?: number;
+  totalJobReferences?: number;
   trialEnded?: boolean;
   tokens?: {
     accessToken?: string;

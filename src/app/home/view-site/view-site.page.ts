@@ -75,7 +75,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
   instructions$: Observable<SI[]>;
 
   purchaseOrders$: Observable<JobReference[]>;
-  completedPO$: Observable<JobReference[]>;
+  completedJobReference$: Observable<JobReference[]>;
 
   transactionInvoices$: Observable<TransactionInvoice[]>;
 
@@ -251,7 +251,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         where('status', '==', 'pending'),
         orderBy('code', 'desc'),
       ]) as Observable<any[]>;
-    this.completedPO$ = this.masterSvc
+    this.completedJobReference$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.ids[0]}/pos`, [
         where('site.id', '==', this.ids[1]),
@@ -407,7 +407,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
     return modal.present();
   }
 
-  async addPO(site: Site) {
+  async addJobReference(site: Site) {
     const alert = await this.alertController.create({
       header: 'Please enter Job Reference',
       buttons: [
@@ -441,16 +441,16 @@ export class ViewSitePage implements OnInit, OnDestroy {
 
     const jobReference = data?.values[0];
     if (jobReference) {
-      this.createPO(site, jobReference);
+      this.createJobReference(site, jobReference);
     } else {
-      this.addPO(site);
+      this.addJobReference(site);
       this.masterSvc
         .notification()
         .toast('Enter a valid Job Reference', 'danger');
     }
   }
 
-  createPO(site: Site, jobReference: string) {
+  createJobReference(site: Site, jobReference: string) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         const company = this.masterSvc
@@ -469,7 +469,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         const jr: JobReference = {};
         const code = this.masterSvc
           .edit()
-          .generateDocCode(company.totalPOs, 'Job Reference');
+          .generateDocCode(company.totalJobReferences, 'Job Reference');
         Object.assign(jr, {
           estimate,
           site,
@@ -485,12 +485,12 @@ export class ViewSitePage implements OnInit, OnDestroy {
           .edit()
           .addDocument(`company/${company.id}/pos`, jr);
         await this.masterSvc.edit().updateDoc('company', company.id, {
-          totalPOs: increment(1),
+          totalJobReferences: increment(1),
         });
         await this.masterSvc
           .edit()
           .updateDoc(`company/${company.id}/sites`, site.id, {
-            poList: arrayUnion(jobReference),
+            JobReferenceList: arrayUnion(jobReference),
           });
         this.masterSvc
           .notification()
@@ -507,12 +507,12 @@ export class ViewSitePage implements OnInit, OnDestroy {
     });
   }
 
-  async viewPO(poData: JobReference, site: Site) {
+  async viewJobReference(poData: JobReference, site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: PurchaseOrderComponent,
       componentProps: { value: poData, site },
       showBackdrop: false,
-      id: 'viewPO',
+      id: 'viewJobReference',
       cssClass: 'fullscreen',
     });
     return await modal.present();
