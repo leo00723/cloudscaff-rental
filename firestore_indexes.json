@@ -557,7 +557,7 @@
       ]
     },
     {
-      "collectionGroup": "pos",
+      "collectionGroup": "jobReferences",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -575,7 +575,7 @@
       ]
     },
     {
-      "collectionGroup": "poTransfers",
+      "collectionGroup": "jobReferenceTransfers",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -1343,7 +1343,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "poNumber",
+          "fieldPath": "jobReference",
           "order": "ASCENDING"
         },
         {
@@ -1373,7 +1373,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "poNumber",
+          "fieldPath": "jobReference",
           "order": "ASCENDING"
         },
         {
@@ -1399,7 +1399,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "poNumber",
+          "fieldPath": "jobReference",
           "order": "ASCENDING"
         },
         {
@@ -1421,7 +1421,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "poNumber",
+          "fieldPath": "jobReference",
           "order": "ASCENDING"
         },
         {

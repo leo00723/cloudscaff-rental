@@ -333,7 +333,7 @@ exports.scaffoldUpdates = functions.firestore
   });
 
 exports.poTransferUpdates = functions.firestore
-  .document('company/{companyId}/poTransfers/{id}')
+  .document('company/{companyId}/jobReferenceTransfers/{id}')
   .onUpdate(async (change, context) => {
     const data = change.after.data();
     const companyId = context.params.companyId;

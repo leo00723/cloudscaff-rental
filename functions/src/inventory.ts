@@ -490,8 +490,8 @@ exports.manageTransfer = functions.firestore
     }
   });
 
-exports.managePOTransfer = functions.firestore
-  .document('company/{companyId}/poTransfers/{transferId}')
+exports.manageJobReferenceTransfer = functions.firestore
+  .document('company/{companyId}/jobReferenceTransfers/{transferId}')
   .onUpdate(async (change, context) => {
     try {
       if (
@@ -2772,7 +2772,7 @@ const transferDeliveryTransaction = async (transfer: any) => {
       invoiceStart: Timestamp.fromDate(transferDate),
       invoiceEnd: null,
       hireRate: 0,
-      jobReference: transfer.toPO,
+      jobReference: transfer.toJobReference,
       transactionType: 'Delivery',
       siteId: transfer.toSite.id,
       status: 'active',
@@ -2825,7 +2825,7 @@ const transferReturnTransaction = async (transfer: any) => {
       invoiceStart: item.invoiceStart,
       invoiceEnd: Timestamp.fromDate(transferDate),
       hireRate: item.hireRate || 0,
-      jobReference: transfer.fromPO,
+      jobReference: transfer.fromJobReference,
       transactionType: 'Return',
       siteId: transfer.fromSite.id,
       status: 'active',

@@ -12,7 +12,7 @@ Central service that handles PO number updates across all collections.
 
 **Key Methods:**
 
-- `updatePONumberAcrossCollections()` - Updates PO number in all related collections
+- `updateJobReferenceAcrossCollections()` - Updates PO number in all related collections
 - `getUpdateCount()` - Returns count of records that will be affected by the change
 
 ### 2. Purchase Order Component Updates

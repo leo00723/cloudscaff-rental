@@ -230,7 +230,7 @@ service cloud.firestore {
         allow read, write: if canReadWrite();
       }
 
-      match /poTransfers/{id} {
+      match /jobReferenceTransfers/{id} {
         allow read, write: if canReadWrite();
       }
 

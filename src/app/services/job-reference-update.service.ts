@@ -261,7 +261,7 @@ export class JobReferenceUpdateService {
     // 7. Transfers (from)
     const fromTransfers = await firstValueFrom(
       this.editSvc
-        .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+        .getCollectionFiltered(`company/${companyId}/jobReferenceTransfers`, [
           where('fromJobReference', '==', oldJobReference),
           where('fromSite.id', '==', siteId),
         ])
@@ -271,7 +271,7 @@ export class JobReferenceUpdateService {
     if (fromTransfers) {
       fromTransfers.forEach((transfer) => {
         updates.push({
-          collection: `company/${companyId}/poTransfers`,
+          collection: `company/${companyId}/jobReferenceTransfers`,
           docId: transfer.id,
           updateData: { fromJobReference: newJobReference },
         });
@@ -281,7 +281,7 @@ export class JobReferenceUpdateService {
     // 8. Transfers (to)
     const toTransfers = await firstValueFrom(
       this.editSvc
-        .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+        .getCollectionFiltered(`company/${companyId}/jobReferenceTransfers`, [
           where('toJobReference', '==', oldJobReference),
           where('toSite.id', '==', siteId),
         ])
@@ -291,7 +291,7 @@ export class JobReferenceUpdateService {
     if (toTransfers) {
       toTransfers.forEach((transfer) => {
         updates.push({
-          collection: `company/${companyId}/poTransfers`,
+          collection: `company/${companyId}/jobReferenceTransfers`,
           docId: transfer.id,
           updateData: { toJobReference: newJobReference },
         });
@@ -444,7 +444,7 @@ export class JobReferenceUpdateService {
       { name: 'adjustments', count: 0 },
       { name: 'returns', count: 0 },
       { name: 'transactionInvoices', count: 0 },
-      { name: 'poTransfers', count: 0 },
+      { name: 'jobReferenceTransfers', count: 0 },
     ];
 
     // 1. Update Job Reference document first
@@ -625,7 +625,7 @@ export class JobReferenceUpdateService {
           where('jobReference', '==', jobReference),
           where('site.id', '==', siteId),
         ];
-      case 'poTransfers':
+      case 'jobReferenceTransfers':
         // Note: This would need two separate queries for fromJobReference and toJobReference
         // For simplicity, handling fromJobReference first
         return [
@@ -650,7 +650,7 @@ export class JobReferenceUpdateService {
     const collection = `company/${companyId}/${collectionName}`;
 
     switch (collectionName) {
-      case 'poTransfers':
+      case 'jobReferenceTransfers':
         // Handle both fromJobReference and toJobReference cases
         if (doc.fromSite?.id === siteId) {
           return {
@@ -761,7 +761,7 @@ export class JobReferenceUpdateService {
       ),
       firstValueFrom(
         this.editSvc
-          .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+          .getCollectionFiltered(`company/${companyId}/jobReferenceTransfers`, [
             where('fromJobReference', '==', jobReference),
             where('fromSite.id', '==', siteId),
           ])
@@ -769,7 +769,7 @@ export class JobReferenceUpdateService {
       ),
       firstValueFrom(
         this.editSvc
-          .getCollectionFiltered(`company/${companyId}/poTransfers`, [
+          .getCollectionFiltered(`company/${companyId}/jobReferenceTransfers`, [
             where('toJobReference', '==', jobReference),
             where('toSite.id', '==', siteId),
           ])
