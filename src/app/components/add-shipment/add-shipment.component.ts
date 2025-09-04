@@ -9,7 +9,7 @@ import {
 import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { lastValueFrom, map, Observable, Subject, Subscription } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Delivery } from 'src/app/models/delivery.model';
@@ -22,6 +22,7 @@ import { MultiuploaderComponent } from '../multiuploader/multiuploader.component
 import { ImgService } from 'src/app/services/img.service';
 import * as Papa from 'papaparse';
 import { LoadingController } from '@ionic/angular';
+import { CalculatePipe } from '../calculate.pipe';
 
 @Component({
   selector: 'app-add-shipment',
@@ -59,11 +60,15 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   blob: any;
   uploading = false;
 
+  isMobile = false;
+
   private loadingCtrl = inject(LoadingController);
   private imgService = inject(ImgService);
+  private calcPipe = inject(CalculatePipe);
   private subs = new Subscription();
 
   constructor(private masterSvc: MasterService) {
+    this.isMobile = this.masterSvc.platform().is('mobile');
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.init();
@@ -73,13 +78,20 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (!this.isEdit) {
-      this.subs.add(
-        this.inventoryItems$.subscribe((items) => {
-          this.items = items;
-        })
+      this.items = await lastValueFrom(
+        this.inventoryItems$.pipe(
+          map((data) =>
+            data.map((item) => {
+              delete item.log;
+              item.calculatedAvailableQty = this.calcPipe.transform(item);
+              return item;
+            })
+          )
+        )
       );
+
       this.initForm();
     }
   }
@@ -180,7 +192,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .notification()
           .toast('Delivery updated successfully', 'success');
         if (this.shipment.status === 'pending') {
-          this.initEditForm();
+          await this.initEditForm();
         } else if (this.shipment.status === 'reserved') {
           this.close();
         }
@@ -515,7 +527,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initEditForm() {
+  private async initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.shipment.site, Validators.required],
       startDate: [this.shipment?.startDate, Validators.nullValidator],
@@ -536,21 +548,28 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       customerRepContact: [this.shipment?.customerRepContact],
     });
     if (this.shipment.status === 'pending') {
-      this.subs.add(
-        this.inventoryItems$.subscribe((items) => {
-          items.forEach((dbItem) => {
-            dbItem.shipmentQty = null;
-          });
-          this.shipment.items.forEach((item) => {
-            const inventoryItem = items.find((i) => i.id === item.id);
-            if (inventoryItem) {
-              inventoryItem.shipmentQty = +item.shipmentQty;
-              inventoryItem.checked = item.checked || false;
-            }
-          });
-          this.items = items;
-        })
+      const items = await lastValueFrom(
+        this.inventoryItems$.pipe(
+          map((data) =>
+            data.map((item) => {
+              delete item.log;
+              item.calculatedAvailableQty = this.calcPipe.transform(item);
+              return item;
+            })
+          )
+        )
       );
+      items.forEach((dbItem) => {
+        dbItem.shipmentQty = null;
+      });
+      this.shipment.items.forEach((item) => {
+        const inventoryItem = items.find((i) => i.id === item.id);
+        if (inventoryItem) {
+          inventoryItem.shipmentQty = +item.shipmentQty;
+          inventoryItem.checked = item.checked || false;
+        }
+      });
+      this.items = items;
     } else {
       this.items = this.shipment.items;
     }

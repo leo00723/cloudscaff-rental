@@ -42,4 +42,6 @@ export interface InventoryItem {
   uploads?: UploadedFile[];
   forInvoice?: boolean;
   total?: number;
+  calculatedAvailableQty?: number;
+  supplier?: string;
 }
