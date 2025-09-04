@@ -294,8 +294,14 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeSite(event) {
+  changeSite(event: Site[]) {
     this.field('site').setValue(event[0]);
+    this.field('companyRepName').setValue(event[0].repName);
+    this.field('companyRepEmail').setValue(event[0].repEmail);
+    this.field('companyRepContact').setValue(event[0].repContact);
+    this.field('customerRepName').setValue(event[0].foremanName);
+    this.field('customerRepEmail').setValue(event[0].foremanEmail);
+    this.field('customerRepContact').setValue(event[0].foremanContact);
   }
 
   autoSave() {
