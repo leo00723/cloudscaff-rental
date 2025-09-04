@@ -57,14 +57,14 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     if (this.form && val) {
       this.form = this.masterSvc.fb().group({
         name: [this.site.name, Validators.required],
-        address: [this.site.address, Validators.required],
+        address: [this.site.address],
         customer: [this.site.customer, Validators.required],
         suburb: [this.site.suburb],
-        city: [this.site.city, Validators.required],
-        startDate: [this.site.startDate, Validators.required],
-        endDate: [this.site.endDate, Validators.required],
+        city: [this.site.city],
+        startDate: [this.site.startDate],
+        endDate: [this.site.endDate],
         zip: [this.site.zip],
-        country: [this.site.country, Validators.required],
+        country: [this.site.country],
         billingCycle: [this.site.billingCycle],
         billable: [this.site.billable],
       });
@@ -282,13 +282,13 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     this.form = this.masterSvc.fb().group({
       name: ['', Validators.required],
       customer: ['', Validators.required],
-      address: ['', Validators.required],
+      address: [''],
       suburb: [''],
-      city: ['', Validators.required],
+      city: [''],
       zip: [''],
-      country: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      country: [''],
+      startDate: [''],
+      endDate: [''],
       billingCycle: [''],
       billable: [''],
     });
