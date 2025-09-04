@@ -9,7 +9,7 @@ export interface TransactionInvoice {
   date?: any;
   createdBy?: string;
   createdByName?: string;
-  poNumber?: string;
+  jobReference?: string;
   code?: string;
   discount?: number;
   subtotal?: number;

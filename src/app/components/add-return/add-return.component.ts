@@ -409,7 +409,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
     this.items = this.itemBackup.filter(
       (item) =>
-        item?.poNumber?.toString().toLowerCase() === val ||
+        item?.jobReference?.toString().toLowerCase() === val ||
         item?.code?.toString().toLowerCase().includes(val) ||
         item?.name?.toString().toLowerCase().includes(val) ||
         item?.category?.toString().toLowerCase().includes(val) ||
@@ -499,7 +499,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       driverNo: [this.returnDoc?.driverNo, Validators.nullValidator],
       vehicleReg: [this.returnDoc?.vehicleReg, Validators.nullValidator],
       createdByName: [this.returnDoc?.createdByName || ''],
-      poNumber: ['BulkReturn'],
+      jobReference: ['BulkReturn'],
     });
     if (
       this.returnDoc.status === 'submitted' ||
@@ -562,7 +562,7 @@ export class AddReturnComponent implements OnInit, OnDestroy {
       driverName: ['', Validators.nullValidator],
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],
-      poNumber: ['BulkReturn'],
+      jobReference: ['BulkReturn'],
     });
     this.getTransactions();
   }

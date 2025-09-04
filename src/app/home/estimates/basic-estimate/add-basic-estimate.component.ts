@@ -336,7 +336,7 @@ export class AddBasicEstimateComponent implements OnInit {
       scope: [this.estimate.scope, Validators.nullValidator],
       note1: [this.estimate.note1, Validators.nullValidator],
       note2: [this.estimate.note2, Validators.nullValidator],
-      poNumber: [this.estimate.poNumber, Validators.nullValidator],
+      jobReference: [this.estimate.jobReference, Validators.nullValidator],
 
       discountPercentage: [
         this.estimate.discountPercentage || 0,
@@ -373,7 +373,7 @@ export class AddBasicEstimateComponent implements OnInit {
       scope: ['', Validators.nullValidator],
       note1: ['', Validators.nullValidator],
       note2: ['', Validators.nullValidator],
-      poNumber: ['', Validators.nullValidator],
+      jobReference: ['', Validators.nullValidator],
       discountPercentage: [
         0,
         [Validators.nullValidator, Validators.min(0), Validators.max(100)],

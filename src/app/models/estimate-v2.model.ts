@@ -24,7 +24,7 @@ export interface EstimateV2 {
   createdBy?: string;
   createdByName?: string;
   acceptedBy?: string;
-  poNumber?: string;
+  jobReference?: string;
   siteId?: string;
   acceptedTerms?: boolean;
   comments?: Comment[];

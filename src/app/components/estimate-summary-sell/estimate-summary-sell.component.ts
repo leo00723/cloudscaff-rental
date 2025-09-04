@@ -40,7 +40,7 @@ export class EstimateSummarySellComponent {
       estimate: this.estimate,
       createdBy: this.estimate.createdBy,
       createdByName: this.estimate.createdByName,
-      poNumber: this.estimate.poNumber,
+      jobReference: this.estimate.jobReference,
       id: '',
       date: new Date(),
       status: 'pending',

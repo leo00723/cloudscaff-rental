@@ -9,7 +9,7 @@ export interface PO {
   date?: any;
   createdBy?: string;
   createdByName?: string;
-  poNumber?: string;
+  jobReference?: string;
   code?: string;
   discount?: number;
   subtotal?: number;

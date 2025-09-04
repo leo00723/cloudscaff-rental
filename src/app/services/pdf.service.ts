@@ -943,7 +943,7 @@ export class PdfService {
           [
             [
               { text: 'PO Number', style: 'h6b' },
-              `${invoice.poNumber || 'N/A'}`,
+              `${invoice.jobReference || 'N/A'}`,
               '',
               '',
             ],
@@ -1328,7 +1328,7 @@ export class PdfService {
               : ['', '', '', ''], // Empty text if no image
             [
               { text: 'PO Number', style: 'h6b' },
-              `${invoice?.poNumber || 'N/A'}`,
+              `${invoice?.jobReference || 'N/A'}`,
               '',
               '',
             ],
@@ -1610,7 +1610,7 @@ export class PdfService {
               : ['', '', '', ''], // Empty text if no image
             [
               { text: 'PO Number', style: 'h6b' },
-              `${invoice?.poNumber || 'N/A'}`,
+              `${invoice?.jobReference || 'N/A'}`,
               '',
               '',
             ],
@@ -2016,7 +2016,7 @@ export class PdfService {
               : ['', '', '', ''], // Empty text if no image
             [
               { text: 'PO Number', style: 'h6b' },
-              `${invoice?.poNumber || 'N/A'}`,
+              `${invoice?.jobReference || 'N/A'}`,
               '',
               '',
             ],
@@ -3156,7 +3156,7 @@ export class PdfService {
             ],
             [
               { text: 'PO Number:', style: 'h6b' },
-              `${delivery?.poNumber || 'N/A'}`,
+              `${delivery?.jobReference || 'N/A'}`,
               '',
               '',
             ],
@@ -4453,7 +4453,7 @@ export class PdfService {
           returnDate: returnDoc.returnDate,
           siteName: returnDoc.site.name,
           customerName: returnDoc.site.customer?.name,
-          poNumber: returnDoc.poNumber,
+          jobReference: returnDoc.jobReference,
           driverName: returnDoc.driverName,
         });
       });

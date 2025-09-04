@@ -21,7 +21,7 @@
     <ion-list>
       <ion-item button *ngFor="let po of filteredPOs" (click)="selectPO(po)">
         <ion-label>
-          <h3>{{ po.poNumber }}</h3>
+          <h3>{{ po.jobReference }}</h3>
           <p>{{ po.code }} - {{ po.status }}</p>
           <p>Site: {{ po.site?.name }}</p>
         </ion-label>
@@ -35,7 +35,7 @@
   <div *ngIf="selectedPO">
     <ion-card>
       <ion-card-header>
-        <ion-card-title>{{ selectedPO.poNumber }}</ion-card-title>
+        <ion-card-title>{{ selectedPO.jobReference }}</ion-card-title>
         <ion-card-subtitle>{{ selectedPO.code }}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
@@ -99,7 +99,7 @@
       expand="block"
       (click)="updatePONumber()"
       [disabled]="
-        !newPONumber || newPONumber === selectedPO.poNumber || updating
+        !newPONumber || newPONumber === selectedPO.jobReference || updating
       "
       color="primary"
     >

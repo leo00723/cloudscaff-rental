@@ -369,8 +369,8 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
     }
   }
   protected getTransactions(value: any) {
-    const poNumber = this.field('poNumber').value;
-    if (!poNumber) {
+    const jobReference = this.field('jobReference').value;
+    if (!jobReference) {
       return;
     }
     this.subs.add(
@@ -379,7 +379,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
         .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
-          where('poNumber', '==', poNumber),
+          where('jobReference', '==', jobReference),
           where('siteId', '==', this.field('site').value.id),
           orderBy('code', 'asc'),
         ])
@@ -402,7 +402,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
       driverNo: [this.adjustmentDoc?.driverNo, Validators.nullValidator],
       vehicleReg: [this.adjustmentDoc?.vehicleReg, Validators.nullValidator],
       createdByName: [this.adjustmentDoc?.createdByName || ''],
-      poNumber: [this.adjustmentDoc?.poNumber, Validators.required],
+      jobReference: [this.adjustmentDoc?.jobReference, Validators.required],
     });
     if (
       this.adjustmentDoc.status === 'submitted' ||
@@ -414,7 +414,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
           .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
-            where('poNumber', '==', this.adjustmentDoc?.poNumber),
+            where('jobReference', '==', this.adjustmentDoc?.jobReference),
             where('siteId', '==', this.adjustmentDoc?.site.id),
             orderBy('code', 'asc'),
           ])
@@ -448,7 +448,7 @@ export class AddAdjustmentComponent implements OnInit, OnDestroy {
       driverName: ['', Validators.nullValidator],
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],
-      poNumber: ['', Validators.required],
+      jobReference: ['', Validators.required],
     });
   }
 }

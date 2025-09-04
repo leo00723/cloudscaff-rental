@@ -312,7 +312,10 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
       ],
       code: [this.inventoryEstimate.code],
       excludeVAT: [this.inventoryEstimate.excludeVAT],
-      poNumber: [this.inventoryEstimate.poNumber, Validators.nullValidator],
+      jobReference: [
+        this.inventoryEstimate.jobReference,
+        Validators.nullValidator,
+      ],
     });
     if (this.inventoryEstimate.status === 'pending') {
       this.subs.add(
@@ -351,7 +354,7 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       excludeVAT: [false],
-      poNumber: ['', Validators.nullValidator],
+      jobReference: ['', Validators.nullValidator],
     });
   }
 

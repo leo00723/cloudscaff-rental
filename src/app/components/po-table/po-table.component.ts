@@ -63,7 +63,8 @@ export class POTableComponent {
         items.filter(
           (item) =>
             (item.code && item.code.toLowerCase().includes(val)) ||
-            (item.poNumber && item.poNumber.toLowerCase().includes(val)) ||
+            (item.jobReference &&
+              item.jobReference.toLowerCase().includes(val)) ||
             (item.site.name && item.site.name.toLowerCase().includes(val)) ||
             (item.site.customer.name &&
               item.site.customer.name.toLowerCase().includes(val)) ||

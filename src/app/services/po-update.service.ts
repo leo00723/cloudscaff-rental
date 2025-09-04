@@ -155,14 +155,14 @@ export class POUpdateService {
     updates.push({
       collection: `company/${companyId}/pos`,
       docId: poId,
-      updateData: { poNumber: newPONumber },
+      updateData: { jobReference: newPONumber },
     });
 
     // 2. Transaction logs
     const transactionLogs = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/transactionLog`, [
-          where('poNumber', '==', oldPONumber),
+          where('jobReference', '==', oldPONumber),
           where('siteId', '==', siteId),
         ])
         .pipe(take(1))
@@ -173,7 +173,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/transactionLog`,
           docId: log.id,
-          updateData: { poNumber: newPONumber },
+          updateData: { jobReference: newPONumber },
         });
       });
     }
@@ -182,7 +182,7 @@ export class POUpdateService {
     const shipments = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/shipments`, [
-          where('poNumber', '==', oldPONumber),
+          where('jobReference', '==', oldPONumber),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -193,7 +193,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/shipments`,
           docId: shipment.id,
-          updateData: { poNumber: newPONumber },
+          updateData: { jobReference: newPONumber },
         });
       });
     }
@@ -202,7 +202,7 @@ export class POUpdateService {
     const adjustments = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/adjustments`, [
-          where('poNumber', '==', oldPONumber),
+          where('jobReference', '==', oldPONumber),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -213,7 +213,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/adjustments`,
           docId: adjustment.id,
-          updateData: { poNumber: newPONumber },
+          updateData: { jobReference: newPONumber },
         });
       });
     }
@@ -222,7 +222,7 @@ export class POUpdateService {
     const returns = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/returns`, [
-          where('poNumber', '==', oldPONumber),
+          where('jobReference', '==', oldPONumber),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -233,7 +233,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/returns`,
           docId: returnDoc.id,
-          updateData: { poNumber: newPONumber },
+          updateData: { jobReference: newPONumber },
         });
       });
     }
@@ -242,7 +242,7 @@ export class POUpdateService {
     const invoices = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/transactionInvoices`, [
-          where('poNumber', '==', oldPONumber),
+          where('jobReference', '==', oldPONumber),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -253,7 +253,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/transactionInvoices`,
           docId: invoice.id,
-          updateData: { poNumber: newPONumber },
+          updateData: { jobReference: newPONumber },
         });
       });
     }
@@ -399,13 +399,13 @@ export class POUpdateService {
   private async getEstimatedUpdateCount(
     companyId: string,
     siteId: string,
-    poNumber: string
+    jobReference: string
   ): Promise<number> {
     // Quick estimation - just count transaction logs as they're usually the largest
     const transactionLogs = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/transactionLog`, [
-          where('poNumber', '==', poNumber),
+          where('jobReference', '==', jobReference),
           where('siteId', '==', siteId),
         ])
         .pipe(take(1))
@@ -453,7 +453,7 @@ export class POUpdateService {
       {
         collection: `company/${companyId}/pos`,
         docId: poId,
-        updateData: { poNumber: newPONumber },
+        updateData: { jobReference: newPONumber },
       },
     ]);
     totalProcessed += 1;
@@ -574,7 +574,7 @@ export class POUpdateService {
   private buildCollectionQuery(
     companyId: string,
     siteId: string,
-    poNumber: string,
+    jobReference: string,
     collectionName: string,
     lastDocId: string | null,
     limit: number
@@ -584,7 +584,7 @@ export class POUpdateService {
     // Build where conditions based on collection type
     const whereConditions = this.getWhereConditionsForCollection(
       collectionName,
-      poNumber,
+      jobReference,
       siteId
     );
 
@@ -600,13 +600,13 @@ export class POUpdateService {
    */
   private getWhereConditionsForCollection(
     collectionName: string,
-    poNumber: string,
+    jobReference: string,
     siteId: string
   ) {
     switch (collectionName) {
       case 'transactionLog':
         return [
-          where('poNumber', '==', poNumber),
+          where('jobReference', '==', jobReference),
           where('siteId', '==', siteId),
         ];
       case 'shipments':
@@ -614,14 +614,14 @@ export class POUpdateService {
       case 'returns':
       case 'transactionInvoices':
         return [
-          where('poNumber', '==', poNumber),
+          where('jobReference', '==', jobReference),
           where('site.id', '==', siteId),
         ];
       case 'poTransfers':
         // Note: This would need two separate queries for fromPO and toPO
         // For simplicity, handling fromPO first
         return [
-          where('fromPO', '==', poNumber),
+          where('fromPO', '==', jobReference),
           where('fromSite.id', '==', siteId),
         ];
       default:
@@ -662,7 +662,7 @@ export class POUpdateService {
         return {
           collection,
           docId: doc.id,
-          updateData: { poNumber: newPONumber },
+          updateData: { jobReference: newPONumber },
         };
     }
   }
@@ -683,7 +683,7 @@ export class POUpdateService {
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/pos`, [
           where('site.id', '==', siteId),
-          where('poNumber', '==', newPONumber),
+          where('jobReference', '==', newPONumber),
         ])
         .pipe(take(1))
     );
@@ -700,7 +700,7 @@ export class POUpdateService {
   async getUpdateCount(
     companyId: string,
     siteId: string,
-    poNumber: string
+    jobReference: string
   ): Promise<UpdateCounts> {
     const [
       transactionLogs,
@@ -714,7 +714,7 @@ export class POUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/transactionLog`, [
-            where('poNumber', '==', poNumber),
+            where('jobReference', '==', jobReference),
             where('siteId', '==', siteId),
           ])
           .pipe(take(1))
@@ -722,7 +722,7 @@ export class POUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/shipments`, [
-            where('poNumber', '==', poNumber),
+            where('jobReference', '==', jobReference),
             where('site.id', '==', siteId),
           ])
           .pipe(take(1))
@@ -730,7 +730,7 @@ export class POUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/adjustments`, [
-            where('poNumber', '==', poNumber),
+            where('jobReference', '==', jobReference),
             where('site.id', '==', siteId),
           ])
           .pipe(take(1))
@@ -738,7 +738,7 @@ export class POUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/returns`, [
-            where('poNumber', '==', poNumber),
+            where('jobReference', '==', jobReference),
             where('site.id', '==', siteId),
           ])
           .pipe(take(1))
@@ -746,7 +746,7 @@ export class POUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/transactionInvoices`, [
-            where('poNumber', '==', poNumber),
+            where('jobReference', '==', jobReference),
             where('site.id', '==', siteId),
           ])
           .pipe(take(1))
@@ -754,7 +754,7 @@ export class POUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-            where('fromPO', '==', poNumber),
+            where('fromPO', '==', jobReference),
             where('fromSite.id', '==', siteId),
           ])
           .pipe(take(1))
@@ -762,7 +762,7 @@ export class POUpdateService {
       firstValueFrom(
         this.editSvc
           .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-            where('toPO', '==', poNumber),
+            where('toPO', '==', jobReference),
             where('toSite.id', '==', siteId),
           ])
           .pipe(take(1))

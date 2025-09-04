@@ -359,7 +359,7 @@ export class TransactionOverReturnComponent implements OnInit, OnDestroy {
       driverNo: [this.overReturn?.driverNo, Validators.nullValidator],
       vehicleReg: [this.overReturn?.vehicleReg, Validators.nullValidator],
       createdByName: [this.overReturn?.createdByName || ''],
-      poNumber: ['BulkReturn'],
+      jobReference: ['BulkReturn'],
     });
 
     this.overageItems = this.overReturn.overageItems;

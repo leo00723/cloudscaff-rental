@@ -209,7 +209,7 @@ export class AddScaffoldComponent implements OnInit {
       labour: this.masterSvc.fb().array([]),
       transport: this.masterSvc.fb().array([]),
       additionals: this.masterSvc.fb().array([]),
-      poNumber: null,
+      jobReference: null,
       woNumber: null,
       createdBy: null,
       startDate: [''],

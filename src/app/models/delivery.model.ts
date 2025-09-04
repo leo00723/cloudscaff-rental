@@ -27,7 +27,7 @@ export interface Delivery {
   signedBy2?: string;
   signature2?: string;
   signatureRef2?: string;
-  poNumber?: string;
+  jobReference?: string;
   companyRepName?: string;
   companyRepEmail?: string;
   companyRepContact?: string;

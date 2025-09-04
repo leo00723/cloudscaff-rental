@@ -219,7 +219,7 @@
               <tbody>
                 <ng-container *ngFor="let item of items; let i = index">
                   <tr class="align-middle" *ngIf="viewAll; else viewShipment">
-                    <th scope="row">{{ item.poNumber }}</th>
+                    <th scope="row">{{ item.jobReference }}</th>
                     <th scope="row">{{ item.code }}</th>
                     <td>{{ item.category }}</td>
                     <td>{{ item.name }}</td>
@@ -303,7 +303,7 @@
                   </tr>
                   <ng-template #viewShipment>
                     <tr class="align-middle" *ngIf="item.returnQty > 0">
-                      <th scope="row">{{ item.poNumber }}</th>
+                      <th scope="row">{{ item.jobReference }}</th>
                       <th scope="row">{{ item.code }}</th>
                       <td>{{ item.category }}</td>
                       <td>{{ item.name }}</td>

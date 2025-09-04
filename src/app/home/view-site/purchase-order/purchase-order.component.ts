@@ -259,7 +259,7 @@ export class PurchaseOrderComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.po.site.id,
           {
-            poList: arrayRemove(this.po.poNumber),
+            poList: arrayRemove(this.po.jobReference),
           }
         );
 
@@ -293,7 +293,7 @@ export class PurchaseOrderComponent implements OnInit {
           `company/${this.company.id}/sites`,
           this.po.site.id,
           {
-            poList: arrayUnion(this.po.poNumber),
+            poList: arrayUnion(this.po.jobReference),
           }
         );
 
@@ -357,7 +357,7 @@ export class PurchaseOrderComponent implements OnInit {
       const updateCounts = await this.poUpdateSvc.getUpdateCount(
         this.company.id,
         this.po.site.id,
-        this.po.poNumber
+        this.po.jobReference
       );
 
       const alert = await this.alertCtrl.create({
@@ -374,7 +374,7 @@ export class PurchaseOrderComponent implements OnInit {
             name: 'newPONumber',
             type: 'text',
             placeholder: 'Enter new PO number',
-            value: this.po.poNumber,
+            value: this.po.jobReference,
             attributes: {
               minlength: 1,
               required: true,
@@ -389,7 +389,10 @@ export class PurchaseOrderComponent implements OnInit {
           {
             text: 'Update',
             handler: (data) => {
-              if (data.newPONumber && data.newPONumber !== this.po.poNumber) {
+              if (
+                data.newPONumber &&
+                data.newPONumber !== this.po.jobReference
+              ) {
                 this.performPONumberUpdate(data.newPONumber);
               }
             },
@@ -416,11 +419,11 @@ export class PurchaseOrderComponent implements OnInit {
           await this.poUpdateSvc.updatePONumberAcrossCollections(
             this.company.id,
             this.po.site.id,
-            this.po.poNumber,
+            this.po.jobReference,
             newPONumber,
             this.po.id
           );
-          this.po.poNumber = newPONumber;
+          this.po.jobReference = newPONumber;
           this.notificationSvc.toast(
             'PO number updated successfully!',
             'success'
@@ -516,10 +519,10 @@ export class PurchaseOrderComponent implements OnInit {
   }
 
   private init() {
-    this.po.poNumber;
+    this.po.jobReference;
     this.editSvc
       .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
-        where('poNumber', '==', this.po.poNumber),
+        where('jobReference', '==', this.po.jobReference),
         where('siteId', '==', this.po.site.id),
         where('status', '==', 'active'),
         orderBy('code', 'asc'),

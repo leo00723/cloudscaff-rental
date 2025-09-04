@@ -80,7 +80,7 @@ export class ReturnsTableComponent {
             s?.site?.name?.toLowerCase().includes(searchTerm) ||
             s?.site?.customer?.name?.toLowerCase().includes(searchTerm) ||
             s?.status?.toLowerCase().includes(searchTerm) ||
-            (s?.poNumber?.toLowerCase()?.includes(searchTerm) ?? false) ||
+            (s?.jobReference?.toLowerCase()?.includes(searchTerm) ?? false) ||
             !searchTerm
           );
         })
@@ -95,7 +95,7 @@ export class ReturnsTableComponent {
       const company = this.store.selectSnapshot(CompanyState.company);
 
       const pdf = await this.pdfService.overReturnedItemsReport(
-        returns.filter((data) => data.poNumber),
+        returns.filter((data) => data.jobReference),
         company,
         null
       );

@@ -205,8 +205,8 @@ export class AddTransferComponent implements OnInit, OnDestroy {
   }
 
   protected getTransactions(value: any) {
-    const poNumber = this.field('fromPO').value;
-    if (!poNumber) {
+    const jobReference = this.field('fromPO').value;
+    if (!jobReference) {
       return;
     }
     this.subs.add(
@@ -215,7 +215,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
         .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
-          where('poNumber', '==', poNumber),
+          where('jobReference', '==', jobReference),
           where('siteId', '==', this.field('fromSite').value.id),
         ])
         .pipe(take(1))
@@ -245,7 +245,7 @@ export class AddTransferComponent implements OnInit, OnDestroy {
           .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
-            where('poNumber', '==', this.transfer.fromPO),
+            where('jobReference', '==', this.transfer.fromPO),
             where('siteId', '==', this.transfer.fromSite.id),
           ])
           .pipe(take(1))

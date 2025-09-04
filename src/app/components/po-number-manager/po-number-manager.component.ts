@@ -38,7 +38,9 @@ export class PONumberManagerComponent implements OnInit {
 
     this.filteredPOs = this.pos.filter(
       (po) =>
-        po.poNumber?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        po.jobReference
+          ?.toLowerCase()
+          .includes(this.searchTerm.toLowerCase()) ||
         po.code?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         po.site?.name?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
@@ -46,13 +48,13 @@ export class PONumberManagerComponent implements OnInit {
 
   async selectPO(po: PO) {
     this.selectedPO = po;
-    this.newPONumber = po.poNumber || '';
+    this.newPONumber = po.jobReference || '';
 
     try {
       this.updateCounts = await this.poUpdateSvc.getUpdateCount(
         this.companyId,
         po.site?.id || '',
-        po.poNumber || ''
+        po.jobReference || ''
       );
     } catch (error) {
       console.error('Error getting update count:', error);
@@ -82,18 +84,18 @@ export class PONumberManagerComponent implements OnInit {
           await this.poUpdateSvc.updatePONumberAcrossCollections(
             this.companyId,
             this.selectedPO.site.id,
-            this.selectedPO.poNumber,
+            this.selectedPO.jobReference,
             this.newPONumber,
             this.selectedPO.id
           );
 
           // Update the local PO object
-          this.selectedPO.poNumber = this.newPONumber;
+          this.selectedPO.jobReference = this.newPONumber;
 
           // Update the PO in the list
           const index = this.pos.findIndex((p) => p.id === this.selectedPO.id);
           if (index > -1) {
-            this.pos[index].poNumber = this.newPONumber;
+            this.pos[index].jobReference = this.newPONumber;
           }
 
           this.notificationSvc.toast(

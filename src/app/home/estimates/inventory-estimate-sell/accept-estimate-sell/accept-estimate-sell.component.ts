@@ -32,7 +32,7 @@ export class AcceptEstimateSellComponent implements OnInit {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         this.loading = true;
-        this.estimate.poNumber = this.form.get('poNumber').value;
+        this.estimate.jobReference = this.form.get('jobReference').value;
         this.estimate.acceptedBy = this.user.name;
         this.estimate.status = 'accepted';
 
@@ -47,7 +47,7 @@ export class AcceptEstimateSellComponent implements OnInit {
           estimate: this.estimate,
           createdBy: this.user.id,
           createdByName: this.user.name,
-          poNumber: this.estimate.poNumber,
+          jobReference: this.estimate.jobReference,
           code,
           id: '',
           date: new Date(),

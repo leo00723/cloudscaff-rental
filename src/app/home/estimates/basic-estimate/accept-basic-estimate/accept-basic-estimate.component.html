@@ -24,7 +24,7 @@
       <ion-col size="12">
         <app-input-reactive
           title="Purchase Order"
-          controlName="poNumber"
+          controlName="jobReference"
           [form]="form"
           placeholder="Enter Purchase Order Number"
         >
@@ -34,15 +34,15 @@
         <ion-button
           shape="round"
           color="primary"
-          *ngIf="!form.get('poNumber').value"
-          (click)="form.get('poNumber').setValue(estimate.code)"
+          *ngIf="!form.get('jobReference').value"
+          (click)="form.get('jobReference').setValue(estimate.code)"
         >
           Generate PO
         </ion-button>
         <ion-button
           shape="round"
           color="success"
-          [disabled]="!form.get('poNumber').value"
+          [disabled]="!form.get('jobReference').value"
           (click)="page = 1"
         >
           Next
@@ -111,7 +111,7 @@
         </app-input-text>
         <app-input-reactive
           title="Purchase Order"
-          controlName="poNumber"
+          controlName="jobReference"
           [form]="form"
           [readonly]="true"
         >

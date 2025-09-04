@@ -112,9 +112,9 @@
           <app-input-select-reactive
             title="PO Number"
             placeholder="Select PO"
-            controlName="poNumber"
+            controlName="jobReference"
             [form]="form"
-            [selectedText]="field('poNumber').value"
+            [selectedText]="field('jobReference').value"
           >
             <ng-container *ngFor="let po of site.poList">
               <ion-select-option [value]="po">{{ po }}</ion-select-option>

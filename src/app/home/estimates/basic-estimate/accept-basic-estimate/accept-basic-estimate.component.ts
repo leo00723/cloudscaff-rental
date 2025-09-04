@@ -69,7 +69,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
       try {
         this.loading = true;
         Object.assign(this.site, this.form2.get('site').value);
-        this.estimate.poNumber = this.form.get('poNumber').value;
+        this.estimate.jobReference = this.form.get('jobReference').value;
         this.estimate.siteId = this.site.id;
         this.estimate.siteName = this.site.name;
         this.estimate.customer = this.site.customer;
@@ -88,7 +88,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
           site: this.site,
           createdBy: this.user.id,
           createdByName: this.user.name,
-          poNumber: this.estimate.poNumber,
+          jobReference: this.estimate.jobReference,
           code,
           id: '',
           date: new Date(),
@@ -111,7 +111,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
         await this.masterSvc
           .edit()
           .updateDoc(`company/${this.company.id}/sites`, this.site.id, {
-            poList: arrayUnion(this.estimate.poNumber),
+            poList: arrayUnion(this.estimate.jobReference),
           });
         // if (this.estimate.enquiryId.length > 0) {
         //   await this.masterSvc

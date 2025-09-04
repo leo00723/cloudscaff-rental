@@ -339,7 +339,7 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
       ],
       code: [this.inventoryEstimate.code],
       excludeVAT: [this.inventoryEstimate.excludeVAT],
-      poNumber: [this.inventoryEstimate.poNumber],
+      jobReference: [this.inventoryEstimate.jobReference],
     });
     if (this.inventoryEstimate.status === 'pending') {
       this.subs.add(
@@ -381,7 +381,7 @@ export class InventoryEstimateRentComponent implements OnInit, OnDestroy {
         [Validators.required, Validators.min(0), Validators.max(100)],
       ],
       excludeVAT: [false],
-      poNumber: [''],
+      jobReference: [''],
     });
   }
 

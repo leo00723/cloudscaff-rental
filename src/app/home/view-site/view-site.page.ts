@@ -439,16 +439,16 @@ export class ViewSitePage implements OnInit, OnDestroy {
       return;
     }
 
-    const poNumber = data?.values[0];
-    if (poNumber) {
-      this.createPO(site, poNumber);
+    const jobReference = data?.values[0];
+    if (jobReference) {
+      this.createPO(site, jobReference);
     } else {
       this.addPO(site);
       this.masterSvc.notification().toast('Enter a valid PO number', 'danger');
     }
   }
 
-  createPO(site: Site, poNumber: string) {
+  createPO(site: Site, jobReference: string) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       try {
         const company = this.masterSvc
@@ -456,7 +456,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
           .selectSnapshot(CompanyState.company);
         const user = this.masterSvc.store().selectSnapshot(UserState.user);
         const estimate: EstimateV2 = {};
-        estimate.poNumber = poNumber;
+        estimate.jobReference = jobReference;
         estimate.siteId = site.id;
         estimate.siteName = site.name;
         estimate.customer = site.customer;
@@ -473,7 +473,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
           site,
           createdBy: user.id,
           createdByName: user.name,
-          poNumber,
+          jobReference,
           code,
           id: '',
           date: new Date(),
@@ -488,7 +488,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         await this.masterSvc
           .edit()
           .updateDoc(`company/${company.id}/sites`, site.id, {
-            poList: arrayUnion(poNumber),
+            poList: arrayUnion(jobReference),
           });
         this.masterSvc
           .notification()

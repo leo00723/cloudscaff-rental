@@ -28,7 +28,7 @@ export interface TransactionReturn {
   signedBy2?: string;
   signature2?: string;
   signatureRef2?: string;
-  poNumber?: string;
+  jobReference?: string;
   overageItems?: InventoryItem[];
   isReversal?: boolean;
   totalReversals?: number;

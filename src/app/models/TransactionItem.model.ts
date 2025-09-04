@@ -25,7 +25,7 @@ export interface TransactionItem {
   invoiceStart?: any;
   invoiceEnd?: any;
   hireRate?: number;
-  poNumber?: string;
+  jobReference?: string;
   transactionType?: string;
   siteId?: string;
   days?: number;

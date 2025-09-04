@@ -1353,10 +1353,10 @@ const returnItems = async (
     if (
       change.before.data().status !== 'sent' &&
       change.before.data().status !== 'received' &&
-      !change.before.data().poNumber &&
+      !change.before.data().jobReference &&
       (change.after.data().status === 'sent' ||
         change.after.data().status === 'received') &&
-      !change.before.data().poNumber
+      !change.before.data().jobReference
     ) {
       const returnData = change.after.data();
       // Get the shipment items on site
@@ -1837,7 +1837,7 @@ const deliveryTransaction = async (
     if (
       change.before.data().status !== 'received' &&
       change.after.data().status === 'received' &&
-      change.after.data().poNumber
+      change.after.data().jobReference
     ) {
       const delivery = change.after.data();
 
@@ -1861,7 +1861,7 @@ const deliveryTransaction = async (
         invoiceStart: FieldValue.serverTimestamp(),
         invoiceEnd: null,
         hireRate: +item.hireCost || 0,
-        poNumber: delivery.poNumber,
+        jobReference: delivery.jobReference,
         transactionType: 'Delivery',
         siteId: delivery.site.id,
         status: 'active',
@@ -1900,7 +1900,7 @@ const adjustmentTransaction = async (
     if (
       change.before.data().status !== 'received' &&
       change.after.data().status === 'received' &&
-      change.after.data().poNumber
+      change.after.data().jobReference
     ) {
       const adjustmentDoc = change.after.data();
       const returnDate = new Date(adjustmentDoc.returnDate);
@@ -1926,7 +1926,7 @@ const adjustmentTransaction = async (
         invoiceStart: item.invoiceStart,
         invoiceEnd: Timestamp.fromDate(returnDate),
         hireRate: 0,
-        poNumber: adjustmentDoc.poNumber,
+        jobReference: adjustmentDoc.jobReference,
         transactionType: 'Adjustment',
         siteId: adjustmentDoc.site.id,
         status: 'completed',
@@ -1977,7 +1977,7 @@ const returnTransaction = async (
     if (
       change.before.data().status !== 'received' &&
       change.after.data().status === 'received' &&
-      change.after.data().poNumber
+      change.after.data().jobReference
     ) {
       const returnDoc = change.after.data();
       const returnDate = new Date(returnDoc.returnDate);
@@ -2003,7 +2003,7 @@ const returnTransaction = async (
         invoiceStart: item.invoiceStart,
         invoiceEnd: Timestamp.fromDate(returnDate),
         hireRate: item.hireRate || 0,
-        poNumber: item.poNumber,
+        jobReference: item.jobReference,
         transactionType: 'Return',
         siteId: returnDoc.site.id,
         status: 'active',
@@ -2031,7 +2031,7 @@ const returnTransaction = async (
           invoiceStart: Timestamp.fromDate(returnDate), // Start billing from return date
           invoiceEnd: Timestamp.fromDate(returnDate), // End immediately for overage
           hireRate: item.hireCost || 0,
-          poNumber: returnDoc.poNumber, // Use the return's PO number
+          jobReference: returnDoc.jobReference, // Use the return's PO number
           transactionType: 'Overage Return',
           siteId: returnDoc.site.id,
           status: 'completed', // Overage items are immediately completed
@@ -2105,7 +2105,7 @@ const returnTransactionItems = async (
     if (
       change.before.data().status !== 'received' &&
       change.after.data().status === 'received' &&
-      change.after.data().poNumber
+      change.after.data().jobReference
     ) {
       const returnData = change.after.data();
       // Get the shipment items on site
@@ -2137,7 +2137,7 @@ const returnTransactionItems = async (
           lostQty: item.lostQty ? +item.lostQty : 0,
           inMaintenanceQty: item.inMaintenanceQty ? +item.inMaintenanceQty : 0,
           excess: 0,
-          poNumber: item.poNumber,
+          jobReference: item.jobReference,
         }));
 
         const oldInventory = siteInventory.data()?.items;
@@ -2191,7 +2191,7 @@ const returnTransactionItems = async (
               lastMovementType: `${
                 isReturn ? 'Return' : 'Adjustment'
               } (Overage)`,
-              poNumber: item.poNumber,
+              jobReference: item.jobReference,
             };
             oldInventory.push(newItem);
           }
@@ -2263,7 +2263,7 @@ const returnTransactionItems = async (
               item.id,
               batch,
               returnData.code,
-              `${returnData.site.name}-${item.poNumber} excess`,
+              `${returnData.site.name}-${item.jobReference} excess`,
               returnData.site.customer.name,
               item.excess,
               isReturn ? 'Return' : 'Adjustment'
@@ -2278,7 +2278,7 @@ const returnTransactionItems = async (
             item.id,
             batch,
             returnData.code,
-            `${returnData.site.name}-${item.poNumber}`,
+            `${returnData.site.name}-${item.jobReference}`,
             returnData.site.customer.name,
             item.availableQty - item.excess,
             isReturn ? 'Return' : 'Adjustment'
@@ -2364,7 +2364,7 @@ const overageReversalTransaction = async (
           invoiceStart: Timestamp.fromDate(returnDate), // Start billing from return date
           invoiceEnd: Timestamp.fromDate(returnDate), // End immediately for overage
           hireRate: item.hireCost || 0,
-          poNumber: returnDoc.poNumber, // Use the return's PO number
+          jobReference: returnDoc.jobReference, // Use the return's PO number
           transactionType: 'Overage Return Reversal',
           siteId: returnDoc.site.id,
           status: 'completed', // Overage items are immediately completed
@@ -2772,7 +2772,7 @@ const transferDeliveryTransaction = async (transfer: any) => {
       invoiceStart: Timestamp.fromDate(transferDate),
       invoiceEnd: null,
       hireRate: 0,
-      poNumber: transfer.toPO,
+      jobReference: transfer.toPO,
       transactionType: 'Delivery',
       siteId: transfer.toSite.id,
       status: 'active',
@@ -2825,7 +2825,7 @@ const transferReturnTransaction = async (transfer: any) => {
       invoiceStart: item.invoiceStart,
       invoiceEnd: Timestamp.fromDate(transferDate),
       hireRate: item.hireRate || 0,
-      poNumber: transfer.fromPO,
+      jobReference: transfer.fromPO,
       transactionType: 'Return',
       siteId: transfer.fromSite.id,
       status: 'active',

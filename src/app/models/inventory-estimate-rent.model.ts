@@ -28,7 +28,7 @@ export interface InventoryEstimateRent {
   comments?: Comment[];
   excludeVAT?: boolean;
   uploads?: UploadedFile[];
-  poNumber?: string;
+  jobReference?: string;
   repName?: string;
   repEmail?: string;
   repContact?: string;

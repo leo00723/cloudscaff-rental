@@ -62,7 +62,8 @@ export class InvoiceTableComponent {
         items.filter(
           (item) =>
             (item.code && item.code.toLowerCase().includes(val)) ||
-            (item.poNumber && item.poNumber.toLowerCase().includes(val)) ||
+            (item.jobReference &&
+              item.jobReference.toLowerCase().includes(val)) ||
             (item.date && item.date.toString().toLowerCase().includes(val)) ||
             (item.createdByName &&
               item.createdByName.toLowerCase().includes(val)) ||

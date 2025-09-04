@@ -26,7 +26,7 @@ export interface InventoryEstimateSell {
   comments?: Comment[];
   excludeVAT?: boolean;
   uploads?: UploadedFile[];
-  poNumber?: string;
+  jobReference?: string;
   acceptedBy?: string;
   repName?: string;
   repEmail?: string;

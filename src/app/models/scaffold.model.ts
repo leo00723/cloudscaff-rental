@@ -16,7 +16,7 @@ export interface Scaffold {
   endDate?: any;
   latestHandover?: Handover;
   latestInspection?: Inspection;
-  poNumber?: string;
+  jobReference?: string;
   scaffold?: Item;
   siIDS?: string[];
   siteCode?: string;

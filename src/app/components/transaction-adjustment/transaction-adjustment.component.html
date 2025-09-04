@@ -113,9 +113,9 @@
           <app-input-select-reactive
             title="PO Number"
             placeholder="Select PO"
-            controlName="poNumber"
+            controlName="jobReference"
             [form]="form"
-            [selectedText]="field('poNumber').value"
+            [selectedText]="field('jobReference').value"
             (ionChange)="getTransactions($event)"
           >
             <ng-container *ngFor="let po of field('site').value.poList">
@@ -167,7 +167,7 @@
             </app-input-reactive>
           </ion-col>
         </ng-container>
-        <ng-container *ngIf="field('poNumber').value">
+        <ng-container *ngIf="field('jobReference').value">
           <ion-col size="6">
             <ion-text color="medium">
               <h4>Inventory Information</h4>

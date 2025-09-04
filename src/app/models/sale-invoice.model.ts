@@ -4,7 +4,7 @@ export interface SaleInvoice {
   estimate?: InventoryEstimateSell;
   createdBy?: string;
   createdByName?: string;
-  poNumber?: string;
+  jobReference?: string;
   code?: string;
   id?: string;
   date?: any;

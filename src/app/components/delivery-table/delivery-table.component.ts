@@ -69,7 +69,7 @@ export class DeliveryTableComponent {
             s?.site?.name?.toLowerCase().includes(searchTerm) ||
             s?.site?.customer?.name?.toLowerCase().includes(searchTerm) ||
             s?.status?.toLowerCase().includes(searchTerm) ||
-            (s?.poNumber?.toLowerCase()?.includes(searchTerm) ?? false) ||
+            (s?.jobReference?.toLowerCase()?.includes(searchTerm) ?? false) ||
             !searchTerm
           );
         })
