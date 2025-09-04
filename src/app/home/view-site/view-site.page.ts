@@ -11,7 +11,7 @@ import { AddScaffoldComponent } from 'src/app/components/add-scaffold/add-scaffo
 import { AddShipmentComponent } from 'src/app/components/add-shipment/add-shipment.component';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
-import { Job Reference } from 'src/app/models/po.model';
+import { JobReference } from 'src/app/models/jr.model';
 import { Request } from 'src/app/models/request.model';
 import { Scaffold } from 'src/app/models/scaffold.model';
 import { Delivery } from 'src/app/models/delivery.model';
@@ -74,8 +74,8 @@ export class ViewSitePage implements OnInit, OnDestroy {
   signedInstructions$: Observable<SI[]>;
   instructions$: Observable<SI[]>;
 
-  purchaseOrders$: Observable<Job Reference[]>;
-  completedPO$: Observable<Job Reference[]>;
+  purchaseOrders$: Observable<JobReference[]>;
+  completedPO$: Observable<JobReference[]>;
 
   transactionInvoices$: Observable<TransactionInvoice[]>;
 
@@ -466,11 +466,11 @@ export class ViewSitePage implements OnInit, OnDestroy {
         estimate.status = 'accepted';
         estimate.items = [];
 
-        const po: Job Reference = {};
+        const jr: JobReference = {};
         const code = this.masterSvc
           .edit()
           .generateDocCode(company.totalPOs, 'Job Reference');
-        Object.assign(po, {
+        Object.assign(jr, {
           estimate,
           site,
           createdBy: user.id,
@@ -483,7 +483,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         });
         await this.masterSvc
           .edit()
-          .addDocument(`company/${company.id}/pos`, po);
+          .addDocument(`company/${company.id}/pos`, jr);
         await this.masterSvc.edit().updateDoc('company', company.id, {
           totalPOs: increment(1),
         });
@@ -499,7 +499,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         this.masterSvc
           .notification()
           .toast(
-            'Something went wrong creating your po, try again!',
+            'Something went wrong creating your jr, try again!',
             'danger',
             2000
           );
@@ -507,7 +507,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
     });
   }
 
-  async viewPO(poData: Job Reference, site: Site) {
+  async viewPO(poData: JobReference, site: Site) {
     const modal = await this.masterSvc.modal().create({
       component: PurchaseOrderComponent,
       componentProps: { value: poData, site },

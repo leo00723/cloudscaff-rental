@@ -93,8 +93,8 @@
             [selectedText]="field('fromPO').value"
             (ionChange)="getTransactions($event)"
           >
-            <ng-container *ngFor="let po of field('fromSite').value.poList">
-              <ion-select-option [value]="po">{{ po }}</ion-select-option>
+            <ng-container *ngFor="let jr of field('fromSite').value.poList">
+              <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
             </ng-container>
           </app-input-select-reactive>
         </ion-col>
@@ -155,8 +155,8 @@
             [form]="form"
             [selectedText]="field('toPO').value"
           >
-            <ng-container *ngFor="let po of field('toSite').value.poList">
-              <ion-select-option [value]="po">{{ po }}</ion-select-option>
+            <ng-container *ngFor="let jr of field('toSite').value.poList">
+              <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
             </ng-container>
           </app-input-select-reactive>
         </ion-col>

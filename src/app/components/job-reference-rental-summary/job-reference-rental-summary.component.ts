@@ -11,8 +11,8 @@ import { Term } from 'src/app/models/term.model';
 import { PdfService } from 'src/app/services/pdf.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 @Component({
-  selector: 'app-po-rental-summary',
-  templateUrl: './po-rental-summary.component.html',
+  selector: 'app-job-reference-rental-summary',
+  templateUrl: './job-reference-rental-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PORentalSummaryComponent {

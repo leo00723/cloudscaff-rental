@@ -54,9 +54,9 @@ import { UploadTaskComponent } from './multiuploader/upload-task/upload-task.com
 import { NotificationsComponent } from './notifications/notifications.component';
 import { PagePlaceholderComponent } from './page-placeholder/page-placeholder.component';
 import { PermissionsSelectComponent } from './permissions-select/permissions-select.component';
-import { PORentalSummaryComponent } from './po-rental-summary/po-rental-summary.component';
-import { POSummaryComponent } from './po-summary/po-summary.component';
-import { POTableComponent } from './po-table/po-table.component';
+import { PORentalSummaryComponent } from './job-reference-rental-summary/job-reference-rental-summary.component';
+import { POSummaryComponent } from './job-reference-summary/job-reference-summary.component';
+import { POTableComponent } from './job-reference-table/job-reference-table.component';
 import { RepurposeInventoryComponent } from './repurpose-inventory/repurpose-inventory.component';
 import { RequestsTableComponent } from './requests-table/requests-table.component';
 import { ReturnsTableComponent } from './returns-table/returns-table.component';
@@ -83,11 +83,11 @@ import { ViewStockLogComponent } from './view-stock-log/view-stock-log.component
 import { ViewTermsComponent } from './view-terms/view-terms.component';
 import { WeightPipe } from './weight.pipe';
 import { AddAdjustmentComponent } from './add-adjustment/add-adjustment.component';
-import { PoCustomItemComponent } from './po-custom-item/po-custom-item.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { TransactionOverReturnComponent } from './transaction-over-return/transaction-over-return.component';
-import { PONumberManagerComponent } from './po-number-manager/po-number-manager.component';
 import { DateFormatPipe } from './date-format.pipe';
+import { JobReferenceManagerComponent } from './job-reference-number-manager/job-reference-number-manager.component';
+import { JobReferenceCustomItemComponent } from './job-reference-custom-item/job-reference-custom-item.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -134,7 +134,7 @@ const COMPONENTS = [
   InvoiceComponent,
   MultiuploaderComponent,
   NotificationsComponent,
-  PoCustomItemComponent,
+  JobReferenceCustomItemComponent,
   POSummaryComponent,
   PORentalSummaryComponent,
   POTableComponent,
@@ -166,7 +166,7 @@ const COMPONENTS = [
   ViewStockLogComponent,
   ViewTermsComponent,
   WeightPipe,
-  PONumberManagerComponent,
+  JobReferenceManagerComponent,
   DateFormatPipe,
 ];
 const IMPORTS = [

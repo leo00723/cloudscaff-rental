@@ -25,7 +25,7 @@ interface UpdateCounts {
 @Injectable({
   providedIn: 'root',
 })
-export class POUpdateService {
+export class JobReferenceUpdateService {
   private editSvc = inject(EditService);
   private notificationSvc = inject(NotificationService);
 
@@ -43,17 +43,17 @@ export class POUpdateService {
    *
    * @param companyId The company ID
    * @param siteId The site ID
-   * @param oldPONumber The current Job Reference
-   * @param newPONumber The new Job Reference
+   * @param oldJobReference The current Job Reference
+   * @param newJobReference The new Job Reference
    * @param poId The Job Reference document ID
    * @param progressCallback Optional callback for progress updates
    * @returns Promise<void>
    */
-  async updatePONumberAcrossCollections(
+  async updateJobReferenceAcrossCollections(
     companyId: string,
     siteId: string,
-    oldPONumber: string,
-    newPONumber: string,
+    oldJobReference: string,
+    newJobReference: string,
     poId: string,
     progressCallback?: ProgressCallback
   ): Promise<void> {
@@ -65,29 +65,29 @@ export class POUpdateService {
       const estimatedCount = await this.getEstimatedUpdateCount(
         companyId,
         siteId,
-        oldPONumber
+        oldJobReference
       );
 
       progressCallback?.(0, estimatedCount, 'Validating Job Reference');
 
       // Validation: Check if new Job Reference already exists for this site
-      await this.validateNewPONumber(companyId, siteId, newPONumber);
+      await this.validateNewJobReference(companyId, siteId, newJobReference);
 
       if (estimatedCount > this.streamThreshold) {
-        await this.updatePONumberWithStreaming(
+        await this.updateJobReferenceWithStreaming(
           companyId,
           siteId,
-          oldPONumber,
-          newPONumber,
+          oldJobReference,
+          newJobReference,
           poId,
           progressCallback
         );
       } else {
-        await this.updatePONumberStandard(
+        await this.updateJobReferenceStandard(
           companyId,
           siteId,
-          oldPONumber,
-          newPONumber,
+          oldJobReference,
+          newJobReference,
           poId,
           progressCallback
         );
@@ -108,11 +108,11 @@ export class POUpdateService {
   /**
    * Standard update method for smaller datasets
    */
-  private async updatePONumberStandard(
+  private async updateJobReferenceStandard(
     companyId: string,
     siteId: string,
-    oldPONumber: string,
-    newPONumber: string,
+    oldJobReference: string,
+    newJobReference: string,
     poId: string,
     progressCallback?: ProgressCallback
   ): Promise<void> {
@@ -122,8 +122,8 @@ export class POUpdateService {
     const allUpdates = await this.getAllUpdatesNeeded(
       companyId,
       siteId,
-      oldPONumber,
-      newPONumber,
+      oldJobReference,
+      newJobReference,
       poId
     );
 
@@ -145,8 +145,8 @@ export class POUpdateService {
   private async getAllUpdatesNeeded(
     companyId: string,
     siteId: string,
-    oldPONumber: string,
-    newPONumber: string,
+    oldJobReference: string,
+    newJobReference: string,
     poId: string
   ): Promise<UpdateOperation[]> {
     const updates: UpdateOperation[] = [];
@@ -155,14 +155,14 @@ export class POUpdateService {
     updates.push({
       collection: `company/${companyId}/pos`,
       docId: poId,
-      updateData: { jobReference: newPONumber },
+      updateData: { jobReference: newJobReference },
     });
 
     // 2. Transaction logs
     const transactionLogs = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/transactionLog`, [
-          where('jobReference', '==', oldPONumber),
+          where('jobReference', '==', oldJobReference),
           where('siteId', '==', siteId),
         ])
         .pipe(take(1))
@@ -173,7 +173,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/transactionLog`,
           docId: log.id,
-          updateData: { jobReference: newPONumber },
+          updateData: { jobReference: newJobReference },
         });
       });
     }
@@ -182,7 +182,7 @@ export class POUpdateService {
     const shipments = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/shipments`, [
-          where('jobReference', '==', oldPONumber),
+          where('jobReference', '==', oldJobReference),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -193,7 +193,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/shipments`,
           docId: shipment.id,
-          updateData: { jobReference: newPONumber },
+          updateData: { jobReference: newJobReference },
         });
       });
     }
@@ -202,7 +202,7 @@ export class POUpdateService {
     const adjustments = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/adjustments`, [
-          where('jobReference', '==', oldPONumber),
+          where('jobReference', '==', oldJobReference),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -213,7 +213,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/adjustments`,
           docId: adjustment.id,
-          updateData: { jobReference: newPONumber },
+          updateData: { jobReference: newJobReference },
         });
       });
     }
@@ -222,7 +222,7 @@ export class POUpdateService {
     const returns = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/returns`, [
-          where('jobReference', '==', oldPONumber),
+          where('jobReference', '==', oldJobReference),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -233,7 +233,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/returns`,
           docId: returnDoc.id,
-          updateData: { jobReference: newPONumber },
+          updateData: { jobReference: newJobReference },
         });
       });
     }
@@ -242,7 +242,7 @@ export class POUpdateService {
     const invoices = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/transactionInvoices`, [
-          where('jobReference', '==', oldPONumber),
+          where('jobReference', '==', oldJobReference),
           where('site.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -253,7 +253,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/transactionInvoices`,
           docId: invoice.id,
-          updateData: { jobReference: newPONumber },
+          updateData: { jobReference: newJobReference },
         });
       });
     }
@@ -262,7 +262,7 @@ export class POUpdateService {
     const fromTransfers = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-          where('fromPO', '==', oldPONumber),
+          where('fromPO', '==', oldJobReference),
           where('fromSite.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -273,7 +273,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/poTransfers`,
           docId: transfer.id,
-          updateData: { fromPO: newPONumber },
+          updateData: { fromPO: newJobReference },
         });
       });
     }
@@ -282,7 +282,7 @@ export class POUpdateService {
     const toTransfers = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/poTransfers`, [
-          where('toPO', '==', oldPONumber),
+          where('toPO', '==', oldJobReference),
           where('toSite.id', '==', siteId),
         ])
         .pipe(take(1))
@@ -293,7 +293,7 @@ export class POUpdateService {
         updates.push({
           collection: `company/${companyId}/poTransfers`,
           docId: transfer.id,
-          updateData: { toPO: newPONumber },
+          updateData: { toPO: newJobReference },
         });
       });
     }
@@ -302,13 +302,13 @@ export class POUpdateService {
     updates.push({
       collection: `company/${companyId}/sites`,
       docId: siteId,
-      updateData: { poList: arrayRemove(oldPONumber) },
+      updateData: { poList: arrayRemove(oldJobReference) },
     });
 
     updates.push({
       collection: `company/${companyId}/sites`,
       docId: siteId,
-      updateData: { poList: arrayUnion(newPONumber) },
+      updateData: { poList: arrayUnion(newJobReference) },
     });
 
     return updates;
@@ -419,11 +419,11 @@ export class POUpdateService {
   /**
    * Streaming update method for very large datasets
    */
-  private async updatePONumberWithStreaming(
+  private async updateJobReferenceWithStreaming(
     companyId: string,
     siteId: string,
-    oldPONumber: string,
-    newPONumber: string,
+    oldJobReference: string,
+    newJobReference: string,
     poId: string,
     progressCallback?: ProgressCallback
   ): Promise<void> {
@@ -433,7 +433,7 @@ export class POUpdateService {
     const estimatedTotal = await this.getEstimatedUpdateCount(
       companyId,
       siteId,
-      oldPONumber
+      oldJobReference
     );
 
     // Process each collection type separately to avoid memory issues
@@ -457,7 +457,7 @@ export class POUpdateService {
       {
         collection: `company/${companyId}/pos`,
         docId: poId,
-        updateData: { jobReference: newPONumber },
+        updateData: { jobReference: newJobReference },
       },
     ]);
     totalProcessed += 1;
@@ -477,8 +477,8 @@ export class POUpdateService {
       const processed = await this.streamProcessCollection(
         companyId,
         siteId,
-        oldPONumber,
-        newPONumber,
+        oldJobReference,
+        newJobReference,
         collectionInfo.name
       );
 
@@ -491,12 +491,12 @@ export class POUpdateService {
       {
         collection: `company/${companyId}/sites`,
         docId: siteId,
-        updateData: { poList: arrayRemove(oldPONumber) },
+        updateData: { poList: arrayRemove(oldJobReference) },
       },
       {
         collection: `company/${companyId}/sites`,
         docId: siteId,
-        updateData: { poList: arrayUnion(newPONumber) },
+        updateData: { poList: arrayUnion(newJobReference) },
       },
     ]);
     totalProcessed += 2;
@@ -512,8 +512,8 @@ export class POUpdateService {
   private async streamProcessCollection(
     companyId: string,
     siteId: string,
-    oldPONumber: string,
-    newPONumber: string,
+    oldJobReference: string,
+    newJobReference: string,
     collectionName: string
   ): Promise<number> {
     const batchSize = this.baseBatchSize;
@@ -526,7 +526,7 @@ export class POUpdateService {
       const query = this.buildCollectionQuery(
         companyId,
         siteId,
-        oldPONumber,
+        oldJobReference,
         collectionName,
         lastDocId,
         batchSize
@@ -550,7 +550,7 @@ export class POUpdateService {
             companyId,
             collectionName,
             doc,
-            newPONumber,
+            newJobReference,
             siteId
           )
         )
@@ -640,7 +640,7 @@ export class POUpdateService {
     companyId: string,
     collectionName: string,
     doc: any,
-    newPONumber: string,
+    newJobReference: string,
     siteId: string
   ): UpdateOperation | null {
     const collection = `company/${companyId}/${collectionName}`;
@@ -652,13 +652,13 @@ export class POUpdateService {
           return {
             collection,
             docId: doc.id,
-            updateData: { fromPO: newPONumber },
+            updateData: { fromPO: newJobReference },
           };
         } else if (doc.toSite?.id === siteId) {
           return {
             collection,
             docId: doc.id,
-            updateData: { toPO: newPONumber },
+            updateData: { toPO: newJobReference },
           };
         }
         return null;
@@ -666,7 +666,7 @@ export class POUpdateService {
         return {
           collection,
           docId: doc.id,
-          updateData: { jobReference: newPONumber },
+          updateData: { jobReference: newJobReference },
         };
     }
   }
@@ -678,16 +678,16 @@ export class POUpdateService {
     this.cancellationToken.cancelled = true;
   }
 
-  private async validateNewPONumber(
+  private async validateNewJobReference(
     companyId: string,
     siteId: string,
-    newPONumber: string
+    newJobReference: string
   ): Promise<void> {
     const existingPOs = await firstValueFrom(
       this.editSvc
         .getCollectionFiltered(`company/${companyId}/pos`, [
           where('site.id', '==', siteId),
-          where('jobReference', '==', newPONumber),
+          where('jobReference', '==', newJobReference),
         ])
         .pipe(take(1))
     );

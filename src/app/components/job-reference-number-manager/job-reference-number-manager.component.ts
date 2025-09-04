@@ -1,28 +1,28 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { POUpdateService } from 'src/app/services/po-update.service';
+import { JobReference } from 'src/app/models/jr.model';
+import { JobReferenceUpdateService } from 'src/app/services/job-reference-update.service';
 import { NotificationService } from 'src/app/services/notification.service';
-import { Job Reference } from 'src/app/models/po.model';
 
 @Component({
-  selector: 'app-po-number-manager',
-  templateUrl: './po-number-manager.component.html',
-  styleUrls: ['./po-number-manager.component.scss'],
+  selector: 'app-job-reference-number-manager',
+  templateUrl: './job-reference-number-manager.component.html',
+  styleUrls: ['./job-reference-number-manager.component.scss'],
 })
-export class PONumberManagerComponent implements OnInit {
-  @Input() pos: Job Reference[] = [];
+export class JobReferenceManagerComponent implements OnInit {
+  @Input() pos: JobReference[] = [];
   @Input() companyId: string;
 
   searchTerm = '';
-  filteredPOs: Job Reference[] = [];
-  selectedPO: Job Reference | null = null;
-  newPONumber = '';
+  filteredPOs: JobReference[] = [];
+  selectedPO: JobReference | null = null;
+  newJobReference = '';
   updating = false;
   updateCounts: any = null;
 
   constructor(
     private modalCtrl: ModalController,
-    private poUpdateSvc: POUpdateService,
+    private jobReferenceUpdateSvc: JobReferenceUpdateService,
     private notificationSvc: NotificationService
   ) {}
 
@@ -37,24 +37,24 @@ export class PONumberManagerComponent implements OnInit {
     }
 
     this.filteredPOs = this.pos.filter(
-      (po) =>
-        po.jobReference
+      (jr) =>
+        jr.jobReference
           ?.toLowerCase()
           .includes(this.searchTerm.toLowerCase()) ||
-        po.code?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        po.site?.name?.toLowerCase().includes(this.searchTerm.toLowerCase())
+        jr.code?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        jr.site?.name?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
 
-  async selectPO(po: Job Reference) {
-    this.selectedPO = po;
-    this.newPONumber = po.jobReference || '';
+  async selectPO(jr: JobReference) {
+    this.selectedPO = jr;
+    this.newJobReference = jr.jobReference || '';
 
     try {
-      this.updateCounts = await this.poUpdateSvc.getUpdateCount(
+      this.updateCounts = await this.jobReferenceUpdateSvc.getUpdateCount(
         this.companyId,
-        po.site?.id || '',
-        po.jobReference || ''
+        jr.site?.id || '',
+        jr.jobReference || ''
       );
     } catch (error) {
       console.error('Error getting update count:', error);
@@ -64,12 +64,12 @@ export class PONumberManagerComponent implements OnInit {
 
   goBack() {
     this.selectedPO = null;
-    this.newPONumber = '';
+    this.newJobReference = '';
     this.updateCounts = null;
   }
 
-  async updatePONumber() {
-    if (!this.selectedPO || !this.newPONumber) {
+  async updateJobReference() {
+    if (!this.selectedPO || !this.newJobReference) {
       return;
     }
 
@@ -81,21 +81,21 @@ export class PONumberManagerComponent implements OnInit {
       async () => {
         try {
           this.updating = true;
-          await this.poUpdateSvc.updatePONumberAcrossCollections(
+          await this.jobReferenceUpdateSvc.updateJobReferenceAcrossCollections(
             this.companyId,
             this.selectedPO.site.id,
             this.selectedPO.jobReference,
-            this.newPONumber,
+            this.newJobReference,
             this.selectedPO.id
           );
 
           // Update the local Job Reference object
-          this.selectedPO.jobReference = this.newPONumber;
+          this.selectedPO.jobReference = this.newJobReference;
 
           // Update the Job Reference in the list
           const index = this.pos.findIndex((p) => p.id === this.selectedPO.id);
           if (index > -1) {
-            this.pos[index].jobReference = this.newPONumber;
+            this.pos[index].jobReference = this.newJobReference;
           }
 
           this.notificationSvc.toast(

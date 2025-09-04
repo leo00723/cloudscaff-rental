@@ -662,10 +662,10 @@
               >
             </ion-item>
             <div class="ion-padding" slot="content">
-              <app-po-table
+              <app-job-reference-table
                 [value]="purchaseOrders$"
                 (selectedItem)="viewPO($event,site)"
-              ></app-po-table>
+              ></app-job-reference-table>
             </div>
           </ion-accordion>
           <ion-accordion
@@ -678,10 +678,10 @@
               >
             </ion-item>
             <div class="ion-padding" slot="content">
-              <app-po-table
+              <app-job-reference-table
                 [value]="completedPO$"
                 (selectedItem)="viewPO($event,site)"
-              ></app-po-table>
+              ></app-job-reference-table>
             </div>
           </ion-accordion>
         </ion-accordion-group>
@@ -715,10 +715,10 @@
               >
             </ion-item>
             <div class="ion-padding" slot="content">
-              <app-po-table
+              <app-job-reference-table
                 [value]="transactionInvoices$"
                 (selectedItem)="viewInvoice($event)"
-              ></app-po-table>
+              ></app-job-reference-table>
             </div>
           </ion-accordion>
         </ion-accordion-group>

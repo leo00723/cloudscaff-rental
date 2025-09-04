@@ -10,7 +10,7 @@
       </ion-button>
     </ion-buttons>
     <ion-title>
-      Purchase Order - {{ po?.code }} - {{ po?.jobReference }}
+      Purchase Order - {{ jr?.code }} - {{ jr?.jobReference }}
       <ion-text *ngIf="saving">
         <i class="text-muted fs-6">(Saving...)</i>
       </ion-text>
@@ -22,14 +22,14 @@
     <ion-col size="12" class="text-end">
       <ion-chip
         size="small"
-        (click)="updatePONumber()"
+        (click)="updateJobReference()"
         color="primary"
-        *ngIf="!saving && !updatingPONumber"
+        *ngIf="!saving && !updatingJobReference"
       >
         <ion-icon name="create-outline" slot="start"></ion-icon>
         Edit Job Reference
       </ion-chip>
-      <ion-chip size="small" color="medium" *ngIf="updatingPONumber">
+      <ion-chip size="small" color="medium" *ngIf="updatingJobReference">
         <ion-spinner name="dots" size="small"></ion-spinner>
         Updating...
       </ion-chip>
@@ -53,28 +53,28 @@
         size="small"
         (click)="downloadMixedDraft()"
         color="warning"
-        *ngIf="!saving && form.valid && po.mixedInvoice"
+        *ngIf="!saving && form.valid && jr.mixedInvoice"
       >
         Mixed Invoice Draft
       </ion-chip>
     </ion-col>
   </ion-row>
-  <app-po-rental-summary
-    [value]="po.estimate"
-    *ngIf="po.type === 'Rental'; else default"
-  ></app-po-rental-summary>
+  <app-job-reference-rental-summary
+    [value]="jr.estimate"
+    *ngIf="jr.type === 'Rental'; else default"
+  ></app-job-reference-rental-summary>
   <ng-template #default>
-    <ng-container *ngIf="po.customInvoice; else summary">
-      <app-po-custom-item
-        [value]="po.estimate"
+    <ng-container *ngIf="jr.customInvoice; else summary">
+      <app-job-reference-custom-item
+        [value]="jr.estimate"
         (update)="updatePOEstimate($event)"
-      ></app-po-custom-item>
+      ></app-job-reference-custom-item>
     </ng-container>
     <ng-template #summary>
-      <app-po-summary
-        [value]="po.estimate"
+      <app-job-reference-summary
+        [value]="jr.estimate"
         (update)="updatePOEstimate($event)"
-      ></app-po-summary>
+      ></app-job-reference-summary>
     </ng-template>
   </ng-template>
   <ion-row>
@@ -87,19 +87,19 @@
       size="6"
       class="text-end my-auto align-middle d-flex gap-3"
       style="width: 100%"
-      *ngIf="po.type !== 'Rental'"
+      *ngIf="jr.type !== 'Rental'"
     >
       <div class="ms-auto">
         <ion-text color="medium"> <h6>Custom Invoice</h6> </ion-text>
         <ion-toggle
-          [checked]="po.customInvoice"
+          [checked]="jr.customInvoice"
           (ionChange)="enableCustomInvoice()"
         ></ion-toggle>
       </div>
-      <div *ngIf="po.customInvoice">
+      <div *ngIf="jr.customInvoice">
         <ion-text color="medium"> <h6>Mixed Invoice</h6> </ion-text>
         <ion-toggle
-          [checked]="po.mixedInvoice"
+          [checked]="jr.mixedInvoice"
           (ionChange)="enableMixedInvoice()"
         ></ion-toggle>
       </div>
@@ -124,14 +124,14 @@
           <th rowspan="2">Item Code</th>
           <th class="text-start" rowspan="2">Description</th>
           <th rowspan="2">Unit</th>
-          <th rowspan="2" *ngIf="!po.customInvoice || po.mixedInvoice">
+          <th rowspan="2" *ngIf="!jr.customInvoice || jr.mixedInvoice">
             Qty for Invoice
           </th>
           <th colspan="4">Actual Qty</th>
           <th colspan="2">Hire Period</th>
           <th rowspan="2">Days</th>
           <th rowspan="2">Months</th>
-          <ng-container *ngIf="!po.customInvoice || po.mixedInvoice">
+          <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
             <th rowspan="2">Monthly Rent Rate</th>
             <th class="text-end" rowspan="2">Amount</th>
           </ng-container>
@@ -172,7 +172,7 @@
             <td>EA</td>
 
             <!-- Qty for Invoice -->
-            <td class="fw-bold" *ngIf="!po.customInvoice || po.mixedInvoice">
+            <td class="fw-bold" *ngIf="!jr.customInvoice || jr.mixedInvoice">
               {{ transaction.invoiceQty }}
             </td>
 
@@ -217,7 +217,7 @@
             <td>
               {{ transaction.months }}
             </td>
-            <ng-container *ngIf="!po.customInvoice || po.mixedInvoice">
+            <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
               <!-- Daily Rent Rate -->
               <td>
                 <ion-input
@@ -268,7 +268,7 @@
             <td>EA</td>
 
             <!-- Qty for Invoice -->
-            <td class="fw-bold" *ngIf="!po.customInvoice || po.mixedInvoice">
+            <td class="fw-bold" *ngIf="!jr.customInvoice || jr.mixedInvoice">
               {{ transaction.invoiceQty }}
             </td>
 
@@ -313,7 +313,7 @@
             <td>
               {{ transaction.months }}
             </td>
-            <ng-container *ngIf="!po.customInvoice || po.mixedInvoice">
+            <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
               <!-- Daily Rent Rate -->
               <td>
                 <ion-input
@@ -340,7 +340,7 @@
       <!-- FOOTER TOTALS -->
       <tfoot>
         <tr>
-          <th [colSpan]="po.customInvoice && !po.mixedInvoice ? 13 : 15">
+          <th [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 13 : 15">
             <div class="m-3">
               <form [formGroup]="form">
                 <app-input-reactive
@@ -369,101 +369,101 @@
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 10 : 12"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 10 : 12"
             scope="col"
           >
             Subtotal
           </th>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 2 : 3"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ po.subtotal | number : "0.2-2" }}
+            {{ jr.subtotal | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 10 : 12"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 10 : 12"
             scope="col"
           >
             Discount
           </th>
           <th
             class="text-end text-danger"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 2 : 3"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
             - {{ company.currency.symbol }}
-            {{ po.discount | number : "0.2-2" }}
+            {{ jr.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 10 : 12"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 10 : 12"
             scope="col"
           >
             Invoice Total
           </th>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 2 : 3"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ po.subtotal - po.discount | number : "0.2-2" }}
+            {{ jr.subtotal - jr.discount | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 10 : 12"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 10 : 12"
             scope="col"
           >
             Sales Tax ({{ company.salesTax }}%)
           </th>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 2 : 3"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
-            {{ company.currency.symbol }} {{ po.tax | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ jr.tax | number : "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 10 : 12"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 10 : 12"
             scope="col"
           >
             {{ company?.gst ? "GST" : "VAT" }} ({{ company.vat }}%)
           </th>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 2 : 3"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
-            {{ company.currency.symbol }} {{ po.vat | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ jr.vat | number : "0.2-2" }}
           </th>
         </tr>
         <tr>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 10 : 12"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 10 : 12"
             scope="col"
           >
             Grand Total
           </th>
           <th
             class="text-end"
-            [colSpan]="po.customInvoice && !po.mixedInvoice ? 2 : 3"
+            [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ po.total | number : "0.2-2" }}
+            {{ jr.total | number : "0.2-2" }}
           </th>
         </tr>
       </tfoot>
@@ -479,7 +479,7 @@
         (click)="closePO()"
         shape="round"
         color="danger"
-        *ngIf="!saving && transactions.length <= 0 && po.status !== 'completed'"
+        *ngIf="!saving && transactions.length <= 0 && jr.status !== 'completed'"
       >
         Close Job Reference
       </ion-button></ion-col
@@ -489,7 +489,7 @@
         (click)="openPO()"
         shape="round"
         color="success"
-        *ngIf="!saving && transactions.length <= 0 && po.status === 'completed'"
+        *ngIf="!saving && transactions.length <= 0 && jr.status === 'completed'"
       >
         Open Job Reference
       </ion-button>
@@ -497,7 +497,7 @@
         *ngIf="!saving"
         (click)="createInvoice()"
         shape="round"
-        [disabled]="form.invalid || po.total <= 0"
+        [disabled]="form.invalid || jr.total <= 0"
         color="success"
       >
         Create Invoice

@@ -118,8 +118,8 @@
             [selectedText]="field('jobReference').value"
             (ionChange)="getTransactions($event)"
           >
-            <ng-container *ngFor="let po of field('site').value.poList">
-              <ion-select-option [value]="po">{{ po }}</ion-select-option>
+            <ng-container *ngFor="let jr of field('site').value.poList">
+              <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
             </ng-container>
           </app-input-select-reactive>
         </ion-col>

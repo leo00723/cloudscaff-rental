@@ -23,10 +23,10 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
-  selector: 'app-po-custom-item',
-  templateUrl: './po-custom-item.component.html',
+  selector: 'app-job-reference-custom-item',
+  templateUrl: './job-reference-custom-item.component.html',
 })
-export class PoCustomItemComponent implements OnInit {
+export class JobReferenceCustomItemComponent implements OnInit {
   @Input() set value(val: EstimateV2) {
     if (val) {
       this.estimate = cloneDeep(val);

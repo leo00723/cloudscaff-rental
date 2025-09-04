@@ -12,8 +12,8 @@ import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import cloneDeep from 'lodash/cloneDeep';
 @Component({
-  selector: 'app-po-summary',
-  templateUrl: './po-summary.component.html',
+  selector: 'app-job-reference-summary',
+  templateUrl: './job-reference-summary.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class POSummaryComponent {

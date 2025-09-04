@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { InventoryEstimateRent } from 'src/app/models/inventory-estimate-rent.model';
-import { Job Reference } from 'src/app/models/po.model';
+import { JobReference } from 'src/app/models/jr.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
@@ -92,9 +92,12 @@ export class AcceptEstimateRentComponent implements OnInit {
         this.estimate.status = 'accepted';
 
         const company = this.store.selectSnapshot(CompanyState.company);
-        const po: Job Reference = {};
-        const code = this.editSvc.generateDocCode(company.totalPOs, 'Job Reference');
-        Object.assign(po, {
+        const jr: JobReference = {};
+        const code = this.editSvc.generateDocCode(
+          company.totalPOs,
+          'Job Reference'
+        );
+        Object.assign(jr, {
           estimate: this.estimate,
           site: this.site,
           createdBy: this.user.id,
@@ -107,7 +110,7 @@ export class AcceptEstimateRentComponent implements OnInit {
           type: 'Rental',
         });
 
-        await this.editSvc.addDocument(`company/${this.company.id}/pos`, po);
+        await this.editSvc.addDocument(`company/${this.company.id}/pos`, jr);
         await this.editSvc.updateDoc('company', this.company.id, {
           totalPOs: increment(1),
         });

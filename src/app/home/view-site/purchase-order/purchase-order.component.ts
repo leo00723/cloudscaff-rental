@@ -20,14 +20,14 @@ import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
 import { DatepickerComponent } from 'src/app/components/datepicker/datepicker.component';
 import { Company } from 'src/app/models/company.model';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
-import { Job Reference } from 'src/app/models/po.model';
+import { JobReference } from 'src/app/models/jr.model';
 import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
+import { JobReferenceUpdateService } from 'src/app/services/job-reference-update.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { PdfService } from 'src/app/services/pdf.service';
-import { POUpdateService } from 'src/app/services/po-update.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
@@ -37,16 +37,16 @@ import { UserState } from 'src/app/shared/user/user.state';
   styles: [],
 })
 export class PurchaseOrderComponent implements OnInit {
-  @Input() set value(val: Job Reference) {
+  @Input() set value(val: JobReference) {
     if (val) {
-      Object.assign(this.po, val);
+      Object.assign(this.jr, val);
       this.init();
     }
   }
 
   protected company: Company;
   protected form: FormGroup;
-  protected po: Job Reference = {
+  protected jr: JobReference = {
     subtotal: 0,
     discount: 0,
     total: 0,
@@ -58,7 +58,7 @@ export class PurchaseOrderComponent implements OnInit {
   protected saving = false;
   protected transactions: TransactionItem[] = [];
   protected user: User;
-  protected updatingPONumber = false;
+  protected updatingJobReference = false;
 
   private editSvc = inject(EditService);
   private fb = inject(FormBuilder);
@@ -68,7 +68,7 @@ export class PurchaseOrderComponent implements OnInit {
   private dateDiff = inject(DateDiffPipe);
   private pdfSvc = inject(PdfService);
   private alertCtrl = inject(AlertController);
-  private poUpdateSvc = inject(POUpdateService);
+  private jobReferenceUpdateService = inject(JobReferenceUpdateService);
 
   constructor() {
     this.user = this.store.selectSnapshot(UserState.user);
@@ -149,7 +149,7 @@ export class PurchaseOrderComponent implements OnInit {
     } else {
       item.error = false;
       item.hireRate = +val.detail.target.value;
-      item.siteId = this.po.site.id;
+      item.siteId = this.jr.site.id;
 
       try {
         this.saving = true;
@@ -180,17 +180,17 @@ export class PurchaseOrderComponent implements OnInit {
   }
 
   enableCustomInvoice() {
-    this.po.customInvoice = !this.po.customInvoice;
+    this.jr.customInvoice = !this.jr.customInvoice;
     this.calcTotal();
   }
 
   enableMixedInvoice() {
-    this.po.mixedInvoice = !this.po.mixedInvoice;
+    this.jr.mixedInvoice = !this.jr.mixedInvoice;
     this.calcTotal();
   }
 
   updatePOEstimate(estimate: EstimateV2) {
-    this.po.estimate = estimate;
+    this.jr.estimate = estimate;
     this.calcTotal();
   }
 
@@ -199,14 +199,14 @@ export class PurchaseOrderComponent implements OnInit {
       try {
         this.saving = true;
         const invoice: TransactionInvoice = {
-          ...this.po,
+          ...this.jr,
           ...this.form.value,
           status: 'pending',
           items: this.transactions,
           createdBy: this.user.id,
           createdByName: this.user.name,
           date: new Date(),
-          poId: this.po.id,
+          poId: this.jr.id,
           creditItems: [],
           creditTotal: 0,
         };
@@ -223,9 +223,9 @@ export class PurchaseOrderComponent implements OnInit {
 
         await this.editSvc.updateDoc(
           `company/${this.company.id}/pos`,
-          this.po.id,
+          this.jr.id,
           {
-            lastInvoiceTotal: this.po.total,
+            lastInvoiceTotal: this.jr.total,
           }
         );
 
@@ -249,7 +249,7 @@ export class PurchaseOrderComponent implements OnInit {
 
         await this.editSvc.updateDoc(
           `company/${this.company.id}/pos`,
-          this.po.id,
+          this.jr.id,
           {
             status: 'completed',
           }
@@ -257,13 +257,16 @@ export class PurchaseOrderComponent implements OnInit {
 
         await this.editSvc.updateDoc(
           `company/${this.company.id}/sites`,
-          this.po.site.id,
+          this.jr.site.id,
           {
-            poList: arrayRemove(this.po.jobReference),
+            poList: arrayRemove(this.jr.jobReference),
           }
         );
 
-        this.notificationSvc.toast('Job Reference closed successfully.', 'success');
+        this.notificationSvc.toast(
+          'Job Reference closed successfully.',
+          'success'
+        );
         this.close();
       } catch (e) {
         console.log(e);
@@ -283,7 +286,7 @@ export class PurchaseOrderComponent implements OnInit {
 
         await this.editSvc.updateDoc(
           `company/${this.company.id}/pos`,
-          this.po.id,
+          this.jr.id,
           {
             status: 'pending',
           }
@@ -291,13 +294,16 @@ export class PurchaseOrderComponent implements OnInit {
 
         await this.editSvc.updateDoc(
           `company/${this.company.id}/sites`,
-          this.po.site.id,
+          this.jr.site.id,
           {
-            poList: arrayUnion(this.po.jobReference),
+            poList: arrayUnion(this.jr.jobReference),
           }
         );
 
-        this.notificationSvc.toast('Job Reference open successfully.', 'success');
+        this.notificationSvc.toast(
+          'Job Reference open successfully.',
+          'success'
+        );
         this.close();
       } catch (e) {
         console.log(e);
@@ -313,32 +319,32 @@ export class PurchaseOrderComponent implements OnInit {
 
   async downloadDraft(isBasic?: boolean) {
     const invoice: TransactionInvoice = {
-      ...this.po,
+      ...this.jr,
       ...this.form.value,
       status: 'pending',
       items: this.transactions,
       createdBy: this.user.id,
       createdByName: this.user.name,
       date: new Date(),
-      poId: this.po.id,
+      poId: this.jr.id,
       creditItems: [],
       creditTotal: 0,
     };
     const pdf = isBasic
       ? await this.pdfSvc.rentalInvoiceMerged(invoice, this.company, null, true)
       : await this.pdfSvc.rentalInvoice(invoice, this.company, null, true);
-    this.pdfSvc.handlePdf(pdf, this.po.code);
+    this.pdfSvc.handlePdf(pdf, this.jr.code);
   }
   async downloadMixedDraft() {
     const invoice: TransactionInvoice = {
-      ...this.po,
+      ...this.jr,
       ...this.form.value,
       status: 'pending',
       items: this.transactions,
       createdBy: this.user.id,
       createdByName: this.user.name,
       date: new Date(),
-      poId: this.po.id,
+      poId: this.jr.id,
       creditItems: [],
       creditTotal: 0,
     };
@@ -348,16 +354,16 @@ export class PurchaseOrderComponent implements OnInit {
       null,
       true
     );
-    this.pdfSvc.handlePdf(pdf, this.po.code);
+    this.pdfSvc.handlePdf(pdf, this.jr.code);
   }
 
-  async updatePONumber() {
+  async updateJobReference() {
     try {
       // First, get count of affected records
-      const updateCounts = await this.poUpdateSvc.getUpdateCount(
+      const updateCounts = await this.jobReferenceUpdateService.getUpdateCount(
         this.company.id,
-        this.po.site.id,
-        this.po.jobReference
+        this.jr.site.id,
+        this.jr.jobReference
       );
 
       const alert = await this.alertCtrl.create({
@@ -371,10 +377,10 @@ export class PurchaseOrderComponent implements OnInit {
         • ${updateCounts.transfers} transfers`,
         inputs: [
           {
-            name: 'newPONumber',
+            name: 'newJobReference',
             type: 'text',
             placeholder: 'Enter new Job Reference',
-            value: this.po.jobReference,
+            value: this.jr.jobReference,
             attributes: {
               minlength: 1,
               required: true,
@@ -390,10 +396,10 @@ export class PurchaseOrderComponent implements OnInit {
             text: 'Update',
             handler: (data) => {
               if (
-                data.newPONumber &&
-                data.newPONumber !== this.po.jobReference
+                data.newJobReference &&
+                data.newJobReference !== this.jr.jobReference
               ) {
-                this.performPONumberUpdate(data.newPONumber);
+                this.performJobReferenceUpdate(data.newJobReference);
               }
             },
           },
@@ -411,19 +417,19 @@ export class PurchaseOrderComponent implements OnInit {
     }
   }
 
-  private async performPONumberUpdate(newPONumber: string) {
+  private async performJobReferenceUpdate(newJobReference: string) {
     this.notificationSvc.presentAlertConfirm(
       async () => {
         try {
-          this.updatingPONumber = true;
-          await this.poUpdateSvc.updatePONumberAcrossCollections(
+          this.updatingJobReference = true;
+          await this.jobReferenceUpdateService.updateJobReferenceAcrossCollections(
             this.company.id,
-            this.po.site.id,
-            this.po.jobReference,
-            newPONumber,
-            this.po.id
+            this.jr.site.id,
+            this.jr.jobReference,
+            newJobReference,
+            this.jr.id
           );
-          this.po.jobReference = newPONumber;
+          this.jr.jobReference = newJobReference;
           this.notificationSvc.toast(
             'Job Reference updated successfully!',
             'success'
@@ -436,7 +442,7 @@ export class PurchaseOrderComponent implements OnInit {
             'danger'
           );
         } finally {
-          this.updatingPONumber = false;
+          this.updatingJobReference = false;
         }
       },
       'This action will update the Job Reference across all related records including ' +
@@ -463,24 +469,24 @@ export class PurchaseOrderComponent implements OnInit {
         2
       );
 
-      this.po.subtotal += item.total;
+      this.jr.subtotal += item.total;
     });
   }
 
   private async calcTotal() {
-    this.po.subtotal = 0;
+    this.jr.subtotal = 0;
 
     // Calculate subtotal based on invoice type
-    if (this.po.customInvoice) {
+    if (this.jr.customInvoice) {
       // For both customInvoice cases (with or without mixedInvoice)
-      this.po.estimate.items.forEach((item) => {
+      this.jr.estimate.items.forEach((item) => {
         if (item.forInvoice) {
-          this.po.subtotal += item.total;
+          this.jr.subtotal += item.total;
         }
       });
 
       // Add transaction calculations only if mixedInvoice is true
-      if (this.po.mixedInvoice) {
+      if (this.jr.mixedInvoice) {
         this.calculateTransactionSubtotal();
       }
     } else {
@@ -488,25 +494,25 @@ export class PurchaseOrderComponent implements OnInit {
       this.calculateTransactionSubtotal();
     }
 
-    this.po.discount = +this.field('discount').value;
-    const totalAfterDiscount = this.po.subtotal - this.po.discount;
-    this.po.tax = 0;
-    this.po.vat = 0;
-    this.po.total = 0;
-    if (this.field('excludeVAT').value || this.po.site.customer.excludeVAT) {
-      this.po.total = totalAfterDiscount + this.po.tax + this.po.vat;
+    this.jr.discount = +this.field('discount').value;
+    const totalAfterDiscount = this.jr.subtotal - this.jr.discount;
+    this.jr.tax = 0;
+    this.jr.vat = 0;
+    this.jr.total = 0;
+    if (this.field('excludeVAT').value || this.jr.site.customer.excludeVAT) {
+      this.jr.total = totalAfterDiscount + this.jr.tax + this.jr.vat;
     } else {
-      this.po.tax = totalAfterDiscount * (this.company.salesTax / 100);
-      this.po.vat = totalAfterDiscount * (this.company.vat / 100);
-      this.po.total = totalAfterDiscount + this.po.tax + this.po.vat;
+      this.jr.tax = totalAfterDiscount * (this.company.salesTax / 100);
+      this.jr.vat = totalAfterDiscount * (this.company.vat / 100);
+      this.jr.total = totalAfterDiscount + this.jr.tax + this.jr.vat;
     }
 
     try {
       this.saving = true;
       await this.editSvc.updateDoc(
         `company/${this.company.id}/pos`,
-        this.po.id,
-        this.po
+        this.jr.id,
+        this.jr
       );
     } catch (e) {
       console.log(e);
@@ -520,11 +526,11 @@ export class PurchaseOrderComponent implements OnInit {
   }
 
   private init() {
-    this.po.jobReference;
+    this.jr.jobReference;
     this.editSvc
       .getCollectionFiltered(`company/${this.company.id}/transactionLog`, [
-        where('jobReference', '==', this.po.jobReference),
-        where('siteId', '==', this.po.site.id),
+        where('jobReference', '==', this.jr.jobReference),
+        where('siteId', '==', this.jr.site.id),
         where('status', '==', 'active'),
         orderBy('code', 'asc'),
         orderBy('transactionType', 'asc'),

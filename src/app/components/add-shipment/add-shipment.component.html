@@ -116,8 +116,8 @@
             [form]="form"
             [selectedText]="field('jobReference').value"
           >
-            <ng-container *ngFor="let po of site.poList">
-              <ion-select-option [value]="po">{{ po }}</ion-select-option>
+            <ng-container *ngFor="let jr of site.poList">
+              <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
             </ng-container>
           </app-input-select-reactive>
         </ion-col>

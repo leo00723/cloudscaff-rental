@@ -27,11 +27,11 @@
 <ion-content class="ion-padding">
   <ng-container [ngSwitch]="active" *ngIf="company$ | async as company">
     <ng-container *ngSwitchCase="'rental'">
-      <app-po-table
+      <app-job-reference-table
         [value]="rentalInvoices$"
         *ngIf="rentalInvoices$ | async else loading"
         (selectedItem)="viewRentalInvoice($event)"
-      ></app-po-table>
+      ></app-job-reference-table>
     </ng-container>
     <ng-container *ngSwitchCase="'sale'">
       <app-invoice-table

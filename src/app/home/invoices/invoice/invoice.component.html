@@ -144,22 +144,22 @@
     </ion-col>
   </ion-row>
 
-  <app-po-rental-summary
+  <app-job-reference-rental-summary
     [value]="invoice.estimate"
     *ngIf="invoice.type === 'Rental'; else default"
-  ></app-po-rental-summary>
+  ></app-job-reference-rental-summary>
   <ng-template #default>
     <ng-container *ngIf="invoice.customInvoice && allowEdit; else summary">
-      <app-po-custom-item
+      <app-job-reference-custom-item
         [value]="invoice.estimate"
         (update)="updatePOEstimate($event)"
-      ></app-po-custom-item>
+      ></app-job-reference-custom-item>
     </ng-container>
     <ng-template #summary>
-      <app-po-summary
+      <app-job-reference-summary
         [value]="invoice.estimate"
         [customInvoice]="invoice.customInvoice"
-      ></app-po-summary>
+      ></app-job-reference-summary>
     </ng-template>
   </ng-template>
 

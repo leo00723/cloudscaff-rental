@@ -12,22 +12,22 @@ import {
   SortType,
 } from '@swimlane/ngx-datatable';
 import { map, Observable } from 'rxjs';
-import { Job Reference } from 'src/app/models/po.model';
+import { JobReference } from 'src/app/models/jr.model';
 
 @Component({
-  selector: 'app-po-table',
-  templateUrl: './po-table.component.html',
+  selector: 'app-job-reference-table',
+  templateUrl: './job-reference-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class POTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  @Output() selectedItem = new EventEmitter<Job Reference>();
-  @Input() set value(data: Observable<Job Reference[]>) {
+  @Output() selectedItem = new EventEmitter<JobReference>();
+  @Input() set value(data: Observable<JobReference[]>) {
     this.temp$ = data;
     this.data$ = data;
   }
-  data$: Observable<Job Reference[]>;
-  temp$: Observable<Job Reference[]>;
+  data$: Observable<JobReference[]>;
+  temp$: Observable<JobReference[]>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];

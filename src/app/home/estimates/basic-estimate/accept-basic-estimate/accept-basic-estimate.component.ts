@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { EstimateV2 } from 'src/app/models/estimate-v2.model';
-import { Job Reference } from 'src/app/models/po.model';
+import { JobReference } from 'src/app/models/jr.model';
 import { Site } from 'src/app/models/site.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
@@ -79,11 +79,11 @@ export class AcceptBasicEstimateComponent implements OnInit {
         const company = this.masterSvc
           .store()
           .selectSnapshot(CompanyState.company);
-        const po: Job Reference = {};
+        const jr: JobReference = {};
         const code = this.masterSvc
           .edit()
           .generateDocCode(company.totalPOs, 'Job Reference');
-        Object.assign(po, {
+        Object.assign(jr, {
           estimate: this.estimate,
           site: this.site,
           createdBy: this.user.id,
@@ -97,7 +97,7 @@ export class AcceptBasicEstimateComponent implements OnInit {
 
         await this.masterSvc
           .edit()
-          .addDocument(`company/${this.company.id}/pos`, po);
+          .addDocument(`company/${this.company.id}/pos`, jr);
         await this.masterSvc.edit().updateDoc('company', this.company.id, {
           totalPOs: increment(1),
         });

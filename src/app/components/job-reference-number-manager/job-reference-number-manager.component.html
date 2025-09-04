@@ -19,14 +19,14 @@
     </ion-searchbar>
 
     <ion-list>
-      <ion-item button *ngFor="let po of filteredPOs" (click)="selectPO(po)">
+      <ion-item button *ngFor="let jr of filteredPOs" (click)="selectPO(jr)">
         <ion-label>
-          <h3>{{ po.jobReference }}</h3>
-          <p>{{ po.code }} - {{ po.status }}</p>
-          <p>Site: {{ po.site?.name }}</p>
+          <h3>{{ jr.jobReference }}</h3>
+          <p>{{ jr.code }} - {{ jr.status }}</p>
+          <p>Site: {{ jr.site?.name }}</p>
         </ion-label>
-        <ion-chip slot="end" [color]="getStatusColor(po.status)">
-          {{ po.status }}
+        <ion-chip slot="end" [color]="getStatusColor(jr.status)">
+          {{ jr.status }}
         </ion-chip>
       </ion-item>
     </ion-list>
@@ -88,7 +88,7 @@
     <ion-item>
       <ion-label position="stacked">New Job Reference</ion-label>
       <ion-input
-        [(ngModel)]="newPONumber"
+        [(ngModel)]="newJobReference"
         placeholder="Enter new Job Reference"
         [disabled]="updating"
       >
@@ -97,9 +97,11 @@
 
     <ion-button
       expand="block"
-      (click)="updatePONumber()"
+      (click)="updateJobReference()"
       [disabled]="
-        !newPONumber || newPONumber === selectedPO.jobReference || updating
+        !newJobReference ||
+        newJobReference === selectedPO.jobReference ||
+        updating
       "
       color="primary"
     >
