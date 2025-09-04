@@ -45,6 +45,8 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     zip: '',
     foremanContact: '',
     foremanName: '',
+    foremanEmail: '',
+    repEmail: '',
     repContact: '',
     repName: '',
   };
@@ -73,8 +75,10 @@ export class SiteFormComponent implements OnInit, OnDestroy {
         billable: [this.site.billable],
         foremanName: [this.site.foremanName],
         foremanContact: [this.site.foremanContact],
+        foremanEmail: [this.site.foremanEmail],
         repName: [this.site.repName],
         repContact: [this.site.repContact],
+        repEmail: [this.site.repEmail],
       });
     }
   }
@@ -301,6 +305,8 @@ export class SiteFormComponent implements OnInit, OnDestroy {
       billable: [''],
       foremanName: [''],
       foremanContact: [''],
+      foremanEmail: [''],
+      repEmail: [''],
       repName: [''],
       repContact: [''],
     });

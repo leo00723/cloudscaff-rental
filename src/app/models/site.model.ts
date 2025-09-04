@@ -30,6 +30,8 @@ export interface Site {
   jobReferenceList?: string[];
   foremanContact?: string;
   foremanName?: string;
+  foremanEmail?: string;
+  repEmail?: string;
   repContact?: string;
   repName?: string;
 }

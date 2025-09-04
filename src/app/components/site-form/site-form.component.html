@@ -8,28 +8,42 @@
         controlName="name"
       ></app-input-reactive>
     </ion-col>
-    <ion-col size="6">
+    <ion-col size="4">
       <app-input-reactive
-        title="Site Main Contact"
+        title="Main Contact"
         [form]="form"
         controlName="repName"
       ></app-input-reactive>
     </ion-col>
-    <ion-col size="6">
+    <ion-col size="4">
+      <app-input-reactive
+        title="Email"
+        [form]="form"
+        controlName="repEmail"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="4">
       <app-input-reactive
         title="Phone No."
         [form]="form"
         controlName="repContact"
       ></app-input-reactive>
     </ion-col>
-    <ion-col size="6">
+    <ion-col size="4">
       <app-input-reactive
-        title="Site Forman"
+        title="Forman"
         [form]="form"
         controlName="foremanName"
       ></app-input-reactive>
     </ion-col>
-    <ion-col size="6">
+    <ion-col size="4">
+      <app-input-reactive
+        title="Email"
+        [form]="form"
+        controlName="foremanEmail"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="4">
       <app-input-reactive
         title="Phone No."
         [form]="form"
@@ -84,8 +98,12 @@
         placeholder="Search for Site Address"
       >
       </app-address-search>
+    </ion-col>
+    <ion-col>
       <app-input-reactive title="Address" [form]="form" controlName="address">
       </app-input-reactive>
+    </ion-col>
+    <ion-col>
       <app-input-reactive
         title="suburb"
         [form]="form"
@@ -93,23 +111,23 @@
         [optional]="true"
       >
       </app-input-reactive>
-      <ion-row>
-        <ion-col class="py-0 ps-0">
-          <app-input-reactive
-            title="State/City"
-            [form]="form"
-            controlName="city"
-          ></app-input-reactive>
-        </ion-col>
-        <ion-col class="py-0 pe-0">
-          <app-input-reactive
-            title="Zip"
-            [form]="form"
-            controlName="zip"
-            [optional]="true"
-          ></app-input-reactive>
-        </ion-col>
-      </ion-row>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="State/City"
+        [form]="form"
+        controlName="city"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Zip"
+        [form]="form"
+        controlName="zip"
+        [optional]="true"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col>
       <app-input-reactive
         title="Country"
         [form]="form"
