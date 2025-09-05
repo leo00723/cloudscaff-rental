@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
@@ -27,21 +27,31 @@ export class CustomerComponent {
     if (this.form && val) {
       this.form = this.masterSvc.fb().group({
         name: [this.customerData.name, Validators.required],
+        tradingName: [this.customerData.tradingName, Validators.required],
         email: [
           this.customerData.email,
           [Validators.required, Validators.email],
         ],
         rep: [this.customerData.rep, Validators.required],
         phone: [this.customerData.phone, Validators.required],
-        address: [this.customerData.address, Validators.required],
+        address: [this.customerData.address],
         suburb: [this.customerData.suburb],
-        city: [this.customerData.city, Validators.required],
+        city: [this.customerData.city],
         zip: [this.customerData.zip],
         regNumber: [this.customerData.regNumber],
         vatNum: [this.customerData.vatNum],
-        country: [this.customerData.country, Validators.required],
+        country: [this.customerData.country],
         xeroID: [this.customerData.xeroID],
         excludeVAT: [this.customerData.excludeVAT],
+        reps: this.masterSvc.fb().array([]),
+      });
+      this.customerData?.reps?.forEach((item) => {
+        const additional = this.masterSvc.fb().group({
+          name: [item?.name || ''],
+          phone: [item?.phone || ''],
+          email: [item?.email || ''],
+        });
+        this.repForms.push(additional);
       });
     }
   }
@@ -64,8 +74,27 @@ export class CustomerComponent {
       vatNum: [''],
       xeroID: [''],
       excludeVAT: [''],
+      reps: this.masterSvc.fb().array([]),
     });
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+  }
+
+  get repForms() {
+    return this.form.get('reps') as FormArray;
+  }
+  addRep() {
+    const additional = this.masterSvc.fb().group({
+      name: [''],
+      phone: [''],
+      email: [''],
+    });
+    this.repForms.push(additional);
+  }
+
+  deleteRep(i: number) {
+    this.masterSvc.notification().presentAlertConfirm(() => {
+      this.repForms.removeAt(i);
+    });
   }
 
   field(field: string) {

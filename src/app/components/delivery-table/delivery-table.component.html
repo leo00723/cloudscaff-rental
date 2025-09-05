@@ -45,7 +45,7 @@
     prop="site.customer.name"
   ></ngx-datatable-column>
   <ngx-datatable-column
-    name="Start Date"
+    name="Hire Start"
     cellClass="text-center"
     headerClass="text-center"
   >
@@ -54,7 +54,7 @@
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
-    name="End Date"
+    name="Expected Delivery"
     cellClass="text-center"
     headerClass="text-center"
   >
@@ -88,15 +88,6 @@
           value.length
         }}</ion-badge>
       </div>
-    </ng-template>
-  </ngx-datatable-column>
-  <ngx-datatable-column
-    name="Status"
-    cellClass="text-center"
-    headerClass="text-center"
-  >
-    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      <ion-badge [color]="getStatus(value)" mode="ios">{{ value }}</ion-badge>
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>

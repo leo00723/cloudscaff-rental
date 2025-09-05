@@ -9,6 +9,12 @@
           [readonly]="readOnly"
         ></app-input-reactive>
         <app-input-reactive
+          title="Trading Name"
+          [form]="form"
+          controlName="tradingName"
+          [readonly]="readOnly"
+        ></app-input-reactive>
+        <app-input-reactive
           title="Email address"
           [form]="form"
           controlName="email"
@@ -53,11 +59,13 @@
           ></ion-checkbox>
         </ion-item>
       </ion-col>
-      <ion-col size="12" sizeXl="6">
+      <ion-col size="12">
         <app-address-search
           *ngIf="isCreate || isUpdate"
           (addressData)="updateAddress($event)"
         ></app-address-search>
+      </ion-col>
+      <ion-col>
         <app-input-reactive
           title="Address"
           [form]="form"
@@ -65,6 +73,8 @@
           [readonly]="readOnly"
         >
         </app-input-reactive>
+      </ion-col>
+      <ion-col>
         <app-input-reactive
           title="suburb"
           [form]="form"
@@ -73,12 +83,16 @@
           [readonly]="readOnly"
         >
         </app-input-reactive>
+      </ion-col>
+      <ion-col>
         <app-input-reactive
           title="State/City"
           [form]="form"
           controlName="city"
           [readonly]="readOnly"
         ></app-input-reactive>
+      </ion-col>
+      <ion-col>
         <app-input-reactive
           title="Zip"
           [form]="form"
@@ -86,6 +100,8 @@
           [optional]="true"
           [readonly]="readOnly"
         ></app-input-reactive>
+      </ion-col>
+      <ion-col>
         <app-input-reactive
           title="Country"
           [form]="form"
