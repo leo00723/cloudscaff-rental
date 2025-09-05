@@ -8,6 +8,7 @@ import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
 import { User } from 'src/app/models/user.model';
 import { MasterService } from 'src/app/services/master.service';
+import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 
 @Component({
@@ -55,10 +56,13 @@ export class CustomerComponent {
       });
     }
   }
-  @Select() company$: Observable<Company>;
+
   form: FormGroup;
   loading = false;
-  user: User;
+
+  protected user: User;
+  protected company: Company;
+
   constructor(private masterSvc: MasterService) {
     this.form = this.masterSvc.fb().group({
       name: ['', Validators.required],
@@ -77,6 +81,7 @@ export class CustomerComponent {
       reps: this.masterSvc.fb().array([]),
     });
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
+    this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
   }
 
   get repForms() {

@@ -1,151 +1,253 @@
-<form [formGroup]="form" class="card-outline m-auto">
-  <ng-container *ngIf="company$ | async as company">
-    <ion-row>
-      <ion-col size="12" sizeXl="6">
-        <app-input-reactive
-          title="Legal Entity Name"
-          [form]="form"
-          controlName="name"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Trading Name"
-          [form]="form"
-          controlName="tradingName"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Email address"
-          [form]="form"
-          controlName="email"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Representative"
-          [form]="form"
-          controlName="rep"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Contact Number"
-          [form]="form"
-          controlName="phone"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="Registration Number"
-          [optional]="true"
-          [form]="form"
-          controlName="regNumber"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-        <app-input-reactive
-          title="VAT Number"
-          [optional]="true"
-          [form]="form"
-          controlName="vatNum"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-        <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
-          <ion-label
-            >Exclude {{ company?.gst ? "GST" : "VAT" }} on Estimates and
-            Invoices</ion-label
+<form [formGroup]="form" class="m-auto">
+  <ion-accordion-group
+    mode="ios"
+    class="rounded-lg overflow-hidden"
+    [value]="['details']"
+  >
+    <ion-accordion value="details">
+      <ion-item slot="header" color="light">
+        <ion-label>Customer Details</ion-label>
+      </ion-item>
+      <ion-row slot="content">
+        <ion-col sizeMd="6" size="12">
+          <app-input-reactive
+            title="Legal Entity Name"
+            [form]="form"
+            controlName="name"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="6" size="12">
+          <app-input-reactive
+            title="Trading Name"
+            [form]="form"
+            controlName="tradingName"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            title="Email address"
+            [form]="form"
+            controlName="email"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            title="Representative"
+            [form]="form"
+            controlName="rep"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            title="Contact Number"
+            [form]="form"
+            controlName="phone"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="Registration Number"
+            [optional]="true"
+            [form]="form"
+            controlName="regNumber"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="VAT Number"
+            [optional]="true"
+            [form]="form"
+            controlName="vatNum"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col size="12">
+          <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
+            <ion-label>
+              Exclude {{ company?.gst ? "GST" : "VAT" }} on Estimates and
+              Invoices
+            </ion-label>
+            <ion-checkbox
+              mode="ios"
+              slot="end"
+              [checked]="field('excludeVAT').value"
+              (ionChange)="excludeVAT($event)"
+            ></ion-checkbox>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-accordion>
+    <ion-accordion value="address">
+      <ion-item slot="header" color="light">
+        <ion-label>Office Address</ion-label>
+      </ion-item>
+      <ion-row slot="content">
+        <ion-col size="12">
+          <app-address-search
+            *ngIf="isCreate || isUpdate"
+            (addressData)="updateAddress($event)"
+          ></app-address-search>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Address"
+            [form]="form"
+            controlName="address"
+            [readonly]="readOnly"
           >
-          <ion-checkbox
-            mode="ios"
-            slot="end"
-            [checked]="field('excludeVAT').value"
-            (ionChange)="excludeVAT($event)"
-          ></ion-checkbox>
-        </ion-item>
-      </ion-col>
-      <ion-col size="12">
-        <app-address-search
-          *ngIf="isCreate || isUpdate"
-          (addressData)="updateAddress($event)"
-        ></app-address-search>
-      </ion-col>
-      <ion-col>
-        <app-input-reactive
-          title="Address"
-          [form]="form"
-          controlName="address"
-          [readonly]="readOnly"
-        >
-        </app-input-reactive>
-      </ion-col>
-      <ion-col>
-        <app-input-reactive
-          title="suburb"
-          [form]="form"
-          controlName="suburb"
-          [optional]="true"
-          [readonly]="readOnly"
-        >
-        </app-input-reactive>
-      </ion-col>
-      <ion-col>
-        <app-input-reactive
-          title="State/City"
-          [form]="form"
-          controlName="city"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-      </ion-col>
-      <ion-col>
-        <app-input-reactive
-          title="Zip"
-          [form]="form"
-          controlName="zip"
-          [optional]="true"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-      </ion-col>
-      <ion-col>
-        <app-input-reactive
-          title="Country"
-          [form]="form"
-          controlName="country"
-          [readonly]="readOnly"
-        ></app-input-reactive>
-      </ion-col>
-
-      <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
-      <ion-col size="12" class="text-end">
-        <ion-button
-          *ngIf="
-            !loading &&
-            (user.role === 'Owner' ||
-              user.permissionsList.includes('Super Admin')) &&
-            isDelete
-          "
-          shape="round"
-          color="danger"
-          type="submit"
-          [disabled]="form.invalid"
-          (click)="delete()"
-        >
-          Delete Customer
-        </ion-button>
-        <ion-button
-          *ngIf="!loading && isUpdate"
-          shape="round"
-          color="success"
-          type="submit"
-          [disabled]="form.invalid"
-          (click)="update()"
-        >
-          Update Customer
-        </ion-button>
-        <ion-button
-          *ngIf="!loading && isCreate"
-          shape="round"
-          type="submit"
-          [disabled]="form.invalid"
-          (click)="create()"
-          >Create Customer
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ng-container>
+          </app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="suburb"
+            [form]="form"
+            controlName="suburb"
+            [optional]="true"
+            [readonly]="readOnly"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="State/City"
+            [form]="form"
+            controlName="city"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Zip"
+            [form]="form"
+            controlName="zip"
+            [optional]="true"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col>
+          <app-input-reactive
+            title="Country"
+            [form]="form"
+            controlName="country"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+      </ion-row>
+    </ion-accordion>
+    <ion-accordion value="reps">
+      <ion-item slot="header" color="light">
+        <ion-label>Accounts Contacts</ion-label>
+      </ion-item>
+      <ion-row class="card-outline my-3" slot="content">
+        <ion-col size="12">
+          <ion-row
+            formArrayName="reps"
+            class="mb-3"
+            *ngFor="let rep of repForms.controls; let i = index"
+          >
+            <ion-col size="12">
+              <ion-note> Rep {{ i + 1 }} </ion-note>
+              <ion-chip
+                outline
+                color="danger"
+                class="ion-float-end"
+                (click)="deleteRep(i)"
+              >
+                <ion-label>Delete</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Name "
+                type="text"
+                controlName="name"
+                placeholder="Enter Rep Name"
+                [form]="rep"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Email Address"
+                type="text"
+                controlName="email"
+                placeholder="Enter Email Address"
+                [form]="rep"
+              >
+              </app-input-reactive>
+            </ion-col>
+            <ion-col>
+              <app-input-reactive
+                title="Phone Number"
+                type="text"
+                controlName="phone"
+                placeholder="Enter Phone Number"
+                [form]="rep"
+              >
+              </app-input-reactive>
+            </ion-col>
+          </ion-row>
+          <ion-row class="mb-3">
+            <ion-col>
+              <ion-fab-button
+                size="small"
+                class="m-auto"
+                color="success"
+                (click)="addRep()"
+              >
+                <ion-icon name="add"></ion-icon>
+              </ion-fab-button>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-accordion>
+  </ion-accordion-group>
+  <ion-item lines="none">
+    <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+    <ion-buttons slot="end">
+      <ion-button
+        *ngIf="
+          !loading &&
+          (user.role === 'Owner' ||
+            user.permissionsList.includes('Super Admin')) &&
+          isDelete
+        "
+        shape="round"
+        fill="solid"
+        color="danger"
+        type="submit"
+        [disabled]="form.invalid"
+        (click)="delete()"
+      >
+        Delete Customer
+      </ion-button>
+      <ion-button
+        *ngIf="!loading && isUpdate"
+        shape="round"
+        color="success"
+        fill="solid"
+        type="submit"
+        [disabled]="form.invalid"
+        (click)="update()"
+      >
+        Update Customer
+      </ion-button>
+      <ion-button
+        *ngIf="!loading && isCreate"
+        shape="round"
+        type="submit"
+        fill="solid"
+        [disabled]="form.invalid"
+        (click)="create()"
+        >Create Customer
+      </ion-button>
+    </ion-buttons>
+  </ion-item>
 </form>
