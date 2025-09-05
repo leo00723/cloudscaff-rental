@@ -16,7 +16,7 @@ import { UserState } from 'src/app/shared/user/user.state';
   templateUrl: './customer.component.html',
 })
 export class CustomerComponent {
-  private customerData: Customer = { uploads: [] };
+  protected customerData: Customer = { uploads: [] };
   @Output() newCustomer = new EventEmitter<Customer>();
   @Input() isUpdate = false;
   @Input() isDelete = false;
@@ -27,6 +27,7 @@ export class CustomerComponent {
     Object.assign(this.customerData, val);
     if (this.form && val) {
       this.form = this.masterSvc.fb().group({
+        code: [this.customerData.code, Validators.required],
         name: [this.customerData.name, Validators.required],
         tradingName: [this.customerData.tradingName, Validators.required],
         email: [
@@ -72,7 +73,9 @@ export class CustomerComponent {
 
   constructor(private masterSvc: MasterService) {
     this.form = this.masterSvc.fb().group({
+      code: ['', Validators.required],
       name: ['', Validators.required],
+      tradingName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       rep: ['', Validators.required],
       phone: ['', Validators.required],
@@ -80,13 +83,13 @@ export class CustomerComponent {
       officeEmail: [''],
       officePhone: [''],
       websiteUrl: [''],
-      address: ['', Validators.required],
-      city: ['', Validators.required],
-      country: ['', Validators.required],
+      address: [''],
       suburb: [''],
+      city: [''],
       zip: [''],
       abnNumber: [''],
       vatNum: [''],
+      country: [''],
       xeroID: [''],
       excludeVAT: [''],
       discountPercentage: [0],
@@ -101,6 +104,7 @@ export class CustomerComponent {
   get repForms() {
     return this.form.get('reps') as FormArray;
   }
+
   addRep() {
     const additional = this.masterSvc.fb().group({
       name: ['Accounts'],
@@ -219,17 +223,17 @@ export class CustomerComponent {
   }
 
   async setUploads(uploads) {
-    this.customer?.uploads
-      ? this.customer.uploads.push(...uploads)
-      : (this.customer.uploads = [...uploads]);
+    this.customerData?.uploads
+      ? this.customerData.uploads.push(...uploads)
+      : (this.customerData.uploads = [...uploads]);
     try {
       await this.masterSvc
         .edit()
         .updateDoc(
           `company/${this.customerData.company}/customers`,
-          this.customer.id,
+          this.customerData.id,
           {
-            uploads: this.customer?.uploads,
+            uploads: this.customerData?.uploads,
           }
         );
       this.masterSvc
@@ -247,13 +251,17 @@ export class CustomerComponent {
   }
 
   async removeUpload(index: number) {
-    this.customer?.uploads.splice(index, 1);
+    this.customerData?.uploads.splice(index, 1);
     try {
       await this.masterSvc
         .edit()
-        .updateDoc(`company/${this.company.id}/customers`, this.customer.id, {
-          uploads: this.customer?.uploads,
-        });
+        .updateDoc(
+          `company/${this.company.id}/customers`,
+          this.customerData.id,
+          {
+            uploads: this.customerData?.uploads,
+          }
+        );
       this.masterSvc
         .notification()
         .toast('Files deleted successfully', 'success');

@@ -280,15 +280,17 @@
             (uploaded)="setUploads($event)"
           ></app-multiuploader>
         </ion-col>
-        <ion-col size="12" *ngIf="customer?.uploads?.length > 0">
+
+        <ion-col size="12" *ngIf="customerData?.uploads?.length > 0">
           <app-title-block>Uploaded Files</app-title-block>
         </ion-col>
+
         <ion-col
-          size="6"
-          sizeMd="4"
-          *ngFor="let file of customer?.uploads; let i = index"
+          size="12"
+          *ngFor="let file of customerData?.uploads; let i = index"
         >
           <app-file-item
+            [simplified]="true"
             [file]="file"
             [allowDelete]="true"
             (deleted)="removeUpload(i)"

@@ -37,6 +37,7 @@ export interface Company {
   terminology?: Terminology;
   totalBulkEstimates?: number;
   totalCredits?: number;
+  totalCustomers?: number;
   totalDismantles?: number;
   totalEnquiries?: number;
   totalEstimates?: number;
