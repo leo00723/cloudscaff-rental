@@ -3764,6 +3764,8 @@ export class PdfService {
           ]
         ),
         hr,
+        { text: docData.notes },
+        hr,
         summary,
       ],
       styles: stylesCS,
