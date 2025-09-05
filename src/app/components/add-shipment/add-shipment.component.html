@@ -178,12 +178,7 @@
 <!-- Site Information Template -->
 <ng-template #siteInformation>
   <ion-col size="12">
-    <ng-container *ngIf="isMobile">
-      <ion-text color="medium"><h4>Site Information</h4></ion-text>
-    </ng-container>
-    <ng-container *ngIf="!isMobile">
-      <app-title-block>Site Information</app-title-block>
-    </ng-container>
+    <app-title-block>Site Information</app-title-block>
   </ion-col>
   <ion-col size="12" *ngIf="shipment.status === 'pending'">
     <ng-container *ngIf="sites$ | async as sites">
@@ -243,12 +238,7 @@
 <ng-template #contactInformation>
   <ng-container *ngIf="field('site').value as site">
     <ion-col size="12">
-      <ng-container *ngIf="isMobile">
-        <ion-text color="medium"><h4>Contact Information</h4></ion-text>
-      </ng-container>
-      <ng-container *ngIf="!isMobile">
-        <app-title-block>Contact Information</app-title-block>
-      </ng-container>
+      <app-title-block>Contact Information</app-title-block>
     </ion-col>
     <ng-container *ngTemplateOutlet="contactFields"></ng-container>
   </ng-container>
@@ -321,12 +311,7 @@
 <!-- Delivery Information Template -->
 <ng-template #deliveryInformation>
   <ion-col size="12">
-    <ng-container *ngIf="isMobile">
-      <ion-text color="medium"><h4>Delivery Information</h4></ion-text>
-    </ng-container>
-    <ng-container *ngIf="!isMobile">
-      <app-title-block>Delivery Information</app-title-block>
-    </ng-container>
+    <app-title-block>Delivery Information</app-title-block>
   </ion-col>
   <ion-col size="6">
     <app-input-date
@@ -602,28 +587,21 @@
     ></app-multiuploader>
   </ion-col>
   <ion-col size="12" *ngIf="shipment?.uploads?.length > 0">
-    <ng-container *ngIf="isMobile">
-      <app-title-block>Uploaded Files</app-title-block>
-    </ng-container>
-    <ng-container *ngIf="!isMobile">
-      <app-title-block>Uploaded Files</app-title-block>
-    </ng-container>
-    <ion-row>
-      <ion-col
-        [attr.sizeXl]="isMobile ? null : '2'"
-        [attr.sizeLg]="isMobile ? null : '3'"
-        [attr.sizeMd]="isMobile ? null : '4'"
-        [attr.size]="isMobile ? '6' : '6'"
-        *ngFor="let file of shipment.uploads; let i = index"
-      >
-        <app-file-item
-          [file]="file"
-          [allowDelete]="!isMobile"
-          (deleted)="removeUpload(i)"
-        >
-        </app-file-item>
-      </ion-col>
-    </ion-row>
+    <app-title-block>Uploaded Files</app-title-block>
+  </ion-col>
+  <ion-col
+    [attr.sizeXl]="isMobile ? null : '2'"
+    [attr.sizeLg]="isMobile ? null : '3'"
+    [attr.sizeMd]="isMobile ? null : '4'"
+    [attr.size]="isMobile ? '6' : '6'"
+    *ngFor="let file of shipment.uploads; let i = index"
+  >
+    <app-file-item
+      [file]="file"
+      [allowDelete]="!isMobile"
+      (deleted)="removeUpload(i)"
+    >
+    </app-file-item>
   </ion-col>
 </ng-template>
 
@@ -637,12 +615,7 @@
       (shipment.status === 'on-route' || shipment.status === 'received')
     "
   >
-    <ng-container *ngIf="isMobile">
-      <app-title-block>Signatures</app-title-block>
-    </ng-container>
-    <ng-container *ngIf="!isMobile">
-      <app-title-block>Signatures</app-title-block>
-    </ng-container>
+    <app-title-block>Signatures</app-title-block>
     <table class="table table-bordered mb-3">
       <tbody>
         <tr class="align-middle">
@@ -680,12 +653,7 @@
     size="12"
     *ngIf="shipment.status === 'on-route' || shipment.status === 'pending'"
   >
-    <ng-container *ngIf="isMobile">
-      <app-title-block>Signature</app-title-block>
-    </ng-container>
-    <ng-container *ngIf="!isMobile">
-      <app-title-block>Signature</app-title-block>
-    </ng-container>
+    <app-title-block>Signature</app-title-block>
     <app-signature-pad
       #signature
       [showSave]="blob ? false : true"
@@ -713,7 +681,12 @@
       <!-- Desktop totals in footer -->
       <ng-container *ngTemplateOutlet="inventoryTotals"></ng-container>
     </ng-container>
-    <ion-toolbar>
+    <ion-toolbar
+      *ngIf="
+        user.permissionsList.includes('Inventory Admin') ||
+        user.permissionsList.includes('Super Admin')
+      "
+    >
       <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
       <ng-container *ngTemplateOutlet="footerButtons"></ng-container>
     </ion-toolbar>
@@ -724,51 +697,64 @@
 <ng-template #footerButtons>
   <ion-buttons slot="start">
     <ion-button
-      shape="round"
       *ngIf="isEdit && !loading"
-      color="danger"
       [disabled]="form.invalid"
       (click)="updateShipment('void')"
+      class="text-capitalize"
+      fill="solid"
+      shape="round"
+      color="danger"
     >
-      Void Delivery
+      Void
     </ion-button>
     <ion-button
-      shape="round"
       *ngIf="isEdit && !loading && shipment.status === 'pending'"
-      color="tertiary"
       [disabled]="form.invalid"
       (click)="updateShipment('reserved')"
+      class="text-capitalize"
+      fill="solid"
+      shape="round"
+      color="tertiary"
     >
-      Reserve Delivery
+      Reserve
     </ion-button>
   </ion-buttons>
   <ion-buttons slot="end">
     <ion-button
-      shape="round"
       *ngIf="isEdit && !loading && shipment.status === 'reserved'"
-      color="primary"
       [disabled]="form.invalid"
       (click)="updateShipment('pending')"
+      ]
+      class="text-capitalize"
+      shape="round"
+      fill="solid"
+      color="warning"
     >
-      Unreserve Delivery
+      Unreserve
     </ion-button>
     <ion-button
-      shape="round"
-      [disabled]="form.invalid || error"
       *ngIf="!isEdit && !loading"
+      [disabled]="form.invalid || error"
       (click)="createShipment()"
+      class="text-capitalize"
+      shape="round"
+      color="success"
+      fill="solid"
     >
-      Create Delivery
+      Create
     </ion-button>
     <ion-button
-      shape="round"
       *ngIf="isEdit && !loading && shipment.status === 'pending'"
       [disabled]="form.invalid"
       (click)="updateShipment('pending')"
+      class="text-capitalize"
+      shape="round"
+      color="warning"
+      fill="solid"
     >
-      Update Delivery
+      Update
     </ion-button>
-    <ion-button
+    <!-- <ion-button
       shape="round"
       *ngIf="isEdit && !loading && shipment.status === 'pending'"
       color="success"
@@ -791,18 +777,17 @@
       (click)="receiveDelivery()"
     >
       Receive Delivery
+    </ion-button> -->
+    <ion-button
+      *ngIf="isEdit && !loading && shipment.status === 'pending'"
+      [disabled]="!blob || !shipment.signedBy || form.invalid"
+      (click)="receiveDelivery(true)"
+      class="text-capitalize"
+      shape="round"
+      fill="solid"
+      color="success"
+    >
+      Send
     </ion-button>
-    <ng-container *ngIf="user.permissionsList.includes('Inventory Admin')">
-      <ion-button
-        shape="round"
-        fill="outline"
-        *ngIf="isEdit && !loading && shipment.status === 'pending'"
-        color="tertiary"
-        [disabled]="!blob || !shipment.signedBy || form.invalid"
-        (click)="receiveDelivery(true)"
-      >
-        Send Immediately
-      </ion-button>
-    </ng-container>
   </ion-buttons>
 </ng-template>
