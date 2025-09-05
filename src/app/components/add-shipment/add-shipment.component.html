@@ -698,7 +698,6 @@
   <ion-buttons slot="start">
     <ion-button
       *ngIf="isEdit && !loading"
-      [disabled]="form.invalid"
       (click)="updateShipment('void')"
       class="text-capitalize"
       fill="solid"
@@ -709,7 +708,6 @@
     </ion-button>
     <ion-button
       *ngIf="isEdit && !loading && shipment.status === 'pending'"
-      [disabled]="form.invalid"
       (click)="updateShipment('reserved')"
       class="text-capitalize"
       fill="solid"
@@ -722,7 +720,6 @@
   <ion-buttons slot="end">
     <ion-button
       *ngIf="isEdit && !loading && shipment.status === 'reserved'"
-      [disabled]="form.invalid"
       (click)="updateShipment('pending')"
       ]
       class="text-capitalize"
@@ -734,7 +731,6 @@
     </ion-button>
     <ion-button
       *ngIf="!isEdit && !loading"
-      [disabled]="form.invalid || error"
       (click)="createShipment()"
       class="text-capitalize"
       shape="round"
@@ -744,8 +740,9 @@
       Create
     </ion-button>
     <ion-button
-      *ngIf="isEdit && !loading && shipment.status === 'pending'"
-      [disabled]="form.invalid"
+      *ngIf="
+        isEdit && !loading && ['pending', 'picklist'].includes(shipment.status)
+      "
       (click)="updateShipment('pending')"
       class="text-capitalize"
       shape="round"

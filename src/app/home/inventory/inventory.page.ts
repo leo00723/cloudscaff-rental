@@ -932,7 +932,7 @@ export class InventoryPage implements OnInit {
           `company/${this.company.id}/shipments`,
           'status',
           '==',
-          'on-route',
+          'picklist',
           'code',
           'asc'
         );
