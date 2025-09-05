@@ -229,7 +229,7 @@ export class CustomerComponent {
           `company/${this.customerData.company}/customers`,
           this.customer.id,
           {
-            uploads: this.customer.uploads,
+            uploads: this.customer?.uploads,
           }
         );
       this.masterSvc
@@ -247,12 +247,12 @@ export class CustomerComponent {
   }
 
   async removeUpload(index: number) {
-    this.customer.uploads.splice(index, 1);
+    this.customer?.uploads.splice(index, 1);
     try {
       await this.masterSvc
         .edit()
         .updateDoc(`company/${this.company.id}/customers`, this.customer.id, {
-          uploads: this.customer.uploads,
+          uploads: this.customer?.uploads,
         });
       this.masterSvc
         .notification()
