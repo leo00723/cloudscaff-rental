@@ -4,11 +4,11 @@ export interface Customer {
   id?: string;
   name?: string;
   tradingName?: string;
-  abnNo?: string;
 
   rep?: string;
   email?: string;
   phone?: string;
+  abnNumber?: string;
 
   officeRep?: string;
   officeEmail?: string;
@@ -31,7 +31,6 @@ export interface Customer {
 
   reps?: { name?: string; phone?: string; email?: string }[];
 
-  regNumber?: string;
   vatNum?: string;
 
   company?: string;

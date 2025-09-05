@@ -61,7 +61,7 @@ export class CompanyPage implements OnDestroy {
     logoRef: '',
     subHeaderUrl: '',
     subHeaderRef: '',
-    regNumber: '',
+    abnNumber: '',
   };
   currencies = new Currencies().currencies;
   measurements = [
@@ -176,7 +176,7 @@ export class CompanyPage implements OnDestroy {
           country: [this.company.country, Validators.required],
           bankName: [this.company.bankName],
           accountNum: [this.company.accountNum],
-          regNumber: [this.company.regNumber],
+          abnNumber: [this.company.abnNumber],
           vatNum: [this.company.vatNum],
           branchCode: [this.company.branchCode],
           swiftCode: [this.company.swiftCode],

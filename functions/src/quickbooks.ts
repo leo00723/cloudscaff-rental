@@ -55,7 +55,7 @@ interface Customer {
   zip?: string;
   country?: string;
   company?: string;
-  regNumber?: string;
+  abnNumber?: string;
   vatNum?: string;
   selected?: boolean;
   xeroID?: string;
@@ -797,8 +797,8 @@ const transformToQuickBooksCustomer = (
 
   // Add registration and VAT numbers to Notes
   const notes: string[] = [];
-  if (customer.regNumber) {
-    notes.push(`Registration Number: ${customer.regNumber}`);
+  if (customer.abnNumber) {
+    notes.push(`Registration Number: ${customer.abnNumber}`);
   }
   if (customer.vatNum) {
     notes.push(`VAT Number: ${customer.vatNum}`);

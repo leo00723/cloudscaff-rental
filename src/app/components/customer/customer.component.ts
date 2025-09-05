@@ -16,7 +16,7 @@ import { UserState } from 'src/app/shared/user/user.state';
   templateUrl: './customer.component.html',
 })
 export class CustomerComponent {
-  private customerData: Customer = {};
+  private customerData: Customer = { uploads: [] };
   @Output() newCustomer = new EventEmitter<Customer>();
   @Input() isUpdate = false;
   @Input() isDelete = false;
@@ -24,7 +24,7 @@ export class CustomerComponent {
   @Input() readOnly = false;
   @Input() companyId: string;
   @Input() set customer(val: Customer) {
-    this.customerData = val;
+    Object.assign(this.customerData, val);
     if (this.form && val) {
       this.form = this.masterSvc.fb().group({
         name: [this.customerData.name, Validators.required],
@@ -35,15 +35,22 @@ export class CustomerComponent {
         ],
         rep: [this.customerData.rep, Validators.required],
         phone: [this.customerData.phone, Validators.required],
+        officeRep: [this.customerData.officeRep],
+        officeEmail: [this.customerData.officeEmail],
+        officePhone: [this.customerData.officePhone],
+        websiteUrl: [this.customerData.websiteUrl],
         address: [this.customerData.address],
         suburb: [this.customerData.suburb],
         city: [this.customerData.city],
         zip: [this.customerData.zip],
-        regNumber: [this.customerData.regNumber],
+        abnNumber: [this.customerData.abnNumber],
         vatNum: [this.customerData.vatNum],
         country: [this.customerData.country],
         xeroID: [this.customerData.xeroID],
         excludeVAT: [this.customerData.excludeVAT],
+        discountPercentage: [this.customerData.discountPercentage],
+        minHire: [this.customerData.minHire],
+        poRequired: [this.customerData.poRequired],
         reps: this.masterSvc.fb().array([]),
       });
       this.customerData?.reps?.forEach((item) => {
@@ -69,15 +76,22 @@ export class CustomerComponent {
       email: ['', [Validators.required, Validators.email]],
       rep: ['', Validators.required],
       phone: ['', Validators.required],
+      officeRep: [''],
+      officeEmail: [''],
+      officePhone: [''],
+      websiteUrl: [''],
       address: ['', Validators.required],
       city: ['', Validators.required],
       country: ['', Validators.required],
       suburb: [''],
       zip: [''],
-      regNumber: [''],
+      abnNumber: [''],
       vatNum: [''],
       xeroID: [''],
       excludeVAT: [''],
+      discountPercentage: [''],
+      minHire: [''],
+      poRequired: [''],
       reps: this.masterSvc.fb().array([]),
     });
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
@@ -204,8 +218,62 @@ export class CustomerComponent {
     });
   }
 
+  async setUploads(uploads) {
+    this.customer?.uploads
+      ? this.customer.uploads.push(...uploads)
+      : (this.customer.uploads = [...uploads]);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.customerData.company}/customers`,
+          this.customer.id,
+          {
+            uploads: this.customer.uploads,
+          }
+        );
+      this.masterSvc
+        .notification()
+        .toast('Files uploaded successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong uploading files. Please try again.',
+          'danger'
+        );
+    }
+  }
+
+  async removeUpload(index: number) {
+    this.customer.uploads.splice(index, 1);
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(`company/${this.company.id}/customers`, this.customer.id, {
+          uploads: this.customer.uploads,
+        });
+      this.masterSvc
+        .notification()
+        .toast('Files deleted successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong deleting file. Please try again.',
+          'danger'
+        );
+    }
+  }
+
   excludeVAT(args) {
     this.field('excludeVAT').setValue(args.detail.checked);
+  }
+
+  poRequired(args) {
+    this.field('poRequired').setValue(args.detail.checked);
   }
 
   updateAddress(address: Address) {

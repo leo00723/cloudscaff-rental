@@ -5112,9 +5112,9 @@ export class PdfService {
           ],
           [
             { text: 'Registration No:', style: 'h6b' },
-            customer.regNumber ? customer.regNumber : 'N/A',
+            customer.abnNumber ? customer.abnNumber : 'N/A',
             { text: 'Registration No:', style: 'h6b' },
-            company.regNumber ? company.regNumber : 'N/A',
+            company.abnNumber ? company.abnNumber : 'N/A',
           ],
           [
             { text: 'VAT No:', style: 'h6b' },

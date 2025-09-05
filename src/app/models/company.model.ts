@@ -27,7 +27,7 @@ export interface Company {
   needsSetup?: boolean;
   phone?: string;
   rep?: string;
-  regNumber?: string;
+  abnNumber?: string;
   removeBilling?: boolean;
   removeBranding?: boolean;
   replaceBranding?: string;
