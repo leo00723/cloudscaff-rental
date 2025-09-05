@@ -401,6 +401,11 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       .pdf()
       .pickList(this.shipment, this.shipment.items, this.company);
     this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.shipment.code}`);
+    await this.masterSvc
+      .edit()
+      .updateDoc(`company/${this.company.id}/shipments`, this.shipment.id, {
+        status: 'picklist',
+      });
   }
   async downloadPdf() {
     if (!this.shipment.date) {

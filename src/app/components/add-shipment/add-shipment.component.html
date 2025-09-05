@@ -240,7 +240,7 @@
 </ng-template>
 
 <!-- Contact Information Template -->
-<ng-template #contactInformation let-isMobile="isMobile">
+<ng-template #contactInformation>
   <ng-container *ngIf="field('site').value as site">
     <ion-col size="12">
       <ng-container *ngIf="isMobile">
@@ -360,7 +360,7 @@
 </ng-template>
 
 <!-- Inventory Section Template -->
-<ng-template #inventorySection let-isMobile="isMobile">
+<ng-template #inventorySection>
   <ng-container *ngIf="isMobile">
     <ion-row>
       <ion-col size="6">
@@ -594,7 +594,7 @@
 </ng-template>
 
 <!-- Uploads Section Template -->
-<ng-template #uploadsSection let-isMobile="isMobile">
+<ng-template #uploadsSection>
   <ion-col size="12">
     <app-multiuploader
       [autoupload]="true"
