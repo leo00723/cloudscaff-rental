@@ -28,30 +28,30 @@ export class HomePage implements OnDestroy {
       url: '/dashboard/enquiries',
       icon: 'reader-outline',
     },
-    {
-      title: 'Estimates',
-      permission: 'Estimates',
-      url: '/dashboard/estimates',
-      icon: 'options-outline',
-    },
+    // {
+    //   title: 'Estimates',
+    //   permission: 'Estimates',
+    //   url: '/dashboard/estimates',
+    //   icon: 'options-outline',
+    // },
     {
       title: 'Invoices',
       permission: 'Invoices',
       url: '/dashboard/invoices',
       icon: 'receipt-outline',
     },
-    {
-      title: 'Instructions',
-      permission: 'Instructions',
-      url: '/dashboard/site-instructions',
-      icon: 'newspaper-outline',
-    },
-    {
-      title: 'Handovers',
-      permission: 'Handover List',
-      url: '/dashboard/handovers',
-      icon: 'document-text-outline',
-    },
+    // {
+    //   title: 'Instructions',
+    //   permission: 'Instructions',
+    //   url: '/dashboard/site-instructions',
+    //   icon: 'newspaper-outline',
+    // },
+    // {
+    //   title: 'Handovers',
+    //   permission: 'Handover List',
+    //   url: '/dashboard/handovers',
+    //   icon: 'document-text-outline',
+    // },
     {
       title: 'Sites',
       url: '/dashboard/sites',

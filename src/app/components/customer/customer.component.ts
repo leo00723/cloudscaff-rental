@@ -89,8 +89,8 @@ export class CustomerComponent {
       vatNum: [''],
       xeroID: [''],
       excludeVAT: [''],
-      discountPercentage: [''],
-      minHire: [''],
+      discountPercentage: [0],
+      minHire: [28],
       poRequired: [''],
       reps: this.masterSvc.fb().array([]),
     });
@@ -103,7 +103,7 @@ export class CustomerComponent {
   }
   addRep() {
     const additional = this.masterSvc.fb().group({
-      name: [''],
+      name: ['Accounts'],
       phone: [''],
       email: [''],
     });

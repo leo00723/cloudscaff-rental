@@ -1,7 +1,7 @@
 <ion-searchbar
   debounce="250"
   mode="ios"
-  placeholder="Search by company name, email or country"
+  placeholder="Search by Customer Code, Entity name, Known as name or ABN Number"
   (ionChange)="updateFilter($event)"
 >
 </ion-searchbar>
@@ -36,12 +36,15 @@
     (select)="onSelect($event)"
     [selected]="selected"
   >
-    <ngx-datatable-column name="Company" prop="name"></ngx-datatable-column>
+    <ngx-datatable-column name="Code" prop="code"></ngx-datatable-column>
+    <ngx-datatable-column name="Entity Name" prop="name"></ngx-datatable-column>
     <ngx-datatable-column
-      name="Representative"
-      prop="rep"
+      name="Know As Name"
+      prop="tradingName"
     ></ngx-datatable-column>
-    <ngx-datatable-column name="Email"></ngx-datatable-column>
-    <ngx-datatable-column name="Country"> </ngx-datatable-column>
+    <ngx-datatable-column
+      name="ABN Number"
+      prop="regNumber"
+    ></ngx-datatable-column>
   </ngx-datatable>
 </div>
