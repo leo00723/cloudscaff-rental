@@ -338,12 +338,14 @@
       mode="ios"
       class="rounded-lg overflow-hidden mb-5"
       [multiple]="true"
-      [value]="['pending','outbound']"
+      [value]="['pending',]"
     >
       <ng-container *ngIf="pendingShipments$ | async as ps else loading">
         <ion-accordion value="pending">
           <ion-item slot="header" color="light">
-            <ion-label color="primary">Pending ({{ps.length}})</ion-label>
+            <ion-label color="primary">
+              Pending Picking Slip ({{ps.length}})
+            </ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-delivery-table
@@ -354,11 +356,26 @@
         </ion-accordion>
       </ng-container>
       <ng-container *ngIf="outboundShipments$ | async as os else loading">
-        <ion-accordion value="outbound">
+        <ion-accordion value="picking">
           <ion-item slot="header" color="light">
-            <ion-label color="warning"
-              >Picklist Generated ({{os.length}})</ion-label
-            >
+            <ion-label color="warning">
+              Picking In Progress ({{os.length}})
+            </ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-delivery-table
+              [value]="outboundShipments$"
+              (selectedItem)="viewShipment($event)"
+            ></app-delivery-table>
+          </div>
+        </ion-accordion>
+      </ng-container>
+      <ng-container *ngIf="outboundShipments$ | async as os else loading">
+        <ion-accordion value="packed">
+          <ion-item slot="header" color="light">
+            <ion-label color="dark">
+              Packed for Delivery ({{os.length}})
+            </ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-delivery-table
@@ -371,7 +388,9 @@
       <ng-container *ngIf="shipments$ | async as s else loading">
         <ion-accordion value="sent">
           <ion-item slot="header" color="light">
-            <ion-label color="success">Completed ({{s.length}})</ion-label>
+            <ion-label color="success"
+              >Delivery Complete ({{s.length}})</ion-label
+            >
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-delivery-table
@@ -470,12 +489,14 @@
       mode="ios"
       class="rounded-lg overflow-hidden"
       [multiple]="true"
-      [value]="['pending','outbound']"
+      [value]="['pending',]"
     >
       <ng-container *ngIf="submittedReturns$ | async as sr else loading">
         <ion-accordion value="pending">
           <ion-item slot="header" color="light">
-            <ion-label color="primary">Submitted ({{sr.length}})</ion-label>
+            <ion-label color="primary"
+              >Return in Progress ({{sr.length}})</ion-label
+            >
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-returns-table
@@ -485,7 +506,7 @@
           </div>
         </ion-accordion>
       </ng-container>
-      <ng-container *ngIf="outboundReturns$ | async as or else loading">
+      <!-- <ng-container *ngIf="outboundReturns$ | async as or else loading">
         <ion-accordion value="outbound">
           <ion-item slot="header" color="light">
             <ion-label color="warning">Outbound ({{or.length}})</ion-label>
@@ -497,11 +518,13 @@
             ></app-returns-table>
           </div>
         </ion-accordion>
-      </ng-container>
+      </ng-container> -->
       <ng-container *ngIf="returns$ | async as r else loading">
         <ion-accordion value="approved">
           <ion-item slot="header" color="light">
-            <ion-label color="success">Completed ({{r.length}})</ion-label>
+            <ion-label color="success"
+              >Return Completed ({{r.length}})</ion-label
+            >
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-returns-table

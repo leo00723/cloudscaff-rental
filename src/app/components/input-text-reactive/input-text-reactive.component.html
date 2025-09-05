@@ -8,6 +8,9 @@
 >
   <ion-label position="stacked">
     {{ title }} {{ optional ? "(optional)" : "" }}
+    <ion-note color="medium" *ngIf="tooltip">
+      {{ tooltip }}
+    </ion-note>
   </ion-label>
   <ion-input
     *ngIf="!textarea"
@@ -43,5 +46,6 @@
   >
     Please enter a valid {{ title }}
   </ion-note>
+
   <ion-reorder *ngIf="reorder" slot="end"></ion-reorder>
 </ion-item>

@@ -19,6 +19,7 @@ export class InputTextReactiveComponent {
   @Input() type = 'text';
   @Input() margin = 'mb-3';
   @Input() reorder = false;
+  @Input() tooltip = '';
   @Input() controlName: string;
   @Input() readonly = false;
   @Input() optional = false;

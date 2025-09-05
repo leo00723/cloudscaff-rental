@@ -62,7 +62,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
     this.site = val;
     if (this.form && val) {
       this.form = this.masterSvc.fb().group({
-        name: [this.site.name, Validators.required],
+        name: [this.site.name],
         address: [this.site.address],
         customer: [this.site.customer, Validators.required],
         suburb: [this.site.suburb],
@@ -292,7 +292,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
 
   private initFrom() {
     this.form = this.masterSvc.fb().group({
-      name: ['', Validators.required],
+      name: [''],
       customer: ['', Validators.required],
       address: [''],
       suburb: [''],

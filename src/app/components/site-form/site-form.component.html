@@ -1,51 +1,119 @@
 <form [formGroup]="form">
-  <app-title-block>Site Details</app-title-block>
+  <app-title-block>Customer Details</app-title-block>
   <ion-row class="card-outline mb-3">
     <ion-col size="12">
+      <app-searchable-select
+        (click)="select.open()"
+        *ngIf="customers$ | async as customers"
+        title="Select Customer"
+        [data]="customers"
+        itemTextField="name"
+        [add]="true"
+        (selectedChanged)="changeCustomer($event)"
+        #select
+      ></app-searchable-select>
+    </ion-col>
+    <ion-col
+      size="12"
+      *ngIf="show === 'editCustomer' || field('customer').value"
+    >
+      <app-customer
+        [customer]="field('customer').value"
+        [isUpdate]="true"
+        [isCreate]="false"
+        [companyId]="company.id"
+      >
+      </app-customer>
+    </ion-col>
+    <ion-col size="12" *ngIf="show === 'addCustomer'">
+      <app-customer
+        [companyId]="company.id"
+        (newCustomer)="newCustomer($event)"
+        [isCreate]="true"
+      >
+      </app-customer>
+    </ion-col>
+  </ion-row>
+
+  <app-title-block>Site Details</app-title-block>
+  <ion-row class="card-outline mb-3">
+    <!-- <ion-col size="12">
       <app-input-reactive
         title="Site Address"
         [form]="form"
         controlName="name"
       ></app-input-reactive>
+    </ion-col> -->
+    <ion-col size="12">
+      <app-address-search
+        *ngIf="isCreate || isUpdate"
+        (addressData)="updateAddress($event)"
+        placeholder="Search for Site Address"
+      >
+      </app-address-search>
     </ion-col>
+    <ion-col>
+      <app-input-reactive title="Address" [form]="form" controlName="address">
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive title="suburb" [form]="form" controlName="suburb">
+      </app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="State/City"
+        [form]="form"
+        controlName="city"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col>
+      <app-input-reactive
+        title="Post Code"
+        [form]="form"
+        controlName="zip"
+      ></app-input-reactive>
+    </ion-col>
+    <ion-col size="12"> </ion-col>
     <ion-col size="4">
       <app-input-reactive
-        title="Main Contact"
+        title="Project Manager Name"
+        tooltip="(Contract administrator main point of contact)"
         [form]="form"
         controlName="repName"
       ></app-input-reactive>
     </ion-col>
     <ion-col size="4">
       <app-input-reactive
-        title="Email"
+        title="Project Manager Email"
         [form]="form"
         controlName="repEmail"
       ></app-input-reactive>
     </ion-col>
     <ion-col size="4">
       <app-input-reactive
-        title="Phone No."
+        title="Project Manager Phone"
         [form]="form"
         controlName="repContact"
       ></app-input-reactive>
     </ion-col>
     <ion-col size="4">
       <app-input-reactive
-        title="Forman"
+        title="On-Site Supervisor Name"
         [form]="form"
         controlName="foremanName"
       ></app-input-reactive>
     </ion-col>
     <ion-col size="4">
       <app-input-reactive
-        title="Email"
+        title="On-Site Supervisor Email"
         [form]="form"
         controlName="foremanEmail"
       ></app-input-reactive>
     </ion-col>
     <ion-col size="4">
       <app-input-reactive
-        title="Phone No."
+        title="On-Site Supervisor Phone"
         [form]="form"
         controlName="foremanContact"
       ></app-input-reactive>
@@ -88,88 +156,7 @@
       </ng-container>
     </ion-row>
   </ng-container> -->
-  <app-title-block>Physical Address</app-title-block>
 
-  <ion-row class="card-outline mb-3">
-    <ion-col size="12">
-      <app-address-search
-        *ngIf="isCreate || isUpdate"
-        (addressData)="updateAddress($event)"
-        placeholder="Search for Site Address"
-      >
-      </app-address-search>
-    </ion-col>
-    <ion-col>
-      <app-input-reactive title="Address" [form]="form" controlName="address">
-      </app-input-reactive>
-    </ion-col>
-    <ion-col>
-      <app-input-reactive
-        title="suburb"
-        [form]="form"
-        controlName="suburb"
-        [optional]="true"
-      >
-      </app-input-reactive>
-    </ion-col>
-    <ion-col>
-      <app-input-reactive
-        title="State/City"
-        [form]="form"
-        controlName="city"
-      ></app-input-reactive>
-    </ion-col>
-    <ion-col>
-      <app-input-reactive
-        title="Zip"
-        [form]="form"
-        controlName="zip"
-        [optional]="true"
-      ></app-input-reactive>
-    </ion-col>
-    <ion-col>
-      <app-input-reactive
-        title="Country"
-        [form]="form"
-        controlName="country"
-      ></app-input-reactive>
-    </ion-col>
-  </ion-row>
-  <app-title-block>Customer Details</app-title-block>
-  <ion-row class="card-outline mb-3">
-    <ion-col size="12">
-      <app-searchable-select
-        (click)="select.open()"
-        *ngIf="customers$ | async as customers"
-        title="Select Customer"
-        [data]="customers"
-        itemTextField="name"
-        [add]="true"
-        (selectedChanged)="changeCustomer($event)"
-        #select
-      ></app-searchable-select>
-    </ion-col>
-    <ion-col
-      size="12"
-      *ngIf="show === 'editCustomer' || field('customer').value"
-    >
-      <app-customer
-        [customer]="field('customer').value"
-        [isUpdate]="true"
-        [isCreate]="false"
-        [companyId]="company.id"
-      >
-      </app-customer>
-    </ion-col>
-    <ion-col size="12" *ngIf="show === 'addCustomer'">
-      <app-customer
-        [companyId]="company.id"
-        (newCustomer)="newCustomer($event)"
-        [isCreate]="true"
-      >
-      </app-customer>
-    </ion-col>
-  </ion-row>
   <ion-row class="mb-3">
     <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
     <ion-col size="6" sizeMd="2">
