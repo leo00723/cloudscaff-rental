@@ -58,26 +58,26 @@
     </ion-thumbnail>
 
     <ion-label> {{ file.file }} </ion-label>
-    <ion-button
-      slot="end"
-      *ngIf="allowDelete"
-      (click)="deleteFile()"
-      color="danger"
-      shape="round"
-      size="small"
-    >
-      <ion-icon name="trash"></ion-icon>
-    </ion-button>
-    <ion-button
-      slot="end"
-      [href]="file.downloadUrl"
-      target="_blank"
-      shape="round"
-      color="success"
-      size="small"
-      fill="clear"
-    >
-      Download
-    </ion-button>
+    <ion-buttons slot="end">
+      <ion-button
+        *ngIf="allowDelete"
+        (click)="deleteFile()"
+        color="danger"
+        shape="round"
+        size="small"
+      >
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+      <ion-button
+        slot="end"
+        [href]="file.downloadUrl"
+        target="_blank"
+        shape="round"
+        color="success"
+        size="small"
+      >
+        <ion-icon slot="icon-only" name="cloud-download"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-item>
 </ng-container>

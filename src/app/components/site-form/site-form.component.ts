@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  inject,
   Input,
   OnDestroy,
   OnInit,
@@ -18,6 +19,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import { UserPickerComponent } from '../user-picker/user-picker.component';
+import { UtilityService } from 'src/app/services/utility.service';
 
 @Component({
   selector: 'app-site-form',
@@ -88,6 +90,9 @@ export class SiteFormComponent implements OnInit, OnDestroy {
   form: FormGroup;
   loading = false;
   show = '';
+
+  private utilitySvc = inject(UtilityService);
+
   constructor(private masterSvc: MasterService) {
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
@@ -229,6 +234,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
 
   updateAddress(address: Address) {
     this.form.patchValue(address);
+    this.field('name').setValue(this.utilitySvc.getAddress(address));
   }
 
   add() {

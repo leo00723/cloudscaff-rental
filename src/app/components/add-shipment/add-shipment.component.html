@@ -313,7 +313,7 @@
   <ion-col size="12">
     <app-title-block>Delivery Information</app-title-block>
   </ion-col>
-  <ion-col size="6">
+  <ion-col size="12">
     <app-input-date
       [readonly]="shipment.status !== 'pending'"
       [form]="form"
@@ -322,15 +322,7 @@
     >
     </app-input-date>
   </ion-col>
-  <ion-col size="6">
-    <app-input-date
-      [readonly]="shipment.status !== 'pending'"
-      [form]="form"
-      controlName="startDate"
-      title="Hire Start Date"
-    >
-    </app-input-date>
-  </ion-col>
+
   <ion-col size="12">
     <app-input-reactive
       title="Delivery Notes"
@@ -588,14 +580,9 @@
   <ion-col size="12" *ngIf="shipment?.uploads?.length > 0">
     <app-title-block>Uploaded Files</app-title-block>
   </ion-col>
-  <ion-col
-    [attr.sizeXl]="isMobile ? null : '2'"
-    [attr.sizeLg]="isMobile ? null : '3'"
-    [attr.sizeMd]="isMobile ? null : '4'"
-    [attr.size]="isMobile ? '6' : '6'"
-    *ngFor="let file of shipment.uploads; let i = index"
-  >
+  <ion-col size="12" *ngFor="let file of shipment.uploads; let i = index">
     <app-file-item
+      [simplified]="true"
       [file]="file"
       [allowDelete]="!isMobile"
       (deleted)="removeUpload(i)"
@@ -653,6 +640,15 @@
     *ngIf="shipment.status === 'on-route' || shipment.status === 'pending'"
   >
     <app-title-block>Signature</app-title-block>
+    <ion-col size="6">
+      <app-input-date
+        [readonly]="shipment.status !== 'pending'"
+        [form]="form"
+        controlName="startDate"
+        title="Hire Start Date"
+      >
+      </app-input-date>
+    </ion-col>
     <app-signature-pad
       #signature
       [showSave]="blob ? false : true"

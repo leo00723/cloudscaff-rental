@@ -322,6 +322,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.field('customerRepName').setValue(event[0].foremanName);
     this.field('customerRepEmail').setValue(event[0].foremanEmail);
     this.field('customerRepContact').setValue(event[0].foremanContact);
+    this.field('jobReference').setValue(null);
   }
 
   autoSave() {

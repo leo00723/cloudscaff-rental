@@ -471,7 +471,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         const jr: JobReference = {};
         const code = this.masterSvc
           .edit()
-          .generateDocCode(company.totalJobReferences, 'Job Reference');
+          .generateDocCode(company.totalJobReferences, 'JR');
         Object.assign(jr, {
           estimate,
           site,
