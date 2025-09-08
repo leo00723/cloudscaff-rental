@@ -49,7 +49,8 @@ export class InventoryPage implements OnInit {
 
   shipments$: Observable<Delivery[]>;
   pendingShipments$: Observable<Delivery[]>;
-  outboundShipments$: Observable<Delivery[]>;
+  picklistShipments$: Observable<Delivery[]>;
+  docketShipments$: Observable<Delivery[]>;
   reservedShipments$: Observable<Delivery[]>;
   voidShipments$: Observable<Delivery[]>;
 
@@ -926,13 +927,23 @@ export class InventoryPage implements OnInit {
           'code',
           'asc'
         );
-      this.outboundShipments$ = this.masterSvc
+      this.picklistShipments$ = this.masterSvc
         .edit()
         .getCollectionWhereAndOrder(
           `company/${this.company.id}/shipments`,
           'status',
           '==',
           'picklist',
+          'code',
+          'asc'
+        );
+      this.docketShipments$ = this.masterSvc
+        .edit()
+        .getCollectionWhereAndOrder(
+          `company/${this.company.id}/shipments`,
+          'status',
+          '==',
+          'docket',
           'code',
           'asc'
         );

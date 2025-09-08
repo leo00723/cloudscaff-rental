@@ -1,16 +1,21 @@
 <ng-container [ngSwitch]="simplified">
+  <!-- Default view with file type placeholder -->
   <ng-container *ngSwitchDefault>
     <div class="position-relative border rounded-sm text-center">
-      <div class="img-fluid p-1">
-        <ion-img
-          [alt]="file.file"
-          style="aspect-ratio: 1/1; object-fit: contain"
-          [src]="
-            file.type.startsWith('image')
-              ? file.downloadUrl
-              : 'assets/no-preview.webp'
-          "
-        ></ion-img>
+      <div
+        class="img-fluid p-3 d-flex flex-column align-items-center justify-content-center"
+        style="min-height: 100px"
+      >
+        <ion-icon
+          [name]="getFileIcon()"
+          size="large"
+          color="medium"
+          class="mb-2"
+        >
+        </ion-icon>
+        <small class="text-muted fw-bold" *ngIf="getFileExtension()">
+          {{ getFileExtension() }}
+        </small>
       </div>
       <ion-buttons
         class="position-absolute d-flex justify-content-between top-0 pt-2 px-1 w-100"
@@ -40,24 +45,24 @@
       </ion-buttons>
     </div>
     <div class="text-center mt-2">
-      <ion-label>{{ file.file | slice : 0 : 20 }}...</ion-label>
+      <ion-label>{{ getTruncatedFileName() }}</ion-label>
     </div>
   </ng-container>
 
+  <!-- Simplified list view -->
   <ion-item *ngSwitchCase="true">
-    <ion-thumbnail slot="start">
-      <ion-img
-        [alt]="file.file"
-        style="aspect-ratio: 1/1; object-fit: contain"
-        [src]="
-          file.type.startsWith('image')
-            ? file.downloadUrl
-            : 'assets/no-preview.webp'
-        "
-      ></ion-img>
-    </ion-thumbnail>
+    <div
+      slot="start"
+      class="d-flex flex-column align-items-center justify-content-center p-2"
+    >
+      <ion-icon [name]="getFileIcon()" size="large" color="medium"> </ion-icon>
+      <small class="text-muted fw-bold" *ngIf="getFileExtension()">
+        {{ getFileExtension() }}
+      </small>
+    </div>
 
-    <ion-label> {{ file.file }} </ion-label>
+    <ion-label>{{ file.file }}</ion-label>
+
     <ion-buttons slot="end">
       <ion-button
         *ngIf="allowDelete"
@@ -69,7 +74,6 @@
         <ion-icon name="trash"></ion-icon>
       </ion-button>
       <ion-button
-        slot="end"
         [href]="file.downloadUrl"
         target="_blank"
         shape="round"

@@ -37,22 +37,32 @@
         >
           <ion-label
             >Deliveries
-            <ng-container *ngIf="pendingShipments$ | async as shipments">
+            <ng-container *ngIf="pendingShipments$ | async as deliveries">
               <ion-badge
                 shape="round"
                 mode="ios"
                 color="danger"
-                *ngIf="shipments.length > 0"
+                *ngIf="deliveries.length > 0"
               >
-                {{shipments.length}}
+                {{deliveries.length}}
               </ion-badge>
             </ng-container>
 
-            <ng-container *ngIf="outboundShipments$ | async as deliveries">
+            <ng-container *ngIf="picklistShipments$ | async as deliveries">
               <ion-badge
                 shape="round"
                 mode="ios"
                 color="warning"
+                *ngIf="deliveries.length > 0"
+              >
+                {{deliveries.length}}
+              </ion-badge>
+            </ng-container>
+            <ng-container *ngIf="docketShipments$ | async as deliveries">
+              <ion-badge
+                shape="round"
+                mode="ios"
+                color="dark"
                 *ngIf="deliveries.length > 0"
               >
                 {{deliveries.length}}
@@ -355,7 +365,7 @@
           </div>
         </ion-accordion>
       </ng-container>
-      <ng-container *ngIf="outboundShipments$ | async as os else loading">
+      <ng-container *ngIf="picklistShipments$ | async as os else loading">
         <ion-accordion value="picking">
           <ion-item slot="header" color="light">
             <ion-label color="warning">
@@ -364,22 +374,22 @@
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-delivery-table
-              [value]="outboundShipments$"
+              [value]="picklistShipments$"
               (selectedItem)="viewShipment($event)"
             ></app-delivery-table>
           </div>
         </ion-accordion>
       </ng-container>
-      <ng-container *ngIf="outboundShipments$ | async as os else loading">
+      <ng-container *ngIf="docketShipments$ | async as ds else loading">
         <ion-accordion value="packed">
           <ion-item slot="header" color="light">
             <ion-label color="dark">
-              Packed for Delivery ({{os.length}})
+              Packed for Delivery ({{ds.length}})
             </ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-delivery-table
-              [value]="outboundShipments$"
+              [value]="docketShipments$"
               (selectedItem)="viewShipment($event)"
             ></app-delivery-table>
           </div>

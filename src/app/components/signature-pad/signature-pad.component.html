@@ -1,21 +1,29 @@
-<div class="mt-5 d-grid justify-content-center">
-  <app-input-text
-    title="Name"
-    placeholder="Enter name"
-    (fieldChange)="name = $event"
-  ></app-input-text>
-  <signature-pad [options]="signaturePadOptions"></signature-pad>
-
-  <div class="text-end">
-    <ion-button shape="round" color="danger" (click)="clearSignature()"
-      >Clear
+<app-input-text
+  title="Name"
+  placeholder="Enter name"
+  (fieldChange)="name = $event"
+></app-input-text>
+<div class="text-center">
+  <signature-pad class="w-full" [options]="signaturePadOptions"></signature-pad>
+</div>
+<ion-item lines="none">
+  <ion-buttons slot="end">
+    <ion-button
+      fill="solid"
+      shape="round"
+      color="danger"
+      (click)="clearSignature()"
+    >
+      Clear
     </ion-button>
     <ion-button
+      fill="solid"
       shape="round"
       color="success"
       (click)="savePad()"
       *ngIf="showSave"
-      >Save
+    >
+      Save
     </ion-button>
-  </div>
-</div>
+  </ion-buttons>
+</ion-item>

@@ -30,6 +30,7 @@ import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { CalculatePipe } from '../components/calculate.pipe';
 import { Transfer } from '../models/transfer.model';
+import { DateFormatPipe } from '../components/date-format.pipe';
 
 // Configure the fonts
 (pdfMake as any).vfs = pdfFonts.vfs;
@@ -161,6 +162,7 @@ export class PdfService {
   constructor(
     private calcPipe: CalculatePipe,
     private dateDiffPipe: DateDiffPipe,
+    private dateFormatPipe: DateFormatPipe,
     private decimalPipe: DecimalPipe,
     private datePipe: DatePipe,
     private weightPipe: WeightPipe,
@@ -3697,7 +3699,7 @@ export class PdfService {
 
   // DELIVERY PICKLIST PDF
   async pickList(
-    docData: Delivery | TransactionReturn,
+    docData: Delivery | any,
     inventory: InventoryItem[],
     company: Company
   ) {
@@ -3758,6 +3760,12 @@ export class PdfService {
             [
               { text: 'Site Code', style: 'h6b' },
               `${docData?.site.code || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Expected Delivery Date', style: 'h6b' },
+              this.toDate(this.dateFormatPipe.transform(docData?.endDate)),
               '',
               '',
             ],

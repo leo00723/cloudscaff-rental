@@ -136,7 +136,7 @@
 <!-- Header Actions Template -->
 <ng-template #headerActions>
   <ng-container *ngIf="!uploading && shipment.status === 'pending'">
-    <ion-chip
+    <!-- <ion-chip
       (click)="fileInput.click()"
       mode="ios"
       shape="round"
@@ -144,7 +144,7 @@
       color="success"
     >
       Import List
-    </ion-chip>
+    </ion-chip> -->
     <input
       style="display: none"
       type="file"
@@ -155,7 +155,7 @@
   </ng-container>
   <ng-container *ngIf="isEdit">
     <ion-chip
-      (click)="downloadPicklist()"
+      (click)="downloadPicklist(true)"
       mode="ios"
       shape="round"
       size="small"
@@ -164,7 +164,7 @@
       Generate Picklist
     </ion-chip>
     <ion-chip
-      (click)="downloadPdf()"
+      (click)="downloadPdf(true)"
       mode="ios"
       shape="round"
       size="small"
@@ -637,18 +637,17 @@
 <ng-template #signaturePad>
   <ion-col
     size="12"
-    *ngIf="shipment.status === 'on-route' || shipment.status === 'pending'"
+    class="card-outline mt-5"
+    *ngIf="shipment.status === 'on-route' || shipment.status === 'docket'"
   >
     <app-title-block>Signature</app-title-block>
-    <ion-col size="6">
-      <app-input-date
-        [readonly]="shipment.status !== 'pending'"
-        [form]="form"
-        controlName="startDate"
-        title="Hire Start Date"
-      >
-      </app-input-date>
-    </ion-col>
+    <app-input-date
+      [readonly]="shipment.status !== 'docket'"
+      [form]="form"
+      controlName="startDate"
+      title="Hire Start Date"
+    >
+    </app-input-date>
     <app-signature-pad
       #signature
       [showSave]="blob ? false : true"
@@ -736,7 +735,9 @@
     </ion-button>
     <ion-button
       *ngIf="
-        isEdit && !loading && ['pending', 'picklist'].includes(shipment.status)
+        isEdit &&
+        !loading &&
+        ['pending', 'picklist', 'docket'].includes(shipment.status)
       "
       (click)="updateShipment('pending')"
       class="text-capitalize"
@@ -771,7 +772,7 @@
       Receive Delivery
     </ion-button> -->
     <ion-button
-      *ngIf="isEdit && !loading && shipment.status === 'pending'"
+      *ngIf="isEdit && !loading && shipment.status === 'docket'"
       [disabled]="!blob || !shipment.signedBy || form.invalid"
       (click)="receiveDelivery(true)"
       class="text-capitalize"

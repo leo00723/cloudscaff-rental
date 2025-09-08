@@ -63,6 +63,7 @@ import { SplashPage } from './splash/splash.page';
 import { TrialEndedPage } from './trial-ended/trial-ended.page';
 import { DateDiffPipe } from './components/dateDiff.pipe';
 import { CalculatePipe } from './components/calculate.pipe';
+import { DateFormatPipe } from './components/date-format.pipe';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -156,6 +157,7 @@ import { CalculatePipe } from './components/calculate.pipe';
     WeightPipe,
     DateDiffPipe,
     CalculatePipe,
+    DateFormatPipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],

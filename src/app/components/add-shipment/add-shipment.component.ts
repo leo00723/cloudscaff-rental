@@ -394,7 +394,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.close();
   }
 
-  async downloadPicklist() {
+  async downloadPicklist(changeStatus = false) {
     if (!this.shipment.date) {
       this.shipment.date = new Date();
     }
@@ -402,13 +402,17 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       .pdf()
       .pickList(this.shipment, this.shipment.items, this.company);
     this.masterSvc.pdf().handlePdf(pdf, `Picklist-${this.shipment.code}`);
-    await this.masterSvc
-      .edit()
-      .updateDoc(`company/${this.company.id}/shipments`, this.shipment.id, {
-        status: 'picklist',
-      });
+
+    if (changeStatus && this.shipment.status === 'pending') {
+      await this.masterSvc
+        .edit()
+        .updateDoc(`company/${this.company.id}/shipments`, this.shipment.id, {
+          status: 'picklist',
+        });
+    }
   }
-  async downloadPdf() {
+
+  async downloadPdf(changeStatus = false) {
     if (!this.shipment.date) {
       this.shipment.date = new Date();
     }
@@ -420,16 +424,29 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     this.shipment.site.customer.rep = this.shipment.customerRepName;
     this.shipment.site.customer.email = this.shipment.customerRepEmail;
     this.shipment.site.customer.phone = this.shipment.customerRepContact;
+
     const loader = await this.loadingCtrl.create({
       message: 'Please wait',
       mode: 'ios',
     });
+
     try {
       loader.present();
       const pdf = await this.masterSvc
         .pdf()
         .delivery(this.shipment, companyCopy, null);
       this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
+
+      if (
+        changeStatus &&
+        ['pending', 'picklist'].includes(this.shipment.status)
+      ) {
+        await this.masterSvc
+          .edit()
+          .updateDoc(`company/${this.company.id}/shipments`, this.shipment.id, {
+            status: 'docket',
+          });
+      }
     } catch (error) {
       console.error('Error in downloading PDF:', error);
     } finally {
@@ -466,7 +483,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   protected async sign(ev: { signature: string; name: string }) {
     if (ev.signature) {
       this.blob = await (await fetch(ev.signature)).blob();
-      if (this.shipment.status === 'pending') {
+      if (this.shipment.status === 'docket') {
         this.shipment.signedBy = ev.name;
       } else if (this.shipment.status === 'on-route') {
         this.shipment.signedBy2 = ev.name;
@@ -536,15 +553,15 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   private async initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.shipment.site, Validators.required],
-      startDate: [this.shipment?.startDate, Validators.nullValidator],
-      endDate: [this.shipment?.endDate, Validators.nullValidator],
+      startDate: [this.shipment?.startDate],
+      endDate: [this.shipment?.endDate],
       company: [this.company, Validators.required],
-      status: [this.shipment.status, Validators.required],
-      updatedBy: [this.user.id, Validators.required],
-      driverName: [this.shipment?.driverName, Validators.nullValidator],
-      driverNo: [this.shipment?.driverNo, Validators.nullValidator],
-      vehicleReg: [this.shipment?.vehicleReg, Validators.nullValidator],
-      notes: [this.shipment?.notes, Validators.nullValidator],
+      status: [this.shipment.status],
+      updatedBy: [this.user.id],
+      driverName: [this.shipment?.driverName],
+      driverNo: [this.shipment?.driverNo],
+      vehicleReg: [this.shipment?.vehicleReg],
+      notes: [this.shipment?.notes],
       jobReference: [this.shipment?.jobReference, Validators.required],
       companyRepName: [this.shipment?.companyRepName],
       companyRepEmail: [this.shipment?.companyRepEmail],
@@ -584,16 +601,16 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       site: ['', Validators.required],
-      startDate: ['', Validators.nullValidator],
-      endDate: ['', Validators.nullValidator],
+      startDate: [''],
+      endDate: [''],
       company: [this.company, Validators.required],
-      status: ['pending', Validators.required],
-      createdBy: [this.user.id, Validators.required],
-      createdByName: [this.user.name, Validators.required],
-      driverName: ['', Validators.nullValidator],
-      driverNo: ['', Validators.nullValidator],
-      vehicleReg: ['', Validators.nullValidator],
-      notes: ['', Validators.nullValidator],
+      status: ['pending'],
+      createdBy: [this.user.id],
+      createdByName: [this.user.name],
+      driverName: [''],
+      driverNo: [''],
+      vehicleReg: [''],
+      notes: [''],
       jobReference: ['', Validators.required],
       companyRepName: [''],
       companyRepEmail: [''],
