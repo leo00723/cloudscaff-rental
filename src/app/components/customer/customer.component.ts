@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
@@ -16,6 +14,23 @@ import { UserState } from 'src/app/shared/user/user.state';
   templateUrl: './customer.component.html',
 })
 export class CustomerComponent {
+  private static readonly MESSAGES = {
+    SUCCESS: {
+      CREATE: 'Customer added successfully!',
+      UPDATE: 'Customer updated successfully!',
+      DELETE: 'Customer deleted successfully!',
+      UPLOAD: 'Files uploaded successfully',
+      REMOVE_UPLOAD: 'Files deleted successfully',
+    },
+    ERROR: {
+      CREATE: 'Something went wrong creating your customer, try again!',
+      UPDATE: 'Something went wrong updating your customer, try again!',
+      DELETE: 'Something went wrong deleting your customer, try again!',
+      UPLOAD: 'Something went wrong uploading files. Please try again.',
+      REMOVE_UPLOAD: 'Something went wrong deleting file. Please try again.',
+    },
+  };
+
   protected customerData: Customer = { uploads: [] };
   @Output() newCustomer = new EventEmitter<Customer>();
   @Input() isUpdate = false;
@@ -23,268 +38,225 @@ export class CustomerComponent {
   @Input() isCreate = true;
   @Input() readOnly = false;
   @Input() companyId: string;
+
   @Input() set customer(val: Customer) {
     Object.assign(this.customerData, val);
     if (this.form && val) {
-      this.form = this.masterSvc.fb().group({
-        code: [this.customerData.code, Validators.required],
-        name: [this.customerData.name, Validators.required],
-        tradingName: [this.customerData.tradingName, Validators.required],
-        email: [
-          this.customerData.email,
-          [Validators.required, Validators.email],
-        ],
-        rep: [this.customerData.rep, Validators.required],
-        phone: [this.customerData.phone, Validators.required],
-        officeRep: [this.customerData.officeRep],
-        officeEmail: [this.customerData.officeEmail],
-        officePhone: [this.customerData.officePhone],
-        websiteUrl: [this.customerData.websiteUrl],
-        address: [this.customerData.address],
-        suburb: [this.customerData.suburb],
-        city: [this.customerData.city],
-        zip: [this.customerData.zip],
-        abnNumber: [this.customerData.abnNumber],
-        vatNum: [this.customerData.vatNum],
-        country: [this.customerData.country],
-        xeroID: [this.customerData.xeroID],
-        excludeVAT: [this.customerData.excludeVAT],
-        discountPercentage: [this.customerData.discountPercentage],
-        minHire: [this.customerData.minHire],
-        poRequired: [this.customerData.poRequired],
-        reps: this.masterSvc.fb().array([]),
-      });
-      this.customerData?.reps?.forEach((item) => {
-        const additional = this.masterSvc.fb().group({
-          name: [item?.name || ''],
-          phone: [item?.phone || ''],
-          email: [item?.email || ''],
-        });
-        this.repForms.push(additional);
-      });
+      this.form = this.createCustomerForm(this.customerData);
+      this.populateRepsFormArray();
     }
   }
 
   form: FormGroup;
   loading = false;
-
   protected user: User;
   protected company: Company;
 
   constructor(private masterSvc: MasterService) {
-    this.form = this.masterSvc.fb().group({
-      code: ['', Validators.required],
-      name: ['', Validators.required],
-      tradingName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      rep: ['', Validators.required],
-      phone: ['', Validators.required],
-      officeRep: [''],
-      officeEmail: [''],
-      officePhone: [''],
-      websiteUrl: [''],
-      address: [''],
-      suburb: [''],
-      city: [''],
-      zip: [''],
-      abnNumber: [''],
-      vatNum: [''],
-      country: [''],
-      xeroID: [''],
-      excludeVAT: [''],
-      discountPercentage: [0],
-      minHire: [28],
-      poRequired: [''],
-      reps: this.masterSvc.fb().array([]),
-    });
+    this.initializeComponent();
+  }
+
+  private initializeComponent(): void {
+    this.form = this.createCustomerForm();
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
   }
 
-  get repForms() {
+  private createCustomerForm(customerData?: Customer): FormGroup {
+    return this.masterSvc.fb().group({
+      code: [customerData?.code || '', Validators.required],
+      name: [customerData?.name || '', Validators.required],
+      tradingName: [customerData?.tradingName || '', Validators.required],
+      email: [
+        customerData?.email || '',
+        [Validators.required, Validators.email],
+      ],
+      rep: [customerData?.rep || '', Validators.required],
+      phone: [customerData?.phone || '', Validators.required],
+      officeRep: [customerData?.officeRep || ''],
+      officeEmail: [customerData?.officeEmail || ''],
+      officePhone: [customerData?.officePhone || ''],
+      websiteUrl: [customerData?.websiteUrl || ''],
+      address: [customerData?.address || ''],
+      suburb: [customerData?.suburb || ''],
+      city: [customerData?.city || ''],
+      zip: [customerData?.zip || ''],
+      abnNumber: [customerData?.abnNumber || ''],
+      vatNum: [customerData?.vatNum || ''],
+      country: [customerData?.country || ''],
+      xeroID: [customerData?.xeroID || ''],
+      excludeVAT: [customerData?.excludeVAT || ''],
+      discountPercentage: [customerData?.discountPercentage || 0],
+      minHire: [customerData?.minHire || 28],
+      poRequired: [customerData?.poRequired || ''],
+      reps: this.masterSvc.fb().array([]),
+    });
+  }
+
+  private populateRepsFormArray(): void {
+    const repsArray = this.repForms;
+    repsArray.clear();
+    this.customerData?.reps?.forEach((rep) => {
+      const repGroup = this.createRepFormGroup(rep);
+      repsArray.push(repGroup);
+    });
+  }
+
+  private createRepFormGroup(rep?: any): FormGroup {
+    return this.masterSvc.fb().group({
+      name: [rep?.name || ''],
+      phone: [rep?.phone || ''],
+      email: [rep?.email || ''],
+    });
+  }
+
+  private getCustomerCollectionPath(): string {
+    return `company/${this.customerData.company || this.companyId}/customers`;
+  }
+
+  private async handleAsyncOperation<T>(
+    operation: () => Promise<T>,
+    successMessage: string,
+    errorMessage: string,
+    onSuccess?: (result: T) => void
+  ): Promise<void> {
+    try {
+      this.loading = true;
+      const result = await operation();
+      this.masterSvc.notification().toast(successMessage, 'success');
+      onSuccess?.(result);
+    } catch (error) {
+      console.error(error);
+      this.masterSvc.notification().toast(errorMessage, 'danger', 2000);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  get repForms(): FormArray {
     return this.form.get('reps') as FormArray;
   }
 
-  addRep() {
-    const additional = this.masterSvc.fb().group({
-      name: ['Accounts'],
-      phone: [''],
-      email: [''],
-    });
-    this.repForms.push(additional);
+  addRep(): void {
+    const repGroup = this.createRepFormGroup({ name: 'Accounts' });
+    this.repForms.push(repGroup);
   }
 
-  deleteRep(i: number) {
+  deleteRep(index: number): void {
     this.masterSvc.notification().presentAlertConfirm(() => {
-      this.repForms.removeAt(i);
+      this.repForms.removeAt(index);
     });
   }
 
-  field(field: string) {
-    return this.form.get(field) as FormControl;
+  field(fieldName: string): FormControl {
+    return this.form.get(fieldName) as FormControl;
   }
-  checkStatus(field: FormControl) {
+
+  checkStatus(field: FormControl): boolean {
     return field.invalid && field.touched;
   }
 
-  create() {
+  create(): void {
     this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
       this.customerData.company = this.companyId;
       Object.assign(this.customerData, this.form.value);
       this.customerData.selected = false;
-      this.masterSvc
-        .edit()
-        .addDocument(
-          `company/${this.customerData.company}/customers`,
-          this.customerData
-        )
-        .then((data) => {
-          this.loading = false;
+
+      this.handleAsyncOperation(
+        () =>
           this.masterSvc
-            .notification()
-            .toast('Customer added successfully!', 'success');
+            .edit()
+            .addDocument(this.getCustomerCollectionPath(), this.customerData),
+        CustomerComponent.MESSAGES.SUCCESS.CREATE,
+        CustomerComponent.MESSAGES.ERROR.CREATE,
+        (data) => {
           this.newCustomer.emit({ ...this.customerData, id: data.id });
           this.form.reset();
-        })
-        .catch(() => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong creating your customer, try again!',
-              'danger',
-              2000
-            );
-        });
+        }
+      );
     });
   }
 
-  update() {
+  update(): void {
     this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-
       Object.assign(this.customerData, this.form.value);
       this.customerData.selected = false;
 
-      this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.customerData.company}/customers`,
-          this.customerData.id,
-          this.customerData
-        )
-        .then(() => {
-          this.loading = false;
+      this.handleAsyncOperation(
+        () =>
           this.masterSvc
-            .notification()
-            .toast('Customer updated successfully!', 'success');
-        })
-        .catch((err) => {
-          this.loading = false;
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong updating your customer, try again!',
-              'danger',
-              2000
-            );
-        });
+            .edit()
+            .updateDoc(
+              this.getCustomerCollectionPath(),
+              this.customerData.id,
+              this.customerData
+            ),
+        CustomerComponent.MESSAGES.SUCCESS.UPDATE,
+        CustomerComponent.MESSAGES.ERROR.UPDATE
+      );
     });
   }
 
-  delete() {
+  delete(): void {
     this.masterSvc.notification().presentAlertConfirm(() => {
-      this.loading = true;
-      this.masterSvc
-        .edit()
-        .deleteDocById(
-          `company/${this.customerData.company}/customers`,
-          this.customerData.id
-        )
-        .then(() => {
-          this.loading = false;
+      this.handleAsyncOperation(
+        () =>
           this.masterSvc
-            .notification()
-            .toast('Customer deleted successfully!', 'success');
-        })
-        .catch((err) => {
-          this.loading = false;
-          this.form.reset();
-          this.masterSvc
-            .notification()
-            .toast(
-              'Something went wrong deleting your customer, try again!',
-              'danger',
-              2000
-            );
-        });
+            .edit()
+            .deleteDocById(
+              this.getCustomerCollectionPath(),
+              this.customerData.id
+            ),
+        CustomerComponent.MESSAGES.SUCCESS.DELETE,
+        CustomerComponent.MESSAGES.ERROR.DELETE,
+        () => this.form.reset()
+      );
     });
   }
 
-  async setUploads(uploads) {
+  async setUploads(uploads: any[]): Promise<void> {
     this.customerData?.uploads
       ? this.customerData.uploads.push(...uploads)
       : (this.customerData.uploads = [...uploads]);
-    try {
-      await this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.customerData.company}/customers`,
-          this.customerData.id,
-          {
+
+    await this.handleAsyncOperation(
+      () =>
+        this.masterSvc
+          .edit()
+          .updateDoc(this.getCustomerCollectionPath(), this.customerData.id, {
             uploads: this.customerData?.uploads,
-          }
-        );
-      this.masterSvc
-        .notification()
-        .toast('Files uploaded successfully', 'success');
-    } catch (error) {
-      console.log(error);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong uploading files. Please try again.',
-          'danger'
-        );
-    }
+          }),
+      CustomerComponent.MESSAGES.SUCCESS.UPLOAD,
+      CustomerComponent.MESSAGES.ERROR.UPLOAD
+    );
   }
 
-  async removeUpload(index: number) {
+  async removeUpload(index: number): Promise<void> {
     this.customerData?.uploads.splice(index, 1);
-    try {
-      await this.masterSvc
-        .edit()
-        .updateDoc(
-          `company/${this.company.id}/customers`,
-          this.customerData.id,
-          {
-            uploads: this.customerData?.uploads,
-          }
-        );
-      this.masterSvc
-        .notification()
-        .toast('Files deleted successfully', 'success');
-    } catch (error) {
-      console.log(error);
-      this.masterSvc
-        .notification()
-        .toast(
-          'Something went wrong deleting file. Please try again.',
-          'danger'
-        );
-    }
+
+    await this.handleAsyncOperation(
+      () =>
+        this.masterSvc
+          .edit()
+          .updateDoc(
+            `company/${this.company.id}/customers`,
+            this.customerData.id,
+            { uploads: this.customerData?.uploads }
+          ),
+      CustomerComponent.MESSAGES.SUCCESS.REMOVE_UPLOAD,
+      CustomerComponent.MESSAGES.ERROR.REMOVE_UPLOAD
+    );
   }
 
-  excludeVAT(args) {
+  excludeVAT(args: any): void {
     this.field('excludeVAT').setValue(args.detail.checked);
   }
 
-  poRequired(args) {
+  poRequired(args: any): void {
     this.field('poRequired').setValue(args.detail.checked);
   }
 
-  updateAddress(address: Address) {
+  updateAddress(address: Address): void {
     this.form.patchValue(address);
   }
 }

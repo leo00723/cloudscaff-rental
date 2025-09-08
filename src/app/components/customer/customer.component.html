@@ -9,7 +9,7 @@
           <app-input-reactive
             title="Customer Code"
             [form]="form"
-            controlName="rep"
+            controlName="code"
             [readonly]="readOnly"
           ></app-input-reactive>
         </ion-col>
@@ -335,6 +335,7 @@
         shape="round"
         type="submit"
         fill="solid"
+        color="success"
         [disabled]="form.invalid"
         (click)="create()"
         >Create Customer

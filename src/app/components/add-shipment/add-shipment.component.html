@@ -317,8 +317,8 @@
     <app-input-date
       [readonly]="shipment.status !== 'pending'"
       [form]="form"
-      controlName="startDate"
-      title="Hire Start Date"
+      controlName="endDate"
+      title="Expected Delivery Date"
     >
     </app-input-date>
   </ion-col>
@@ -326,9 +326,8 @@
     <app-input-date
       [readonly]="shipment.status !== 'pending'"
       [form]="form"
-      controlName="endDate"
-      [min]="field('startDate').value"
-      title="Expected Delivery Date"
+      controlName="startDate"
+      title="Hire Start Date"
     >
     </app-input-date>
   </ion-col>

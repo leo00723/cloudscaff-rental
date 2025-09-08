@@ -4,4 +4,5 @@ export interface Address {
   city?: string;
   zip?: string;
   country?: string;
+  url?: string;
 }
