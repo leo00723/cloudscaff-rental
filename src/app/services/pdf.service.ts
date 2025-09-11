@@ -3140,8 +3140,15 @@ export class PdfService {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
       content: [
+        {
+          text: `Expected Delivery Date: ${this.datePipe.transform(
+            this.dateFormatPipe.transform(delivery?.endDate),
+            'longDate'
+          )}`,
+          style: ['h4b'],
+        },
         await this.getHeader(
-          'Delivery Note',
+          `Delivery Note - ${delivery.jobReference}`,
           delivery.code,
           delivery.site.code,
           delivery.date,
@@ -3190,6 +3197,8 @@ export class PdfService {
         ),
         hr,
         this.getCompanyInfo(delivery.site.customer, company),
+        hr,
+        { text: delivery.notes },
         hr,
         summary,
         hr,
@@ -3713,7 +3722,7 @@ export class PdfService {
           alignment: 'left',
         },
         { text: item.name, style: 'h4b', alignment: 'left' },
-        { text: item.location, style: 'h4b', alignment: 'left' },
+        // { text: item.location, style: 'h4b', alignment: 'left' },
         { text: item.shipmentQty, style: 'h4b', alignment: 'center' },
         { text: '', style: 'h4b', alignment: 'center' },
       ]);
@@ -3723,7 +3732,7 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+        widths: ['auto', 'auto', '*', 'auto', 'auto'],
 
         body: [
           [
@@ -3734,7 +3743,7 @@ export class PdfService {
               alignment: 'left',
             },
             { text: 'Name', style: 'h4b', alignment: 'left' },
-            { text: 'Location', style: 'h4b', alignment: 'left' },
+            // { text: 'Location', style: 'h4b', alignment: 'left' },
             { text: 'Qty Needed', style: 'h4b', alignment: 'center' },
             { text: 'Picked Qty', style: 'h4b', alignment: 'center' },
           ],
@@ -3747,8 +3756,15 @@ export class PdfService {
       footer: await this.getFooter(),
       // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
       content: [
+        {
+          text: `Expected Delivery Date: ${this.datePipe.transform(
+            this.dateFormatPipe.transform(docData?.endDate),
+            'longDate'
+          )}`,
+          style: ['h4b'],
+        },
         await this.getHeader(
-          'Picklist',
+          `Picklist - ${docData.jobReference}`,
           docData.code,
           docData.site.name,
           new Date(),
@@ -3760,12 +3776,6 @@ export class PdfService {
             [
               { text: 'Site Code', style: 'h6b' },
               `${docData?.site.code || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'Expected Delivery Date', style: 'h6b' },
-              this.toDate(this.dateFormatPipe.transform(docData?.endDate)),
               '',
               '',
             ],
@@ -4976,8 +4986,8 @@ export class PdfService {
             },
             '',
           ],
-          [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
-          [{ text: 'Project:', style: 'h6b' }, `${siteName}`, '', ''],
+          [{ text: 'Docket Reference:', style: 'h6b' }, `${code}`, '', ''],
+          [{ text: 'Site Address:', style: 'h6b' }, `${siteName}`, '', ''],
           ...data,
           [
             { text: 'Date Issued:', style: 'h6b' },
@@ -5039,7 +5049,7 @@ export class PdfService {
           [{ text: title, style: 'header', colSpan: 2 }, '', '', ''],
           ...data,
           [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
-          [{ text: 'Project:', style: 'h6b' }, `${siteName}`, '', ''],
+          [{ text: 'Site Address:', style: 'h6b' }, `${siteName}`, '', ''],
           [
             { text: 'Date Issued:', style: 'h6b' },
             `${this.toDate(date)}`,
@@ -5119,17 +5129,12 @@ export class PdfService {
             },
           ],
           [
-            { text: 'Registration No:', style: 'h6b' },
+            { text: 'ABN:', style: 'h6b' },
             customer.abnNumber ? customer.abnNumber : 'N/A',
-            { text: 'Registration No:', style: 'h6b' },
+            { text: 'ABN:', style: 'h6b' },
             company.abnNumber ? company.abnNumber : 'N/A',
           ],
-          [
-            { text: 'VAT No:', style: 'h6b' },
-            customer.vatNum ? customer.vatNum : 'N/A',
-            { text: 'VAT No:', style: 'h6b' },
-            company.vatNum ? company.vatNum : 'N/A',
-          ],
+
           [
             { text: 'Address:', style: 'h6b' },
             this.getAddress(customer),
@@ -5680,7 +5685,7 @@ export class PdfService {
           style: 'h4b',
           alignment: 'left',
         },
-        { text: item.size, style: 'h4b', alignment: 'center' },
+        // { text: item.size, style: 'h4b', alignment: 'center' },
         { text: item.name, style: 'h4b', alignment: 'left' },
         { text: item.shipmentQty, style: 'h4b', alignment: 'center' },
         {
@@ -5697,7 +5702,7 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', 'auto', 'auto', '*', 'auto', 'auto'],
+        widths: ['auto', 'auto', 'auto', '*', 'auto', 'auto'],
 
         body: [
           [
@@ -5708,7 +5713,7 @@ export class PdfService {
               style: 'h4b',
               alignment: 'left',
             },
-            { text: 'Size', style: 'h4b', alignment: 'center' },
+            // { text: 'Size', style: 'h4b', alignment: 'center' },
             { text: 'Name', style: 'h4b', alignment: 'left' },
             { text: 'Item Qty', style: 'h4b', alignment: 'center' },
             { text: 'Weight', style: 'h4b', alignment: 'center' },
