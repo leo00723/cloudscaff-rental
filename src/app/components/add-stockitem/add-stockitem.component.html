@@ -18,55 +18,15 @@
     <ion-grid>
       <app-title-block>Component Details</app-title-block>
       <ion-row class="card-outline mb-3">
-        <!-- <ion-col sizeMd="6" size="12">
-          <ng-container
-            *ngIf="categories$ | async as categories; else addCategory"
-          >
-            <app-input-reactive
-              (click)="CATEGORIES.open()"
-              title="Category"
-              [form]="form"
-              controlName="category"
-              [readonly]="true"
-            ></app-input-reactive>
-            <app-searchable-select
-              [showInput]="false"
-              title="Select Category"
-              [data]="categories.categories"
-              itemTextField="name"
-              [add]="true"
-              (selectedChanged)="changeCategory($event)"
-              #CATEGORIES
-            ></app-searchable-select>
-          </ng-container>
-          <ng-template #addCategory>
-            <app-searchable-select
-              (click)="CATEGORIES2.open()"
-              title="Select Category"
-              [data]="[]"
-              itemTextField="name"
-              [add]="true"
-              (selectedChanged)="changeCategory($event)"
-              #CATEGORIES2
-            ></app-searchable-select>
-          </ng-template>
-        </ion-col>
-        <ion-col sizeMd="6" size="12">
-          <app-input-select-reactive
-            title="Size"
-            placeholder="Select Size"
-            controlName="size"
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Item Code"
+            controlName="code"
             [form]="form"
-            [selectedText]="field('size').value"
           >
-            <ion-select-option
-              [value]="size.size"
-              *ngFor="let size of field('categoryType').value.items"
-              >{{ size.size }}
-            </ion-select-option>
-          </app-input-select-reactive>
-        </ion-col> -->
-        <ion-col sizeMd="6" size="12">
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Category"
             controlName="category"
@@ -74,23 +34,49 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="6" size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive title="Size" controlName="size" [form]="form">
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="4" size="12">
-          <app-input-reactive title="Code" controlName="code" [form]="form">
-          </app-input-reactive>
+
+        <ion-col sizeMd="3" size="12">
+          <app-input-select-reactive
+            title="Type"
+            placeholder="Select Type"
+            controlName="type"
+            [form]="form"
+            [selectedText]="field('type').value || ''"
+          >
+            <ion-select-option value="Component"> Component </ion-select-option>
+            <ion-select-option value="Consumable">
+              Consumable
+            </ion-select-option>
+            <ion-select-option value="Motor"> Motor </ion-select-option>
+          </app-input-select-reactive>
         </ion-col>
-        <ion-col sizeMd="4" size="12">
+        <ion-col sizeMd="6" size="12">
+          <app-input-select-reactive
+            title="Storage Type"
+            placeholder="Select Storage Type"
+            controlName="type"
+            [form]="form"
+            [selectedText]="field('storageType').value || ''"
+          >
+            <ion-select-option value="stillage"> Stillage </ion-select-option>
+            <ion-select-option value="tiberPallet">
+              Tiber pallet
+            </ion-select-option>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col sizeMd="6" size="12">
           <app-input-reactive
-            title="Description"
-            controlName="name"
+            title="Storage Qty"
+            controlName="storageQty"
             [form]="form"
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="4" size="12">
+        <ion-col sizeMd="6" size="12">
           <app-input-reactive
             title="Location"
             controlName="location"
@@ -98,9 +84,84 @@
           >
           </app-input-reactive>
         </ion-col>
+        <ion-col sizeMd="6" size="12">
+          <app-input-reactive
+            title="Description"
+            controlName="name"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Location"
+            controlName="location"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Supplier"
+            controlName="supplier"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="2" size="12">
+          <app-input-reactive
+            title="Weight  ({{ company.mass.symbol }})"
+            inputmode="numeric"
+            type="number"
+            controlName="weight"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="2" size="12">
+          <app-input-reactive
+            title="Hire/Rent Cost ({{ company.currency.symbol }})"
+            inputmode="numeric"
+            type="number"
+            controlName="hireCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="2" size="12">
+          <app-input-reactive
+            title="Replacement Cost ({{ company.currency.symbol }})"
+            inputmode="numeric"
+            type="number"
+            controlName="replacementCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="2" size="12">
+          <app-input-reactive
+            title="Selling Cost ({{ company.currency.symbol }})"
+            inputmode="numeric"
+            type="number"
+            controlName="sellingCost"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            title="Low Level Alert %"
+            inputmode="numeric"
+            type="number"
+            controlName="lowPercentage"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
         <ion-col size="12" *ngIf="!isEdit">
           <app-input-reactive
             title="Total Qty"
+            inputmode="numeric"
             type="number"
             controlName="yardQty"
             [form]="form"
@@ -109,9 +170,10 @@
           </app-input-reactive>
         </ion-col>
         <ng-container *ngIf="isEdit">
-          <ion-col size="12">
+          <ion-col sizeMd="3" size="6">
             <app-input-reactive
               title="Total Qty"
+              inputmode="numeric"
               type="number"
               controlName="yardQty"
               [form]="form"
@@ -119,39 +181,10 @@
             >
             </app-input-reactive>
           </ion-col>
-          <ion-col sizeMd="2" size="6">
-            <app-input-reactive
-              title="Maintenance Qty"
-              type="number"
-              controlName="inMaintenanceQty"
-              [form]="form"
-              [readonly]="true"
-            >
-            </app-input-reactive>
-          </ion-col>
-          <ion-col sizeMd="2" size="6">
-            <app-input-reactive
-              title="Damaged Qty"
-              type="number"
-              controlName="damagedQty"
-              [form]="form"
-              [readonly]="true"
-            >
-            </app-input-reactive>
-          </ion-col>
-          <ion-col sizeMd="2" size="6">
-            <app-input-reactive
-              title="Lost Qty"
-              type="number"
-              controlName="lostQty"
-              [form]="form"
-              [readonly]="true"
-            >
-            </app-input-reactive>
-          </ion-col>
-          <ion-col sizeMd="2" size="6">
+          <ion-col sizeMd="3" size="6">
             <app-input-reactive
               title="In Use Qty"
+              inputmode="numeric"
               type="number"
               controlName="inUseQty"
               [form]="form"
@@ -159,9 +192,10 @@
             >
             </app-input-reactive>
           </ion-col>
-          <ion-col sizeMd="2" size="6">
+          <ion-col sizeMd="3" size="6">
             <app-input-reactive
               title="Reserved Qty"
+              inputmode="numeric"
               type="number"
               controlName="reservedQty"
               [form]="form"
@@ -169,15 +203,15 @@
             >
             </app-input-reactive>
           </ion-col>
-          <ion-col sizeMd="2" size="6">
+          <ion-col sizeMd="3" size="6">
             <app-input-text
               title="Available Qty"
+              inputmode="numeric"
               type="number"
               [value]="
                 field('yardQty').value -
                 field('inUseQty').value -
                 field('inMaintenanceQty').value -
-                field('lostQty').value -
                 field('damagedQty').value -
                 field('reservedQty').value
               "
@@ -186,42 +220,6 @@
             </app-input-text>
           </ion-col>
         </ng-container>
-        <ion-col sizeMd="3" size="12">
-          <app-input-reactive
-            title="Weight  ({{ company.mass.symbol }})"
-            type="number"
-            controlName="weight"
-            [form]="form"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="3" size="12">
-          <app-input-reactive
-            title="Hire/Rent Cost ({{ company.currency.symbol }})"
-            type="number"
-            controlName="hireCost"
-            [form]="form"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="3" size="12">
-          <app-input-reactive
-            title="Replacement Cost ({{ company.currency.symbol }})"
-            type="number"
-            controlName="replacementCost"
-            [form]="form"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="3" size="12">
-          <app-input-reactive
-            title="Selling Cost ({{ company.currency.symbol }})"
-            type="number"
-            controlName="sellingCost"
-            [form]="form"
-          >
-          </app-input-reactive>
-        </ion-col>
         <ion-col size="12" class="text-end">
           <ion-progress-bar
             type="indeterminate"
@@ -244,115 +242,66 @@
         </ion-col>
       </ion-row>
 
+      <!-- movement section start -->
       <ng-container *ngIf="isEdit">
-        <app-title-block>Uploads</app-title-block>
-        <ion-row class="card-outline mb-3">
-          <ion-col size="12">
-            <app-multiuploader></app-multiuploader>
-          </ion-col>
-        </ion-row>
-
         <app-title-block>Manage Qty</app-title-block>
-        <ion-row class="card-outline mb-3" *ngIf="!uploading">
-          <!-- Reusable Component for Quantity Operations -->
-          <ng-container *ngFor="let operation of operations; let i = index">
-            <ion-col [sizeMd]="i > 1 ? 4 : 6" size="12" class="mb-3">
-              <app-input-text
-                [title]="operation.title"
-                [type]="'number'"
-                [value]="operation.value"
-                (fieldChange)="operation.onChange($event)"
-              ></app-input-text>
-              <app-input-text
-                title="Comment"
-                [optional]="true"
-                (fieldChange)="comment = $event"
-              ></app-input-text>
-              <ion-button
-                class="float-end"
-                [size]="'small'"
-                [color]="operation.color"
-                [shape]="'round'"
-                (click)="operation.onClick()"
-              >
-                {{ operation.buttonLabel }}
-              </ion-button>
-            </ion-col>
-          </ng-container>
-
-          <!-- Conditional Button for Damaged Items -->
-          <!-- <ion-col sizeMd="4" size="12" *ngIf="inventoryItem.damagedQty > 0">
-            <div class="h-100 d-flex justify-content-center align-items-center">
-              <ion-button
-                class="my-auto w-100 h-100"
-                mode="ios"
-                fill="outline"
-                (click)="repurpose()"
-              >
-                Repurpose Damaged Items
-              </ion-button>
-            </div>
-          </ion-col> -->
-        </ion-row>
-
-        <app-title-block>Log history</app-title-block>
-        <ion-row class="card-outline mb-3">
-          <ion-col size="12">
-            <div class="table-responsive">
-              <table class="table table-sm table-bordered">
-                <thead>
-                  <tr class="table-light align-middle text-center">
-                    <th>#</th>
-                    <th class="text-start">Status</th>
-                    <th class="text-start">Comment</th>
-                    <th class="text-start">Uploads</th>
-                    <th>User</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <ng-container
-                    *ngFor="let log of inventoryItem.log; let i = index"
-                  >
-                    <tr class="small text-center align-middle">
-                      <td>{{ i + 1 }}</td>
-                      <td
-                        class="text-start"
-                        [ngClass]="
-                          log.status === 'add'
-                            ? 'text-success'
-                            : log.status === 'remove'
-                            ? 'text-danger'
-                            : 'text-warning'
-                        "
-                      >
-                        {{ log.message }}
-                      </td>
-                      <td class="text-start">
-                        {{ log.comment }}
-                      </td>
-                      <td>
-                        <div *ngFor="let item of log.uploads">
-                          <a
-                            [href]="item.downloadUrl"
-                            target="_blank"
-                            [download]="true"
-                            >{{ item.file }}</a
-                          >
-                        </div>
-                      </td>
-                      <td>{{ log.user.name }}</td>
-                      <td>
-                        {{ log.date | dateFormat | date : "dd/MM/yy HH:mm" }}
-                      </td>
-                    </tr>
-                  </ng-container>
-                </tbody>
-              </table>
-            </div>
-          </ion-col>
-        </ion-row>
+        <app-inventory-movement
+          [inventoryItem]="inventoryItem"
+          (movementCompleted)="onMovementCompleted($event)"
+        >
+        </app-inventory-movement>
       </ng-container>
+      <!-- movement section end -->
+
+      <ion-row *ngIf="isEdit">
+        <ion-col size="12">
+          <app-title-block>Log history</app-title-block>
+          <div class="mt-3 table-responsive card-outline">
+            <table class="table table-sm table-bordered">
+              <thead>
+                <tr class="table-light align-middle text-center">
+                  <th>#</th>
+                  <th class="text-start">Status</th>
+                  <th class="text-start">Comment</th>
+                  <th>User</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="let log of inventoryItem.log; let i = index"
+                >
+                  <tr class="small text-center align-middle">
+                    <td>{{ i + 1 }}</td>
+                    <td
+                      class="text-start"
+                      [ngClass]="
+                        log.status === 'add'
+                          ? 'text-success'
+                          : log.status === 'remove'
+                          ? 'text-danger'
+                          : 'text-warning'
+                      "
+                    >
+                      {{ log.message }}
+                    </td>
+                    <td class="text-start">
+                      {{ log.comment }}
+                    </td>
+                    <td>{{ log.user.name }}</td>
+                    <td>
+                      {{
+                        (log.date.toDate ? log.date.toDate() : log.date)
+                          | date : "dd/MM/yy HH:mm"
+                      }}
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </ion-col>
+      </ion-row>
     </ion-grid>
   </form>
 </ion-content>

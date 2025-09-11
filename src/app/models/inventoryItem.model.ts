@@ -1,47 +1,58 @@
 import { Category } from './componentTypes.model';
-import { UploadedFile } from './uploadedFile.model';
 
-export interface CrossHire {
-  company?: string;
-  qty?: number;
-  notes?: string;
-  date?: any;
-}
 export interface InventoryItem {
   id?: string;
-  code?: string;
-  categoryType?: Category;
-  category?: string;
-  size?: string;
-  name?: string;
-  location?: string;
-  hireCost?: number;
-  replacementCost?: number;
-  sellingCost?: number;
-  weight?: number;
   availableQty?: number;
-  yardQty?: number;
-  crossHireQty?: number;
-  inUseQty?: number;
-  inMaintenanceQty?: number;
-  damagedQty?: number;
-  lostQty?: number;
-  shipmentQty?: number;
-  reservedQty?: number;
-  reversedQty?: number;
-  overageBalanceQty?: number;
-  returnQty?: number;
-  crossHire?: CrossHire[];
-  sellQty?: number;
-  error?: boolean;
-  totalCost?: number;
-  log?: any[];
+  calculatedAvailableQty?: number;
+  category?: string;
+  categoryType?: Category;
   checked?: boolean;
+  code?: string;
+  damagedQty?: number;
   deficit?: number;
+  error?: boolean;
+  hireCost?: number;
+  inMaintenanceQty?: number;
+  inUseQty?: number;
+  location?: string;
+  log?: any[];
+  lostQty?: number;
+  resizedQty?: number;
+  lowLevel?: number;
+  lowPercentage?: number;
+  name?: string;
+  overageBalanceQty?: number;
+  replacementCost?: number;
+  reservedQty?: number;
+  returnQty?: number;
+  reversedQty?: number;
+  sellQty?: number;
+  sellingCost?: number;
+  shipmentQty?: number;
+  orderQty?: number;
+  deliveredQty?: number;
+  size?: string;
+  totalCost?: number;
+  weight?: number;
+  yardQty?: number;
+
+  storageQty?: number;
+  storageType?: string;
+
+  hasMetaUpdate?: boolean;
+
+  // New tracking fields
+  totalDelivered?: number;
+  totalReturned?: number;
+  totalTransferredIn?: number;
+  totalTransferredOut?: number;
+  totalOverages?: number;
+  lastMovementDate?: any;
+  lastMovementType?: string;
+
+  type?: string;
+  supplier?: string;
   duration?: number;
-  uploads?: UploadedFile[];
   forInvoice?: boolean;
   total?: number;
-  calculatedAvailableQty?: number;
-  supplier?: string;
 }

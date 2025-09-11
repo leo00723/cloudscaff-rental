@@ -1,0 +1,254 @@
+<ion-grid
+  *ngIf="
+    inventoryItem && inventoryItem.yardQty !== undefined;
+    else loadingTemplate
+  "
+>
+  <ion-row class="card-outline ion-text-center">
+    <ion-col>
+      <div class="quantity-display available">
+        <h3>{{ calculateAvailableQty() }}</h3>
+        <p>Available</p>
+      </div>
+    </ion-col>
+    <ion-col>
+      <div class="quantity-display maintenance">
+        <h3>{{ inventoryItem.inMaintenanceQty || 0 }}</h3>
+        <p>Maintenance</p>
+      </div>
+    </ion-col>
+    <ion-col>
+      <div class="quantity-display damaged">
+        <h3>{{ inventoryItem.damagedQty || 0 }}</h3>
+        <p>Damaged</p>
+      </div>
+    </ion-col>
+    <ion-col>
+      <div class="quantity-display lost">
+        <h3>{{ inventoryItem.lostQty || 0 }}</h3>
+        <p>Lost</p>
+      </div>
+    </ion-col>
+    <ion-col>
+      <div class="quantity-display resized">
+        <h3>{{ inventoryItem.resizedQty || 0 }}</h3>
+        <p>Resized</p>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <!-- Movement Form -->
+
+  <app-title-block>Move Inventory</app-title-block>
+
+  <ion-row class="card-outline">
+    <!-- Operation Type Selection -->
+    <!-- <ion-col size="12">
+            <ion-item>
+              <ion-label position="stacked">Operation Type *</ion-label>
+              <ion-select
+                [(ngModel)]="movementOperation.type"
+                (ionChange)="onOperationTypeChange()"
+                placeholder="Select operation type"
+              >
+                <ion-select-option value="move">
+                  Move Between Categories
+                </ion-select-option>
+                <ion-select-option
+                  value="remove-lost"
+                  [disabled]="(inventoryItem.lostQty || 0) === 0"
+                >
+                  Remove Lost Items ({{ inventoryItem.lostQty || 0 }} available)
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col> -->
+
+    <!-- From Selection -->
+    <ion-col sizeMd="6" size="12" *ngIf="movementOperation.type === 'move'">
+      <ion-item>
+        <ion-label position="stacked">From *</ion-label>
+        <ion-select
+          mode="ios"
+          [(ngModel)]="movementOperation.from"
+          (ionChange)="onFromChange()"
+          placeholder="Select source"
+          interface="popover"
+        >
+          <ion-select-option
+            *ngFor="let option of getFromOptions()"
+            [value]="option.value"
+          >
+            {{ option.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-note *ngIf="getFromOptions().length === 0" color="warning">
+        No inventory available to move. Check item quantities.
+      </ion-note>
+    </ion-col>
+
+    <!-- To Selection -->
+    <ion-col sizeMd="6" size="12" *ngIf="movementOperation.type === 'move'">
+      <ion-item>
+        <ion-label position="stacked">To *</ion-label>
+        <ion-select
+          mode="ios"
+          [(ngModel)]="movementOperation.to"
+          [disabled]="!movementOperation.from"
+          placeholder="Select destination"
+          interface="popover"
+        >
+          <ion-select-option
+            *ngFor="let option of getToOptions()"
+            [value]="option.value"
+          >
+            {{ option.label }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+
+    <!-- Quantity Input -->
+    <ion-col size="12">
+      <ion-item>
+        <ion-label position="stacked">Quantity *</ion-label>
+        <ion-input
+          type="number"
+          inputmode="numeric"
+          [(ngModel)]="movementOperation.quantity"
+          (ionInput)="onQuantityChange()"
+          [disabled]="
+            movementOperation.type === 'move' && !movementOperation.from
+          "
+          [max]="getMaxMovableQuantity()"
+          min="1"
+          placeholder="Enter quantity"
+        >
+        </ion-input>
+        <ion-button
+          slot="end"
+          shape="round"
+          color="tertiary"
+          fill="outline"
+          size="small"
+          [disabled]="
+            (movementOperation.type === 'move' && !movementOperation.from) ||
+            getMaxMovableQuantity() === 0
+          "
+          (click)="setMaxQuantity()"
+        >
+          Use Max
+        </ion-button>
+      </ion-item>
+      <ion-note
+        *ngIf="movementOperation.type === 'move' && movementOperation.from"
+        color="medium"
+      >
+        Max available: {{ getMaxMovableQuantity() }}
+      </ion-note>
+      <ion-note *ngIf="movementOperation.type === 'remove-lost'" color="medium">
+        Max lost items: {{ getMaxMovableQuantity() }}
+      </ion-note>
+    </ion-col>
+
+    <!-- Comment -->
+    <ion-col size="12">
+      <ion-item>
+        <ion-label position="stacked">Comment *</ion-label>
+        <ion-textarea
+          [(ngModel)]="movementOperation.comment"
+          placeholder="Enter reason for movement"
+          rows="3"
+        >
+        </ion-textarea>
+      </ion-item>
+    </ion-col>
+
+    <!-- Preview -->
+    <ion-col size="12" *ngIf="isValidMovement()">
+      <ion-card color="light">
+        <ion-card-content>
+          <div class="movement-preview">
+            <ion-icon
+              name="information-circle-outline"
+              color="primary"
+            ></ion-icon>
+            <strong>Preview:</strong> {{ getMovementPreview() }}
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+
+    <!-- Action Buttons -->
+    <ion-col size="12">
+      <div class="text-end">
+        <ion-button
+          shape="round"
+          color="danger"
+          fill="outline"
+          [disabled]="loading"
+          (click)="resetMovementForm()"
+        >
+          Reset Form
+        </ion-button>
+        <ion-button
+          shape="round"
+          color="success"
+          [disabled]="!isValidMovement() || loading"
+          (click)="executeMovement()"
+        >
+          <ion-spinner *ngIf="loading" slot="start" name="crescent">
+          </ion-spinner>
+          {{ loading ? "Processing..." : "Approve" }}
+        </ion-button>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <!-- Validation Messages -->
+  <ion-card
+    *ngIf="movementOperation.quantity > 0 && !isValidMovement()"
+    color="danger"
+  >
+    <ion-card-content>
+      <div class="validation-message">
+        <ion-icon name="warning-outline"></ion-icon>
+        <span *ngIf="movementOperation.quantity > getMaxMovableQuantity()">
+          Insufficient quantity. Maximum available:
+          {{ getMaxMovableQuantity() }}
+        </span>
+        <span *ngIf="!movementOperation.comment.trim()">
+          Comment is required for all operations
+        </span>
+        <span
+          *ngIf="
+            movementOperation.type === 'move' &&
+            movementOperation.from === movementOperation.to
+          "
+        >
+          Source and destination cannot be the same
+        </span>
+        <span
+          *ngIf="
+            movementOperation.type === 'move' &&
+            (!movementOperation.from || !movementOperation.to)
+          "
+        >
+          Please select both source and destination
+        </span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-grid>
+
+<ng-template #loadingTemplate>
+  <ion-card>
+    <ion-card-content>
+      <div class="ion-text-center">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading inventory data...</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ng-template>

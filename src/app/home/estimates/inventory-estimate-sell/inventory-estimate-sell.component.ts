@@ -323,7 +323,7 @@ export class InventoryEstimateSellComponent implements OnInit, OnDestroy {
           items.forEach((dbItem) => {
             dbItem.sellQty = null;
             delete dbItem.log;
-            delete dbItem.crossHire;
+            // delete dbItem.crossHire;
           });
           this.inventoryEstimate.items.forEach((item) => {
             const inventoryItem = items.find((i) => i.id === item.id);

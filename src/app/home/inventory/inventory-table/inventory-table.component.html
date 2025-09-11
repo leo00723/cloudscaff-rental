@@ -117,7 +117,8 @@
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
-    name="Code"
+    name="Item Code"
+    prop="code"
     [checkboxable]="false"
     cellClass="my-auto"
   ></ngx-datatable-column>
@@ -125,7 +126,7 @@
     name="Category"
     cellClass="my-auto"
   ></ngx-datatable-column>
-  <ngx-datatable-column name="Size" cellClass="my-auto"></ngx-datatable-column>
+  <!-- <ngx-datatable-column name="Size" cellClass="my-auto"></ngx-datatable-column> -->
   <ngx-datatable-column name="Description" prop="name" cellClass="my-auto">
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -223,7 +224,8 @@
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
-    name="Hire Cost"
+    name="Hire/Rent Cost (Daily)"
+    prop="hireCost"
     cellClass="text-end my-auto"
     headerClass="text-end"
   >
@@ -247,6 +249,15 @@
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    name="Type"
+    cellClass="text-center my-auto"
+    headerClass="text-center"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-badge mode="ios" color="tertiary">{{ value }}</ion-badge>
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>

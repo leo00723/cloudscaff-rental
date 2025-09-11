@@ -88,6 +88,7 @@ import { TransactionOverReturnComponent } from './transaction-over-return/transa
 import { DateFormatPipe } from './date-format.pipe';
 import { JobReferenceManagerComponent } from './job-reference-number-manager/job-reference-number-manager.component';
 import { JobReferenceCustomItemComponent } from './job-reference-custom-item/job-reference-custom-item.component';
+import { InventoryMovementComponent } from './inventory-movement/inventory-movement.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -140,6 +141,7 @@ const COMPONENTS = [
   JobReferenceTableComponent,
   PagePlaceholderComponent,
   RepurposeInventoryComponent,
+  InventoryMovementComponent,
   RequestsTableComponent,
   ReturnsTableComponent,
   SITableComponent,

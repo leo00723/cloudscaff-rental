@@ -7,6 +7,7 @@ import { MasterService } from 'src/app/services/master.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import cloneDeep from 'lodash/cloneDeep';
+import { orderBy } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-repurpose-inventory',
@@ -26,11 +27,11 @@ export class RepurposeInventoryComponent implements OnInit {
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
     this.inventoryItems$ = this.masterSvc
       .edit()
-      .getCollectionOrdered(
-        `company/${this.company.id}/stockItems`,
-        'code',
-        'asc'
-      )
+      .getCollectionFiltered(`company/${this.company.id}/stockItems`, [
+        orderBy('category', 'asc'),
+        orderBy('name', 'asc'),
+        orderBy('size', 'asc'),
+      ])
       .pipe(
         map((items) =>
           items.map((item) => ({
@@ -50,7 +51,7 @@ export class RepurposeInventoryComponent implements OnInit {
     item.yardQty = +item.yardQty + addQty;
     item.availableQty = +item.yardQty;
     const log = {
-      message: `${this.user.name} added ${addQty} items to the yard.`,
+      message: `Added ${addQty} items to Total Qty.`,
       user: this.user,
       date: new Date(),
       status: 'add',
@@ -76,7 +77,7 @@ export class RepurposeInventoryComponent implements OnInit {
     } else {
       item.damagedQty = damagedQty - removeQty;
       const log = {
-        message: `${this.user.name} repurposed ${removeQty} damaged items.`,
+        message: `Repurposed ${removeQty} damaged items.`,
         user: this.user,
         date: new Date(),
         status: 'remove',
