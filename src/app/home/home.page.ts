@@ -22,12 +22,12 @@ export class HomePage implements OnDestroy {
     //   url: '/dashboard/view',
     //   icon: 'home',
     // },
-    {
-      title: 'Enquiries',
-      permission: 'Enquiries',
-      url: '/dashboard/enquiries',
-      icon: 'reader-outline',
-    },
+    // {
+    //   title: 'Enquiries',
+    //   permission: 'Enquiries',
+    //   url: '/dashboard/enquiries',
+    //   icon: 'reader-outline',
+    // },
     // {
     //   title: 'Estimates',
     //   permission: 'Estimates',

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { increment } from '@angular/fire/firestore';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
@@ -31,7 +32,28 @@ export class CustomerComponent {
     },
   };
 
-  protected customerData: Customer = { uploads: [] };
+  protected customerData: Customer = {
+    uploads: [],
+    checklistItems: [
+      {
+        name: 'Add PDF ABN look up - https://abr.business.gov.au/',
+        enabled: false,
+      },
+      {
+        name: 'Completed credit application - Request from Accounts',
+        enabled: false,
+      },
+      {
+        name: 'Process/welcome email sent - Dry hire Email template',
+        enabled: false,
+      },
+      {
+        name: 'Phone Call to head office to confirm all details (accounts email, PO Needed etc )',
+        enabled: false,
+      },
+      { name: 'Ensure all details are entered correctly', enabled: false },
+    ],
+  };
   @Output() newCustomer = new EventEmitter<Customer>();
   @Input() isUpdate = false;
   @Input() isDelete = false;
@@ -49,6 +71,7 @@ export class CustomerComponent {
 
   form: FormGroup;
   loading = false;
+  codeGenerated = false;
   protected user: User;
   protected company: Company;
 
@@ -60,6 +83,9 @@ export class CustomerComponent {
     this.form = this.createCustomerForm();
     this.user = this.masterSvc.store().selectSnapshot(UserState.user);
     this.company = this.masterSvc.store().selectSnapshot(CompanyState.company);
+    if (this.isCreate) {
+      this.addRep();
+    }
   }
 
   private createCustomerForm(customerData?: Customer): FormGroup {
@@ -89,6 +115,8 @@ export class CustomerComponent {
       discountPercentage: [customerData?.discountPercentage || 0],
       minHire: [customerData?.minHire || 28],
       poRequired: [customerData?.poRequired || ''],
+      billingTerms: [customerData?.billingTerms || ''],
+      status: [customerData?.status || ''],
       reps: this.masterSvc.fb().array([]),
     });
   }
@@ -174,6 +202,12 @@ export class CustomerComponent {
           this.form.reset();
         }
       );
+
+      if (this.codeGenerated) {
+        this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalCustomers: increment(1),
+        });
+      }
     });
   }
 
@@ -194,6 +228,12 @@ export class CustomerComponent {
         CustomerComponent.MESSAGES.SUCCESS.UPDATE,
         CustomerComponent.MESSAGES.ERROR.UPDATE
       );
+
+      if (this.codeGenerated) {
+        this.masterSvc.edit().updateDoc('company', this.company.id, {
+          totalCustomers: increment(1),
+        });
+      }
     });
   }
 
@@ -258,5 +298,25 @@ export class CustomerComponent {
 
   updateAddress(address: Address): void {
     this.form.patchValue(address);
+  }
+
+  generateCode(): void {
+    const prefix: string = this.field('name').value;
+    const totalCustomers = this.company?.totalCustomers + 1 || 1;
+    const code =
+      prefix.replace(/\s+/g, '').toUpperCase().substring(0, 3) +
+      totalCustomers.toString().padStart(3, '0');
+
+    this.codeGenerated = true;
+
+    this.field('code').setValue(code);
+  }
+  getChecklistCount() {
+    return `${
+      this.customerData.checklistItems?.filter((item) => item.enabled).length
+    }/${this.customerData.checklistItems?.length}`;
+  }
+  toggleChecklist(ev: any, item) {
+    item.enabled = ev.detail.checked;
   }
 }

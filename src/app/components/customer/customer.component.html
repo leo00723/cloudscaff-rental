@@ -7,15 +7,8 @@
       <ion-row class="card-outline my-3" slot="content">
         <ion-col sizeMd="4" size="12">
           <app-input-reactive
-            title="Customer Code"
-            [form]="form"
-            controlName="code"
-            [readonly]="readOnly"
-          ></app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="4" size="12">
-          <app-input-reactive
-            title="Legal Entity Name (As shown on ABN Lookup)"
+            title="Legal Entity Name"
+            tooltip="(As shown on ABN Lookup)"
             [form]="form"
             controlName="name"
             [readonly]="readOnly"
@@ -23,13 +16,26 @@
         </ion-col>
         <ion-col sizeMd="4" size="12">
           <app-input-reactive
-            title="Trading Name (Known as Name)"
+            title="Trading Name"
+            tooltip="(Known as Name)"
             [form]="form"
             controlName="tradingName"
             [readonly]="readOnly"
           ></app-input-reactive>
         </ion-col>
-
+        <ion-col sizeMd="3" size="1.5">
+          <app-input-reactive
+            title="Customer Code"
+            [form]="form"
+            controlName="code"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="1" size=".5">
+          <ion-button color="primary" (click)="generateCode()" expand="block">
+            <ion-icon slot="icon-only" name="refresh"></ion-icon>
+          </ion-button>
+        </ion-col>
         <ion-col sizeMd="6" size="12">
           <app-input-reactive
             title="Main Office Email"
@@ -147,6 +153,22 @@
         <ion-label>Billing Settings</ion-label>
       </ion-item>
       <ion-row class="card-outline my-3" slot="content">
+        <ion-col size="12">
+          <app-input-select-reactive
+            title="Status"
+            placeholder="Select customer status"
+            controlName="status"
+            [form]="form"
+            [selectedText]="field('status').value"
+          >
+            <ion-select-option value="Blocked">Blocked</ion-select-option>
+            <ion-select-option value="Set up not yet completed"
+              >Set up not yet completed</ion-select-option
+            >
+            <ion-select-option value="On-Hold">On-Hold</ion-select-option>
+            <ion-select-option value="Active">Active</ion-select-option>
+          </app-input-select-reactive>
+        </ion-col>
         <!-- <ion-col size="12">
           <app-input-reactive
             title="{{ company?.gst ? 'GST Number' : 'VAT Number' }}"
@@ -196,6 +218,15 @@
               (ionChange)="poRequired($event)"
             ></ion-checkbox>
           </ion-item>
+        </ion-col>
+        <ion-col size="12">
+          <app-input-reactive
+            title="terms"
+            [form]="form"
+            controlName="billingTerms"
+            [textarea]="true"
+            [readonly]="readOnly"
+          ></app-input-reactive>
         </ion-col>
         <ion-col size="12">
           <ion-row
@@ -263,10 +294,25 @@
     <ion-accordion value="checkist">
       <ion-item slot="header" color="light">
         <ion-label>Customer Setup Checklist</ion-label>
-        <ion-chip slot="end">1/4</ion-chip>
+        <ion-chip slot="end">{{ getChecklistCount() }}</ion-chip>
       </ion-item>
-      <ion-row class="card-outline my-3" slot="content">
-        <ion-col size="12"> </ion-col>
+      <ion-row class="card-outline mb-3" slot="content">
+        <ion-col size="12">
+          <ion-item
+            fill="solid"
+            lines="full"
+            class="rounded-3 mb-3"
+            *ngFor="let item of customerData.checklistItems; let i = index"
+          >
+            <ion-label text-wrap>{{ i + 1 }}. {{ item.name }}</ion-label>
+            <ion-checkbox
+              mode="ios"
+              slot="end"
+              [checked]="item?.enabled"
+              (ionChange)="toggleChecklist($event, item)"
+            ></ion-checkbox>
+          </ion-item>
+        </ion-col>
       </ion-row>
     </ion-accordion>
     <ion-accordion value="uploads">

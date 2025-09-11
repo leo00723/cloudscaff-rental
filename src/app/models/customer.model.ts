@@ -25,6 +25,9 @@ export interface Customer {
   discountPercentage?: number;
   minHire?: number;
   poRequired?: boolean;
+  billingTerms?: string;
+
+  checklistItems?: any[];
 
   status?: boolean;
 

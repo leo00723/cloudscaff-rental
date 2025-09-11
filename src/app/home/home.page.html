@@ -102,7 +102,7 @@
     </ion-list>
     <ion-list id="labels-list">
       <ion-menu-toggle auto-hide="false">
-        <ion-item
+        <!-- <ion-item
           href="https://billing.stripe.com/p/login/00gaHp4Nkac2gRq8ww"
           target="_blank"
           lines="none"
@@ -110,6 +110,18 @@
         >
           <ion-icon slot="start" name="card-outline"></ion-icon>
           <ion-label>Manage Subscription</ion-label>
+        </ion-item> -->
+        <ion-item
+          routerDirection="root"
+          routerLinkActive="selected"
+          routerLink="/dashboard/settings/customers"
+          [replaceUrl]="true"
+          lines="none"
+          detail="false"
+          *ngIf="user.permissionsList.includes('Settings') || user.permissionsList.includes('Super Admin') || user.role === 'Owner'"
+        >
+          <ion-icon slot="start" name="people-outline"></ion-icon>
+          <ion-label>Customers</ion-label>
         </ion-item>
         <ion-item
           routerDirection="root"
