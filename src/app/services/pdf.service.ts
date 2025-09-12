@@ -3100,42 +3100,18 @@ export class PdfService {
   // DELIVERY INVENTORY PDF
   async delivery(delivery: Delivery, company: Company, terms: Term | null) {
     const summary = this.createShipmentTable(delivery.items);
-    const signature1 = delivery.signature
-      ? {
-          image: await this.getBase64ImageFromURL(
-            delivery.signature,
-            300,
-            200,
-            0.6,
-            true
-          ),
-          width: 100,
-          alignment: 'right',
-        }
-      : {
-          text: 'Needs Signature',
-          style: 'h4b',
-          alignment: 'Right',
-          color: 'red',
-        };
-    const signature2 = delivery.signature2
-      ? {
-          image: await this.getBase64ImageFromURL(
-            delivery.signature2,
-            300,
-            200,
-            0.6,
-            true
-          ),
-          width: 100,
-          alignment: 'right',
-        }
-      : {
-          text: 'Needs Signature',
-          style: 'h4b',
-          alignment: 'Right',
-          color: 'red',
-        };
+    const signature1 = {
+      text: '',
+      style: 'h4b',
+      alignment: 'Right',
+      color: 'red',
+    };
+    const signature2 = {
+      text: '',
+      style: 'h4b',
+      alignment: 'Right',
+      color: 'red',
+    };
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
@@ -3148,9 +3124,9 @@ export class PdfService {
           style: ['h4b'],
         },
         await this.getHeader(
-          `Delivery Note - ${delivery.jobReference}`,
+          `Delivery Note - JR - ${delivery.jobReference}`,
           delivery.code,
-          delivery.site.code,
+          delivery.site.name,
           delivery.date,
           company.logoUrl.length > 0
             ? company.logoUrl
@@ -3722,7 +3698,13 @@ export class PdfService {
           alignment: 'left',
         },
         { text: item.name, style: 'h4b', alignment: 'left' },
-        // { text: item.location, style: 'h4b', alignment: 'left' },
+        {
+          text: this.decimalPipe.transform(
+            (+item?.weight || 0) * (+item?.shipmentQty || 0)
+          ),
+          style: 'h4b',
+          alignment: 'center',
+        },
         { text: item.shipmentQty, style: 'h4b', alignment: 'center' },
         { text: '', style: 'h4b', alignment: 'center' },
       ]);
@@ -3732,7 +3714,7 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto'],
+        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
 
         body: [
           [
@@ -3743,7 +3725,7 @@ export class PdfService {
               alignment: 'left',
             },
             { text: 'Name', style: 'h4b', alignment: 'left' },
-            // { text: 'Location', style: 'h4b', alignment: 'left' },
+            { text: 'Weight', style: 'h4b', alignment: 'left' },
             { text: 'Qty Needed', style: 'h4b', alignment: 'center' },
             { text: 'Picked Qty', style: 'h4b', alignment: 'center' },
           ],
@@ -3764,7 +3746,7 @@ export class PdfService {
           style: ['h4b'],
         },
         await this.getHeader(
-          `Picklist - ${docData.jobReference}`,
+          `Picklist - JR - ${docData.jobReference}`,
           docData.code,
           docData.site.name,
           new Date(),
@@ -3773,18 +3755,27 @@ export class PdfService {
             : 'assets/icon/default.webp',
           null,
           [
-            [
-              { text: 'Site Code', style: 'h6b' },
-              `${docData?.site.code || 'N/A'}`,
-              '',
-              '',
-            ],
+            // [
+            //   { text: 'Site Code', style: 'h6b' },
+            //   `${docData?.site.code || 'N/A'}`,
+            //   '',
+            //   '',
+            // ],
           ]
         ),
         hr,
         { text: docData.notes },
         hr,
         summary,
+        hr,
+        {
+          text: `Total Weight : ${this.weightPipe.transform(
+            docData.items,
+            true
+          )}`,
+          style: ['h3', 'mt3'],
+          alignment: 'right',
+        },
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
