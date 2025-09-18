@@ -86,7 +86,7 @@ export class CustomerComponent {
     if (this.isCreate) {
       this.addRep();
     }
-    this.form.markAllAsTouched()
+    this.form.markAllAsTouched();
   }
 
   private createCustomerForm(customerData?: Customer): FormGroup {
@@ -115,7 +115,7 @@ export class CustomerComponent {
       excludeVAT: [customerData?.excludeVAT || ''],
       discountPercentage: [customerData?.discountPercentage || 0],
       minHire: [customerData?.minHire || 28],
-      poRequired: [customerData?.poRequired || ''],
+      poRequired: [customerData?.poRequired || false],
       paymentDays: [customerData?.paymentDays || ''],
       status: [customerData?.status || ''],
       reps: this.masterSvc.fb().array([]),
