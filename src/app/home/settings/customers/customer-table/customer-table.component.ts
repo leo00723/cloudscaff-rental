@@ -53,4 +53,19 @@ export class CustomerTableComponent {
     );
     this.table.offset = 0;
   }
+
+  getStatus(status: string) {
+    switch (status) {
+      case 'Active':
+        return 'success';
+      case 'On-Hold':
+        return 'tertiary';
+      case 'Set up not yet completed':
+        return 'warning';
+      case 'Blocked':
+        return 'danger';
+      default:
+        return 'primary';
+    }
+  }
 }

@@ -23,18 +23,22 @@
             [readonly]="readOnly"
           ></app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="3" size="1.5">
+        <ion-col sizeMd="4" size="11">
           <app-input-reactive
             title="Customer Code"
             [form]="form"
             controlName="code"
             [readonly]="readOnly"
-          ></app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="1" size=".5">
-          <ion-button color="primary" (click)="generateCode()" expand="block">
-            <ion-icon slot="icon-only" name="refresh"></ion-icon>
-          </ion-button>
+          >
+            <ion-button
+              shape="round"
+              slot="end"
+              color="primary"
+              (click)="generateCode()"
+            >
+              <ion-icon slot="icon-only" name="refresh"></ion-icon>
+            </ion-button>
+          </app-input-reactive>
         </ion-col>
         <ion-col sizeMd="6" size="12">
           <app-input-reactive
@@ -178,7 +182,7 @@
             [readonly]="readOnly"
           ></app-input-reactive>
         </ion-col> -->
-        <ion-col sizeMd="6" size="12">
+        <ion-col sizeMd="4" size="12">
           <app-input-reactive
             title="Discount Percentage (%)"
             [form]="form"
@@ -187,12 +191,23 @@
             [readonly]="readOnly"
           ></app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="6" size="12">
+        <ion-col sizeMd="4" size="12">
           <app-input-reactive
-            title="Minimum Hire (Days)"
+            title="Minimum Hire"
+            tooltip="(Days)"
             [form]="form"
             controlName="minHire"
             type="number"
+            [readonly]="readOnly"
+          ></app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="4" size="12">
+          <app-input-reactive
+            title="Days to Pay"
+            [form]="form"
+            tooltip="(Days)"
+            controlName="paymentDays"
+            inputmode="numeric"
             [readonly]="readOnly"
           ></app-input-reactive>
         </ion-col>
@@ -219,15 +234,7 @@
             ></ion-checkbox>
           </ion-item>
         </ion-col>
-        <ion-col size="12">
-          <app-input-reactive
-            title="terms"
-            [form]="form"
-            controlName="billingTerms"
-            [textarea]="true"
-            [readonly]="readOnly"
-          ></app-input-reactive>
-        </ion-col>
+
         <ion-col size="12">
           <ion-row
             formArrayName="reps"
@@ -382,7 +389,7 @@
         type="submit"
         fill="solid"
         color="success"
-        [disabled]="form.invalid"
+        [disabled]="form.invalid || getChecklistCount() !== '5/5'"
         (click)="create()"
         >Create Customer
       </ion-button>

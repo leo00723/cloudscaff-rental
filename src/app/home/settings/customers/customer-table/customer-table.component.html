@@ -46,6 +46,14 @@
       name="ABN Number"
       prop="abnNumber"
     ></ngx-datatable-column>
-    <ngx-datatable-column name="Status"></ngx-datatable-column>
+    <ngx-datatable-column name="Status">
+      <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+        <div>
+          <ion-badge [color]="getStatus(value)" mode="ios" *ngIf="value">{{
+            value
+          }}</ion-badge>
+        </div>
+      </ng-template>
+    </ngx-datatable-column>
   </ngx-datatable>
 </div>
