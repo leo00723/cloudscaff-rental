@@ -31,6 +31,7 @@ import { EstimateV2 } from 'src/app/models/estimate-v2.model';
 import { UserState } from 'src/app/shared/user/user.state';
 import { AlertController, LoadingController } from '@ionic/angular';
 import * as XLSX from 'xlsx';
+import { JobReferenceFormComponent } from './job-reference-form/job-reference-form.component';
 
 @Component({
   selector: 'app-view-site',
@@ -408,105 +409,16 @@ export class ViewSitePage implements OnInit, OnDestroy {
   }
 
   async addJobReference(site: Site) {
-    const alert = await this.alertController.create({
-      header: 'Please enter Job Reference',
-      subHeader:
-        'This can be a PO number, Work Area, Work Zone, Phase, Job Tracking Number, or Invoice Number.',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'OK',
-          role: 'confirm',
-        },
-      ],
-      inputs: [
-        {
-          type: 'text',
-          placeholder: 'Job Reference',
-          attributes: {
-            minlength: 1,
-          },
-        },
-      ],
-      mode: 'ios',
+    //start the acceptance process
+    const modal = await this.masterSvc.modal().create({
+      component: JobReferenceFormComponent,
+      componentProps: {
+        site,
+      },
+      id: 'jobReferenceForm',
+      cssClass: 'accept',
     });
-
-    await alert.present();
-    const { role, data } = await alert.onDidDismiss();
-
-    if (role !== 'confirm') {
-      return;
-    }
-
-    const jobReference = data?.values[0];
-    if (jobReference) {
-      this.createJobReference(site, jobReference);
-    } else {
-      this.addJobReference(site);
-      this.masterSvc
-        .notification()
-        .toast('Enter a valid Job Reference', 'danger');
-    }
-  }
-
-  createJobReference(site: Site, jobReference: string) {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      try {
-        const company = this.masterSvc
-          .store()
-          .selectSnapshot(CompanyState.company);
-        const user = this.masterSvc.store().selectSnapshot(UserState.user);
-        const estimate: EstimateV2 = {};
-        estimate.jobReference = jobReference;
-        estimate.siteId = site.id;
-        estimate.siteName = site.name;
-        estimate.customer = site.customer;
-        estimate.acceptedBy = user.name;
-        estimate.status = 'accepted';
-        estimate.items = [];
-
-        const jr: JobReference = {};
-        const code = this.masterSvc
-          .edit()
-          .generateDocCode(company.totalJobReferences, 'JR');
-        Object.assign(jr, {
-          estimate,
-          site,
-          createdBy: user.id,
-          createdByName: user.name,
-          jobReference,
-          code,
-          id: '',
-          date: new Date(),
-          status: 'pending',
-        });
-        await this.masterSvc
-          .edit()
-          .addDocument(`company/${company.id}/jobReferences`, jr);
-        await this.masterSvc.edit().updateDoc('company', company.id, {
-          totalJobReferences: increment(1),
-        });
-        await this.masterSvc
-          .edit()
-          .updateDoc(`company/${company.id}/sites`, site.id, {
-            jobReferenceList: arrayUnion(jobReference),
-          });
-        this.masterSvc
-          .notification()
-          .toast('Job Reference created successfully!', 'success');
-      } catch (err) {
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong creating your jr, try again!',
-            'danger',
-            2000
-          );
-      }
-    });
+    return await modal.present();
   }
 
   async viewJobReference(poData: JobReference, site: Site) {

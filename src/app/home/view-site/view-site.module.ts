@@ -5,6 +5,7 @@ import { JobReferenceComponent } from './job-reference/job-reference.component';
 import { SiteInventoryTableComponent } from './site-inventory-table/site-inventory-table.component';
 import { ViewSitePageRoutingModule } from './view-site-routing.module';
 import { ViewSitePage } from './view-site.page';
+import { JobReferenceFormComponent } from './job-reference-form/job-reference-form.component';
 
 @NgModule({
   imports: [ComponentsModule, ViewSitePageRoutingModule],
@@ -12,6 +13,7 @@ import { ViewSitePage } from './view-site.page';
     ViewSitePage,
     SiteInventoryTableComponent,
     JobReferenceComponent,
+    JobReferenceFormComponent,
   ],
   exports: [],
   providers: [],

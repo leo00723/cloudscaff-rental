@@ -29,7 +29,7 @@ export interface Customer {
 
   checklistItems?: any[];
 
-  status?: boolean;
+  status?: string;
 
   uploads?: UploadedFile[];
 

@@ -22,6 +22,7 @@ export class InputTextComponent implements OnInit {
   @Input() title: string;
   @Input() placeholder: string;
   @Input() type = 'text';
+  @Input() tooltip = '';
   @Input() reorder = false;
   @Input() readonly = false;
   @Input() optional = false;
