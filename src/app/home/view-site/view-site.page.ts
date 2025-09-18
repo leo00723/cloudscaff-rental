@@ -416,7 +416,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         site,
       },
       id: 'jobReferenceForm',
-      cssClass: 'accept',
+      cssClass: 'fullscreen',
     });
     return await modal.present();
   }

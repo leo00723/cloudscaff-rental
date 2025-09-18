@@ -14,86 +14,129 @@
 </ion-header>
 
 <ion-content class="ion-padding" [ngSwitch]="page">
-  <ion-row *ngSwitchDefault>
-    <ng-container *ngIf="site.customer.poRequired">
-      <ion-col size="12">
-        <ion-card color="danger">
-          <ion-card-content>
-            <ion-item lines="none" color="danger">
-              <ion-icon
-                name="alert-circle"
-                slot="start"
-                size="large"
-              ></ion-icon>
-              <ion-label>
-                <h2>
-                  <strong>PO Number is required for this customer</strong>
-                </h2>
-              </ion-label>
-            </ion-item>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ng-container>
-    <ng-container *ngIf="site.customer.status !== 'Active'">
-      <ion-col size="12">
-        <ion-card [color]="getStatus(site.customer.status)">
-          <ion-card-content>
-            <ion-item lines="none" [color]="getStatus(site.customer.status)">
-              <ion-icon
-                name="alert-circle"
-                slot="start"
-                size="large"
-              ></ion-icon>
-              <ion-label>
-                <h2><strong>This customer is not active</strong></h2>
-                <p>Status: {{ site.customer.status }}</p>
-                <p>Please contact admin if this is an error.</p>
-              </ion-label>
-            </ion-item>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ng-container>
-    <ion-col size="12">
-      <ion-note>
-        This can be a PO number, Work Area, Work Zone, Phase, Job Tracking
-        Number, or Invoice Number.
-      </ion-note>
-      <app-input-text
-        title="Job Reference"
-        type="text"
-        [value]="jobReference.jobReference"
-      ></app-input-text>
-    </ion-col>
-    <ion-col sizeMd="4" size="12">
-      <app-input-text
-        title="Discount (%)"
-        inputmode="numeric"
-        [value]="site.customer.discountPercentage"
-      ></app-input-text>
-    </ion-col>
-    <ion-col sizeMd="4" size="12">
-      <app-input-text
-        title="Minimum Hire"
-        tooltip="(days)"
-        inputmode="numeric"
-        [value]="site.customer.minHire"
-      ></app-input-text>
-    </ion-col>
-    <ion-col sizeMd="4" size="12">
-      <app-input-text
-        title="Days to Pay"
-        inputmode="numeric"
-        [value]="site.customer.paymentDays"
-      ></app-input-text>
-    </ion-col>
-  </ion-row>
-  <ion-row *ngSwitchCase="1"
-    >This can be a PO number, Work Area, Work Zone, Phase, Job Tracking Number,
-    or Invoice Number.
-  </ion-row>
-  <ion-row *ngSwitchCase="2"> </ion-row>
+  <div *ngSwitchDefault>
+    <!-- Alert Messages -->
+    <div
+      class="alerts-section"
+      *ngIf="site.customer.poRequired || site.customer.status !== 'Active'"
+    >
+      <!-- PO Required Alert -->
+      <ion-card
+        *ngIf="site.customer.poRequired"
+        color="danger"
+        class="ion-margin-bottom"
+      >
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="alert-circle" class="ion-margin-end"></ion-icon>
+            PO Number Required
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="ion-no-margin">
+            This customer requires a Purchase Order (PO) number for all
+            transactions.
+          </p>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Customer Status Alert -->
+      <ion-card
+        *ngIf="site.customer.status !== 'Active'"
+        [color]="getStatus(site.customer.status)"
+        class="ion-margin-bottom"
+      >
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="alert-circle" class="ion-margin-end"></ion-icon>
+            Customer Account Status
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p><strong>Status:</strong> {{ site.customer.status }}</p>
+          <p class="ion-no-margin">
+            This customer account is not currently active. Please contact your
+            administrator if this appears to be an error.
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Job Reference Form -->
+    <ion-card class="ion-margin-bottom">
+      <ion-card-header>
+        <ion-card-title>Job Reference Information</ion-card-title>
+        <ion-card-subtitle>
+          Enter the job reference details. This can be a PO number, Work Area,
+          Work Zone, Phase, Job Tracking Number, or Invoice Number.
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12">
+              <app-input-text
+                title="Job Reference"
+                type="text"
+                [value]="jobReference.jobReference"
+              ></app-input-text>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Customer Settings -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Customer Settings</ion-card-title>
+        <ion-card-subtitle
+          >Review and adjust customer-specific pricing and
+          terms</ion-card-subtitle
+        >
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-md="4">
+              <app-input-text
+                title="Discount (%)"
+                inputmode="numeric"
+                [value]="site.customer.discountPercentage"
+              ></app-input-text>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <app-input-text
+                title="Minimum Hire"
+                tooltip="(days)"
+                inputmode="numeric"
+                [value]="site.customer.minHire"
+              ></app-input-text>
+            </ion-col>
+            <ion-col size="12" size-md="4">
+              <app-input-text
+                title="Days to Pay"
+                inputmode="numeric"
+                [value]="site.customer.paymentDays"
+              ></app-input-text>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Additional Page Content (if needed) -->
+  <div *ngSwitchCase="1">
+    <ion-card>
+      <ion-card-content>
+        <p>
+          This can be a PO number, Work Area, Work Zone, Phase, Job Tracking
+          Number, or Invoice Number.
+        </p>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
 <ion-footer>
   <ion-toolbar>
@@ -105,7 +148,7 @@
         color="success"
         (click)="create()"
       >
-        Create
+        Create Job Reference
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
