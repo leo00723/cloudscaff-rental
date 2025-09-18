@@ -111,19 +111,19 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
 
   checkError(item: InventoryItem) {
-    // const totalQty = item.availableQty ? item.availableQty : 0;
-    // const inUseQty = item.inUseQty ? item.inUseQty : 0;
-    // const damaged = item.damagedQty ? item.damagedQty : 0;
-    // const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
+    const totalQty = item.availableQty ? item.availableQty : 0;
+    const inUseQty = item.inUseQty ? item.inUseQty : 0;
+    const damaged = item.damagedQty ? item.damagedQty : 0;
+    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
     // const lost = item.lostQty ? item.lostQty : 0;
-    // const availableQty = totalQty - inUseQty - damaged - maintenance - lost;
-    // if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
-    //   item.error = true;
-    //   this.error = true;
-    // } else {
-    //   item.error = false;
-    //   this.error = false;
-    // }
+    const availableQty = totalQty - inUseQty - damaged - maintenance;
+    if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
+      item.error = true;
+      this.error = true;
+    } else {
+      item.error = false;
+      this.error = false;
+    }
   }
 
   createShipment() {
@@ -591,6 +591,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           inventoryItem.shipmentQty = +item.shipmentQty;
           inventoryItem.checked = item.checked || false;
         }
+        this.checkError(inventoryItem);
       });
       this.items = items;
     } else {
