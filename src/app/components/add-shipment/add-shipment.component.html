@@ -477,7 +477,6 @@
         <tr>
           <th scope="col">Code</th>
           <th scope="col">Category</th>
-          <th scope="col">Size</th>
           <th scope="col">Name</th>
           <th scope="col" class="text-center">Location</th>
           <th
@@ -491,7 +490,7 @@
           <th scope="col" class="text-center">
             Weight ({{ company.mass.symbol }})
           </th>
-          <th scope="col" class="text-center">Item Checked</th>
+          <!-- <th scope="col" class="text-center">Item Checked</th> -->
         </tr>
       </thead>
       <tbody>
@@ -513,7 +512,6 @@
   >
     <th scope="row">{{ item.code }}</th>
     <td>{{ item.category }}</td>
-    <td>{{ item.size }}</td>
     <td>{{ item.name }}</td>
     <td class="text-center">{{ item?.location }}</td>
     <td class="text-center" *ngIf="shipment.status === 'pending'">
@@ -539,7 +537,7 @@
     <td class="text-end">
       {{ item.shipmentQty * item.weight | number }}
     </td>
-    <td class="text-center">
+    <!-- <td class="text-center">
       <ion-checkbox
         mode="ios"
         [checked]="item.checked"
@@ -547,7 +545,7 @@
         [disabled]="shipment.status === 'sent'"
       >
       </ion-checkbox>
-    </td>
+    </td> -->
   </tr>
 </ng-template>
 

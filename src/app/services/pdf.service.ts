@@ -3100,18 +3100,6 @@ export class PdfService {
   // DELIVERY INVENTORY PDF
   async delivery(delivery: Delivery, company: Company, terms: Term | null) {
     const summary = this.createShipmentTable(delivery.items);
-    const signature1 = {
-      text: '',
-      style: 'h4b',
-      alignment: 'Right',
-      color: 'red',
-    };
-    const signature2 = {
-      text: '',
-      style: 'h4b',
-      alignment: 'Right',
-      color: 'red',
-    };
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
@@ -3134,32 +3122,24 @@ export class PdfService {
           null,
           [
             [
-              { text: 'Site Address', style: 'h6b' },
-              `${delivery?.site.name || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
               { text: 'Job Reference:', style: 'h6b' },
               `${delivery?.jobReference || 'N/A'}`,
               '',
               '',
             ],
             [
-              { text: 'Driver:', style: 'h6b' },
-              `${delivery?.driverName || 'N/A'}`,
+              { text: 'Site Main Contact:', style: 'h6b' },
+              `${delivery?.companyRepName || 'N/A'}
+              ${delivery?.companyRepEmail || 'N/A'}
+              ${delivery?.companyRepContact || 'N/A'}`,
               '',
               '',
             ],
             [
-              { text: 'Driver Contact:', style: 'h6b' },
-              `${delivery?.driverNo || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'Vehicle Reg:', style: 'h6b' },
-              `${delivery?.vehicleReg || 'N/A'}`,
+              { text: 'Site Foreman:', style: 'h6b' },
+              `${delivery?.customerRepName || 'N/A'}
+              ${delivery?.customerRepEmail || 'N/A'}
+              ${delivery?.customerRepContact || 'N/A'}`,
               '',
               '',
             ],
@@ -3191,35 +3171,55 @@ export class PdfService {
             // headers are automatically repeated if the table spans over multiple pages
             // you can declare how many rows should be treated as headers
             headerRows: 1,
-            widths: ['*', 'auto'],
+            widths: ['*', '*'],
             body: [
               [
                 {
-                  text: 'Status',
+                  text: 'Order received by Company: ',
                   style: 'h4b',
                   alignment: 'left',
                 },
                 {
-                  text: delivery.status,
+                  text: 'Order delivered by Company:',
                   style: 'h4b',
-                  alignment: 'center',
+                  alignment: 'left',
                 },
               ],
               [
                 {
-                  text: `Sent By ${delivery?.signedBy || 'N/A'}`,
+                  text: 'Name:',
                   style: 'h4b',
                   alignment: 'left',
                 },
-                signature1,
+                {
+                  text: 'Name:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
               ],
               [
                 {
-                  text: `Received By ${delivery?.signedBy2 || 'N/A'}`,
+                  text: 'Date:',
                   style: 'h4b',
                   alignment: 'left',
                 },
-                signature2,
+                {
+                  text: 'Date:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Sign:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+                {
+                  text: 'Sign:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
               ],
             ],
           },
@@ -3230,7 +3230,7 @@ export class PdfService {
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      // pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
@@ -3775,6 +3775,52 @@ export class PdfService {
           )}`,
           style: ['h3', 'mt3'],
           alignment: 'right',
+        },
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*'],
+            body: [
+              [
+                {
+                  text: 'Load Prepared By: ',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Name:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Date:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Signß:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'I have confirmed all quantities picked are correct:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
         },
       ],
       styles: stylesCS,
