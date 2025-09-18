@@ -18,7 +18,7 @@
     <ion-grid>
       <app-title-block>Component Details</app-title-block>
       <ion-row class="card-outline mb-3">
-        <ion-col sizeMd="3" size="12">
+        <ion-col sizeMd="2" size="12">
           <app-input-reactive
             title="Item Code"
             controlName="code"
@@ -26,7 +26,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="3" size="12">
+        <ion-col sizeMd="2" size="12">
           <app-input-reactive
             title="Category"
             controlName="category"
@@ -34,57 +34,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="3" size="12">
-          <app-input-reactive title="Size" controlName="size" [form]="form">
-          </app-input-reactive>
-        </ion-col>
-
-        <ion-col sizeMd="3" size="12">
-          <app-input-select-reactive
-            title="Type"
-            placeholder="Select Type"
-            controlName="type"
-            [form]="form"
-            [selectedText]="field('type').value || ''"
-          >
-            <ion-select-option value="Component"> Component </ion-select-option>
-            <ion-select-option value="Consumable">
-              Consumable
-            </ion-select-option>
-            <ion-select-option value="Motor"> Motor </ion-select-option>
-          </app-input-select-reactive>
-        </ion-col>
-        <ion-col sizeMd="6" size="12">
-          <app-input-select-reactive
-            title="Storage Type"
-            placeholder="Select Storage Type"
-            controlName="type"
-            [form]="form"
-            [selectedText]="field('storageType').value || ''"
-          >
-            <ion-select-option value="stillage"> Stillage </ion-select-option>
-            <ion-select-option value="tiberPallet">
-              Tiber pallet
-            </ion-select-option>
-          </app-input-select-reactive>
-        </ion-col>
-        <ion-col sizeMd="6" size="12">
-          <app-input-reactive
-            title="Storage Pack"
-            controlName="storageQty"
-            [form]="form"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="6" size="12">
-          <app-input-reactive
-            title="Location"
-            controlName="location"
-            [form]="form"
-          >
-          </app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="6" size="12">
+        <ion-col sizeMd="4" size="12">
           <app-input-reactive
             title="Description"
             controlName="name"
@@ -92,7 +42,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="3" size="12">
+        <ion-col sizeMd="4" size="12">
           <app-input-reactive
             title="Location"
             controlName="location"
@@ -100,15 +50,16 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="3" size="12">
+        <!-- <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Supplier"
             controlName="supplier"
             [form]="form"
           >
           </app-input-reactive>
-        </ion-col>
-        <ion-col sizeMd="2" size="12">
+        </ion-col> -->
+
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Weight  ({{ company.mass.symbol }})"
             inputmode="numeric"
@@ -118,9 +69,10 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="2" size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Hire/Rent Cost ({{ company.currency.symbol }})"
+            tooltip="Daily"
             inputmode="numeric"
             type="number"
             controlName="hireCost"
@@ -128,7 +80,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="2" size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Replacement Cost ({{ company.currency.symbol }})"
             inputmode="numeric"
@@ -138,7 +90,7 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="2" size="12">
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Selling Cost ({{ company.currency.symbol }})"
             inputmode="numeric"
@@ -148,7 +100,52 @@
           >
           </app-input-reactive>
         </ion-col>
-        <ion-col sizeMd="4" size="12">
+        <ion-col sizeMd="3" size="12">
+          <app-input-select-reactive
+            title="Type"
+            placeholder="Select Type"
+            controlName="type"
+            interface="popover"
+            [form]="form"
+            [selectedText]="field('type').value || ''"
+          >
+            <ion-select-option value="Component">
+              Component (Item that gets returned)
+            </ion-select-option>
+            <ion-select-option value="Consumable">
+              Consumable - One-Off Purchase Not Returened
+            </ion-select-option>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
+          <app-input-select-reactive
+            title="Storage Type"
+            placeholder="Select Storage Type"
+            controlName="storageType"
+            [form]="form"
+            [selectedText]="field('storageType').value || ''"
+          >
+            <ion-select-option value="Cage Stillage">
+              Cage Stillage
+            </ion-select-option>
+            <ion-select-option value="STD Stillage">
+              STD Stillage
+            </ion-select-option>
+            <ion-select-option value="Timber Pallet">
+              Timber pallet
+            </ion-select-option>
+            <ion-select-option value="Other"> Other </ion-select-option>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
+          <app-input-reactive
+            title="Storage Pack (Quanity Total)"
+            controlName="storageQty"
+            [form]="form"
+          >
+          </app-input-reactive>
+        </ion-col>
+        <ion-col sizeMd="3" size="12">
           <app-input-reactive
             title="Low Level Alert %"
             inputmode="numeric"

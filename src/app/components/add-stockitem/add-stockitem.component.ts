@@ -181,6 +181,8 @@ export class AddStockitemComponent implements OnInit {
         category:
           this.form.value.categoryType.name || this.form.value.category || '',
         type: this.form.get('type').value,
+        storageType: this.form.get('storageType').value,
+        storageQty: this.form.get('storageQty').value,
         supplier: this.form.get('supplier').value,
         log: this.inventoryItem.log,
       };
@@ -275,6 +277,8 @@ export class AddStockitemComponent implements OnInit {
       lowPercentage: [0, [Validators.min(0), Validators.max(100)]],
       type: [''],
       supplier: [''],
+      storageType: [''],
+      storageQty: [''],
     });
   }
 }
