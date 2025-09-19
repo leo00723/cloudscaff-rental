@@ -201,7 +201,7 @@
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
             <td>
-              {{ field("endDate").value | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceEnd | dateFormat | date : "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->

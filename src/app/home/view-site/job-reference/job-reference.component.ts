@@ -372,16 +372,21 @@ export class JobReferenceComponent implements OnInit {
 
   private calculateTransactionSubtotal() {
     this.transactions.forEach((item) => {
-      item.days =
-        item.transactionType === 'Return'
-          ? +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              item.invoiceEnd.toDate()
-            )
-          : +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              this.field('endDate').value
-            );
+      // item.days =
+      //   item.transactionType === 'Return'
+      //     ? +this.dateDiff.transform(
+      //         item.invoiceStart.toDate(),
+      //         item.invoiceEnd.toDate()
+      //       )
+      //     : +this.dateDiff.transform(
+      //         item.invoiceStart.toDate(),
+      //         this.field('endDate').value
+      //       );
+
+      item.days = +this.dateDiff.transform(
+        item.invoiceStart.toDate(),
+        item.invoiceEnd.toDate()
+      );
 
       item.months = +(item.days / 30).toFixed(2);
       item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
