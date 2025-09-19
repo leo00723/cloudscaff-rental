@@ -413,7 +413,11 @@ export class ViewSitePage implements OnInit, OnDestroy {
     const modal = await this.masterSvc.modal().create({
       component: JobReferenceFormComponent,
       componentProps: {
-        site,
+        data: {
+          jobReference: {},
+          site,
+          isEdit: false,
+        },
       },
       id: 'jobReferenceForm',
       cssClass: 'fullscreen',

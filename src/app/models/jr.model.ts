@@ -20,4 +20,8 @@ export interface JobReference {
   type?: string;
   customInvoice?: boolean;
   mixedInvoice?: boolean;
+
+  discountPercentage?: number;
+  minHire?: number;
+  paymentDays?: number;
 }

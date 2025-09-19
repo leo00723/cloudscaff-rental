@@ -3,7 +3,6 @@ import {
   arrayRemove,
   arrayUnion,
   orderBy,
-  serverTimestamp,
   Timestamp,
   where,
 } from '@angular/fire/firestore';
@@ -13,7 +12,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { AlertController, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { Store } from '@ngxs/store';
 import { take } from 'rxjs';
 import { DateDiffPipe } from 'src/app/components/dateDiff.pipe';
@@ -25,11 +24,11 @@ import { TransactionInvoice } from 'src/app/models/transactionInvoice.model';
 import { TransactionItem } from 'src/app/models/transactionItem.model';
 import { User } from 'src/app/models/user.model';
 import { EditService } from 'src/app/services/edit.service';
-import { JobReferenceUpdateService } from 'src/app/services/job-reference-update.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { PdfService } from 'src/app/services/pdf.service';
 import { CompanyState } from 'src/app/shared/company/company.state';
 import { UserState } from 'src/app/shared/user/user.state';
+import { JobReferenceFormComponent } from '../job-reference-form/job-reference-form.component';
 
 @Component({
   selector: 'app-job-reference',
@@ -67,8 +66,6 @@ export class JobReferenceComponent implements OnInit {
   private store = inject(Store);
   private dateDiff = inject(DateDiffPipe);
   private pdfSvc = inject(PdfService);
-  private alertCtrl = inject(AlertController);
-  private jobReferenceUpdateService = inject(JobReferenceUpdateService);
 
   constructor() {
     this.user = this.store.selectSnapshot(UserState.user);
@@ -317,6 +314,22 @@ export class JobReferenceComponent implements OnInit {
     });
   }
 
+  async openSettings() {
+    const modal = await this.modalSvc.create({
+      component: JobReferenceFormComponent,
+      componentProps: {
+        data: {
+          jobReference: this.jr,
+          site: this.jr.site,
+          isEdit: true,
+        },
+      },
+      id: 'jobReferenceForm',
+      cssClass: 'fullscreen',
+    });
+    return await modal.present();
+  }
+
   async downloadDraft(isBasic?: boolean) {
     const invoice: TransactionInvoice = {
       ...this.jr,
@@ -355,100 +368,6 @@ export class JobReferenceComponent implements OnInit {
       true
     );
     this.pdfSvc.handlePdf(pdf, this.jr.code);
-  }
-
-  async updateJobReference() {
-    try {
-      // First, get count of affected records
-      const updateCounts = await this.jobReferenceUpdateService.getUpdateCount(
-        this.company.id,
-        this.jr.site.id,
-        this.jr.jobReference
-      );
-
-      const alert = await this.alertCtrl.create({
-        header: 'Update Job Reference',
-        message: `This will update ${updateCounts.total} related records including:
-        • ${updateCounts.transactionLogs} transaction logs
-        • ${updateCounts.shipments} shipments
-        • ${updateCounts.adjustments} adjustments
-        • ${updateCounts.returns} returns
-        • ${updateCounts.invoices} invoices
-        • ${updateCounts.transfers} transfers`,
-        inputs: [
-          {
-            name: 'newJobReference',
-            type: 'text',
-            placeholder: 'Enter new Job Reference',
-            value: this.jr.jobReference,
-            attributes: {
-              minlength: 1,
-              required: true,
-            },
-          },
-        ],
-        buttons: [
-          {
-            text: 'Cancel',
-            role: 'cancel',
-          },
-          {
-            text: 'Update',
-            handler: (data) => {
-              if (
-                data.newJobReference &&
-                data.newJobReference !== this.jr.jobReference
-              ) {
-                this.performJobReferenceUpdate(data.newJobReference);
-              }
-            },
-          },
-        ],
-        mode: 'ios',
-      });
-
-      await alert.present();
-    } catch (error) {
-      console.error('Error getting update count:', error);
-      this.notificationSvc.toast(
-        'Failed to load update information. Please try again.',
-        'danger'
-      );
-    }
-  }
-
-  private async performJobReferenceUpdate(newJobReference: string) {
-    this.notificationSvc.presentAlertConfirm(
-      async () => {
-        try {
-          this.updatingJobReference = true;
-          await this.jobReferenceUpdateService.updateJobReferenceAcrossCollections(
-            this.company.id,
-            this.jr.site.id,
-            this.jr.jobReference,
-            newJobReference,
-            this.jr.id
-          );
-          this.jr.jobReference = newJobReference;
-          this.notificationSvc.toast(
-            'Job Reference updated successfully!',
-            'success'
-          );
-        } catch (error) {
-          console.error('Error updating Job Reference:', error);
-          this.notificationSvc.toast(
-            error.message ||
-              'Failed to update Job Reference. Please try again.',
-            'danger'
-          );
-        } finally {
-          this.updatingJobReference = false;
-        }
-      },
-      'This action will update the Job Reference across all related records including ' +
-        'transaction logs, shipments, adjustments, and returns. This cannot be undone.',
-      'Update Job Reference'
-    );
   }
 
   private calculateTransactionSubtotal() {

@@ -15,24 +15,20 @@
         <i class="text-muted fs-6">(Saving...)</i>
       </ion-text>
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openSettings()">
+        <ion-icon
+          color="primary"
+          slot="icon-only"
+          name="settings-outline"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
   <ion-row>
     <ion-col size="12" class="text-end">
-      <ion-chip
-        size="small"
-        (click)="updateJobReference()"
-        color="primary"
-        *ngIf="!saving && !updatingJobReference"
-      >
-        <ion-icon name="create-outline" slot="start"></ion-icon>
-        Edit Job Reference
-      </ion-chip>
-      <ion-chip size="small" color="medium" *ngIf="updatingJobReference">
-        <ion-spinner name="dots" size="small"></ion-spinner>
-        Updating...
-      </ion-chip>
       <ion-chip
         size="small"
         (click)="downloadDraft(true)"

@@ -13,8 +13,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" [ngSwitch]="page">
-  <div *ngSwitchDefault>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="site && jobReference">
     <!-- Alert Messages -->
     <div
       class="alerts-section"
@@ -79,7 +79,19 @@
                 title="Job Reference"
                 type="text"
                 [value]="jobReference.jobReference"
-              ></app-input-text>
+                (fieldChange)="jobReference.jobReference = $event"
+                [readonly]="isEdit"
+              >
+                <ion-button
+                  *ngIf="isEdit"
+                  shape="round"
+                  slot="end"
+                  color="primary"
+                  (click)="updateJobReference()"
+                >
+                  <ion-icon slot="icon-only" name="refresh"></ion-icon>
+                </ion-button>
+              </app-input-text>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -102,7 +114,8 @@
               <app-input-text
                 title="Discount (%)"
                 inputmode="numeric"
-                [value]="site.customer.discountPercentage"
+                [value]="jobReference.discountPercentage"
+                (fieldChange)="jobReference.discountPercentage = $event"
               ></app-input-text>
             </ion-col>
             <ion-col size="12" size-md="4">
@@ -110,38 +123,29 @@
                 title="Minimum Hire"
                 tooltip="(days)"
                 inputmode="numeric"
-                [value]="site.customer.minHire"
+                [value]="jobReference.minHire"
+                (fieldChange)="jobReference.minHire = $event"
               ></app-input-text>
             </ion-col>
             <ion-col size="12" size-md="4">
               <app-input-text
                 title="Days to Pay"
                 inputmode="numeric"
-                [value]="site.customer.paymentDays"
+                [value]="jobReference.paymentDays"
+                (fieldChange)="jobReference.paymentDays = $event"
               ></app-input-text>
             </ion-col>
           </ion-row>
         </ion-grid>
       </ion-card-content>
     </ion-card>
-  </div>
-
-  <!-- Additional Page Content (if needed) -->
-  <div *ngSwitchCase="1">
-    <ion-card>
-      <ion-card-content>
-        <p>
-          This can be a PO number, Work Area, Work Zone, Phase, Job Tracking
-          Number, or Invoice Number.
-        </p>
-      </ion-card-content>
-    </ion-card>
-  </div>
+  </ng-container>
 </ion-content>
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot="end">
       <ion-button
+        *ngIf="!isEdit"
         class="text-capitalize"
         shape="round"
         fill="solid"
@@ -149,6 +153,16 @@
         (click)="create()"
       >
         Create Job Reference
+      </ion-button>
+      <ion-button
+        *ngIf="isEdit"
+        class="text-capitalize"
+        shape="round"
+        fill="solid"
+        color="success"
+        (click)="update()"
+      >
+        Update Job Reference
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
