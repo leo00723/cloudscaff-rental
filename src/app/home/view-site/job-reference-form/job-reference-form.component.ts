@@ -75,6 +75,20 @@ export class JobReferenceFormComponent implements OnInit {
     this.notificationSvc.presentAlertConfirm(async () => {
       try {
         await this.loading.present();
+
+        // check site.jobReferenceList for duplicates
+        if (
+          this.site.jobReferenceList?.includes(this.jobReference.jobReference)
+        ) {
+          this.notificationSvc.toast(
+            'This Job Reference already exists for this site, please choose another.',
+            'danger',
+            3000,
+            'middle'
+          );
+          return;
+        }
+
         const company = this.store.selectSnapshot(CompanyState.company);
         const user = this.store.selectSnapshot(UserState.user);
         const estimate: EstimateV2 = {};
