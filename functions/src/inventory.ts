@@ -733,258 +733,6 @@ exports.saleInvoiceUpdated = functions.firestore
     await manageSaleItems(change, context);
   });
 
-// exports.generateInvoices = functions.pubsub
-//   .schedule('00 03 * * *')
-//   .timeZone('America/Los_Angeles') // Users can choose timezone - default is America/Los_Angeles
-//   .onRun(async (context) => {
-//     try {
-//       //get all billable sites
-//       logger.log('Getting all billable sites......');
-//       const data = await admin
-//         .firestore()
-//         .collectionGroup('sites')
-//         .where('billable', '==', true)
-//         .get();
-//       //loop through all sites
-//       logger.log('Looping all billable sites......');
-//       for (const siteDoc of data.docs) {
-//         const site = siteDoc.data();
-//         const today = Timestamp.fromDate(new Date()).seconds;
-//         let daysRemaining = null;
-//         daysRemaining = daysbetween(site.nextInvoiceDate.seconds, today);
-//         //check if site is due for billing on the current day
-//         if (daysRemaining <= 0) {
-//           //get all shipments for billable site
-//           logger.log('Getting all active shipments......');
-//           const shipments = await admin
-//             .firestore()
-//             .collectionGroup('billableShipments')
-//             .where('site.id', '==', siteDoc.id)
-//             .where('status', '==', 'sent')
-//             .get();
-//           //loop through all shipments
-//           logger.log('Looping all active shipments......');
-//           for (const shipmentDoc of shipments.docs) {
-//             const shipment = shipmentDoc.data();
-//             //check if the shipment ended in the cycle
-//             const daysTillEnd = daysbetween(
-//               Timestamp.fromDate(new Date(shipment.endDate))
-//                 .seconds,
-//               today
-//             );
-//             //check if it is the first invoice for this shipment
-//             if (shipment.consumablesCharged) {
-//               logger.log('shipment has been charged before');
-//               let daysOnHire = 0;
-//               if (daysTillEnd <= 0) {
-//                 //shipment is ended
-//                 daysOnHire = daysbetween(
-//                   Timestamp.fromDate(new Date(shipment.endDate))
-//                     .seconds,
-//                   shipment.lastInvoiceDate.seconds
-//                 );
-//                 logger.log('shipment ended', daysOnHire);
-//               } else {
-//                 //shipment is still active
-//                 daysOnHire = daysbetween(
-//                   today,
-//                   shipment.lastInvoiceDate.seconds
-//                 );
-//                 logger.log('shipment active', daysOnHire);
-//               }
-//               const company = (
-//                 await admin
-//                   .firestore()
-//                   .doc(`company/${shipment.company.id}`)
-//                   .get()
-//               ).data();
-//               let invoice = { ...shipment };
-//               invoice.code = `INV${new Date().toLocaleDateString('en', {
-//                 year: '2-digit',
-//               })}${(company?.totalInvoices ? company.totalInvoices + 1 : 1)
-//                 .toString()
-//                 .padStart(6, '0')}`;
-//               invoice.type = 'shipment';
-//               invoice.date = FieldValue.serverTimestamp();
-
-//               invoice = calcShipmentCost(invoice, daysOnHire, false, company);
-//               await admin
-//                 .firestore()
-//                 .collection(`company/${shipment.company.id}/invoices`)
-//                 .add({
-//                   ...invoice,
-//                 });
-//               await admin
-//                 .firestore()
-//                 .doc(`company/${shipment.company.id}`)
-//                 .set(
-//                   {
-//                     totalInvoices: FieldValue.increment(1),
-//                   },
-//                   { merge: true }
-//                 );
-//               await admin
-//                 .firestore()
-//                 .doc(
-//                   `company/${shipment.company.id}/billableShipments/${shipmentDoc.id}`
-//                 )
-//                 .set(
-//                   {
-//                     lastInvoiceDate:
-//                       FieldValue.serverTimestamp(),
-//                   },
-//                   { merge: true }
-//                 );
-//             } else {
-//               logger.log('first Invoice');
-//               if (daysTillEnd <= 0) {
-//                 //shipment ended so invoice full amount
-//                 const company = (
-//                   await admin
-//                     .firestore()
-//                     .doc(`company/${shipment.company.id}`)
-//                     .get()
-//                 ).data();
-//                 const invoice = { ...shipment };
-//                 invoice.code = `INV${new Date().toLocaleDateString('en', {
-//                   year: '2-digit',
-//                 })}${(company?.totalInvoices ? company.totalInvoices + 1 : 1)
-//                   .toString()
-//                   .padStart(6, '0')}`;
-//                 invoice.type = 'shipment';
-//                 invoice.date = FieldValue.serverTimestamp();
-//                 await admin
-//                   .firestore()
-//                   .collection(`company/${shipment.company.id}/invoices`)
-//                   .add({
-//                     ...invoice,
-//                   });
-//                 await admin
-//                   .firestore()
-//                   .doc(`company/${shipment.company.id}`)
-//                   .set(
-//                     {
-//                       totalInvoices: FieldValue.increment(1),
-//                     },
-//                     { merge: true }
-//                   );
-//                 await admin
-//                   .firestore()
-//                   .doc(
-//                     `company/${shipment.company.id}/billableShipments/${shipmentDoc.id}`
-//                   )
-//                   .set(
-//                     {
-//                       consumablesCharged: true,
-//                       status: 'shipment ended',
-//                     },
-//                     { merge: true }
-//                   );
-//               } else {
-//                 //shipment is still active
-//                 const company = (
-//                   await admin
-//                     .firestore()
-//                     .doc(`company/${shipment.company.id}`)
-//                     .get()
-//                 ).data();
-//                 let invoice = { ...shipment };
-//                 invoice.code = `INV${new Date().toLocaleDateString('en', {
-//                   year: '2-digit',
-//                 })}${(company?.totalInvoices ? company.totalInvoices + 1 : 1)
-//                   .toString()
-//                   .padStart(6, '0')}`;
-//                 invoice.type = 'shipment';
-//                 invoice.date = FieldValue.serverTimestamp();
-//                 const daysOnHire = daysbetween(
-//                   today,
-//                   Timestamp.fromDate(
-//                     new Date(shipment.startDate)
-//                   ).seconds
-//                 );
-//                 invoice = calcShipmentCost(invoice, daysOnHire, true, company);
-//                 await admin
-//                   .firestore()
-//                   .collection(`company/${shipment.company.id}/invoices`)
-//                   .add({
-//                     ...invoice,
-//                   });
-//                 await admin
-//                   .firestore()
-//                   .doc(`company/${shipment.company.id}`)
-//                   .set(
-//                     {
-//                       totalInvoices: FieldValue.increment(1),
-//                     },
-//                     { merge: true }
-//                   );
-//                 await admin
-//                   .firestore()
-//                   .doc(
-//                     `company/${shipment.company.id}/billableShipments/${shipmentDoc.id}`
-//                   )
-//                   .set(
-//                     {
-//                       consumablesCharged: true,
-//                       lastInvoiceDate:
-//                         FieldValue.serverTimestamp(),
-//                     },
-//                     { merge: true }
-//                   );
-//               }
-//             }
-//           }
-//         }
-//       }
-//       logger.log('completed');
-//       return true;
-//     } catch (err) {
-//       logger.error('something went wrong somewhere', err);
-//       return false;
-//     }
-//   });
-
-// function calcShipmentCost(
-//   shipment: any,
-//   daysOnHire: number,
-//   chargeConsumables: boolean,
-//   company: any
-// ) {
-//   let itemHire = 0;
-
-//   shipment.items.forEach((i: any) => {
-//     i.totalCost =
-//       +i.hireCost * +daysOnHire * (i.shipmentQty ? +i.shipmentQty : 0);
-//     itemHire += i.totalCost;
-//   });
-
-//   let labour = 0;
-//   let transport = 0;
-//   let additionals = 0;
-//   if (chargeConsumables) {
-//     shipment.labour.forEach((l: any) => {
-//       labour += +l.total;
-//     });
-//     shipment.transport.forEach((t: any) => {
-//       transport += +t.total;
-//     });
-//     shipment.additionals.forEach((a: any) => {
-//       additionals += +a.total;
-//     });
-//   }
-
-//   shipment.subtotal = itemHire + labour + transport + additionals;
-//   shipment.discount = shipment.subtotal * (+shipment.discountPercentage / 100);
-//   shipment.totalAfterDiscount = shipment.subtotal - shipment.discount;
-//   shipment.tax = shipment.totalAfterDiscount * (company.salesTax / 100);
-//   shipment.vat = shipment.totalAfterDiscount * (company.vat / 100);
-//   shipment.total = shipment.totalAfterDiscount + shipment.tax + shipment.vat;
-
-//   return shipment;
-// }
-
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-
 const updateItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
   context: functions.EventContext
@@ -1840,6 +1588,21 @@ const deliveryTransaction = async (
       change.after.data().jobReference
     ) {
       const delivery = change.after.data();
+      const startDate = new Date(delivery.startDate);
+
+      const jrCollection = await admin
+        .firestore()
+        .collection(`company/${context.params.companyId}/jobReferences`)
+        .where('jobReference', '==', delivery.jobReference)
+        .where('site.id', '==', delivery.site.id)
+        .get();
+
+      // gert the first document in the collection
+      const jrDoc = jrCollection.docs[0].data();
+
+      // the end date is the startDate plus the jrDoc.minHire days
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + jrDoc.minHire);
 
       // Create the items for the transaction log
       const items = delivery.items.map((item: any) => ({
@@ -1858,8 +1621,8 @@ const deliveryTransaction = async (
         deliveryId: delivery.id,
         deliveryCode: delivery.code,
         deliveryDate: FieldValue.serverTimestamp(),
-        invoiceStart: FieldValue.serverTimestamp(),
-        invoiceEnd: null,
+        invoiceStart: Timestamp.fromDate(startDate),
+        invoiceEnd: Timestamp.fromDate(endDate),
         hireRate: +item.hireCost || 0,
         jobReference: delivery.jobReference,
         transactionType: 'Delivery',
