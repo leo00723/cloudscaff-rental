@@ -90,6 +90,7 @@ import { JobReferenceManagerComponent } from './job-reference-number-manager/job
 import { JobReferenceCustomItemComponent } from './job-reference-custom-item/job-reference-custom-item.component';
 import { InventoryMovementComponent } from './inventory-movement/inventory-movement.component';
 import { AlertPipe } from './alert.pipe';
+import { CostPipe } from './cost.pipe';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -172,6 +173,7 @@ const COMPONENTS = [
   JobReferenceManagerComponent,
   DateFormatPipe,
   AlertPipe,
+  CostPipe,
 ];
 const IMPORTS = [
   CommonModule,

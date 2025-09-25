@@ -3100,6 +3100,10 @@ export class PdfService {
   // DELIVERY INVENTORY PDF
   async delivery(delivery: Delivery, company: Company, terms: Term | null) {
     const summary = this.createShipmentTable(delivery.items);
+    const itemCount = delivery.items.reduce(
+      (acc, item) => acc + item.shipmentQty,
+      0
+    );
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
@@ -3154,12 +3158,21 @@ export class PdfService {
         hr,
         this.getCompanyInfo(delivery.site.customer, company),
         hr,
+        {
+          text: 'Project Notes',
+          style: ['h4b', 'm20'],
+        },
         { text: delivery.notes },
         hr,
         summary,
         hr,
         {
-          text: `Total Weight : ${this.weightPipe.transform(
+          text: `Total Items: ${itemCount}`,
+          style: 'h3',
+          alignment: 'right',
+        },
+        {
+          text: `Total Weight: ${this.weightPipe.transform(
             delivery.items,
             true
           )}`,
@@ -3734,6 +3747,12 @@ export class PdfService {
       },
       layout: tLayout,
     };
+
+    const itemCount = inventory.reduce(
+      (acc, item) => acc + item.shipmentQty,
+      0
+    );
+
     const data = {
       footer: await this.getFooter(),
       // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
@@ -3764,10 +3783,19 @@ export class PdfService {
           ]
         ),
         hr,
+        {
+          text: 'Project Notes',
+          style: ['h4b', 'm20'],
+        },
         { text: docData.notes },
         hr,
         summary,
         hr,
+        {
+          text: `Total Items: ${itemCount}`,
+          style: 'h3',
+          alignment: 'right',
+        },
         {
           text: `Total Weight : ${this.weightPipe.transform(
             docData.items,
@@ -3806,7 +3834,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: 'Signß:',
+                  text: 'Sign:',
                   style: 'h4b',
                   alignment: 'left',
                 },

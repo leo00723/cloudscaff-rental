@@ -564,6 +564,12 @@
         {{ shipment.items ? (shipment.items | weight : true) : [] }}
       </ion-label>
     </ion-item>
+    <ion-item>
+      <ion-label>Total Cost</ion-label>
+      <ion-label slot="end">
+        {{ shipment.items | cost }}
+      </ion-label>
+    </ion-item>
   </ion-col>
 </ng-template>
 

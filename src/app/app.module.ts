@@ -65,6 +65,7 @@ import { DateDiffPipe } from './components/dateDiff.pipe';
 import { CalculatePipe } from './components/calculate.pipe';
 import { DateFormatPipe } from './components/date-format.pipe';
 import { AlertPipe } from './components/alert.pipe';
+import { CostPipe } from './components/cost.pipe';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -160,6 +161,7 @@ import { AlertPipe } from './components/alert.pipe';
     CalculatePipe,
     DateFormatPipe,
     AlertPipe,
+    CostPipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
