@@ -1,0 +1,531 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="onClose()">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          color="primary"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ !isEdit ? "Add Bulk Update" : "Edit Bulk Update" }}
+      <ion-text *ngIf="loading">
+        <i class="text-muted fs-6">(Saving...)</i>
+      </ion-text>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="text-end">
+    <ion-chip
+      (click)="onDownloadPicklist()"
+      mode="ios"
+      shape="round"
+      size="small"
+      color="tertiary"
+    >
+      Download PDF
+    </ion-chip>
+  </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12">
+        <ion-text color="medium">
+          <h4>Bulk Update Information</h4>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-item mode="md" fill="solid" shape="round">
+          <ion-label>Type</ion-label>
+          <ion-select
+            placeholder="Select Type"
+            [(ngModel)]="bulkUpdate.type"
+            mode="ios"
+          >
+            <ion-select-option value="Bulk Update"
+              >Bulk Update</ion-select-option
+            >
+            <ion-select-option value="Cycle Count"
+              >Cycle Count</ion-select-option
+            >
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col size="12" *ngIf="form">
+        <app-input-reactive
+          title="Notes"
+          controlName="notes"
+          [form]="form"
+          [textarea]="true"
+          [readonly]="readonly"
+        >
+        </app-input-reactive>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-text color="medium">
+          <h4>Inventory Information</h4>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="6" class="text-end my-auto align-middle">
+        <ion-text color="medium">
+          <h6>Show all Items</h6>
+        </ion-text>
+        <ion-toggle
+          [checked]="viewAll || searching"
+          (ionChange)="onViewAllToggle()"
+          [disabled]="searching"
+        ></ion-toggle>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-searchbar
+          debounce="250"
+          mode="ios"
+          placeholder="Search by code, category, name, size, location or supplier"
+          (ionChange)="onSearch($event)"
+        ></ion-searchbar>
+      </ion-col>
+
+      <ion-col size="12">
+        <div class="table-responsive">
+          <table
+            class="table table-bordered table-hover"
+            style="font-size: 13px; min-width: 1200px"
+          >
+            <thead class="table-light">
+              <tr>
+                <th scope="col" style="min-width: 120px">Code</th>
+                <th scope="col" style="min-width: 120px">Category</th>
+                <th scope="col" style="min-width: 100px">Size</th>
+                <th scope="col" style="min-width: 150px">Name</th>
+                <th scope="col" class="text-center" style="min-width: 120px">
+                  Location
+                </th>
+                <th scope="col" class="text-center" style="min-width: 120px">
+                  Supplier
+                </th>
+                <!-- <th scope="col" class="text-center" style="min-width: 120px">
+                  Type
+                </th> -->
+                <th scope="col" class="text-center" style="min-width: 100px">
+                  Weight
+                </th>
+                <th scope="col" class="text-center" style="min-width: 100px">
+                  Total Qty
+                </th>
+                <th scope="col" class="text-center" style="min-width: 120px">
+                  Available Qty
+                </th>
+                <th
+                  scope="col"
+                  class="text-center bg-pending"
+                  style="min-width: 100px"
+                >
+                  Edit Qty
+                </th>
+                <th scope="col" class="text-center" style="min-width: 120px">
+                  Hire Cost
+                </th>
+                <th scope="col" class="text-center" style="min-width: 140px">
+                  Replacement Cost
+                </th>
+                <th scope="col" class="text-center" style="min-width: 120px">
+                  Selling Cost
+                </th>
+                <th scope="col" class="text-center" style="min-width: 120px">
+                  Alert Level %
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of items; trackBy: trackByFn">
+                <tr
+                  class="align-middle"
+                  *ngIf="shouldShowItem(item)"
+                  [class.table-warning]="item.error"
+                >
+                  <!-- Code -->
+                  <td>
+                    <ion-textarea
+                      debounce="200"
+                      [autoGrow]="true"
+                      [value]="item.code"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('code', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-textarea>
+                  </td>
+
+                  <!-- Category -->
+                  <td>
+                    <ion-textarea
+                      debounce="200"
+                      [autoGrow]="true"
+                      [value]="item.category"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('category', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-textarea>
+                  </td>
+
+                  <!-- Size -->
+                  <td>
+                    <ion-textarea
+                      debounce="200"
+                      [autoGrow]="true"
+                      [value]="item.size"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('size', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-textarea>
+                  </td>
+
+                  <!-- Name -->
+                  <td>
+                    <ion-textarea
+                      debounce="200"
+                      [autoGrow]="true"
+                      [value]="item.name"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('name', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-textarea>
+                  </td>
+
+                  <!-- Location -->
+                  <td class="text-center">
+                    <ion-textarea
+                      debounce="200"
+                      [autoGrow]="true"
+                      [value]="item.location"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('location', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-textarea>
+                  </td>
+
+                  <!-- Supplier -->
+                  <td class="text-center">
+                    <ion-textarea
+                      debounce="200"
+                      [autoGrow]="true"
+                      [value]="item.supplier"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('supplier', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-textarea>
+                  </td>
+
+                  <!-- Type -->
+                  <!-- <td class="text-center">
+                    <ion-select
+                      mode="ios"
+                      [value]="item.type"
+                      placeholder="Select type"
+                      [disabled]="!canEdit"
+                      (ionBlur)="onFieldChange('type', $event, item)"
+                      fill="outline"
+                      size="small"
+                    >
+                      <ion-select-option value="Component">
+                        Component
+                      </ion-select-option>
+                      <ion-select-option value="Consumable">
+                        Consumable
+                      </ion-select-option>
+                      <ion-select-option value="Motor">
+                        Motor
+                      </ion-select-option>
+                    </ion-select>
+                  </td> -->
+
+                  <!-- Weight -->
+                  <td class="text-center">
+                    <ion-input
+                      debounce="200"
+                      inputmode="numeric"
+                      [value]="item.weight"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('weight', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-input>
+                  </td>
+
+                  <!-- Total Qty (readonly) -->
+                  <td class="text-center">
+                    <span class="fw-bold">{{ item?.yardQty || 0 }}</span>
+                  </td>
+
+                  <!-- Available Qty (calculated, readonly) -->
+                  <td class="text-center">
+                    <span class="fw-bold text-success">{{
+                      item | calculate
+                    }}</span>
+                  </td>
+
+                  <!-- Edit Qty -->
+                  <td class="text-center bg-pending">
+                    <ion-input
+                      debounce="200"
+                      inputmode="numeric"
+                      [color]="item.error ? 'warning' : 'success'"
+                      [value]="item.shipmentQty"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('shipmentQty', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-input>
+                  </td>
+
+                  <!-- Hire Cost -->
+                  <td class="text-center">
+                    <ion-input
+                      debounce="200"
+                      inputmode="numeric"
+                      [value]="item.hireCost"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('hireCost', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-input>
+                  </td>
+
+                  <!-- Replacement Cost -->
+                  <td class="text-center">
+                    <ion-input
+                      debounce="200"
+                      inputmode="numeric"
+                      [value]="item.replacementCost"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('replacementCost', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-input>
+                  </td>
+
+                  <!-- Selling Cost -->
+                  <td class="text-center">
+                    <ion-input
+                      debounce="200"
+                      inputmode="numeric"
+                      [value]="item.sellingCost"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('sellingCost', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-input>
+                  </td>
+
+                  <!-- Low Level Alert -->
+                  <td class="text-center">
+                    <ion-input
+                      debounce="200"
+                      inputmode="numeric"
+                      [value]="item.lowPercentage"
+                      [readonly]="!canEdit"
+                      (ionBlur)="onFieldChange('lowPercentage', $event, item)"
+                      fill="outline"
+                      size="small"
+                    ></ion-input>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary Information -->
+
+        <ion-card class="mt-3">
+          <ion-card-header>
+            <ion-card-title>Summary</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item>
+                <ion-icon
+                  name="cube-outline"
+                  slot="start"
+                  color="primary"
+                ></ion-icon>
+                <ion-label>
+                  <h3>Total Items</h3>
+                  <p>Number of different inventory items</p>
+                </ion-label>
+                <ion-label slot="end">
+                  <h2 class="text-primary fw-bold">
+                    {{ bulkUpdate.items ? bulkUpdate.items.length : 0 }}
+                  </h2>
+                </ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-icon
+                  name="calculator-outline"
+                  slot="start"
+                  color="success"
+                ></ion-icon>
+                <ion-label>
+                  <h3>Total Counts</h3>
+                  <p>Sum of all quantities</p>
+                </ion-label>
+                <ion-label slot="end">
+                  <h2 class="text-success fw-bold">
+                    {{ totalItemCount }}
+                  </h2>
+                </ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-icon
+                  name="barbell-outline"
+                  slot="start"
+                  color="warning"
+                ></ion-icon>
+                <ion-label>
+                  <h3>Total Weight</h3>
+                  <p>Combined weight of all items</p>
+                </ion-label>
+                <ion-label slot="end">
+                  <h2 class="text-warning fw-bold">
+                    {{
+                      bulkUpdate.items
+                        ? (bulkUpdate.items | weight : true)
+                        : "0 kg"
+                    }}
+                  </h2>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- File Upload Section -->
+      <ion-col size="12" *ngIf="shouldShowUploader">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>File Uploads</ion-card-title>
+            <ion-card-subtitle>Attach supporting documents</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <app-multiuploader></app-multiuploader>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <!-- Uploaded Files Display -->
+      <ion-col size="12" *ngIf="shouldShowUploads">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="attach-outline" class="me-2"></ion-icon>
+              Uploaded Files
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-row>
+              <ion-col
+                sizeXl="2"
+                sizeLg="3"
+                sizeMd="4"
+                size="6"
+                *ngFor="let file of bulkUpdate.uploads; let i = index"
+              >
+                <app-file-item
+                  [file]="file"
+                  [allowDelete]="false"
+                ></app-file-item>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-progress-bar type="indeterminate" *ngIf="loading"></ion-progress-bar>
+
+  <ion-toolbar *ngIf="form && showActionButtons">
+    <ion-row class="ion-padding">
+      <ion-col size="6" *ngIf="canVoid">
+        <ion-button
+          shape="round"
+          color="danger"
+          [disabled]="form.invalid || loading"
+          (click)="onUpdate('void')"
+        >
+          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+          Void
+        </ion-button>
+      </ion-col>
+
+      <ion-col [size]="canVoid ? '6' : '12'" class="text-end">
+        <!-- Create Button -->
+        <!-- <ion-button
+          shape="round"
+          color="primary"
+          [disabled]="form.invalid || loading"
+          *ngIf="!isEdit"
+          (click)="onCreate()"
+        >
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Create
+        </ion-button> -->
+
+        <!-- Approve Button -->
+
+        <!-- Update Button -->
+        <ion-button
+          shape="round"
+          color="primary"
+          [disabled]="form.invalid || loading"
+          *ngIf="canUpdate"
+          (click)="onUpdate('pending')"
+        >
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          Update
+        </ion-button>
+
+        <!-- Submit Button -->
+
+        <ion-button
+          shape="round"
+          color="success"
+          [disabled]="form.invalid || loading || !bulkUpdate.type"
+          *ngIf="canApprove"
+          (click)="onApprove()"
+        >
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Approve
+        </ion-button>
+
+        <ion-button
+          shape="round"
+          color="tertiary"
+          *ngIf="canReverse"
+          (click)="onReverse()"
+        >
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Reverse
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

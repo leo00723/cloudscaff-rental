@@ -13,6 +13,7 @@ import {
   OrderByDirection,
   query,
   QueryConstraint,
+  runTransaction,
   setDoc,
   where,
   WhereFilterOp,
@@ -35,6 +36,37 @@ export class EditService {
     const returnNumber = (total + 1).toString().padStart(6, '0');
 
     return `${prefix}${yearCode}${returnNumber}`;
+  }
+
+  //---- GENERATE DOC CODE WITH ATOMIC COUNTER ----
+  async generateDocCodeAtomic(
+    companyId: string,
+    prefix: string,
+    counterField: string
+  ): Promise<{ code: string; newCounter: number }> {
+    const yearCode = new Date().toLocaleDateString('en', { year: '2-digit' });
+
+    // Use a Firestore transaction to atomically get and increment the counter
+    return await runTransaction(this.firestore, async (transaction) => {
+      const companyRef = this.docRef('company', companyId);
+      const companyDoc = await transaction.get(companyRef);
+
+      if (!companyDoc.exists()) {
+        throw new Error('Company document does not exist');
+      }
+
+      const currentCounter = companyDoc.data()?.[counterField] ?? 0;
+      const newCounter = currentCounter + 1;
+
+      // Generate the code with the new counter value
+      const docNumber = newCounter.toString().padStart(6, '0');
+      const code = `${prefix}${yearCode}${docNumber}`;
+
+      // Update the counter in the transaction
+      transaction.update(companyRef, { [counterField]: newCounter });
+
+      return { code, newCounter };
+    });
   }
   //----ADD FUNCTIONS----
 

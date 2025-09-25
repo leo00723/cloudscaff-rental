@@ -17,6 +17,7 @@ import { TransactionOverReturnComponent } from 'src/app/components/transaction-o
 import { TransactionReturnComponent } from 'src/app/components/transaction-return/transaction-return.component';
 import { ViewStockLocationsComponent } from 'src/app/components/view-stock-locations/view-stock-locations.component';
 import { ViewStockLogComponent } from 'src/app/components/view-stock-log/view-stock-log.component';
+import { BulkUpdate } from 'src/app/models/bulk-update.model';
 import { Company } from 'src/app/models/company.model';
 import { Delivery } from 'src/app/models/delivery.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
@@ -29,6 +30,7 @@ import { CompanyState } from 'src/app/shared/company/company.state';
 import { Navigate } from 'src/app/shared/router.state';
 import { UserState } from 'src/app/shared/user/user.state';
 import * as XLSX from 'xlsx';
+import { InventoryBulkUpdateComponent } from './inventory-bulk-update/inventory-bulk-update.component';
 
 @Component({
   selector: 'app-inventory',
@@ -46,6 +48,11 @@ export class InventoryPage implements OnInit {
   @Select() user$: Observable<User>;
   @Select() company$: Observable<Company>;
   inventoryItems$: Observable<InventoryItem[]>;
+
+  pendingBulkUpdates$: Observable<BulkUpdate[]>;
+  reversedBulkUpdates$: Observable<BulkUpdate[]>;
+  approvedBulkUpdates$: Observable<BulkUpdate[]>;
+  voidedBulkUpdates$: Observable<BulkUpdate[]>;
 
   shipments$: Observable<Delivery[]>;
   pendingShipments$: Observable<Delivery[]>;
@@ -591,6 +598,30 @@ export class InventoryPage implements OnInit {
     return await modal.present();
   }
 
+  async addBulkUpdate() {
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryBulkUpdateComponent,
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'addBulkUpdate',
+    });
+    return await modal.present();
+  }
+
+  async viewBulkUpdate(bulkUpdate: BulkUpdate) {
+    const modal = await this.masterSvc.modal().create({
+      component: InventoryBulkUpdateComponent,
+      componentProps: {
+        isEdit: true,
+        value: bulkUpdate,
+      },
+      cssClass: 'fullscreen',
+      showBackdrop: false,
+      id: 'editBulkUpdate',
+    });
+    return await modal.present();
+  }
+
   async addShipment() {
     const modal = await this.masterSvc.modal().create({
       component: AddShipmentComponent,
@@ -909,6 +940,30 @@ export class InventoryPage implements OnInit {
           'code',
           'asc'
         );
+
+      // Bulk updates
+
+      this.pendingBulkUpdates$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/bulkUpdates`, [
+          where('status', '==', 'pending'),
+        ]);
+      this.reversedBulkUpdates$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/bulkUpdates`, [
+          where('status', '==', 'reversed'),
+        ]);
+      this.approvedBulkUpdates$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/bulkUpdates`, [
+          where('status', '==', 'approved'),
+          orderBy('date', 'asc'),
+        ]);
+      this.voidedBulkUpdates$ = this.masterSvc
+        .edit()
+        .getCollectionFiltered(`company/${this.company.id}/bulkUpdates`, [
+          where('status', '==', 'void'),
+        ]);
 
       // shipments
       this.shipments$ = this.masterSvc

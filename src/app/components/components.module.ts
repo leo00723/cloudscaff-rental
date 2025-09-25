@@ -89,6 +89,7 @@ import { DateFormatPipe } from './date-format.pipe';
 import { JobReferenceManagerComponent } from './job-reference-number-manager/job-reference-number-manager.component';
 import { JobReferenceCustomItemComponent } from './job-reference-custom-item/job-reference-custom-item.component';
 import { InventoryMovementComponent } from './inventory-movement/inventory-movement.component';
+import { AlertPipe } from './alert.pipe';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -170,6 +171,7 @@ const COMPONENTS = [
   WeightPipe,
   JobReferenceManagerComponent,
   DateFormatPipe,
+  AlertPipe,
 ];
 const IMPORTS = [
   CommonModule,

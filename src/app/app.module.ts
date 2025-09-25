@@ -64,6 +64,7 @@ import { TrialEndedPage } from './trial-ended/trial-ended.page';
 import { DateDiffPipe } from './components/dateDiff.pipe';
 import { CalculatePipe } from './components/calculate.pipe';
 import { DateFormatPipe } from './components/date-format.pipe';
+import { AlertPipe } from './components/alert.pipe';
 
 // let resolvePersistenceEnabled: (enabled: boolean) => void;
 // export const persistenceEnabled = new Promise<boolean>((resolve) => {
@@ -158,6 +159,7 @@ import { DateFormatPipe } from './components/date-format.pipe';
     DateDiffPipe,
     CalculatePipe,
     DateFormatPipe,
+    AlertPipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
