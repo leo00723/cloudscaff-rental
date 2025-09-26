@@ -3134,16 +3134,16 @@ export class PdfService {
             [
               { text: 'Site Main Contact:', style: 'h6b' },
               `${delivery?.companyRepName || 'N/A'}
-              ${delivery?.companyRepEmail || 'N/A'}
-              ${delivery?.companyRepContact || 'N/A'}`,
+          ${delivery?.companyRepEmail || 'N/A'}
+          ${delivery?.companyRepContact || 'N/A'}`,
               '',
               '',
             ],
             [
               { text: 'Site Foreman:', style: 'h6b' },
               `${delivery?.customerRepName || 'N/A'}
-              ${delivery?.customerRepEmail || 'N/A'}
-              ${delivery?.customerRepContact || 'N/A'}`,
+          ${delivery?.customerRepEmail || 'N/A'}
+          ${delivery?.customerRepContact || 'N/A'}`,
               '',
               '',
             ],
@@ -3160,7 +3160,7 @@ export class PdfService {
         hr,
         {
           text: 'Project Notes',
-          style: ['h4b', 'm20'],
+          style: ['h4b'],
         },
         { text: delivery.notes },
         hr,
@@ -3179,65 +3179,69 @@ export class PdfService {
           style: 'h3',
           alignment: 'right',
         },
-        {
-          table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
-            headerRows: 1,
-            widths: ['*', '*'],
-            body: [
-              [
-                {
-                  text: 'Order received by Company: ',
-                  style: 'h4b',
-                  alignment: 'left',
+        ...(delivery.status !== 'received'
+          ? [
+              {
+                table: {
+                  // headers are automatically repeated if the table spans over multiple pages
+                  // you can declare how many rows should be treated as headers
+                  headerRows: 1,
+                  widths: ['*', '*'],
+                  body: [
+                    [
+                      {
+                        text: 'Order received by Company: ',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                      {
+                        text: 'Order delivered by Company:',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                    ],
+                    [
+                      {
+                        text: 'Name:',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                      {
+                        text: 'Name:',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                    ],
+                    [
+                      {
+                        text: 'Date:',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                      {
+                        text: 'Date:',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                    ],
+                    [
+                      {
+                        text: 'Sign:',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                      {
+                        text: 'Sign:',
+                        style: 'h4b',
+                        alignment: 'left',
+                      },
+                    ],
+                  ],
                 },
-                {
-                  text: 'Order delivered by Company:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-              [
-                {
-                  text: 'Name:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-                {
-                  text: 'Name:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-              [
-                {
-                  text: 'Date:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-                {
-                  text: 'Date:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-              [
-                {
-                  text: 'Sign:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-                {
-                  text: 'Sign:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-            ],
-          },
-          layout: tLayout,
-        },
+                layout: tLayout,
+              },
+            ]
+          : []),
 
         await this.addUploads(delivery.uploads),
       ],
@@ -3785,7 +3789,7 @@ export class PdfService {
         hr,
         {
           text: 'Project Notes',
-          style: ['h4b', 'm20'],
+          style: ['h4b'],
         },
         { text: docData.notes },
         hr,

@@ -14,15 +14,17 @@ export class CostPipe implements PipeTransform {
     const symbol = this.store.selectSnapshot(CompanyState.company).currency
       .symbol;
     let cost = 0;
-    for (const item of items) {
-      // Make sure item and item.weight exist
-      if (!item || typeof item.hireCost === 'undefined') {
-        continue;
-      }
+    if (items) {
+      for (const item of items) {
+        // Make sure item and item.weight exist
+        if (!item || typeof item.hireCost === 'undefined') {
+          continue;
+        }
 
-      // Convert item.weight to number and multiply by quantity
-      const qty = +item.shipmentQty || 0;
-      cost += qty * +item.hireCost;
+        // Convert item.weight to number and multiply by quantity
+        const qty = +item.shipmentQty || 0;
+        cost += qty * +item.hireCost;
+      }
     }
     return `${symbol}${this.decimalPipe.transform(cost.toFixed(2))}`;
   }
