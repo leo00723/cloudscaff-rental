@@ -417,7 +417,9 @@ export class JobReferenceComponent implements OnInit {
       // Only transaction calculations for non-customInvoice
       this.calculateTransactionSubtotal();
     }
-
+    this.field('discount').setValue(
+      +(this.jr.subtotal * (this.jr.discountPercentage / 100)).toFixed(2)
+    );
     this.jr.discount = +this.field('discount').value;
     const totalAfterDiscount = this.jr.subtotal - this.jr.discount;
     this.jr.tax = 0;

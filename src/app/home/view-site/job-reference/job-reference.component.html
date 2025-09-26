@@ -106,7 +106,7 @@
         <app-input-date
           [form]="form"
           controlName="endDate"
-          title="End Date"
+          title="Billing End Date"
           (fieldChange)="updateDate()"
         ></app-input-date>
       </form>
@@ -337,17 +337,31 @@
       <tfoot>
         <tr>
           <th [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 13 : 15">
-            <div class="m-3">
-              <form [formGroup]="form">
-                <app-input-reactive
-                  [form]="form"
-                  controlName="discount"
-                  title="Discount amount ({{ company.currency.symbol }})"
-                  type="number"
-                  (fieldChange)="updateDate()"
-                ></app-input-reactive>
-              </form>
-              <!-- <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
+            <form [formGroup]="form">
+              <ion-row>
+                <ion-col size="6">
+                  <app-input-text
+                    title="Discount (%)"
+                    type="number"
+                    [value]="jr.discountPercentage"
+                    [readonly]="true"
+                  >
+                  </app-input-text>
+                </ion-col>
+                <ion-col size="6">
+                  <app-input-reactive
+                    [form]="form"
+                    controlName="discount"
+                    title="Discount amount ({{ company.currency.symbol }})"
+                    type="number"
+                    (fieldChange)="updateDate()"
+                    [readonly]="true"
+                  >
+                  </app-input-reactive>
+                </ion-col>
+              </ion-row>
+            </form>
+            <!-- <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
                 <ion-label
                   >Exclude {{ company?.gst ? "GST" : "VAT" }} on
                   Invoice</ion-label
@@ -359,7 +373,6 @@
                   (ionChange)="excludeVAT($event)"
                 ></ion-checkbox>
               </ion-item> -->
-            </div>
           </th>
         </tr>
         <tr>
