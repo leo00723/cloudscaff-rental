@@ -506,7 +506,7 @@
         *ngIf="!saving"
         (click)="createInvoice()"
         shape="round"
-        [disabled]="form.invalid || jr.total <= 0"
+        [disabled]="form.invalid"
         color="success"
       >
         Create Invoice
