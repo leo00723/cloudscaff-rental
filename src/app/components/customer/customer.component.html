@@ -34,9 +34,10 @@
               shape="round"
               slot="end"
               color="primary"
+              fill="clear"
               (click)="generateCode()"
             >
-              <ion-icon slot="icon-only" name="refresh"></ion-icon>
+              Generate
             </ion-button>
           </app-input-reactive>
         </ion-col>
@@ -63,7 +64,18 @@
             [form]="form"
             controlName="abnNumber"
             [readonly]="readOnly"
-          ></app-input-reactive>
+          >
+            <ion-button
+              slot="end"
+              href="https://abr.business.gov.au/"
+              target="_blank"
+              color="primary"
+              shape="round"
+              fill="clear"
+            >
+              ABN Lookup
+            </ion-button>
+          </app-input-reactive>
         </ion-col>
 
         <ion-col size="12">
