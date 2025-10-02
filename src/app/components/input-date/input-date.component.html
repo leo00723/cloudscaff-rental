@@ -9,7 +9,7 @@
   <ion-input
     [formControlName]="controlName"
     readonly="true"
-    (click)="setDate('endDate')"
+    (click)="setDate(controlName)"
     (ionChange)="change()"
     debounce="200"
   >
