@@ -432,10 +432,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
 
     try {
       loader.present();
-      const pdf = await this.masterSvc
-        .pdf()
-        .delivery(this.shipment, companyCopy, null);
-      this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
 
       if (
         changeStatus &&
@@ -446,7 +442,12 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .updateDoc(`company/${this.company.id}/shipments`, this.shipment.id, {
             status: 'docket',
           });
+        this.shipment.status = 'docket';
       }
+      const pdf = await this.masterSvc
+        .pdf()
+        .delivery(this.shipment, companyCopy, null);
+      this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
     } catch (error) {
       console.error('Error in downloading PDF:', error);
     } finally {

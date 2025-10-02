@@ -565,9 +565,15 @@
       </ion-label>
     </ion-item>
     <ion-item>
-      <ion-label>Total Cost</ion-label>
+      <ion-label>Daily Hire</ion-label>
       <ion-label slot="end">
         {{ shipment.items | cost }}
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Weekly Hire</ion-label>
+      <ion-label slot="end">
+        {{ shipment.items | cost : true }}
       </ion-label>
     </ion-item>
   </ion-col>

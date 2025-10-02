@@ -10,7 +10,7 @@ import { CompanyState } from '../shared/company/company.state';
 export class CostPipe implements PipeTransform {
   private decimalPipe = inject(DecimalPipe);
   private store = inject(Store);
-  transform(items: any[]) {
+  transform(items: any[], isWeekly: boolean = false): string {
     const symbol = this.store.selectSnapshot(CompanyState.company).currency
       .symbol;
     let cost = 0;
@@ -23,6 +23,10 @@ export class CostPipe implements PipeTransform {
 
         // Convert item.weight to number and multiply by quantity
         const qty = +item.shipmentQty || 0;
+        if (isWeekly) {
+          cost += qty * +item.hireCost * 7;
+          continue;
+        }
         cost += qty * +item.hireCost;
       }
     }
