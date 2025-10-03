@@ -1588,7 +1588,23 @@ const deliveryTransaction = async (
       change.after.data().jobReference
     ) {
       const delivery = change.after.data();
-      const startDate = new Date(delivery.startDate);
+      const [dayStr, monthStr, yearStr] = (delivery.startDate || '').split('-');
+      const day = Number(dayStr);
+      const month = Number(monthStr);
+      const year = Number(yearStr);
+
+      if (
+        !dayStr ||
+        !monthStr ||
+        !yearStr ||
+        Number.isNaN(day) ||
+        Number.isNaN(month) ||
+        Number.isNaN(year)
+      ) {
+        throw new Error(`Invalid startDate format: ${delivery.startDate}`);
+      }
+
+      const startDate = new Date(Date.UTC(year, month - 1, day));
 
       const jrCollection = await admin
         .firestore()
@@ -1602,7 +1618,7 @@ const deliveryTransaction = async (
 
       // the end date is the startDate plus the jrDoc.minHire days
       const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + (jrDoc.minHire - 1)) || 0;
+      endDate.setUTCDate(endDate.getUTCDate() + (jrDoc.minHire - 1));
 
       // Create the items for the transaction log
       const items = delivery.items.map((item: any) => ({
