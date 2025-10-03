@@ -153,8 +153,9 @@ export class JobReferenceFormComponent implements OnInit {
         await this.loading.present();
         const company = this.store.selectSnapshot(CompanyState.company);
 
-        await this.editSvc.addDocument(
+        await this.editSvc.updateDoc(
           `company/${company.id}/jobReferences`,
+          this.jobReference.id,
           this.jobReference
         );
 
