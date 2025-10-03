@@ -1602,7 +1602,7 @@ const deliveryTransaction = async (
 
       // the end date is the startDate plus the jrDoc.minHire days
       const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + jrDoc.minHire);
+      endDate.setDate(endDate.getDate() + (jrDoc.minHire - 1)) || 0;
 
       // Create the items for the transaction log
       const items = delivery.items.map((item: any) => ({
