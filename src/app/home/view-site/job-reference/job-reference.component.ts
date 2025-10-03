@@ -371,6 +371,8 @@ export class JobReferenceComponent implements OnInit {
   }
 
   private calculateTransactionSubtotal() {
+    const billingDate = this.field('endDate').value;
+
     this.transactions.forEach((item) => {
       // item.days =
       //   item.transactionType === 'Return'
