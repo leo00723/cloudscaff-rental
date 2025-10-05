@@ -403,9 +403,7 @@ export class JobReferenceComponent implements OnInit {
 
       item.days = +this.dateDiff.transform(start, end ?? start);
       item.months = +(item.days / 30).toFixed(2);
-      item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
-        2
-      );
+      item.total = +(+item.invoiceQty * +item.hireRate * item.days).toFixed(2);
       this.jr.subtotal += item.total;
     });
   }

@@ -126,9 +126,8 @@
           <th colspan="4">Actual Qty</th>
           <th colspan="2">Hire Period</th>
           <th rowspan="2">Days</th>
-          <th rowspan="2">Months</th>
           <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
-            <th rowspan="2">Monthly Rent Rate</th>
+            <th rowspan="2">Daily Rent Rate</th>
             <th class="text-end" rowspan="2">Amount</th>
           </ng-container>
         </tr>
@@ -209,10 +208,6 @@
               {{ transaction.days }}
             </td>
 
-            <!-- Months (converting days to months, assuming 30 days per month) -->
-            <td>
-              {{ transaction.months }}
-            </td>
             <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
               <!-- Daily Rent Rate -->
               <td>
@@ -305,10 +300,6 @@
               {{ transaction.days }}
             </td>
 
-            <!-- Months (converting days to months, assuming 30 days per month) -->
-            <td>
-              {{ transaction.months }}
-            </td>
             <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
               <!-- Daily Rent Rate -->
               <td>
