@@ -107,11 +107,11 @@ export class JobReferenceComponent implements OnInit {
       mode: 'ios',
     });
     await modal.present();
-    const date = (await modal.onDidDismiss()).data;
-
-    if (!date) {
+    const rawStartDate = (await modal.onDidDismiss()).data;
+    if (!rawStartDate) {
       return;
     }
+    const startDate = this.parseDdMmYyyyDate(rawStartDate);
 
     try {
       this.saving = true;
@@ -123,7 +123,7 @@ export class JobReferenceComponent implements OnInit {
             `company/${this.company.id}/transactionLog`,
             item.id
           );
-          item.invoiceStart = Timestamp.fromDate(new Date(date));
+          item.invoiceStart = Timestamp.fromDate(startDate);
           batch.update(doc, { ...item });
         }
       });

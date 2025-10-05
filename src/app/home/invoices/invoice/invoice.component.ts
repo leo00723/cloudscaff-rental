@@ -303,30 +303,50 @@ export class InvoiceComponent implements OnInit {
   // Helper function to avoid duplicate code
   private calculateTransactionSubtotal() {
     this.invoice.items.forEach((item) => {
-      item.days =
-        item.transactionType === 'Return'
-          ? +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              item.invoiceEnd.toDate()
-            )
-          : +this.dateDiff.transform(
-              item.invoiceStart.toDate(),
-              this.invoice.endDate
-            );
-      item.invoiceEnd = Timestamp.fromDate(
-        new Date(
-          item.transactionType === 'Return'
-            ? item.invoiceEnd.toDate()
-            : this.invoice.endDate
-        )
+      console.log(item.invoiceStart.toDate(), item.invoiceEnd.toDate());
+
+      item.days = +this.dateDiff.transform(
+        item.invoiceStart.toDate(),
+        item.invoiceEnd.toDate()
       );
+
       item.months = +(item.days / 30).toFixed(2);
-      item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
-        2
-      );
+      item.total = +(+item.invoiceQty * +item.hireRate * item.days).toFixed(2);
 
       this.invoice.subtotal += item.total;
     });
+  }
+
+  private parseDdMmYyyyDate(value: unknown): Date | undefined {
+    if (!value) {
+      return undefined;
+    }
+
+    if (value instanceof Date) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const [dayStr, monthStr, yearStr] = value.split('-');
+      const day = Number(dayStr);
+      const month = Number(monthStr);
+      const year = Number(yearStr);
+
+      if (
+        Number.isNaN(day) ||
+        Number.isNaN(month) ||
+        Number.isNaN(year) ||
+        day <= 0 ||
+        month <= 0 ||
+        month > 12
+      ) {
+        return undefined;
+      }
+
+      return new Date(Date.UTC(year, month - 1, day));
+    }
+
+    return undefined;
   }
 
   protected async creditTotalFunction() {

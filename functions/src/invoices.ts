@@ -11,8 +11,9 @@ exports.invoiceCreated = functions.firestore
       const batch = admin.firestore().batch();
 
       const invoice = change.data();
-      const endDate = new Date(invoice.endDate);
-      endDate.setDate(endDate.getDate() + 1);
+      const endDate = parseDdMmYyyyDate(invoice.endDate);
+
+      endDate.setUTCDate(endDate.getUTCDate() + 1);
 
       const companyRef = admin
         .firestore()
@@ -37,6 +38,7 @@ exports.invoiceCreated = functions.firestore
           ...item,
           deliveryCode: invoice.code,
           invoiceStart: Timestamp.fromDate(endDate),
+          invoiceEnd: null,
           transactionType: 'Delivery', // Preserve transaction type
           status: 'active',
         });
@@ -103,4 +105,36 @@ const mergeTransactionItems = (items: any[]) => {
 
   // Convert map values to array
   return Array.from(mergedItemsMap.values());
+};
+
+const parseDdMmYyyyDate = (value: unknown): Date => {
+  if (!value) {
+    throw new Error('Invoice endDate is required');
+  }
+
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+
+  if (typeof value === 'string') {
+    const [dayStr, monthStr, yearStr] = value.split('-');
+    const day = Number(dayStr);
+    const month = Number(monthStr);
+    const year = Number(yearStr);
+
+    if (
+      Number.isNaN(day) ||
+      Number.isNaN(month) ||
+      Number.isNaN(year) ||
+      day <= 0 ||
+      month <= 0 ||
+      month > 12
+    ) {
+      throw new Error(`Invalid invoice endDate format: ${value}`);
+    }
+
+    return new Date(Date.UTC(year, month - 1, day));
+  }
+
+  throw new Error(`Unsupported invoice endDate value: ${value}`);
 };

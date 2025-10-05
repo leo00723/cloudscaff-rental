@@ -330,7 +330,7 @@
           <th [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 13 : 15">
             <form [formGroup]="form">
               <ion-row>
-                <ion-col size="6">
+                <ion-col size="12">
                   <app-input-text
                     title="Discount (%)"
                     type="number"
@@ -339,7 +339,7 @@
                   >
                   </app-input-text>
                 </ion-col>
-                <ion-col size="6">
+                <!-- <ion-col size="6">
                   <app-input-reactive
                     [form]="form"
                     controlName="discount"
@@ -349,7 +349,7 @@
                     [readonly]="true"
                   >
                   </app-input-reactive>
-                </ion-col>
+                </ion-col> -->
               </ion-row>
             </form>
             <!-- <ion-item fill="solid" lines="none" class="rounded-3 mb-3">
