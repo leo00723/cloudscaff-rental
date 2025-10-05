@@ -3879,6 +3879,17 @@ export class PdfService {
         },
         { text: item.name, style: 'h4b', alignment: 'left' },
         { text: item.location, style: 'h4b', alignment: 'left' },
+        { text: item.balanceQty, style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
+        { text: '', style: 'h4b', alignment: 'center' },
         { text: '', style: 'h4b', alignment: 'center' },
       ]);
     });
@@ -3887,7 +3898,24 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto'],
+        widths: [
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+        ],
 
         body: [
           [
@@ -3899,7 +3927,18 @@ export class PdfService {
             },
             { text: 'Name', style: 'h4b', alignment: 'left' },
             { text: 'Location', style: 'h4b', alignment: 'left' },
-            { text: 'Picked Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Avail Qty', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
           ],
           ...items,
         ],
@@ -3911,7 +3950,7 @@ export class PdfService {
       // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
       content: [
         await this.getHeader(
-          'Picklist',
+          'Return Count Sheet',
           docData.code,
           docData.site.name,
           new Date(),
@@ -3930,9 +3969,57 @@ export class PdfService {
         ),
         hr,
         summary,
+        hr,
+        {
+          table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
+            headerRows: 1,
+            widths: ['*'],
+            body: [
+              [
+                {
+                  text: 'Load Prepared By: ',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Name:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Date:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Sign:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'I have confirmed all quantities picked are correct:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
     };
     return this.generatePdf(data);
   }
