@@ -371,30 +371,41 @@ export class JobReferenceComponent implements OnInit {
   }
 
   private calculateTransactionSubtotal() {
-    const billingDate = this.field('endDate').value;
+    const rawBilling = this.field('endDate').value;
+    const billingDate =
+      rawBilling instanceof Date
+        ? rawBilling
+        : rawBilling
+        ? new Date(rawBilling)
+        : undefined;
 
     this.transactions.forEach((item) => {
-      // item.days =
-      //   item.transactionType === 'Return'
-      //     ? +this.dateDiff.transform(
-      //         item.invoiceStart.toDate(),
-      //         item.invoiceEnd.toDate()
-      //       )
-      //     : +this.dateDiff.transform(
-      //         item.invoiceStart.toDate(),
-      //         this.field('endDate').value
-      //       );
+      const start = item.invoiceStart?.toDate
+        ? item.invoiceStart.toDate()
+        : new Date(item.invoiceStart);
 
-      item.days = +this.dateDiff.transform(
-        item.invoiceStart.toDate(),
-        item.invoiceEnd.toDate()
-      );
+      let end = item.invoiceEnd?.toDate
+        ? item.invoiceEnd.toDate()
+        : item.invoiceEnd
+        ? new Date(item.invoiceEnd)
+        : null;
 
+      // If Firestore cleared invoiceEnd after an invoice, fall back to billing date.
+      if (!end && billingDate) {
+        end = billingDate;
+        item.invoiceEnd = Timestamp.fromDate(billingDate);
+      }
+
+      if (billingDate && end && end < billingDate) {
+        end = billingDate;
+        item.invoiceEnd = Timestamp.fromDate(billingDate);
+      }
+
+      item.days = +this.dateDiff.transform(start, end ?? start);
       item.months = +(item.days / 30).toFixed(2);
       item.total = +(+item.invoiceQty * +item.hireRate * item.months).toFixed(
         2
       );
-
       this.jr.subtotal += item.total;
     });
   }
