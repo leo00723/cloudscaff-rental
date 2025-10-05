@@ -5580,18 +5580,13 @@ export class PdfService {
     let start = null;
     let end = null;
     let days = null;
-    let code = null;
-    if (item.transactionType === 'Delivery') {
-      code = item.deliveryCode;
-      start = item.invoiceStart.toDate();
-      end = endDate;
-      days = +this.dateDiffPipe.transform(start, end);
-    } else {
-      code = item.returnCode;
-      start = item.invoiceStart.toDate();
-      end = item.invoiceEnd.toDate();
-      days = +this.dateDiffPipe.transform(start, end);
-    }
+    const code =
+      item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
+
+    start = item.invoiceStart.toDate();
+    end = item.invoiceEnd.toDate();
+    days = +this.dateDiffPipe.transform(start, end);
+
     const months = +this.format(days / 30);
     const total = +item.invoiceQty * +item.hireRate * months;
     return [
@@ -5671,18 +5666,12 @@ export class PdfService {
     let start = null;
     let end = null;
     let days = null;
-    let code = null;
-    if (item.transactionType === 'Delivery') {
-      code = item.deliveryCode;
-      start = item.invoiceStart.toDate();
-      end = endDate;
-      days = +this.dateDiffPipe.transform(start, end);
-    } else {
-      code = item.returnCode;
-      start = item.invoiceStart.toDate();
-      end = item.invoiceEnd.toDate();
-      days = +this.dateDiffPipe.transform(start, end);
-    }
+    const code =
+      item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
+
+    start = item.invoiceStart.toDate();
+    end = item.invoiceEnd.toDate();
+    days = +this.dateDiffPipe.transform(start, end);
     const months = this.format(days / 30);
     return [
       {
