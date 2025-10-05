@@ -38,8 +38,6 @@
         <ng-container
           *ngTemplateOutlet="uploadsSection; context: { isMobile: true }"
         ></ng-container>
-        <ng-container *ngTemplateOutlet="signaturesSection"></ng-container>
-        <ng-container *ngTemplateOutlet="signaturePad"></ng-container>
       </ion-grid>
     </form>
   </ion-content>
@@ -88,8 +86,6 @@
             <ng-container
               *ngTemplateOutlet="uploadsSection; context: { isMobile: false }"
             ></ng-container>
-            <ng-container *ngTemplateOutlet="signaturesSection"></ng-container>
-            <ng-container *ngTemplateOutlet="signaturePad"></ng-container>
           </ion-row>
         </ion-content>
       </ion-menu>
@@ -321,6 +317,14 @@
       title="Expected Delivery Date"
     >
     </app-input-date>
+    <app-input-date
+      *ngIf="shipment.status === 'received'"
+      [readonly]="true"
+      [form]="form"
+      controlName="startDate"
+      title="Hire Start Date"
+    >
+    </app-input-date>
   </ion-col>
 
   <ion-col size="12">
@@ -362,8 +366,8 @@
       <ion-col size="12">
         <ng-container *ngTemplateOutlet="mobileInventoryList"></ng-container>
       </ion-col>
-      <ng-container *ngTemplateOutlet="inventoryTotals"></ng-container>
     </ion-row>
+    <ng-container *ngTemplateOutlet="inventoryTotals"></ng-container>
   </ng-container>
 
   <ng-container *ngIf="!isMobile">
@@ -551,32 +555,43 @@
 
 <!-- Inventory Totals -->
 <ng-template #inventoryTotals>
-  <ion-col size="12">
-    <ion-item>
-      <ion-label>Total Items</ion-label>
-      <ion-label slot="end">
-        {{ shipment.items ? shipment.items.length : 0 }}
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Total weight</ion-label>
-      <ion-label slot="end">
-        {{ shipment.items ? (shipment.items | weight : true) : [] }}
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Daily Hire</ion-label>
-      <ion-label slot="end">
-        {{ shipment.items | cost }}
-      </ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>Weekly Hire</ion-label>
-      <ion-label slot="end">
-        {{ shipment.items | cost : true }}
-      </ion-label>
-    </ion-item>
-  </ion-col>
+  <ion-row>
+    <ion-col size="12">
+      <ion-item>
+        <ion-label>Total Items</ion-label>
+        <ion-label slot="end">
+          {{ shipment.items ? shipment.items.length : 0 }}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Total weight</ion-label>
+        <ion-label slot="end">
+          {{ shipment.items ? (shipment.items | weight : true) : [] }}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Daily Hire</ion-label>
+        <ion-label slot="end">
+          {{ shipment.items | cost }}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Weekly Hire</ion-label>
+        <ion-label slot="end">
+          {{ shipment.items | cost : true }}
+        </ion-label>
+      </ion-item>
+    </ion-col>
+    <ion-col size="12" class="ion-padding">
+      <app-input-date
+        [readonly]="shipment.status !== 'docket'"
+        [form]="form"
+        controlName="startDate"
+        title="Hire Start Date"
+      >
+      </app-input-date>
+    </ion-col>
+  </ion-row>
 </ng-template>
 
 <!-- Uploads Section Template -->
@@ -598,72 +613,6 @@
       (deleted)="removeUpload(i)"
     >
     </app-file-item>
-  </ion-col>
-</ng-template>
-
-<!-- Signatures Section Template -->
-<ng-template #signaturesSection>
-  <ion-col
-    class="mt-3"
-    size="12"
-    *ngIf="
-      (shipment?.signedBy || shipment?.signedBy2) &&
-      (shipment.status === 'on-route' || shipment.status === 'received')
-    "
-  >
-    <app-title-block>Signatures</app-title-block>
-    <table class="table table-bordered mb-3">
-      <tbody>
-        <tr class="align-middle">
-          <td>Sent By</td>
-          <td class="text-center">
-            <ion-text slot="end">{{ shipment?.signedBy }}</ion-text>
-          </td>
-        </tr>
-        <tr class="align-middle">
-          <td>Signature</td>
-          <td class="text-center">
-            <img [src]="shipment?.signature" />
-          </td>
-        </tr>
-        <tr class="align-middle">
-          <td>Received By</td>
-          <td class="text-center">
-            <ion-text slot="end">{{ shipment?.signedBy2 }}</ion-text>
-          </td>
-        </tr>
-        <tr class="align-middle">
-          <td>Signature</td>
-          <td class="text-center">
-            <img [src]="shipment?.signature2" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </ion-col>
-</ng-template>
-
-<!-- Signature Pad Template -->
-<ng-template #signaturePad>
-  <ion-col
-    size="12"
-    class="card-outline mt-5"
-    *ngIf="shipment.status === 'on-route' || shipment.status === 'docket'"
-  >
-    <app-title-block>Signature</app-title-block>
-    <app-input-date
-      [readonly]="shipment.status !== 'docket'"
-      [form]="form"
-      controlName="startDate"
-      title="Hire Start Date"
-    >
-    </app-input-date>
-    <app-signature-pad
-      #signature
-      [showSave]="blob ? false : true"
-      (res)="sign($event)"
-    >
-    </app-signature-pad>
   </ion-col>
 </ng-template>
 
@@ -757,33 +706,10 @@
     >
       Update
     </ion-button>
-    <!-- <ion-button
-      shape="round"
-      *ngIf="isEdit && !loading && shipment.status === 'pending'"
-      color="success"
-      [disabled]="
-        (!isMobile && (!blob || !shipment.signedBy)) ||
-        (isMobile && (!blob || (!shipment.signedBy && form.invalid)))
-      "
-      (click)="sendDelivery()"
-    >
-      Send Delivery
-    </ion-button>
-    <ion-button
-      shape="round"
-      *ngIf="isEdit && !loading && shipment.status === 'on-route'"
-      color="success"
-      [disabled]="
-        (!isMobile && (!blob || !shipment.signedBy2)) ||
-        (isMobile && (!blob || (!shipment.signedBy2 && form.invalid)))
-      "
-      (click)="receiveDelivery()"
-    >
-      Receive Delivery
-    </ion-button> -->
+
     <ion-button
       *ngIf="isEdit && !loading && shipment.status === 'docket'"
-      [disabled]="!blob || !shipment.signedBy || form.invalid"
+      [disabled]="form.invalid"
       (click)="receiveDelivery(true)"
       class="text-capitalize"
       shape="round"

@@ -57,7 +57,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   searching = false;
   error = false;
   sites$: Observable<Site[]>;
-  blob: any;
   uploading = false;
 
   isMobile = false;
@@ -210,54 +209,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     });
   }
 
-  async sendDelivery() {
-    this.masterSvc.notification().presentAlertConfirm(async () => {
-      this.loading = true;
-      try {
-        this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
-        Object.assign(this.shipment, this.form.value);
-        this.shipment.items = this.itemBackup.filter(
-          (item) => item.shipmentQty > 0
-        );
-        this.shipment.status = 'on-route';
-        this.shipment.date = new Date();
-        await this.upload();
-
-        const res = await this.imgService.uploadBlob(
-          this.blob,
-          `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature`,
-          ''
-        );
-        if (res) {
-          this.shipment.signature = res.url;
-          this.shipment.signatureRef = res.ref;
-        }
-
-        await this.masterSvc
-          .edit()
-          .updateDoc(
-            `company/${this.company.id}/shipments`,
-            this.shipment.id,
-            this.shipment
-          );
-        await this.downloadPdf();
-        this.masterSvc
-          .notification()
-          .toast('Delivery updated successfully', 'success');
-        this.loading = false;
-      } catch (e) {
-        console.error(e);
-        this.masterSvc
-          .notification()
-          .toast(
-            'Something went wrong updating the delivery. Please try again!',
-            'danger'
-          );
-        this.loading = false;
-      }
-    });
-  }
-
   async receiveDelivery(isAdmin?: boolean) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       this.loading = true;
@@ -270,23 +221,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.shipment.status = 'received';
         this.shipment.date = new Date();
         await this.upload();
-
-        if (this.blob) {
-          const res = await this.imgService.uploadBlob(
-            this.blob,
-            `company/${this.shipment.company.id}/shipments/${this.shipment.id}/signature2`,
-            ''
-          );
-          if (res) {
-            if (isAdmin) {
-              this.shipment.signature = res.url;
-              this.shipment.signatureRef = res.ref;
-            } else {
-              this.shipment.signature2 = res.url;
-              this.shipment.signatureRef2 = res.ref;
-            }
-          }
-        }
 
         await this.masterSvc
           .edit()
@@ -481,20 +415,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected async sign(ev: { signature: string; name: string }) {
-    if (ev.signature) {
-      this.blob = await (await fetch(ev.signature)).blob();
-      if (this.shipment.status === 'docket') {
-        this.shipment.signedBy = ev.name;
-      } else if (this.shipment.status === 'on-route') {
-        this.shipment.signedBy2 = ev.name;
-      }
-    } else {
-      this.blob = null;
-      return;
-    }
-  }
-
   protected onFileChanged(event) {
     this.masterSvc.notification().presentAlertConfirm(() => {
       const file: File = event.target.files[0];
@@ -554,7 +474,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   private async initEditForm() {
     this.form = this.masterSvc.fb().group({
       site: [this.shipment.site, Validators.required],
-      startDate: [this.shipment?.startDate],
+      startDate: [this.shipment?.startDate, Validators.required],
       endDate: [this.shipment?.endDate],
       company: [this.company, Validators.required],
       status: [this.shipment.status],
@@ -603,7 +523,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   private initForm() {
     this.form = this.masterSvc.fb().group({
       site: ['', Validators.required],
-      startDate: [''],
+      startDate: ['', Validators.required],
       endDate: [''],
       company: [this.company, Validators.required],
       status: ['pending'],
