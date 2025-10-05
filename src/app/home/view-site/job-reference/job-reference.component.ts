@@ -372,12 +372,7 @@ export class JobReferenceComponent implements OnInit {
 
   private calculateTransactionSubtotal() {
     const rawBilling = this.field('endDate').value;
-    const billingDate =
-      rawBilling instanceof Date
-        ? rawBilling
-        : rawBilling
-        ? new Date(rawBilling)
-        : undefined;
+    const billingDate = this.parseDdMmYyyyDate(rawBilling);
 
     this.transactions.forEach((item) => {
       const start = item.invoiceStart?.toDate
@@ -406,6 +401,38 @@ export class JobReferenceComponent implements OnInit {
       item.total = +(+item.invoiceQty * +item.hireRate * item.days).toFixed(2);
       this.jr.subtotal += item.total;
     });
+  }
+
+  private parseDdMmYyyyDate(value: unknown): Date | undefined {
+    if (!value) {
+      return undefined;
+    }
+
+    if (value instanceof Date) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const [dayStr, monthStr, yearStr] = value.split('-');
+      const day = Number(dayStr);
+      const month = Number(monthStr);
+      const year = Number(yearStr);
+
+      if (
+        Number.isNaN(day) ||
+        Number.isNaN(month) ||
+        Number.isNaN(year) ||
+        day <= 0 ||
+        month <= 0 ||
+        month > 12
+      ) {
+        return undefined;
+      }
+
+      return new Date(Date.UTC(year, month - 1, day));
+    }
+
+    return undefined;
   }
 
   private async calcTotal() {
