@@ -110,6 +110,22 @@
           ></app-input-date>
         </ion-col>
         <ion-col size="12">
+          <app-input-select-reactive
+            title="Job Reference Number"
+            placeholder="Select JR"
+            controlName="jobReference"
+            [form]="form"
+            [selectedText]="field('jobReference').value"
+            (ionChange)="getTransactions()"
+          >
+            <ng-container
+              *ngFor="let jr of field('site').value.jobReferenceList"
+            >
+              <ion-select-option [value]="jr">{{ jr }}</ion-select-option>
+            </ng-container>
+          </app-input-select-reactive>
+        </ion-col>
+        <ion-col size="12">
           <app-input-reactive
             title="Notes"
             controlName="notes"
@@ -154,7 +170,7 @@
           </ion-col>
         </ng-container>
       </ion-row>
-      <ion-row class="card-outline mb-3" *ngIf="field('site').value">
+      <ion-row class="card-outline mb-3" *ngIf="field('jobReference').value">
         <ion-col size="6">
           <ion-text color="medium">
             <h4>Inventory Information</h4>
@@ -407,7 +423,7 @@
           </ion-item>
         </ion-col>
       </ion-row>
-      <ion-row class="card-outline mb-3" *ngIf="field('site').value">
+      <ion-row class="card-outline mb-3" *ngIf="field('jobReference').value">
         <ion-col size="6">
           <ion-text color="medium">
             <h4>Over-Return Information</h4>

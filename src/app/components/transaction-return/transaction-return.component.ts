@@ -57,7 +57,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
   viewAll = true;
   searching = false;
 
-  viewAllOverages = true;
+  viewAllOverages = false;
   searchingOverages = false;
 
   error = false;
@@ -97,7 +97,6 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
 
   changeSite(event) {
     this.field('site').setValue(event[0]);
-    this.getTransactions();
   }
 
   createReturn() {
@@ -198,6 +197,10 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
   }
 
   protected getTransactions() {
+    const jobReference = this.field('jobReference').value;
+    if (!jobReference) {
+      return;
+    }
     this.subs.add(
       this.masterSvc
         .edit()
@@ -205,6 +208,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           where('status', '==', 'active'),
           where('transactionType', '==', 'Delivery'),
           where('siteId', '==', this.field('site').value.id),
+          where('jobReference', '==', jobReference),
           orderBy('code', 'asc'),
         ])
         .pipe(take(1))
@@ -544,7 +548,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       driverNo: [this.returnDoc?.driverNo, Validators.nullValidator],
       vehicleReg: [this.returnDoc?.vehicleReg, Validators.nullValidator],
       createdByName: [this.returnDoc?.createdByName || ''],
-      jobReference: ['BulkReturn'],
+      jobReference: [this.returnDoc?.jobReference || ''],
     });
     if (this.returnDoc.status === 'submitted') {
       this.subs.add(
@@ -554,6 +558,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
             where('status', '==', 'active'),
             where('transactionType', '==', 'Delivery'),
             where('siteId', '==', this.returnDoc.site.id),
+            where('jobReference', '==', this.returnDoc?.jobReference),
             orderBy('code', 'asc'),
           ])
           .subscribe((data) => {
@@ -604,7 +609,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       driverName: ['', Validators.nullValidator],
       driverNo: ['', Validators.nullValidator],
       vehicleReg: ['', Validators.nullValidator],
-      jobReference: ['BulkReturn'],
+      jobReference: [''],
     });
   }
 

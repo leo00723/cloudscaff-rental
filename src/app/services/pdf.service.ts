@@ -3950,7 +3950,7 @@ export class PdfService {
       // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
       content: [
         await this.getHeader(
-          'Return Count Sheet',
+          `Return Count Sheet - JR - ${docData.jobReference}`,
           docData.code,
           docData.site.name,
           new Date(),
@@ -3962,6 +3962,12 @@ export class PdfService {
             [
               { text: 'Site Code', style: 'h6b' },
               `${docData?.site.code || 'N/A'}`,
+              '',
+              '',
+            ],
+            [
+              { text: 'Job Reference', style: 'h6b' },
+              `${docData?.jobReference || 'N/A'}`,
               '',
               '',
             ],
