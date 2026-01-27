@@ -4025,7 +4025,7 @@ export class PdfService {
             body: [
               [
                 {
-                  text: 'Load Prepared By: ',
+                  text: 'Return Processed By: ',
                   style: 'h4b',
                   alignment: 'left',
                 },
@@ -4053,7 +4053,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: 'I have confirmed all quantities picked are correct:',
+                  text: 'I have confirmed all quantities returned are correct:',
                   style: 'h4b',
                   alignment: 'left',
                 },
