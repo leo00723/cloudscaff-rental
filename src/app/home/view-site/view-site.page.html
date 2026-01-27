@@ -74,7 +74,7 @@
           >
             <ion-label
               >Returns
-              <ng-container *ngIf="outboundReturns$ | async as returns">
+              <!-- <ng-container *ngIf="outboundReturns$ | async as returns">
                 <ion-badge
                   shape="round"
                   mode="ios"
@@ -83,8 +83,8 @@
                 >
                   {{returns.length}}
                 </ion-badge>
-              </ng-container></ion-label
-            >
+              </ng-container> -->
+            </ion-label>
           </ion-segment-button>
           <!-- <ion-segment-button
             value="SI"
@@ -515,9 +515,9 @@
           mode="ios"
           class="rounded-lg overflow-hidden"
           [multiple]="true"
-          [value]="['pending','outbound']"
+          [value]="['approved']"
         >
-          <ng-container *ngIf="pendingReturns$ | async as pr else loading">
+          <!-- <ng-container *ngIf="pendingReturns$ | async as pr else loading">
             <ion-accordion value="pending">
               <ion-item slot="header" color="light">
                 <ion-label color="primary"
@@ -531,8 +531,8 @@
                 ></app-returns-table>
               </div>
             </ion-accordion>
-          </ng-container>
-          <ng-container *ngIf="outboundReturns$ | async as or else loading">
+          </ng-container> -->
+          <!-- <ng-container *ngIf="outboundReturns$ | async as or else loading">
             <ion-accordion value="outbound">
               <ion-item slot="header" color="light">
                 <ion-label color="warning"
@@ -546,7 +546,7 @@
                 ></app-returns-table>
               </div>
             </ion-accordion>
-          </ng-container>
+          </ng-container> -->
           <ng-container *ngIf="returns$ | async as r else loading">
             <ion-accordion value="approved">
               <ion-item slot="header" color="light">
@@ -565,7 +565,7 @@
           </ng-container>
         </ion-accordion-group>
 
-        <ion-fab
+        <!-- <ion-fab
           class="m-2"
           vertical="bottom"
           horizontal="end"
@@ -575,7 +575,7 @@
           <ion-fab-button (click)="addReturn(site)">
             <ion-icon name="add"></ion-icon>
           </ion-fab-button>
-        </ion-fab>
+        </ion-fab> -->
       </ng-container>
       <ng-container *ngSwitchCase="'SI'">
         <ion-accordion-group
