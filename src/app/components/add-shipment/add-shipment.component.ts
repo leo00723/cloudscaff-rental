@@ -21,7 +21,7 @@ import { UserState } from 'src/app/shared/user/user.state';
 import { MultiuploaderComponent } from '../multiuploader/multiuploader.component';
 import { ImgService } from 'src/app/services/img.service';
 import * as Papa from 'papaparse';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, MenuController } from '@ionic/angular';
 import { CalculatePipe } from '../calculate.pipe';
 
 @Component({
@@ -64,6 +64,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   private loadingCtrl = inject(LoadingController);
   private imgService = inject(ImgService);
   private calcPipe = inject(CalculatePipe);
+  private menuCtrl = inject(MenuController);
   private subs = new Subscription();
 
   constructor(private masterSvc: MasterService) {
@@ -78,6 +79,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    // Disable the home menu while this modal is open to prevent conflicts
+    await this.menuCtrl.enable(false, 'home');
+
     if (!this.isEdit) {
       this.items = await lastValueFrom(
         this.inventoryItems$.pipe(
@@ -86,9 +90,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
               delete item.log;
               item.calculatedAvailableQty = this.calcPipe.transform(item);
               return item;
-            })
-          )
-        )
+            }),
+          ),
+        ),
       );
 
       this.initForm();
@@ -161,7 +165,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .notification()
           .toast(
             'Something went wrong creating delivery. Please try again!',
-            'danger'
+            'danger',
           );
         this.loading = false;
       }
@@ -175,7 +179,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
         Object.assign(this.shipment, this.form.value);
         this.shipment.items = this.itemBackup.filter(
-          (item) => item.shipmentQty > 0
+          (item) => item.shipmentQty > 0,
         );
         this.shipment.status = status;
         this.shipment.date = new Date();
@@ -185,7 +189,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .updateDoc(
             `company/${this.company.id}/shipments`,
             this.shipment.id,
-            this.shipment
+            this.shipment,
           );
         this.masterSvc
           .notification()
@@ -202,7 +206,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .notification()
           .toast(
             'Something went wrong updating the delivery. Please try again!',
-            'danger'
+            'danger',
           );
         this.loading = false;
       }
@@ -216,7 +220,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
         Object.assign(this.shipment, this.form.value);
         this.shipment.items = this.itemBackup.filter(
-          (item) => item.shipmentQty > 0
+          (item) => item.shipmentQty > 0,
         );
         this.shipment.status = 'received';
         this.shipment.date = new Date();
@@ -227,7 +231,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .updateDoc(
             `company/${this.company.id}/shipments`,
             this.shipment.id,
-            this.shipment
+            this.shipment,
           );
         await this.downloadPdf();
         this.masterSvc
@@ -240,7 +244,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           .notification()
           .toast(
             'Something went wrong updating the delivery. Please try again!',
-            'danger'
+            'danger',
           );
       } finally {
         this.loading = false;
@@ -280,14 +284,18 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         item?.category?.toString().toLowerCase().includes(val) ||
         item?.size?.toString().toLowerCase().includes(val) ||
         item?.location?.toString().toLowerCase().includes(val) ||
-        !val
+        !val,
     );
     if (!val) {
       this.searching = false;
     }
   }
 
-  close() {
+  async close() {
+    // Close the delivery menu and enable the home menu to prevent menu state conflicts
+    await this.menuCtrl.close('delivery');
+    // Re-enable the home menu (id="home" from home.page.html)
+    await this.menuCtrl.enable(true, 'home');
     this.masterSvc.modal().dismiss();
   }
   field(field: string) {
@@ -316,7 +324,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .notification()
         .toast(
           'Something went wrong deleting file. Please try again.',
-          'danger'
+          'danger',
         );
     }
   }
@@ -399,7 +407,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .updateDoc(
           `company/${this.shipment.company.id}/shipments`,
           this.shipment.id,
-          { uploads: this.shipment.uploads }
+          { uploads: this.shipment.uploads },
         );
       this.masterSvc
         .notification()
@@ -410,7 +418,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .notification()
         .toast(
           'Something went wrong uploading files. Please try again.',
-          'danger'
+          'danger',
         );
     }
   }
@@ -438,11 +446,11 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
               let index = null;
               if (item.location) {
                 index = this.items.findIndex(
-                  (i) => i.code === item.code && i.location === item.location
+                  (i) => i.code === item.code && i.location === item.location,
                 );
               } else {
                 index = this.items.findIndex(
-                  (i) => i.code === item.code && !i.location
+                  (i) => i.code === item.code && !i.location,
                 );
               }
               if (index !== -1) {
@@ -499,9 +507,9 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
               delete item.log;
               item.calculatedAvailableQty = this.calcPipe.transform(item);
               return item;
-            })
-          )
-        )
+            }),
+          ),
+        ),
       );
       items.forEach((dbItem) => {
         dbItem.shipmentQty = null;
@@ -556,7 +564,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
           ]);
       } else {
         this.masterSvc.log(
-          '-----------------------try sites----------------------'
+          '-----------------------try sites----------------------',
         );
         this.init();
       }
@@ -572,7 +580,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       this.itemBackup = this.itemBackup ? this.itemBackup : [...this.items];
       Object.assign(this.shipment, this.form.value);
       this.shipment.items = this.itemBackup.filter(
-        (item) => item.shipmentQty > 0
+        (item) => item.shipmentQty > 0,
       );
       this.shipment.status = 'pending';
       await this.upload();
@@ -582,7 +590,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .updateDoc(
           `company/${this.company.id}/shipments`,
           this.shipment.id,
-          this.shipment
+          this.shipment,
         );
     } catch (e) {
       console.error(e);
@@ -590,7 +598,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .notification()
         .toast(
           'Something went wrong updating the delivery. Please try again!',
-          'danger'
+          'danger',
         );
     } finally {
       this.loading = false;
@@ -631,7 +639,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         .notification()
         .toast(
           'Something went wrong creating delivery. Please try again!',
-          'danger'
+          'danger',
         );
     } finally {
       this.loading = false;
