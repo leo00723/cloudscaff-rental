@@ -416,7 +416,7 @@
             <ion-label slot="end">
               {{
                 returnDoc.items
-                  ? (returnDoc.items | weight : false : false : false : true)
+                  ? (returnDoc.items | weight: false : false : false : true)
                   : []
               }}
             </ion-label>
@@ -515,7 +515,7 @@
             <ion-label slot="end">
               {{
                 returnDoc.overageItems
-                  ? (returnDoc.overageItems | weight : true)
+                  ? (returnDoc.overageItems | weight: true)
                   : []
               }}
             </ion-label>
@@ -646,7 +646,7 @@
             >Update Return</ion-button
           >
 
-          <ion-button
+          <!-- <ion-button
             shape="round"
             *ngIf="isEdit && returnDoc.status === 'submitted' && !loading"
             color="success"
@@ -662,31 +662,31 @@
             (click)="logCollection()"
             [disabled]="!blob || !returnDoc.signedBy"
             >Return Collected</ion-button
-          >
+          > -->
 
-          <ion-button
+          <!-- <ion-button
             shape="round"
             *ngIf="isEdit && !loading && returnDoc.status === 'collected'"
             color="success"
             [disabled]="!blob || !returnDoc.signedBy2"
             (click)="approveReturn()"
             >Approve Return</ion-button
-          >
-          <ng-container
+          > -->
+          <!-- <ng-container
             *ngIf="
               user.permissionsList.includes('Inventory Admin') &&
               returnDoc.status === 'submitted'
             "
+          > -->
+          <ion-button
+            shape="round"
+            fill="solid"
+            *ngIf="isEdit && !loading"
+            color="success"
+            (click)="approveReturn(true)"
+            >Approve</ion-button
           >
-            <ion-button
-              shape="round"
-              fill="outline"
-              *ngIf="isEdit && !loading"
-              color="tertiary"
-              (click)="approveReturn(true)"
-              >Approve Immediately</ion-button
-            >
-          </ng-container>
+          <!-- </ng-container> -->
         </ion-col>
       </ion-row>
     </ion-grid>
