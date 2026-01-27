@@ -1143,9 +1143,7 @@ export class PdfService {
         if (item.isDamageCharge) {
           damageItems.push(this.addDamageItem(company, item));
         } else if (item.isConsumable) {
-          consumableItems.push(
-            this.addConsumableItem(company, item),
-          );
+          consumableItems.push(this.addConsumableItem(company, item));
         } else {
           items.push(this.addRentalItem(company, item, invoice.endDate));
         }
@@ -1336,15 +1334,7 @@ export class PdfService {
       consumableSummary = {
         table: {
           headerRows: 1,
-          widths: [
-            'auto',
-            'auto',
-            '*',
-            'auto',
-            'auto',
-            'auto',
-            'auto',
-          ],
+          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
           body: [consumableHeaders, ...consumableItems],
         },
         layout: tLayout,
@@ -1366,15 +1356,7 @@ export class PdfService {
       damageSummary = {
         table: {
           headerRows: 1,
-          widths: [
-            'auto',
-            'auto',
-            '*',
-            'auto',
-            'auto',
-            'auto',
-            'auto',
-          ],
+          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
           body: [damageHeaders, ...damageItems],
         },
         layout: tLayout,
@@ -1628,9 +1610,7 @@ export class PdfService {
       if (item.isDamageCharge) {
         damageItems.push(this.addDamageItem(company, item));
       } else if (item.isConsumable) {
-        consumableItems.push(
-          this.addConsumableItem(company, item),
-        );
+        consumableItems.push(this.addConsumableItem(company, item));
       } else {
         items.push(this.addRentalItem(company, item, invoice.endDate));
       }
@@ -1695,15 +1675,7 @@ export class PdfService {
       consumableSummary = {
         table: {
           headerRows: 1,
-          widths: [
-            'auto',
-            'auto',
-            '*',
-            'auto',
-            'auto',
-            'auto',
-            'auto',
-          ],
+          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
           body: [consumableHeaders, ...consumableItems],
         },
         layout: tLayout,
@@ -1725,15 +1697,7 @@ export class PdfService {
       damageSummary = {
         table: {
           headerRows: 1,
-          widths: [
-            'auto',
-            'auto',
-            '*',
-            'auto',
-            'auto',
-            'auto',
-            'auto',
-          ],
+          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
           body: [damageHeaders, ...damageItems],
         },
         layout: tLayout,
@@ -2002,9 +1966,7 @@ export class PdfService {
       });
 
       consumableMergedItems.forEach((item) => {
-        consumableItems.push(
-          this.addConsumableItem(company, item),
-        );
+        consumableItems.push(this.addConsumableItem(company, item));
       });
 
       damageMergedItems.forEach((item) => {
@@ -2149,15 +2111,7 @@ export class PdfService {
       consumableSummary = {
         table: {
           headerRows: 1,
-          widths: [
-            'auto',
-            'auto',
-            '*',
-            'auto',
-            'auto',
-            'auto',
-            'auto',
-          ],
+          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
           body: [consumableHeaders, ...consumableItems],
         },
         layout: tLayout,
@@ -2179,15 +2133,7 @@ export class PdfService {
       damageSummary = {
         table: {
           headerRows: 1,
-          widths: [
-            'auto',
-            'auto',
-            '*',
-            'auto',
-            'auto',
-            'auto',
-            'auto',
-          ],
+          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
           body: [damageHeaders, ...damageItems],
         },
         layout: tLayout,
@@ -6158,14 +6104,11 @@ export class PdfService {
     ];
   }
 
-  private addConsumableItem(
-    company: Company,
-    item: TransactionItem,
-  ) {
+  private addConsumableItem(company: Company, item: TransactionItem) {
     const code =
       item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
     const total = +item.invoiceQty * +(item.sellingCost || item.hireRate);
-    
+
     return [
       {
         text: code,
@@ -6207,7 +6150,7 @@ export class PdfService {
   private addConsumableItemCustom(item: TransactionItem) {
     const code =
       item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
-    
+
     return [
       {
         text: code,
@@ -6231,14 +6174,11 @@ export class PdfService {
     ];
   }
 
-  private addDamageItem(
-    company: Company,
-    item: TransactionItem,
-  ) {
+  private addDamageItem(company: Company, item: TransactionItem) {
     const code =
       item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
     const total = +item.invoiceQty * +(item.sellingCost || item.hireRate);
-    
+
     return [
       {
         text: code,
@@ -6280,7 +6220,7 @@ export class PdfService {
   private addDamageItemCustom(item: TransactionItem) {
     const code =
       item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
-    
+
     return [
       {
         text: code,
