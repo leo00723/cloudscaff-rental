@@ -9,7 +9,14 @@ import {
 import { increment, orderBy, where } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import cloneDeep from 'lodash/cloneDeep';
-import { lastValueFrom, map, Observable, Subscription, take } from 'rxjs';
+import {
+  lastValueFrom,
+  map,
+  Observable,
+  Subscription,
+  switchMap,
+  take,
+} from 'rxjs';
 import { Company } from 'src/app/models/company.model';
 import { InventoryItem } from 'src/app/models/inventoryItem.model';
 import { Site } from 'src/app/models/site.model';
@@ -85,8 +92,8 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
               item.shipmentQty = null;
             });
             return items;
-          })
-        )
+          }),
+        ),
       );
       this.init();
       this.initForm();
@@ -109,7 +116,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
 
         this.overageBackupItems ||= [...this.overageItems];
         returnDoc.overageItems = this.overageBackupItems.filter(
-          (item) => item.shipmentQty > 0
+          (item) => item.shipmentQty > 0,
         );
 
         this.company = this.masterSvc
@@ -141,7 +148,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           .notification()
           .toast(
             'Something went wrong creating return. Please try again!',
-            'danger'
+            'danger',
           );
       } finally {
         this.loading = false;
@@ -157,12 +164,12 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
 
         this.itemBackup ||= [...this.items];
         this.returnDoc.items = this.itemBackup.filter(
-          (item) => item.returnQty > 0
+          (item) => item.returnQty > 0,
         );
 
         this.overageBackupItems ||= [...this.overageItems];
         this.returnDoc.overageItems = this.overageBackupItems.filter(
-          (item) => item.shipmentQty > 0
+          (item) => item.shipmentQty > 0,
         );
 
         this.returnDoc.status = status;
@@ -173,7 +180,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           .updateDoc(
             `company/${this.company.id}/returns`,
             this.returnDoc.id,
-            this.returnDoc
+            this.returnDoc,
           );
 
         this.masterSvc
@@ -188,7 +195,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           .notification()
           .toast(
             'Something went wrong updating return. Please try again!',
-            'danger'
+            'danger',
           );
       } finally {
         this.loading = false;
@@ -211,10 +218,29 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           where('jobReference', '==', jobReference),
           orderBy('code', 'asc'),
         ])
-        .pipe(take(1))
+        .pipe(
+          take(1),
+          switchMap((transactions) => {
+            // Fetch inventory items to get sellingCost
+            return this.inventoryItems$.pipe(
+              map((inventoryItems) => {
+                // Enrich transactions with sellingCost from inventory
+                return transactions.map((transaction) => {
+                  const inventoryItem = inventoryItems.find(
+                    (item) => item.id === transaction.itemId,
+                  );
+                  return {
+                    ...transaction,
+                    sellingCost: inventoryItem?.sellingCost || 0,
+                  };
+                });
+              }),
+            );
+          }),
+        )
         .subscribe((data) => {
           this.items = data;
-        })
+        }),
     );
   }
 
@@ -229,7 +255,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         ...this.form.value,
         items: this.itemBackup.filter((item) => item.returnQty > 0),
         overageItems: this.overageBackupItems.filter(
-          (item) => item.shipmentQty > 0
+          (item) => item.shipmentQty > 0,
         ),
         status: 'received',
       });
@@ -240,7 +266,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         const res = await this.imgService.uploadBlob(
           this.blob,
           `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature2`,
-          ''
+          '',
         );
         if (res) {
           this.returnDoc.signature2 = res.url;
@@ -253,7 +279,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         .updateDoc(
           `company/${this.company.id}/returns`,
           this.returnDoc.id,
-          this.returnDoc
+          this.returnDoc,
         );
 
       if (this.returnDoc.overageItems.length > 0) {
@@ -270,7 +296,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         .notification()
         .toast(
           'Something went wrong updating return. Please try again!',
-          'danger'
+          'danger',
         );
     } finally {
       this.loading = false;
@@ -310,7 +336,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         ...this.form.value,
         items: this.itemBackup.filter((item) => item.returnQty > 0),
         overageItems: this.overageBackupItems.filter(
-          (item) => item.shipmentQty > 0
+          (item) => item.shipmentQty > 0,
         ),
         status: 'collected',
       });
@@ -319,7 +345,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
       const res = await this.imgService.uploadBlob(
         this.blob,
         `company/${this.returnDoc.company.id}/shipments/${this.returnDoc.id}/signature`,
-        ''
+        '',
       );
       if (res) {
         this.returnDoc.signature = res.url;
@@ -331,7 +357,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         .updateDoc(
           `company/${this.company.id}/returns`,
           this.returnDoc.id,
-          this.returnDoc
+          this.returnDoc,
         );
 
       this.masterSvc
@@ -344,7 +370,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         .notification()
         .toast(
           'Something went wrong updating return. Please try again!',
-          'danger'
+          'danger',
         );
     } finally {
       this.loading = false;
@@ -472,7 +498,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         item?.category?.toString().toLowerCase().includes(val) ||
         item?.size?.toString().toLowerCase().includes(val) ||
         item?.location?.toString().toLowerCase().includes(val) ||
-        !val
+        !val,
     );
     if (!val) {
       this.searching = false;
@@ -492,7 +518,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         item?.category?.toString().toLowerCase().includes(val) ||
         item?.size?.toString().toLowerCase().includes(val) ||
         item?.location?.toString().toLowerCase().includes(val) ||
-        !val
+        !val,
     );
     if (!val) {
       this.searchingOverages = false;
@@ -509,13 +535,13 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
 
     // Check if any quantity is negative
     const hasNegativeQuantity = Object.values(quantities).some(
-      (qty) => qty < 0
+      (qty) => qty < 0,
     );
 
     // Calculate total affected items
     const totalAffectedItems = Object.values(quantities).reduce(
       (sum, qty) => sum + qty,
-      0
+      0,
     );
 
     // Combine all validation conditions
@@ -572,7 +598,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
               }
             });
             this.items = data;
-          })
+          }),
       );
       this.overageItems = await lastValueFrom(
         this.inventoryItems$.pipe(
@@ -581,8 +607,8 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
               item.shipmentQty = null;
             });
             return items;
-          })
-        )
+          }),
+        ),
       );
       this.returnDoc.overageItems.forEach((item) => {
         const inventoryItem = this.overageItems.find((i) => i.id === item.id);
@@ -626,7 +652,7 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
           ]);
       } else {
         this.masterSvc.log(
-          '-----------------------try sites----------------------'
+          '-----------------------try sites----------------------',
         );
         this.init();
       }

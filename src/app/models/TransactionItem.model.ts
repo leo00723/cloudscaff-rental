@@ -32,4 +32,6 @@ export interface TransactionItem {
   months?: number;
   total?: number;
   overageReturnTotal?: number;
+  isDamageCharge?: boolean;
+  sellingCost?: number;
 }

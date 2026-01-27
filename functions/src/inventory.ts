@@ -1858,6 +1858,38 @@ const returnTransaction = async (
           isOverage: true, // Flag to identify overage items
         })) || [];
 
+      // Create damage charge items for items with damage
+      const damageItems = returnDoc.items
+        .filter((item: any) => item.damagedQty && item.damagedQty > 0)
+        .map((item: any) => ({
+          deliveryLogId: item.id,
+          itemId: item.itemId,
+          code: item.code,
+          category: item.category,
+          size: item.size,
+          name: item.name + ' (Damage Charge)',
+          weight: +item.weight,
+          deliveredQty: +item.damagedQty,
+          invoiceQty: +item.damagedQty,
+          balanceQty: 0,
+          returnTotal: 0,
+          returnQty: 0,
+          damagedQty: +item.damagedQty,
+          location: item?.location || '',
+          returnId: returnDoc.id,
+          returnCode: returnDoc.code,
+          returnDate: FieldValue.serverTimestamp(),
+          invoiceStart: returnDate,
+          invoiceEnd: returnDate,
+          hireRate: item.sellingCost || 0,
+          jobReference: item.jobReference,
+          transactionType: 'Damage',
+          siteId: returnDoc.site.id,
+          status: 'active',
+          isDamageCharge: true,
+          total: +(+item.damagedQty * (item.sellingCost || 0)).toFixed(2),
+        }));
+
       // Combine both regular and overage items
       // const allItems = [...regularItems, ...overageItems];
 
@@ -1889,6 +1921,18 @@ const returnTransaction = async (
           invoiceEnd: null,
           status: +item.balanceQty === 0 ? 'completed' : 'active',
         });
+      });
+
+      // Process damage charge items
+      damageItems.forEach((item: any) => {
+        // Create a new document reference with auto-generated ID
+        const itemRef = admin
+          .firestore()
+          .collection(`company/${context.params.companyId}/transactionLog`)
+          .doc();
+
+        // Add the set operation to the batch
+        batch.set(itemRef, { ...item, id: itemRef.id });
       });
 
       // Process overage items (no delivery log to update)

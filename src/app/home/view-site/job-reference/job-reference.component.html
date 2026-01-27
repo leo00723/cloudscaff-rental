@@ -195,12 +195,12 @@
 
             <!-- Start Date (delivery or return date) -->
             <td>
-              {{ transaction.invoiceStart | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
             <td>
-              {{ transaction.invoiceEnd | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
@@ -226,7 +226,7 @@
               <!-- Total Amount (qty * rate * days) -->
               <td class="text-end">
                 {{ company.currency.symbol }}
-                {{ transaction.total | number : "0.2-2" }}
+                {{ transaction.total | number: "0.2-2" }}
               </td>
             </ng-container>
           </tr>
@@ -287,12 +287,12 @@
 
             <!-- Start Date (delivery or return date) -->
             <td>
-              {{ transaction.invoiceStart | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
             <td>
-              {{ transaction.invoiceEnd | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
@@ -318,7 +318,71 @@
               <!-- Total Amount (qty * rate * days) -->
               <td class="text-end">
                 {{ company.currency.symbol }}
-                {{ transaction.total | number : "0.2-2" }}
+                {{ transaction.total | number: "0.2-2" }}
+              </td>
+            </ng-container>
+          </tr>
+          <tr
+            class="text-center align-middle"
+            *ngIf="transaction.transactionType === 'Damage'"
+          >
+            <!-- Type (Damage) -->
+            <td>
+              <ion-chip color="warning" mode="ios">
+                <ion-label>{{ transaction.returnCode }}</ion-label>
+              </ion-chip>
+            </td>
+
+            <!-- Item Code -->
+            <td>{{ transaction.code }}</td>
+
+            <!-- Description -->
+            <td class="text-start">{{ transaction.name }}</td>
+
+            <!-- Unit -->
+            <td>EA</td>
+
+            <!-- Qty for Invoice -->
+            <td class="fw-bold" *ngIf="!jr.customInvoice || jr.mixedInvoice">
+              {{ transaction.invoiceQty }}
+            </td>
+
+            <!-- Delivered Qty  -->
+            <td>-</td>
+
+            <!-- Adjustment Qty  -->
+            <td>-</td>
+
+            <!-- Returned Qty  -->
+            <td>-</td>
+
+            <!-- Balance Qty -->
+            <td>-</td>
+
+            <!-- Start Date -->
+            <td>
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- End Date -->
+            <td>
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- Days -->
+            <td>-</td>
+
+            <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
+              <!-- Unit Cost -->
+              <td>
+                {{ company.currency.symbol }}
+                {{ transaction.hireRate | number: "0.2-2" }}
+              </td>
+
+              <!-- Total Amount -->
+              <td class="text-end">
+                {{ company.currency.symbol }}
+                {{ transaction.total | number: "0.2-2" }}
               </td>
             </ng-container>
           </tr>
@@ -380,7 +444,7 @@
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ jr.subtotal | number : "0.2-2" }}
+            {{ jr.subtotal | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -397,7 +461,7 @@
             scope="col"
           >
             - {{ company.currency.symbol }}
-            {{ jr.discount | number : "0.2-2" }}
+            {{ jr.discount | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -414,7 +478,7 @@
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ jr.subtotal - jr.discount | number : "0.2-2" }}
+            {{ jr.subtotal - jr.discount | number: "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
@@ -430,7 +494,7 @@
             [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
-            {{ company.currency.symbol }} {{ jr.tax | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ jr.tax | number: "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
@@ -446,7 +510,7 @@
             [colSpan]="jr.customInvoice && !jr.mixedInvoice ? 2 : 3"
             scope="col"
           >
-            {{ company.currency.symbol }} {{ jr.vat | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ jr.vat | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -463,7 +527,7 @@
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ jr.total | number : "0.2-2" }}
+            {{ jr.total | number: "0.2-2" }}
           </th>
         </tr>
       </tfoot>

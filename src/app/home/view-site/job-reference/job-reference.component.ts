@@ -121,7 +121,7 @@ export class JobReferenceComponent implements OnInit {
         if (item.deliveryCode === transaction.deliveryCode) {
           const doc = this.editSvc.docRef(
             `company/${this.company.id}/transactionLog`,
-            item.id
+            item.id,
           );
           item.invoiceStart = Timestamp.fromDate(startDate);
           batch.update(doc, { ...item });
@@ -133,7 +133,7 @@ export class JobReferenceComponent implements OnInit {
       console.log(e);
       this.notificationSvc.toast(
         'Something went wrong saving date, please try again',
-        'danger'
+        'danger',
       );
     } finally {
       this.saving = false;
@@ -156,14 +156,14 @@ export class JobReferenceComponent implements OnInit {
           {
             hireRate: item.hireRate,
             siteId: item.siteId,
-          }
+          },
         );
         this.calcTotal();
       } catch (e) {
         console.log(e);
         this.notificationSvc.toast(
           'Something went wrong saving rate, please try again',
-          'danger'
+          'danger',
         );
       } finally {
         this.saving = false;
@@ -210,12 +210,12 @@ export class JobReferenceComponent implements OnInit {
 
         invoice.code = this.editSvc.generateDocCode(
           this.company.totalInvoices,
-          'INV'
+          'INV',
         );
 
         await this.editSvc.addDocument(
           `company/${this.company.id}/transactionInvoices`,
-          invoice
+          invoice,
         );
 
         await this.editSvc.updateDoc(
@@ -223,7 +223,7 @@ export class JobReferenceComponent implements OnInit {
           this.jr.id,
           {
             lastInvoiceTotal: this.jr.total,
-          }
+          },
         );
 
         this.notificationSvc.toast('Invoice created successfully.', 'success');
@@ -232,7 +232,7 @@ export class JobReferenceComponent implements OnInit {
         console.log(e);
         this.notificationSvc.toast(
           'Something went wrong. Please try again.',
-          'danger'
+          'danger',
         );
       } finally {
         this.saving = false;
@@ -249,7 +249,7 @@ export class JobReferenceComponent implements OnInit {
           this.jr.id,
           {
             status: 'completed',
-          }
+          },
         );
 
         await this.editSvc.updateDoc(
@@ -257,19 +257,19 @@ export class JobReferenceComponent implements OnInit {
           this.jr.site.id,
           {
             jobReferenceList: arrayRemove(this.jr.jobReference),
-          }
+          },
         );
 
         this.notificationSvc.toast(
           'Job Reference closed successfully.',
-          'success'
+          'success',
         );
         this.close();
       } catch (e) {
         console.log(e);
         this.notificationSvc.toast(
           'Something went wrong. Please try again.',
-          'danger'
+          'danger',
         );
       } finally {
         this.saving = false;
@@ -286,7 +286,7 @@ export class JobReferenceComponent implements OnInit {
           this.jr.id,
           {
             status: 'pending',
-          }
+          },
         );
 
         await this.editSvc.updateDoc(
@@ -294,19 +294,19 @@ export class JobReferenceComponent implements OnInit {
           this.jr.site.id,
           {
             jobReferenceList: arrayUnion(this.jr.jobReference),
-          }
+          },
         );
 
         this.notificationSvc.toast(
           'Job Reference open successfully.',
-          'success'
+          'success',
         );
         this.close();
       } catch (e) {
         console.log(e);
         this.notificationSvc.toast(
           'Something went wrong. Please try again.',
-          'danger'
+          'danger',
         );
       } finally {
         this.saving = false;
@@ -365,7 +365,7 @@ export class JobReferenceComponent implements OnInit {
       invoice,
       this.company,
       null,
-      true
+      true,
     );
     this.pdfSvc.handlePdf(pdf, this.jr.code);
   }
@@ -375,6 +375,15 @@ export class JobReferenceComponent implements OnInit {
     const billingDate = this.parseDdMmYyyyDate(rawBilling);
 
     this.transactions.forEach((item) => {
+      // Handle damage charges as one-time costs
+      if (item.isDamageCharge) {
+        item.days = 0;
+        item.months = 0;
+        item.total = +(+item.invoiceQty * +item.hireRate).toFixed(2);
+        this.jr.subtotal += item.total;
+        return;
+      }
+
       const start = item.invoiceStart?.toDate
         ? item.invoiceStart.toDate()
         : new Date(item.invoiceStart);
@@ -382,8 +391,8 @@ export class JobReferenceComponent implements OnInit {
       let end = item.invoiceEnd?.toDate
         ? item.invoiceEnd.toDate()
         : item.invoiceEnd
-        ? new Date(item.invoiceEnd)
-        : null;
+          ? new Date(item.invoiceEnd)
+          : null;
 
       // If Firestore cleared invoiceEnd after an invoice, fall back to billing date.
       if (!end && billingDate) {
@@ -456,7 +465,7 @@ export class JobReferenceComponent implements OnInit {
       this.calculateTransactionSubtotal();
     }
     this.field('discount').setValue(
-      +(this.jr.subtotal * (this.jr.discountPercentage / 100)).toFixed(2)
+      +(this.jr.subtotal * (this.jr.discountPercentage / 100)).toFixed(2),
     );
     this.jr.discount = +this.field('discount').value;
     const totalAfterDiscount = this.jr.subtotal - this.jr.discount;
@@ -476,13 +485,13 @@ export class JobReferenceComponent implements OnInit {
       await this.editSvc.updateDoc(
         `company/${this.company.id}/jobReferences`,
         this.jr.id,
-        this.jr
+        this.jr,
       );
     } catch (e) {
       console.log(e);
       this.notificationSvc.toast(
         'Something went wrong saving Job Reference, please try again',
-        'danger'
+        'danger',
       );
     } finally {
       this.saving = false;
