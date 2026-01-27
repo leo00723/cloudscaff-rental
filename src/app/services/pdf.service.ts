@@ -3104,15 +3104,28 @@ export class PdfService {
       (acc, item) => acc + item.shipmentQty,
       0,
     );
+    // Handle DD-MM-YYYY format
+    let expectedDeliveryDate = null;
+    if (delivery?.endDate) {
+      if (typeof delivery.endDate === 'string') {
+        const parts = delivery.endDate.split('-');
+        if (parts.length === 3) {
+          expectedDeliveryDate = new Date(+parts[2], +parts[1] - 1, +parts[0]);
+        }
+      } else {
+        expectedDeliveryDate = this.dateFormatPipe.transform(delivery.endDate);
+      }
+    }
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
       content: [
         {
-          text: `Expected Delivery Date: ${this.datePipe.transform(
-            this.dateFormatPipe.transform(delivery?.endDate),
-            'longDate',
-          )}`,
+          text: `Expected Delivery Date: ${
+            expectedDeliveryDate
+              ? this.datePipe.transform(expectedDeliveryDate, 'longDate')
+              : 'N/A'
+          }`,
           style: ['h4b'],
         },
         await this.getHeader(
@@ -3771,16 +3784,28 @@ export class PdfService {
       (acc, item) => acc + item.shipmentQty,
       0,
     );
-
+    // Handle DD-MM-YYYY format
+    let expectedDeliveryDate = null;
+    if (docData?.endDate) {
+      if (typeof docData.endDate === 'string') {
+        const parts = docData.endDate.split('-');
+        if (parts.length === 3) {
+          expectedDeliveryDate = new Date(+parts[2], +parts[1] - 1, +parts[0]);
+        }
+      } else {
+        expectedDeliveryDate = this.dateFormatPipe.transform(docData.endDate);
+      }
+    }
     const data = {
       footer: await this.getFooter(),
       // info: this.getMetaData(`${site.code}-${site.name}-Inventory List`),
       content: [
         {
-          text: `Expected Delivery Date: ${this.datePipe.transform(
-            this.dateFormatPipe.transform(docData?.endDate),
-            'longDate',
-          )}`,
+          text: `Expected Delivery Date: ${
+            expectedDeliveryDate
+              ? this.datePipe.transform(expectedDeliveryDate, 'longDate')
+              : 'N/A'
+          }`,
           style: ['h4b'],
         },
         await this.getHeader(
