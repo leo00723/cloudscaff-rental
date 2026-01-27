@@ -4139,43 +4139,6 @@ export class PdfService {
     company: Company,
     terms: Term | null,
   ) {
-    const signature1 = returnDoc.signature
-      ? {
-          image: await this.getBase64ImageFromURL(
-            returnDoc.signature,
-            300,
-            200,
-            0.6,
-            true,
-          ),
-          width: 100,
-          alignment: 'right',
-        }
-      : {
-          text: 'Needs Signature',
-          style: 'h4b',
-          alignment: 'Right',
-          color: 'red',
-        };
-    const signature2 = returnDoc.signature2
-      ? {
-          image: await this.getBase64ImageFromURL(
-            returnDoc.signature2,
-            300,
-            200,
-            0.6,
-            true,
-          ),
-          width: 100,
-          alignment: 'right',
-        }
-      : {
-          text: 'Needs Signature',
-          style: 'h4b',
-          alignment: 'Right',
-          color: 'red',
-        };
-
     const summary = this.createTransactionReturnTable(returnDoc.items);
 
     // Create overage items table if overage items exist
@@ -4297,36 +4260,45 @@ export class PdfService {
         ...overageSection, // Add overage section here
         {
           table: {
+            // headers are automatically repeated if the table spans over multiple pages
+            // you can declare how many rows should be treated as headers
             headerRows: 1,
-            widths: ['*', 'auto'],
+            widths: ['*'],
             body: [
               [
                 {
-                  text: 'Status',
+                  text: 'Return Processed By: ',
                   style: 'h4b',
                   alignment: 'left',
-                },
-                {
-                  text: returnDoc.status,
-                  style: 'h4b',
-                  alignment: 'center',
                 },
               ],
               [
                 {
-                  text: `Sent By ${returnDoc?.signedBy || 'N/A'}`,
+                  text: 'Name:',
                   style: 'h4b',
                   alignment: 'left',
                 },
-                signature1,
               ],
               [
                 {
-                  text: `Received By ${returnDoc?.signedBy2 || 'N/A'}`,
+                  text: 'Date:',
                   style: 'h4b',
                   alignment: 'left',
                 },
-                signature2,
+              ],
+              [
+                {
+                  text: 'Sign:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'I have confirmed all quantities returned are correct:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
               ],
             ],
           },
