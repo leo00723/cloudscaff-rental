@@ -300,12 +300,12 @@
 
             <!-- Start Date (delivery or return date) -->
             <td>
-              {{ transaction.invoiceStart | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
             <td>
-              {{ transaction.invoiceEnd | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
@@ -334,7 +334,7 @@
               *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
             >
               {{ company.currency.symbol }}
-              {{ transaction.total | number : "0.2-2" }}
+              {{ transaction.total | number: "0.2-2" }}
             </td>
           </tr>
           <tr
@@ -394,12 +394,12 @@
 
             <!-- Start Date (delivery or return date) -->
             <td>
-              {{ transaction.invoiceStart | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- End Date (assuming you have endDate field in the transaction) -->
             <td>
-              {{ transaction.invoiceEnd | dateFormat | date : "dd MMM yy" }}
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
             </td>
 
             <!-- Days (calculating date difference between deliveryDate and endDate) -->
@@ -428,7 +428,142 @@
               *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
             >
               {{ company.currency.symbol }}
-              {{ transaction.total | number : "0.2-2" }}
+              {{ transaction.total | number: "0.2-2" }}
+            </td>
+          </tr>
+          <tr
+            class="text-center align-middle"
+            *ngIf="
+              transaction.transactionType === 'Delivery' &&
+              transaction.isConsumable
+            "
+          >
+            <!-- Type (Consumable) -->
+            <td>
+              <ion-chip color="primary" mode="ios">
+                <ion-label>{{ transaction.deliveryCode }}</ion-label>
+              </ion-chip>
+            </td>
+
+            <!-- Item Code -->
+            <td>{{ transaction.code }}</td>
+
+            <!-- Description -->
+            <td class="text-start">{{ transaction.name }}</td>
+
+            <!-- Unit -->
+            <td>EA</td>
+
+            <!-- Qty for Invoice -->
+            <td
+              class="fw-bold"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
+              {{ transaction.invoiceQty }}
+            </td>
+
+            <!-- Delivered Qty  -->
+            <td class="text-success fw-bold">
+              {{ transaction.deliveredQty }}
+            </td>
+
+            <!-- Returned Qty  -->
+            <td>-</td>
+
+            <!-- Balance Qty -->
+            <td>-</td>
+
+            <!-- Start Date -->
+            <td>
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- End Date -->
+            <td>
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- Days -->
+            <td>-</td>
+
+            <!-- Unit Cost -->
+            <td *ngIf="!invoice.customInvoice || invoice.mixedInvoice">
+              {{ company.currency.symbol }}
+              {{ transaction.sellingCost | number: "0.2-2" }}
+            </td>
+
+            <!-- Total Amount -->
+            <td
+              class="text-end"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
+              {{ company.currency.symbol }}
+              {{ transaction.total | number: "0.2-2" }}
+            </td>
+          </tr>
+          <tr
+            class="text-center align-middle"
+            *ngIf="transaction.transactionType === 'Damage'"
+          >
+            <!-- Type (Damage) -->
+            <td>
+              <ion-chip color="warning" mode="ios">
+                <ion-label>{{ transaction.returnCode }}</ion-label>
+              </ion-chip>
+            </td>
+
+            <!-- Item Code -->
+            <td>{{ transaction.code }}</td>
+
+            <!-- Description -->
+            <td class="text-start">{{ transaction.name }}</td>
+
+            <!-- Unit -->
+            <td>EA</td>
+
+            <!-- Qty for Invoice -->
+            <td
+              class="fw-bold"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
+              {{ transaction.invoiceQty }}
+            </td>
+
+            <!-- Delivered Qty  -->
+            <td>-</td>
+
+            <!-- Returned Qty  -->
+            <td>-</td>
+
+            <!-- Balance Qty -->
+            <td>-</td>
+
+            <!-- Start Date -->
+            <td>
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- End Date -->
+            <td>
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- Days -->
+            <td>-</td>
+
+            <!-- Unit Cost -->
+            <td *ngIf="!invoice.customInvoice || invoice.mixedInvoice">
+              {{ company.currency.symbol }}
+              {{ transaction.hireRate | number: "0.2-2" }}
+            </td>
+
+            <!-- Total Amount -->
+            <td
+              class="text-end"
+              *ngIf="!invoice.customInvoice || invoice.mixedInvoice"
+            >
+              {{ company.currency.symbol }}
+              {{ transaction.total | number: "0.2-2" }}
             </td>
           </tr>
         </ng-container>
@@ -507,7 +642,7 @@
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ invoice.subtotal | number : "0.2-2" }}
+            {{ invoice.subtotal | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -524,7 +659,7 @@
             scope="col"
           >
             - {{ company.currency.symbol }}
-            {{ invoice.discount | number : "0.2-2" }}
+            {{ invoice.discount | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -541,7 +676,7 @@
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ invoice.subtotal - invoice.discount | number : "0.2-2" }}
+            {{ invoice.subtotal - invoice.discount | number: "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.salesTax > 0">
@@ -557,7 +692,7 @@
             [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
-            {{ company.currency.symbol }} {{ invoice.tax | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.tax | number: "0.2-2" }}
           </th>
         </tr>
         <tr *ngIf="company.vat > 0">
@@ -573,7 +708,7 @@
             [colSpan]="invoice.customInvoice && !invoice.mixedInvoice ? 2 : 3"
             scope="col"
           >
-            {{ company.currency.symbol }} {{ invoice.vat | number : "0.2-2" }}
+            {{ company.currency.symbol }} {{ invoice.vat | number: "0.2-2" }}
           </th>
         </tr>
         <tr>
@@ -590,7 +725,7 @@
             scope="col"
           >
             {{ company.currency.symbol }}
-            {{ invoice.total | number : "0.2-2" }}
+            {{ invoice.total | number: "0.2-2" }}
           </th>
         </tr>
       </tfoot>

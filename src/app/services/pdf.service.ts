@@ -1129,6 +1129,8 @@ export class PdfService {
   ) {
     const estimateItems = [];
     const items = [];
+    const consumableItems = [];
+    const damageItems = [];
 
     if (!invoice.customInvoice) {
       // If customInvoice is false, include all items
@@ -1137,7 +1139,16 @@ export class PdfService {
       });
 
       invoice.items.forEach((item) => {
-        items.push(this.addRentalItem(company, item, invoice.endDate));
+        // Separate items by type
+        if (item.isDamageCharge) {
+          damageItems.push(this.addDamageItem(company, item));
+        } else if (item.isConsumable) {
+          consumableItems.push(
+            this.addConsumableItem(company, item),
+          );
+        } else {
+          items.push(this.addRentalItem(company, item, invoice.endDate));
+        }
       });
     } else {
       // If customInvoice is true, filter out items without the forInvoice flag
@@ -1148,7 +1159,14 @@ export class PdfService {
         });
 
       invoice.items.forEach((item) => {
-        items.push(this.addRentalItemCustom(item, invoice.endDate));
+        // Separate items by type
+        if (item.isDamageCharge) {
+          damageItems.push(this.addDamageItemCustom(item));
+        } else if (item.isConsumable) {
+          consumableItems.push(this.addConsumableItemCustom(item));
+        } else {
+          items.push(this.addRentalItemCustom(item, invoice.endDate));
+        }
       });
     }
     const estimateSummary = {
@@ -1303,6 +1321,66 @@ export class PdfService {
       layout: tLayout,
     };
 
+    // Create consumables summary table if there are consumable items
+    let consumableSummary: any = null;
+    if (consumableItems.length > 0) {
+      const consumableHeaders = [
+        { text: 'Docket', style: 'h4b', alignment: 'left' },
+        { text: 'Item Code', style: 'h4b', alignment: 'center' },
+        { text: 'Description', style: 'h4b', alignment: 'left' },
+        { text: 'Unit', style: 'h4b', alignment: 'center' },
+        { text: 'Qty', style: 'h4b', alignment: 'center' },
+        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+        { text: 'Total', style: 'h4b', alignment: 'right' },
+      ];
+      consumableSummary = {
+        table: {
+          headerRows: 1,
+          widths: [
+            'auto',
+            'auto',
+            '*',
+            'auto',
+            'auto',
+            'auto',
+            'auto',
+          ],
+          body: [consumableHeaders, ...consumableItems],
+        },
+        layout: tLayout,
+      };
+    }
+
+    // Create damages summary table if there are damage items
+    let damageSummary: any = null;
+    if (damageItems.length > 0) {
+      const damageHeaders = [
+        { text: 'Docket', style: 'h4b', alignment: 'left' },
+        { text: 'Item Code', style: 'h4b', alignment: 'center' },
+        { text: 'Description', style: 'h4b', alignment: 'left' },
+        { text: 'Unit', style: 'h4b', alignment: 'center' },
+        { text: 'Qty', style: 'h4b', alignment: 'center' },
+        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+        { text: 'Total', style: 'h4b', alignment: 'right' },
+      ];
+      damageSummary = {
+        table: {
+          headerRows: 1,
+          widths: [
+            'auto',
+            'auto',
+            '*',
+            'auto',
+            'auto',
+            'auto',
+            'auto',
+          ],
+          body: [damageHeaders, ...damageItems],
+        },
+        layout: tLayout,
+      };
+    }
+
     const data = {
       header: this.getPageNumbers(),
       footer: await this.getFooter(),
@@ -1342,12 +1420,18 @@ export class PdfService {
 
         invoice.type !== 'Rental' ? [hr, estimateSummary] : [],
         hr,
-        { text: 'Invoice Items', style: 'h4b' },
-        summary,
-        hr,
-        { text: 'Credit Items', style: 'h4b' },
-        creditSummary,
-        hr,
+        items.length > 0
+          ? [{ text: 'Rental Items', style: 'h4b' }, summary, hr]
+          : [],
+        consumableSummary
+          ? [{ text: 'Consumables', style: 'h4b' }, consumableSummary, hr]
+          : [],
+        damageSummary
+          ? [{ text: 'Damage Charges', style: 'h4b' }, damageSummary, hr]
+          : [],
+        credit.length > 0
+          ? [{ text: 'Credit Items', style: 'h4b' }, creditSummary, hr]
+          : [],
         {
           table: {
             widths: ['*', '*', '*', '*'],
@@ -1530,6 +1614,8 @@ export class PdfService {
     dataUrl?: any,
   ) {
     const items = [];
+    const consumableItems = [];
+    const damageItems = [];
 
     invoice.estimate.items
       .filter((item) => item.forInvoice)
@@ -1538,7 +1624,16 @@ export class PdfService {
       });
 
     invoice.items.forEach((item) => {
-      items.push(this.addRentalItem(company, item, invoice.endDate));
+      // Separate items by type
+      if (item.isDamageCharge) {
+        damageItems.push(this.addDamageItem(company, item));
+      } else if (item.isConsumable) {
+        consumableItems.push(
+          this.addConsumableItem(company, item),
+        );
+      } else {
+        items.push(this.addRentalItem(company, item, invoice.endDate));
+      }
     });
 
     // Define table headers based on customInvoice flag
@@ -1585,6 +1680,66 @@ export class PdfService {
       layout: tLayout,
     };
 
+    // Create consumables summary table if there are consumable items
+    let consumableSummary: any = null;
+    if (consumableItems.length > 0) {
+      const consumableHeaders = [
+        { text: 'Docket', style: 'h4b', alignment: 'left' },
+        { text: 'Item Code', style: 'h4b', alignment: 'center' },
+        { text: 'Description', style: 'h4b', alignment: 'left' },
+        { text: 'Unit', style: 'h4b', alignment: 'center' },
+        { text: 'Qty', style: 'h4b', alignment: 'center' },
+        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+        { text: 'Total', style: 'h4b', alignment: 'right' },
+      ];
+      consumableSummary = {
+        table: {
+          headerRows: 1,
+          widths: [
+            'auto',
+            'auto',
+            '*',
+            'auto',
+            'auto',
+            'auto',
+            'auto',
+          ],
+          body: [consumableHeaders, ...consumableItems],
+        },
+        layout: tLayout,
+      };
+    }
+
+    // Create damages summary table if there are damage items
+    let damageSummary: any = null;
+    if (damageItems.length > 0) {
+      const damageHeaders = [
+        { text: 'Docket', style: 'h4b', alignment: 'left' },
+        { text: 'Item Code', style: 'h4b', alignment: 'center' },
+        { text: 'Description', style: 'h4b', alignment: 'left' },
+        { text: 'Unit', style: 'h4b', alignment: 'center' },
+        { text: 'Qty', style: 'h4b', alignment: 'center' },
+        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+        { text: 'Total', style: 'h4b', alignment: 'right' },
+      ];
+      damageSummary = {
+        table: {
+          headerRows: 1,
+          widths: [
+            'auto',
+            'auto',
+            '*',
+            'auto',
+            'auto',
+            'auto',
+            'auto',
+          ],
+          body: [damageHeaders, ...damageItems],
+        },
+        layout: tLayout,
+      };
+    }
+
     const data = {
       header: this.getPageNumbers(),
       footer: await this.getFooter(),
@@ -1622,7 +1777,13 @@ export class PdfService {
         this.getCompanyInfo(invoice.estimate.customer, company),
         hr,
         { text: 'Invoice Items', style: 'h4b', pageBreak: 'before' },
-        summary,
+        items.length > 0 ? [summary, hr] : [],
+        consumableSummary
+          ? [{ text: 'Consumables', style: 'h4b' }, consumableSummary, hr]
+          : [],
+        damageSummary
+          ? [{ text: 'Damage Charges', style: 'h4b' }, damageSummary, hr]
+          : [],
         {
           table: {
             widths: ['*', '*', '*', '*'],
@@ -1792,12 +1953,24 @@ export class PdfService {
   ) {
     const estimateItems = [];
     const items = [];
+    const consumableItems = [];
+    const damageItems = [];
     const mergedItems: TransactionItem[] = [];
+    const consumableMergedItems: TransactionItem[] = [];
+    const damageMergedItems: TransactionItem[] = [];
 
-    // Iterate over each item in the list
+    // Iterate over each item in the list and separate by type
     invoice.items.forEach((item) => {
-      // Try to find an existing item in the mergedItems array with the same `itemId` and `invoiceStart`
-      const existingItem = mergedItems.find(
+      // Determine which array to use based on item type
+      let targetArray = mergedItems;
+      if (item.isDamageCharge) {
+        targetArray = damageMergedItems;
+      } else if (item.isConsumable) {
+        targetArray = consumableMergedItems;
+      }
+
+      // Try to find an existing item in the target array with the same `itemId` and `invoiceStart`
+      const existingItem = targetArray.find(
         (mergedItem) =>
           mergedItem.itemId === item.itemId &&
           mergedItem.invoiceStart.toDate().toDateString() ===
@@ -1814,7 +1987,7 @@ export class PdfService {
         existingItem.balanceQty += item.balanceQty;
       } else {
         // If no matching item is found, add the current item as is
-        mergedItems.push({ ...item });
+        targetArray.push({ ...item });
       }
     });
 
@@ -1827,6 +2000,16 @@ export class PdfService {
       mergedItems.forEach((item) => {
         items.push(this.addRentalItem(company, item, invoice.endDate));
       });
+
+      consumableMergedItems.forEach((item) => {
+        consumableItems.push(
+          this.addConsumableItem(company, item),
+        );
+      });
+
+      damageMergedItems.forEach((item) => {
+        damageItems.push(this.addDamageItem(company, item));
+      });
     } else {
       // If customInvoice is true, filter out items without the forInvoice flag
       invoice.estimate.items
@@ -1837,6 +2020,14 @@ export class PdfService {
 
       mergedItems.forEach((item) => {
         items.push(this.addRentalItemCustom(item, invoice.endDate));
+      });
+
+      consumableMergedItems.forEach((item) => {
+        consumableItems.push(this.addConsumableItemCustom(item));
+      });
+
+      damageMergedItems.forEach((item) => {
+        damageItems.push(this.addDamageItemCustom(item));
       });
     }
     const estimateSummary = {
@@ -1943,6 +2134,66 @@ export class PdfService {
       layout: tLayout,
     };
 
+    // Create consumables summary table if there are consumable items
+    let consumableSummary: any = null;
+    if (consumableItems.length > 0) {
+      const consumableHeaders = [
+        { text: 'Docket', style: 'h4b', alignment: 'left' },
+        { text: 'Item Code', style: 'h4b', alignment: 'center' },
+        { text: 'Description', style: 'h4b', alignment: 'left' },
+        { text: 'Unit', style: 'h4b', alignment: 'center' },
+        { text: 'Qty', style: 'h4b', alignment: 'center' },
+        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+        { text: 'Total', style: 'h4b', alignment: 'right' },
+      ];
+      consumableSummary = {
+        table: {
+          headerRows: 1,
+          widths: [
+            'auto',
+            'auto',
+            '*',
+            'auto',
+            'auto',
+            'auto',
+            'auto',
+          ],
+          body: [consumableHeaders, ...consumableItems],
+        },
+        layout: tLayout,
+      };
+    }
+
+    // Create damages summary table if there are damage items
+    let damageSummary: any = null;
+    if (damageItems.length > 0) {
+      const damageHeaders = [
+        { text: 'Docket', style: 'h4b', alignment: 'left' },
+        { text: 'Item Code', style: 'h4b', alignment: 'center' },
+        { text: 'Description', style: 'h4b', alignment: 'left' },
+        { text: 'Unit', style: 'h4b', alignment: 'center' },
+        { text: 'Qty', style: 'h4b', alignment: 'center' },
+        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+        { text: 'Total', style: 'h4b', alignment: 'right' },
+      ];
+      damageSummary = {
+        table: {
+          headerRows: 1,
+          widths: [
+            'auto',
+            'auto',
+            '*',
+            'auto',
+            'auto',
+            'auto',
+            'auto',
+          ],
+          body: [damageHeaders, ...damageItems],
+        },
+        layout: tLayout,
+      };
+    }
+
     const credit = [];
     invoice.creditItems.forEach((item, i) => {
       credit.push([
@@ -2031,12 +2282,18 @@ export class PdfService {
 
         invoice.type !== 'Rental' ? [hr, estimateSummary] : [],
         hr,
-        { text: 'Invoice Items', style: 'h4b' },
-        summary,
-        hr,
-        { text: 'Credit Items', style: 'h4b' },
-        creditSummary,
-        hr,
+        items.length > 0
+          ? [{ text: 'Rental Items', style: 'h4b' }, summary, hr]
+          : [],
+        consumableSummary
+          ? [{ text: 'Consumables', style: 'h4b' }, consumableSummary, hr]
+          : [],
+        damageSummary
+          ? [{ text: 'Damage Charges', style: 'h4b' }, damageSummary, hr]
+          : [],
+        credit.length > 0
+          ? [{ text: 'Credit Items', style: 'h4b' }, creditSummary, hr]
+          : [],
         {
           table: {
             widths: ['*', '*', '*', '*'],
@@ -5895,6 +6152,152 @@ export class PdfService {
       },
       {
         text: months,
+        style: 'h6',
+        alignment: 'center',
+      },
+    ];
+  }
+
+  private addConsumableItem(
+    company: Company,
+    item: TransactionItem,
+  ) {
+    const code =
+      item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
+    const total = +item.invoiceQty * +(item.sellingCost || item.hireRate);
+    
+    return [
+      {
+        text: code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.name,
+        style: 'h6',
+      },
+      {
+        text: 'EA',
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.invoiceQty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.sellingCost || item.hireRate)}`,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(total)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
+  }
+
+  private addConsumableItemCustom(item: TransactionItem) {
+    const code =
+      item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
+    
+    return [
+      {
+        text: code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.name,
+        style: 'h6',
+      },
+      {
+        text: 'EA',
+        style: 'h6',
+        alignment: 'center',
+      },
+    ];
+  }
+
+  private addDamageItem(
+    company: Company,
+    item: TransactionItem,
+  ) {
+    const code =
+      item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
+    const total = +item.invoiceQty * +(item.sellingCost || item.hireRate);
+    
+    return [
+      {
+        text: code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.name,
+        style: 'h6',
+      },
+      {
+        text: 'EA',
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.invoiceQty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(item.sellingCost || item.hireRate)}`,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: `${company.currency.symbol} ${this.format(total)}`,
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
+  }
+
+  private addDamageItemCustom(item: TransactionItem) {
+    const code =
+      item.transactionType === 'Delivery' ? item.deliveryCode : item.returnCode;
+    
+    return [
+      {
+        text: code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.code,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: item.name,
+        style: 'h6',
+      },
+      {
+        text: 'EA',
         style: 'h6',
         alignment: 'center',
       },

@@ -54,7 +54,7 @@ export class InvoiceComponent implements OnInit {
     this.company = this.store.selectSnapshot(CompanyState.company);
     this.terms$ = this.editSvc.getDocById(
       `company/${this.company.id}/terms`,
-      'Invoice'
+      'Invoice',
     );
   }
 
@@ -104,7 +104,7 @@ export class InvoiceComponent implements OnInit {
       this.company.vatNum,
       new Date().toISOString(),
       this.invoice.total,
-      this.invoice.vat
+      this.invoice.vat,
     );
   }
 
@@ -116,11 +116,11 @@ export class InvoiceComponent implements OnInit {
       this.company,
       terms,
       isDraft,
-      dataUrl
+      dataUrl,
     );
     this.pdfSvc.handlePdf(
       pdf,
-      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`
+      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`,
     );
   }
 
@@ -133,11 +133,11 @@ export class InvoiceComponent implements OnInit {
       this.company,
       terms,
       isDraft,
-      dataUrl
+      dataUrl,
     );
     await this.pdfSvc.handlePdf(
       pdf,
-      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`
+      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`,
     );
   }
 
@@ -150,11 +150,11 @@ export class InvoiceComponent implements OnInit {
       this.company,
       terms,
       isDraft,
-      dataUrl
+      dataUrl,
     );
     await this.pdfSvc.handlePdf(
       pdf,
-      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`
+      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`,
     );
   }
 
@@ -287,13 +287,13 @@ export class InvoiceComponent implements OnInit {
       await this.editSvc.updateDoc(
         `company/${this.company.id}/transactionInvoices`,
         this.invoice.id,
-        this.invoice
+        this.invoice,
       );
     } catch (error) {
       console.log(error);
       this.notificationSvc.toast(
         'something went wrong saving the invoice, Please check internet connection.',
-        'danger'
+        'danger',
       );
     } finally {
       this.saving = false;
@@ -303,11 +303,27 @@ export class InvoiceComponent implements OnInit {
   // Helper function to avoid duplicate code
   private calculateTransactionSubtotal() {
     this.invoice.items.forEach((item) => {
-      console.log(item.invoiceStart.toDate(), item.invoiceEnd.toDate());
+      // Handle damage charges as one-time costs
+      if (item.isDamageCharge) {
+        item.days = 0;
+        item.months = 0;
+        item.total = +(+item.invoiceQty * +item.hireRate).toFixed(2);
+        this.invoice.subtotal += item.total;
+        return;
+      }
+
+      // Handle consumables as one-time costs using sellingCost
+      if (item.isConsumable) {
+        item.days = 0;
+        item.months = 0;
+        item.total = +(+item.invoiceQty * +item.sellingCost).toFixed(2);
+        this.invoice.subtotal += item.total;
+        return;
+      }
 
       item.days = +this.dateDiff.transform(
         item.invoiceStart.toDate(),
-        item.invoiceEnd.toDate()
+        item.invoiceEnd.toDate(),
       );
 
       item.months = +(item.days / 30).toFixed(2);
@@ -355,17 +371,29 @@ export class InvoiceComponent implements OnInit {
       this.invoice.subtotal = 0;
       if (!this.invoice.customInvoice) {
         this.invoice.items.forEach((item) => {
+          // Handle damage charges as one-time costs
+          if (item.isDamageCharge) {
+            this.invoice.subtotal += +item.invoiceQty * +item.hireRate;
+            return;
+          }
+
+          // Handle consumables as one-time costs using sellingCost
+          if (item.isConsumable) {
+            this.invoice.subtotal += +item.invoiceQty * +item.sellingCost;
+            return;
+          }
+
           this.invoice.subtotal +=
             +item.invoiceQty *
             +item.hireRate *
             (item.transactionType === 'Return'
               ? +this.dateDiff.transform(
                   item.invoiceStart.toDate(),
-                  item.invoiceEnd.toDate()
+                  item.invoiceEnd.toDate(),
                 )
               : +this.dateDiff.transform(
                   item.invoiceStart.toDate(),
-                  this.invoice.endDate
+                  this.invoice.endDate,
                 ));
         });
       } else {
@@ -399,13 +427,13 @@ export class InvoiceComponent implements OnInit {
       await this.editSvc.updateDoc(
         `company/${this.company.id}/transactionInvoices`,
         this.invoice.id,
-        this.invoice
+        this.invoice,
       );
     } catch (error) {
       console.log(error);
       this.notificationSvc.toast(
         'something went wrong saving the invoice, Please check internet connection.',
-        'danger'
+        'danger',
       );
     } finally {
       this.saving = false;
