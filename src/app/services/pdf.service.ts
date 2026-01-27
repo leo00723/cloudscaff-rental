@@ -167,7 +167,7 @@ export class PdfService {
     private datePipe: DatePipe,
     private weightPipe: WeightPipe,
     private platformService: Platform,
-    private fileOpenerService: FileOpener
+    private fileOpenerService: FileOpener,
   ) {}
 
   async handlePdf(pdf: any, filename: string) {
@@ -206,7 +206,7 @@ export class PdfService {
   async basicEstimate(
     estimate: EstimateV2,
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     const items = [];
     estimate.items.forEach((item, i) => {
@@ -257,7 +257,7 @@ export class PdfService {
           estimate.date,
           company,
           '',
-          []
+          [],
         ),
         hr,
         this.getCompanyInfo(estimate.customer, company),
@@ -300,7 +300,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.subtotal
+                    estimate.subtotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -316,7 +316,7 @@ export class PdfService {
                 },
                 {
                   text: `- ${company.currency.symbol} ${this.format(
-                    estimate.discount
+                    estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -332,7 +332,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.subtotal - estimate.discount
+                    estimate.subtotal - estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -353,8 +353,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
-                      ? `Tax (${company.salesTax}%):`
-                      : '',
+                        ? `Tax (${company.salesTax}%):`
+                        : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -362,13 +362,13 @@ export class PdfService {
                   text:
                     company.vat > 0
                       ? `${company.currency.symbol} ${this.format(
-                          estimate.vat
+                          estimate.vat,
                         )}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(
-                          estimate.tax
-                        )}`
-                      : '',
+                        ? `${company.currency.symbol} ${this.format(
+                            estimate.tax,
+                          )}`
+                        : '',
 
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
@@ -392,7 +392,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.total
+                    estimate.total,
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -436,7 +436,7 @@ export class PdfService {
   async rentalEstimate(
     estimate: InventoryEstimateRent,
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     const items = [];
     estimate.items.forEach((item, i) => {
@@ -491,7 +491,7 @@ export class PdfService {
           estimate.date,
           company,
           '',
-          []
+          [],
         ),
         hr,
         this.getCompanyInfo(estimate.customer, company),
@@ -529,7 +529,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.subtotal
+                    estimate.subtotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -545,7 +545,7 @@ export class PdfService {
                 },
                 {
                   text: `- ${company.currency.symbol} ${this.format(
-                    estimate.discount
+                    estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -561,7 +561,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.subtotal - estimate.discount
+                    estimate.subtotal - estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -582,8 +582,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
-                      ? `Tax (${company.salesTax}%):`
-                      : '',
+                        ? `Tax (${company.salesTax}%):`
+                        : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -591,13 +591,13 @@ export class PdfService {
                   text:
                     company.vat > 0
                       ? `${company.currency.symbol} ${this.format(
-                          estimate.vat
+                          estimate.vat,
                         )}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(
-                          estimate.tax
-                        )}`
-                      : '',
+                        ? `${company.currency.symbol} ${this.format(
+                            estimate.tax,
+                          )}`
+                        : '',
 
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
@@ -621,7 +621,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.total
+                    estimate.total,
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -665,7 +665,7 @@ export class PdfService {
   async saleEstimate(
     estimate: InventoryEstimateSell,
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     const items = [];
     estimate.items.forEach((item, i) => {
@@ -715,7 +715,7 @@ export class PdfService {
           estimate.date,
           company,
           '',
-          []
+          [],
         ),
         hr,
         this.getCompanyInfo(estimate.customer, company),
@@ -753,7 +753,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.subtotal
+                    estimate.subtotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -769,7 +769,7 @@ export class PdfService {
                 },
                 {
                   text: `- ${company.currency.symbol} ${this.format(
-                    estimate.discount
+                    estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -785,7 +785,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.subtotal - estimate.discount
+                    estimate.subtotal - estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -806,8 +806,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
-                      ? `Tax (${company.salesTax}%):`
-                      : '',
+                        ? `Tax (${company.salesTax}%):`
+                        : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -815,13 +815,13 @@ export class PdfService {
                   text:
                     company.vat > 0
                       ? `${company.currency.symbol} ${this.format(
-                          estimate.vat
+                          estimate.vat,
                         )}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(
-                          estimate.tax
-                        )}`
-                      : '',
+                        ? `${company.currency.symbol} ${this.format(
+                            estimate.tax,
+                          )}`
+                        : '',
 
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
@@ -845,7 +845,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    estimate.total
+                    estimate.total,
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -890,7 +890,7 @@ export class PdfService {
     invoice: SaleInvoice,
     company: Company,
     terms: Term | null,
-    isdraft?: boolean
+    isdraft?: boolean,
   ) {
     const items = [];
     invoice.estimate.items.forEach((item, i) => {
@@ -932,7 +932,7 @@ export class PdfService {
       header: this.getPageNumbers(),
       footer: await this.getFooter(),
       info: this.getMetaData(
-        `${company.name}-Invoice-${invoice.estimate.code}`
+        `${company.name}-Invoice-${invoice.estimate.code}`,
       ),
       content: [
         await this.getBillingHeader(
@@ -949,7 +949,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(invoice.estimate.customer, company),
@@ -987,7 +987,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.estimate.subtotal
+                    invoice.estimate.subtotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -1003,7 +1003,7 @@ export class PdfService {
                 },
                 {
                   text: `- ${company.currency.symbol} ${this.format(
-                    invoice.estimate.discount
+                    invoice.estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -1019,7 +1019,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.estimate.subtotal - invoice.estimate.discount
+                    invoice.estimate.subtotal - invoice.estimate.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -1040,8 +1040,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
-                      ? `Tax (${company.salesTax}%):`
-                      : '',
+                        ? `Tax (${company.salesTax}%):`
+                        : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -1049,13 +1049,13 @@ export class PdfService {
                   text:
                     company.vat > 0
                       ? `${company.currency.symbol} ${this.format(
-                          invoice.estimate.vat
+                          invoice.estimate.vat,
                         )}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(
-                          invoice.estimate.tax
-                        )}`
-                      : '',
+                        ? `${company.currency.symbol} ${this.format(
+                            invoice.estimate.tax,
+                          )}`
+                        : '',
 
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
@@ -1079,7 +1079,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.estimate.total
+                    invoice.estimate.total,
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -1125,7 +1125,7 @@ export class PdfService {
     company: Company,
     terms: Term | null,
     isdraft?: boolean,
-    dataUrl?: any
+    dataUrl?: any,
   ) {
     const estimateItems = [];
     const items = [];
@@ -1334,7 +1334,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(invoice.estimate.customer, company),
@@ -1377,7 +1377,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal
+                    invoice.subtotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -1393,7 +1393,7 @@ export class PdfService {
                 },
                 {
                   text: `-${company.currency.symbol} ${this.format(
-                    invoice.creditTotal
+                    invoice.creditTotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -1409,7 +1409,7 @@ export class PdfService {
                 },
                 {
                   text: `- ${company.currency.symbol} ${this.format(
-                    invoice.discount
+                    invoice.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -1425,7 +1425,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal - invoice.discount - invoice.creditTotal
+                    invoice.subtotal - invoice.discount - invoice.creditTotal,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -1446,8 +1446,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
-                      ? `Tax (${company.salesTax}%):`
-                      : '',
+                        ? `Tax (${company.salesTax}%):`
+                        : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -1456,8 +1456,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company.currency.symbol} ${this.format(invoice.vat)}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(invoice.tax)}`
-                      : '',
+                        ? `${company.currency.symbol} ${this.format(invoice.tax)}`
+                        : '',
 
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
@@ -1481,7 +1481,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.total
+                    invoice.total,
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -1527,7 +1527,7 @@ export class PdfService {
     company: Company,
     terms: Term | null,
     isdraft?: boolean,
-    dataUrl?: any
+    dataUrl?: any,
   ) {
     const items = [];
 
@@ -1616,7 +1616,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(invoice.estimate.customer, company),
@@ -1653,7 +1653,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal
+                    invoice.subtotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -1669,7 +1669,7 @@ export class PdfService {
                 },
                 {
                   text: `- ${company.currency.symbol} ${this.format(
-                    invoice.discount
+                    invoice.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -1685,7 +1685,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal - invoice.discount - invoice.creditTotal
+                    invoice.subtotal - invoice.discount - invoice.creditTotal,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -1706,8 +1706,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
-                      ? `Tax (${company.salesTax}%):`
-                      : '',
+                        ? `Tax (${company.salesTax}%):`
+                        : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -1716,8 +1716,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company.currency.symbol} ${this.format(invoice.vat)}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(invoice.tax)}`
-                      : '',
+                        ? `${company.currency.symbol} ${this.format(invoice.tax)}`
+                        : '',
 
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
@@ -1741,7 +1741,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.total
+                    invoice.total,
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -1788,7 +1788,7 @@ export class PdfService {
     company: Company,
     terms: Term | null,
     isdraft?: boolean,
-    dataUrl?: any
+    dataUrl?: any,
   ) {
     const estimateItems = [];
     const items = [];
@@ -1802,7 +1802,7 @@ export class PdfService {
           mergedItem.itemId === item.itemId &&
           mergedItem.invoiceStart.toDate().toDateString() ===
             item.invoiceStart.toDate().toDateString() &&
-          item.transactionType !== 'Return'
+          item.transactionType !== 'Return',
       );
 
       if (existingItem) {
@@ -2022,7 +2022,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(invoice.estimate.customer, company),
@@ -2066,7 +2066,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal
+                    invoice.subtotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -2082,7 +2082,7 @@ export class PdfService {
                 },
                 {
                   text: `-${company.currency.symbol} ${this.format(
-                    invoice.creditTotal
+                    invoice.creditTotal,
                   )}`,
                   style: 'h6b',
                   alignment: 'right',
@@ -2098,7 +2098,7 @@ export class PdfService {
                 },
                 {
                   text: `- ${company.currency.symbol} ${this.format(
-                    invoice.discount
+                    invoice.discount,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -2114,7 +2114,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal - invoice.discount - invoice.creditTotal
+                    invoice.subtotal - invoice.discount - invoice.creditTotal,
                   )}`,
                   alignment: 'right',
                   style: 'h6b',
@@ -2135,8 +2135,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
                       : company.salesTax > 0
-                      ? `Tax (${company.salesTax}%):`
-                      : '',
+                        ? `Tax (${company.salesTax}%):`
+                        : '',
                   style: 'h6b',
                   alignment: 'right',
                 },
@@ -2145,8 +2145,8 @@ export class PdfService {
                     company.vat > 0
                       ? `${company.currency.symbol} ${this.format(invoice.vat)}`
                       : company.salesTax > 0
-                      ? `${company.currency.symbol} ${this.format(invoice.tax)}`
-                      : '',
+                        ? `${company.currency.symbol} ${this.format(invoice.tax)}`
+                        : '',
 
                   alignment: 'right',
                   style: ['h6b', 'mt5'],
@@ -2170,7 +2170,7 @@ export class PdfService {
                 },
                 {
                   text: `${company.currency.symbol} ${this.format(
-                    invoice.total
+                    invoice.total,
                   )}`,
                   style: 'h3',
                   alignment: 'right',
@@ -2214,7 +2214,7 @@ export class PdfService {
   async inspection(
     inspection: Inspection,
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     const attachments = [];
     inspection.scaffold.attachments.forEach((a, i) => {
@@ -2370,7 +2370,7 @@ export class PdfService {
             300,
             200,
             0.6,
-            true
+            true,
           ),
           width: 100,
           alignment: 'right',
@@ -2427,7 +2427,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(inspection.customer, company),
@@ -2650,7 +2650,7 @@ export class PdfService {
             300,
             200,
             0.6,
-            true
+            true,
           ),
           width: 100,
           alignment: 'right',
@@ -2707,7 +2707,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(handover.customer, company),
@@ -2969,7 +2969,7 @@ export class PdfService {
             300,
             200,
             0.6,
-            true
+            true,
           ),
           width: 100,
           alignment: 'right',
@@ -3014,7 +3014,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(dismantle.customer, company),
@@ -3102,7 +3102,7 @@ export class PdfService {
     const summary = this.createShipmentTable(delivery.items);
     const itemCount = delivery.items.reduce(
       (acc, item) => acc + item.shipmentQty,
-      0
+      0,
     );
     const data = {
       footer: await this.getFooter(),
@@ -3111,7 +3111,7 @@ export class PdfService {
         {
           text: `Expected Delivery Date: ${this.datePipe.transform(
             this.dateFormatPipe.transform(delivery?.endDate),
-            'longDate'
+            'longDate',
           )}`,
           style: ['h4b'],
         },
@@ -3153,7 +3153,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(delivery.site.customer, company),
@@ -3174,7 +3174,7 @@ export class PdfService {
         {
           text: `Total Weight: ${this.weightPipe.transform(
             delivery.items,
-            true
+            true,
           )}`,
           style: 'h3',
           alignment: 'right',
@@ -3256,7 +3256,7 @@ export class PdfService {
   async inventoryList(
     site: Site,
     inventory: InventoryItem[],
-    company: Company
+    company: Company,
   ) {
     const items = [];
     inventory.forEach((item) => {
@@ -3307,7 +3307,7 @@ export class PdfService {
             ? company.logoUrl
             : 'assets/icon/default.webp',
           null,
-          []
+          [],
         ),
         hr,
         summary,
@@ -3322,7 +3322,7 @@ export class PdfService {
   async inventoryMatrix(
     company: Company,
     matrix: any[], // Data transformed from downloadMasterlistMatrix
-    sites: any[] // Array of all unique site addresss
+    sites: any[], // Array of all unique site addresss
   ) {
     const items = [];
 
@@ -3404,7 +3404,7 @@ export class PdfService {
                       : 'assets/icon/default.webp',
                     400,
                     300,
-                    0.8
+                    0.8,
                   ),
                   alignment: 'right',
                 },
@@ -3430,7 +3430,7 @@ export class PdfService {
   async inventoryTransactionList(
     site: Site,
     inventory: TransactionItem[],
-    company: Company
+    company: Company,
   ) {
     const items = [];
     inventory.forEach((item, i) => {
@@ -3530,7 +3530,7 @@ export class PdfService {
             ? company.logoUrl
             : 'assets/icon/default.webp',
           null,
-          []
+          [],
         ),
         hr,
         summary,
@@ -3546,7 +3546,7 @@ export class PdfService {
   async stockLocations(
     item: InventoryItem,
     locations: { site: any; item: InventoryItem }[],
-    company: Company
+    company: Company,
   ) {
     // Create locations table
     const locationsTable = {
@@ -3588,7 +3588,7 @@ export class PdfService {
     // Calculate totals
     const totalAvailableQty = locations.reduce(
       (sum, location) => sum + (location.item.availableQty || 0),
-      0
+      0,
     );
 
     const data = {
@@ -3611,7 +3611,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         // Item summary table
@@ -3703,7 +3703,7 @@ export class PdfService {
   async pickList(
     docData: Delivery | any,
     inventory: InventoryItem[],
-    company: Company
+    company: Company,
   ) {
     const items = [];
     inventory.forEach((item) => {
@@ -3717,7 +3717,7 @@ export class PdfService {
         { text: item.name, style: 'h4b', alignment: 'left' },
         {
           text: this.decimalPipe.transform(
-            (+item?.weight || 0) * (+item?.shipmentQty || 0)
+            (+item?.weight || 0) * (+item?.shipmentQty || 0),
           ),
           style: 'h4b',
           alignment: 'center',
@@ -3726,6 +3726,21 @@ export class PdfService {
         { text: '', style: 'h4b', alignment: 'center' },
       ]);
     });
+    const blankCell = (alignment = 'left') => ({
+      text: '',
+      style: 'h4b',
+      alignment,
+      margin: [0, 8, 0, 8],
+    });
+    const blankRow = () => [
+      blankCell('left'),
+      blankCell('left'),
+      blankCell('left'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+    ];
+    items.push(blankRow(), blankRow());
     const summary = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages
@@ -3754,7 +3769,7 @@ export class PdfService {
 
     const itemCount = inventory.reduce(
       (acc, item) => acc + item.shipmentQty,
-      0
+      0,
     );
 
     const data = {
@@ -3764,7 +3779,7 @@ export class PdfService {
         {
           text: `Expected Delivery Date: ${this.datePipe.transform(
             this.dateFormatPipe.transform(docData?.endDate),
-            'longDate'
+            'longDate',
           )}`,
           style: ['h4b'],
         },
@@ -3784,7 +3799,7 @@ export class PdfService {
             //   '',
             //   '',
             // ],
-          ]
+          ],
         ),
         hr,
         {
@@ -3803,7 +3818,7 @@ export class PdfService {
         {
           text: `Total Weight : ${this.weightPipe.transform(
             docData.items,
-            true
+            true,
           )}`,
           style: ['h3', 'mt3'],
           alignment: 'right',
@@ -3866,7 +3881,7 @@ export class PdfService {
   async returnPickList(
     docData: Delivery | TransactionReturn,
     inventory: InventoryItem[] | TransactionItem[],
-    company: Company
+    company: Company,
   ) {
     const items = [];
     inventory.forEach((item) => {
@@ -3971,7 +3986,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         summary,
@@ -4034,7 +4049,7 @@ export class PdfService {
   async returnDoc(
     returnDoc: TransactionReturn,
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     const signature1 = returnDoc.signature
       ? {
@@ -4043,7 +4058,7 @@ export class PdfService {
             300,
             200,
             0.6,
-            true
+            true,
           ),
           width: 100,
           alignment: 'right',
@@ -4061,7 +4076,7 @@ export class PdfService {
             300,
             200,
             0.6,
-            true
+            true,
           ),
           width: 100,
           alignment: 'right',
@@ -4173,7 +4188,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(company, returnDoc.site.customer),
@@ -4186,7 +4201,7 @@ export class PdfService {
             false,
             false,
             false,
-            true
+            true,
           )}`,
           style: 'h3',
           alignment: 'right',
@@ -4242,7 +4257,7 @@ export class PdfService {
   async transferDoc(
     transferDoc: Transfer,
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     const summary = this.createTransactionReturnTable(transferDoc.items);
 
@@ -4266,7 +4281,7 @@ export class PdfService {
                 transferDoc?.transferDate
                   ? transferDoc.transferDate.seconds
                     ? new Date(
-                        transferDoc.transferDate.seconds * 1000
+                        transferDoc.transferDate.seconds * 1000,
                       ).toLocaleDateString()
                     : new Date(transferDoc.transferDate).toLocaleDateString()
                   : 'N/A'
@@ -4292,12 +4307,12 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(
           transferDoc.toSite?.customer,
-          transferDoc.fromSite?.customer
+          transferDoc.fromSite?.customer,
         ),
 
         hr,
@@ -4311,7 +4326,7 @@ export class PdfService {
             false,
             false,
             false,
-            true
+            true,
           )}`,
           style: 'h3',
           alignment: 'right',
@@ -4350,7 +4365,7 @@ export class PdfService {
   async overReturnDoc(
     overReturnDoc: TransactionReturn,
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     const signature1 = overReturnDoc.signature
       ? {
@@ -4359,7 +4374,7 @@ export class PdfService {
             300,
             200,
             0.6,
-            true
+            true,
           ),
           width: 100,
           alignment: 'right',
@@ -4377,7 +4392,7 @@ export class PdfService {
             300,
             200,
             0.6,
-            true
+            true,
           ),
           width: 100,
           alignment: 'right',
@@ -4484,7 +4499,7 @@ export class PdfService {
                             style: 'h6',
                             alignment: 'right',
                           },
-                        ]
+                        ],
                   ),
                 ],
               },
@@ -4518,7 +4533,7 @@ export class PdfService {
     const data = {
       footer: await this.getFooter(),
       info: this.getMetaData(
-        `${company.name}-OverReturn-${overReturnDoc.code}`
+        `${company.name}-OverReturn-${overReturnDoc.code}`,
       ),
       content: [
         await this.getHeader(
@@ -4561,7 +4576,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
         hr,
         this.getCompanyInfo(company, overReturnDoc.site.customer),
@@ -4618,11 +4633,12 @@ export class PdfService {
   async overReturnedItemsReport(
     returns: TransactionReturn[],
     company: Company,
-    terms: Term | null
+    terms: Term | null,
   ) {
     // Filter returns that have overage items
     const returnsWithOverage = returns.filter(
-      (returnDoc) => returnDoc.overageItems && returnDoc.overageItems.length > 0
+      (returnDoc) =>
+        returnDoc.overageItems && returnDoc.overageItems.length > 0,
     );
 
     // Collect all overage items with return information
@@ -4644,15 +4660,15 @@ export class PdfService {
     // Calculate totals
     const totalOverageQty = allOverageItems.reduce(
       (sum, item) => sum + (item.shipmentQty || 0),
-      0
+      0,
     );
     const totalOverageWeight = allOverageItems.reduce(
       (sum, item) => sum + (item.shipmentQty || 0) * (item.weight || 0),
-      0
+      0,
     );
     const totalOverageValue = allOverageItems.reduce(
       (sum, item) => sum + (item.shipmentQty || 0) * (item.hireCost || 0),
-      0
+      0,
     );
 
     // Create overage items table
@@ -4747,7 +4763,7 @@ export class PdfService {
               '',
               '',
             ],
-          ]
+          ],
         ),
 
         {
@@ -4961,7 +4977,7 @@ export class PdfService {
   async masterInventoryList(
     inventory: InventoryItem[],
     location: string,
-    company: Company
+    company: Company,
   ) {
     const items = [];
     inventory.forEach((item) => {
@@ -5087,7 +5103,7 @@ export class PdfService {
             ? company.logoUrl
             : 'assets/icon/default.webp',
           null,
-          []
+          [],
         ),
         hr,
         summary,
@@ -5114,7 +5130,7 @@ export class PdfService {
     date: any,
     url: string,
     link?: string,
-    data?: any
+    data?: any,
   ) {
     const linkData = link
       ? [
@@ -5171,7 +5187,7 @@ export class PdfService {
     date: any,
     company: Company,
     link?: string,
-    data?: any
+    data?: any,
   ) {
     const linkData = link
       ? [
@@ -5199,7 +5215,7 @@ export class PdfService {
                 company.subHeaderUrl || defaultSubHeader,
                 760,
                 200,
-                0.8
+                0.8,
               ),
               colSpan: 4,
             },
@@ -5228,7 +5244,7 @@ export class PdfService {
 
   private getCompanyInfo(
     customer: Customer | Company,
-    company: Company | Customer
+    company: Company | Customer,
   ) {
     const address = {
       style: 'tableExample',
@@ -5361,7 +5377,7 @@ export class PdfService {
 
     // Separate image uploads from other files
     const imageUploads = uploads.filter((upload) =>
-      upload.type?.startsWith('image')
+      upload.type?.startsWith('image'),
     );
 
     // Process image uploads with better page break handling
@@ -5383,7 +5399,7 @@ export class PdfService {
                     upload.downloadUrl,
                     400,
                     300,
-                    0.6
+                    0.6,
                   ),
                   width: 180, // Reduced width for 3-column landscape layout
                   alignment: 'center',
@@ -5538,7 +5554,7 @@ export class PdfService {
     index: number,
     company: Company,
     item: any,
-    isRental: boolean
+    isRental: boolean,
   ) {
     return [
       {
@@ -5562,7 +5578,7 @@ export class PdfService {
       },
       {
         text: `${company.currency.symbol} ${this.format(
-          isRental ? item.hireCost : item.sellingCost
+          isRental ? item.hireCost : item.sellingCost,
         )}`,
         style: 'h6',
         alignment: 'center',
@@ -5668,7 +5684,7 @@ export class PdfService {
   private addRentalItem(
     company: Company,
     item: TransactionItem,
-    endDate?: any
+    endDate?: any,
   ) {
     let start = null;
     let end = null;
@@ -5841,7 +5857,7 @@ export class PdfService {
         { text: item.shipmentQty, style: 'h4b', alignment: 'center' },
         {
           text: this.decimalPipe.transform(
-            (+item?.weight || 0) * (+item?.shipmentQty || 0)
+            (+item?.weight || 0) * (+item?.shipmentQty || 0),
           ),
           style: 'h4b',
           alignment: 'center',
@@ -5894,7 +5910,7 @@ export class PdfService {
         { text: item.returnQty, style: 'h4b', alignment: 'center' },
         {
           text: this.decimalPipe.transform(
-            (+item?.weight || 0) * (+item?.returnQty || 0)
+            (+item?.weight || 0) * (+item?.returnQty || 0),
           ),
           style: 'h4b',
           alignment: 'center',
@@ -6036,7 +6052,7 @@ export class PdfService {
             replaceBranding,
             300,
             200,
-            0.8
+            0.8,
           ),
           width: 100,
           alignment: 'right',
@@ -6088,7 +6104,7 @@ export class PdfService {
     maxWidth = 800,
     maxHeight = 600,
     quality = 0.7,
-    preserveTransparency = false
+    preserveTransparency = false,
   ) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -6158,7 +6174,7 @@ export class PdfService {
   private toDate(date, hideTimestamp?: boolean) {
     return this.datePipe.transform(
       new Date(date),
-      hideTimestamp ? 'dd MMM yyyy' : 'dd MMM yyyy (HH:mm)'
+      hideTimestamp ? 'dd MMM yyyy' : 'dd MMM yyyy (HH:mm)',
     );
   }
   private getAddress(data: any): string {
