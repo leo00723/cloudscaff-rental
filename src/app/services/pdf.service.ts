@@ -3933,6 +3933,42 @@ export class PdfService {
       ]);
     });
     items.push(blankRow(), blankRow());
+
+    const damageRows = Array.from({ length: 4 }, () => [
+      { text: '', style: 'h4b', alignment: 'left', margin: [0, 8, 0, 8] },
+      { text: '', style: 'h4b', alignment: 'left', margin: [0, 8, 0, 8] },
+      { text: '', style: 'h4b', alignment: 'center', margin: [0, 8, 0, 8] },
+      { text: '', style: 'h4b', alignment: 'left', margin: [0, 8, 0, 8] },
+    ]);
+
+    const damageSection = {
+      table: {
+        headerRows: 2,
+        widths: ['auto', '*', 'auto', '*'],
+        body: [
+          [
+            {
+              text: 'Damage / Writeoffs',
+              style: 'h4b',
+              alignment: 'left',
+              colSpan: 4,
+            },
+            {},
+            {},
+            {},
+          ],
+          [
+            { text: 'Cost', style: 'h4b', alignment: 'left' },
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Details of damage', style: 'h4b', alignment: 'left' },
+          ],
+          ...damageRows,
+        ],
+      },
+      layout: tLayout,
+      margin: [0, 12, 0, 0],
+    };
     const summary = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages
@@ -4062,6 +4098,8 @@ export class PdfService {
           },
           layout: tLayout,
         },
+        hr,
+        damageSection,
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
