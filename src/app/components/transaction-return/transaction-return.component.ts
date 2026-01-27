@@ -221,19 +221,22 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
         .pipe(
           take(1),
           switchMap((transactions) => {
-            // Fetch inventory items to get sellingCost
+            // Fetch inventory items to get sellingCost and filter out consumables
             return this.inventoryItems$.pipe(
               map((inventoryItems) => {
-                // Enrich transactions with sellingCost from inventory
-                return transactions.map((transaction) => {
-                  const inventoryItem = inventoryItems.find(
-                    (item) => item.id === transaction.itemId,
-                  );
-                  return {
-                    ...transaction,
-                    sellingCost: inventoryItem?.sellingCost || 0,
-                  };
-                });
+                // Enrich transactions with sellingCost from inventory and filter out consumables
+                return transactions
+                  .map((transaction) => {
+                    const inventoryItem = inventoryItems.find(
+                      (item) => item.id === transaction.itemId,
+                    );
+                    return {
+                      ...transaction,
+                      sellingCost: inventoryItem?.sellingCost || 0,
+                      type: inventoryItem?.type || '',
+                    };
+                  })
+                  .filter((transaction) => transaction.type !== 'Consumable');
               }),
             );
           }),
