@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { increment } from '@angular/fire/firestore';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { Address } from 'src/app/models/address.model';
 import { Company } from 'src/app/models/company.model';
 import { Customer } from 'src/app/models/customer.model';
@@ -111,7 +111,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
       this.form.valueChanges.subscribe((form) => {
         Object.assign(this.site, form);
         this.oldSite.emit(this.site);
-      })
+      }),
     );
   }
 
@@ -157,7 +157,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
           .toast(
             'Something went wrong creating your site, try again!',
             'danger',
-            2000
+            2000,
           );
       } finally {
         this.loading = false;
@@ -170,6 +170,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
       try {
         this.loading = true;
         this.site.updatedBy = this.user.name;
+        await this.refreshCustomerFromStore();
         Object.assign(this.site, this.form.value);
         this.site.status = status;
         this.setUserIDs();
@@ -178,7 +179,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
           .updateDoc(
             `company/${this.site.companyId}/sites`,
             this.site.id,
-            this.site
+            this.site,
           );
         this.loading = false;
         this.masterSvc
@@ -191,7 +192,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
           .toast(
             'Something went wrong updating your site, try again!',
             'danger',
-            2000
+            2000,
           );
       }
     });
@@ -208,7 +209,7 @@ export class SiteFormComponent implements OnInit, OnDestroy {
             .updateDoc(
               `company/${this.site.companyId}/sites`,
               this.site.id,
-              this.site
+              this.site,
             );
           this.loading = false;
           this.masterSvc
@@ -223,12 +224,12 @@ export class SiteFormComponent implements OnInit, OnDestroy {
             .toast(
               'Something went wrong deleting your site, try again!',
               'danger',
-              2000
+              2000,
             );
         }
       },
       'Delete Site',
-      'NB! A DELETED SITE CANNOT BE RECOVERED NOR CAN ANY INFORMATION BE ACCESSED'
+      'NB! A DELETED SITE CANNOT BE RECOVERED NOR CAN ANY INFORMATION BE ACCESSED',
     );
   }
 
@@ -294,6 +295,23 @@ export class SiteFormComponent implements OnInit, OnDestroy {
       ids.push(users.id);
     });
     this.site.userIDS = ids;
+  }
+
+  private async refreshCustomerFromStore() {
+    const customer = this.field('customer').value as Customer;
+    if (!customer?.id || !this.site.companyId) {
+      return;
+    }
+
+    const latestCustomer = await firstValueFrom(
+      this.masterSvc
+        .edit()
+        .getDocById(`company/${this.site.companyId}/customers`, customer.id),
+    );
+
+    if (latestCustomer) {
+      this.field('customer').setValue({ ...latestCustomer });
+    }
   }
 
   private initFrom() {
