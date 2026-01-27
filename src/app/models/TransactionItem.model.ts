@@ -33,5 +33,6 @@ export interface TransactionItem {
   total?: number;
   overageReturnTotal?: number;
   isDamageCharge?: boolean;
+  isConsumable?: boolean;
   sellingCost?: number;
 }

@@ -1685,6 +1685,9 @@ const deliveryTransaction = async (
         transactionType: 'Delivery',
         siteId: delivery.site.id,
         status: 'active',
+        isConsumable: item.type === 'Consumable',
+        sellingCost: item?.sellingCost || 0,
+        type: item?.type || '',
       }));
 
       // Batch the writes for better performance

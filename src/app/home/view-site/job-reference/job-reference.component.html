@@ -144,7 +144,10 @@
         <ng-container *ngFor="let transaction of transactions">
           <tr
             class="text-center align-middle"
-            *ngIf="transaction.transactionType === 'Delivery'"
+            *ngIf="
+              transaction.transactionType === 'Delivery' &&
+              !transaction.isConsumable
+            "
           >
             <!-- Type (Delivery or Return) -->
             <td>
@@ -224,6 +227,75 @@
               </td>
 
               <!-- Total Amount (qty * rate * days) -->
+              <td class="text-end">
+                {{ company.currency.symbol }}
+                {{ transaction.total | number: "0.2-2" }}
+              </td>
+            </ng-container>
+          </tr>
+          <tr
+            class="text-center align-middle"
+            *ngIf="
+              transaction.transactionType === 'Delivery' &&
+              transaction.isConsumable
+            "
+          >
+            <!-- Type (Consumable) -->
+            <td>
+              <ion-chip color="primary" mode="ios">
+                <ion-label>{{ transaction.deliveryCode }}</ion-label>
+              </ion-chip>
+            </td>
+
+            <!-- Item Code -->
+            <td>{{ transaction.code }}</td>
+
+            <!-- Description -->
+            <td class="text-start">{{ transaction.name }}</td>
+
+            <!-- Unit -->
+            <td>EA</td>
+
+            <!-- Qty for Invoice -->
+            <td class="fw-bold" *ngIf="!jr.customInvoice || jr.mixedInvoice">
+              {{ transaction.invoiceQty }}
+            </td>
+
+            <!-- Delivered Qty  -->
+            <td class="text-success fw-bold">
+              {{ transaction.deliveredQty }}
+            </td>
+
+            <!-- Adjustment Qty  -->
+            <td>-</td>
+
+            <!-- Returned Qty  -->
+            <td>-</td>
+
+            <!-- Balance Qty -->
+            <td>-</td>
+
+            <!-- Start Date -->
+            <td>
+              {{ transaction.invoiceStart | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- End Date -->
+            <td>
+              {{ transaction.invoiceEnd | dateFormat | date: "dd MMM yy" }}
+            </td>
+
+            <!-- Days -->
+            <td>-</td>
+
+            <ng-container *ngIf="!jr.customInvoice || jr.mixedInvoice">
+              <!-- Unit Cost -->
+              <td>
+                {{ company.currency.symbol }}
+                {{ transaction.sellingCost | number: "0.2-2" }}
+              </td>
+
+              <!-- Total Amount -->
               <td class="text-end">
                 {{ company.currency.symbol }}
                 {{ transaction.total | number: "0.2-2" }}

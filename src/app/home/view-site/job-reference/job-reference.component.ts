@@ -384,6 +384,15 @@ export class JobReferenceComponent implements OnInit {
         return;
       }
 
+      // Handle consumables as one-time costs using sellingCost
+      if (item.isConsumable) {
+        item.days = 0;
+        item.months = 0;
+        item.total = +(+item.invoiceQty * +item.sellingCost).toFixed(2);
+        this.jr.subtotal += item.total;
+        return;
+      }
+
       const start = item.invoiceStart?.toDate
         ? item.invoiceStart.toDate()
         : new Date(item.invoiceStart);
