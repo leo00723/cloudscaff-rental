@@ -6232,8 +6232,18 @@ export class PdfService {
     }`;
   }
   private toDate(date, hideTimestamp?: boolean) {
+    let parsedDate: Date;
+
+    // Handle DD-MM-YYYY format (e.g., "29-01-2026")
+    if (typeof date === 'string' && /^\d{2}-\d{2}-\d{4}$/.test(date)) {
+      const [day, month, year] = date.split('-').map(Number);
+      parsedDate = new Date(year, month - 1, day);
+    } else {
+      parsedDate = new Date(date);
+    }
+
     return this.datePipe.transform(
-      new Date(date),
+      parsedDate,
       hideTimestamp ? 'dd MMM yyyy' : 'dd MMM yyyy (HH:mm)',
     );
   }

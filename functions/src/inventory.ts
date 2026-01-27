@@ -4,6 +4,47 @@ import * as admin from 'firebase-admin';
 import * as logger from 'firebase-functions/logger';
 import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 
+// Helper function to safely convert date values to Timestamps
+const toTimestamp = (date: any): Timestamp => {
+  if (!date) {
+    return Timestamp.now();
+  }
+  if (date instanceof Timestamp) {
+    return date;
+  }
+  if (date.toDate && typeof date.toDate === 'function') {
+    return Timestamp.fromDate(date.toDate());
+  }
+  if (date instanceof Date) {
+    return Timestamp.fromDate(date);
+  }
+
+  // Handle string/number inputs, including dd-mm-yyyy formats
+  if (typeof date === 'string' || typeof date === 'number') {
+    const str = String(date).trim();
+
+    // dd-mm-yyyy or dd/mm/yyyy
+    const dmyMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+    if (dmyMatch) {
+      const day = Number(dmyMatch[1]);
+      const month = Number(dmyMatch[2]);
+      const year = Number(dmyMatch[3]);
+      const parsedDmy = new Date(year, month - 1, day);
+      if (!isNaN(parsedDmy.getTime())) {
+        return Timestamp.fromDate(parsedDmy);
+      }
+    }
+
+    const parsedDate = new Date(str);
+    if (!isNaN(parsedDate.getTime())) {
+      return Timestamp.fromDate(parsedDate);
+    }
+  }
+
+  // Fallback to now if parsing fails
+  return Timestamp.now();
+};
+
 exports.manageBulkUpdate = functions.firestore
   .document('company/{companyId}/bulkUpdates/{bulkUpdateId}')
   .onUpdate(async (change, context) => {
@@ -70,7 +111,7 @@ exports.manageTransfer = functions.firestore
         const fromSiteInventory = await admin
           .firestore()
           .doc(
-            `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+            `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`,
           )
           .get();
 
@@ -78,7 +119,7 @@ exports.manageTransfer = functions.firestore
         const toSiteInventory = await admin
           .firestore()
           .doc(
-            `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+            `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`,
           )
           .get();
 
@@ -107,7 +148,7 @@ exports.manageTransfer = functions.firestore
           //update the from site inventory totals
           items.forEach((item: any) => {
             const inventoryItem = fromSiteItems.find(
-              (i: any) => i.id === item.id
+              (i: any) => i.id === item.id,
             );
             if (inventoryItem) {
               inventoryItem.availableQty =
@@ -127,7 +168,7 @@ exports.manageTransfer = functions.firestore
           //update the to site inventory totals
           items.forEach((item: any) => {
             const inventoryItem = toSiteItems.find(
-              (i: any) => i.id === item.id
+              (i: any) => i.id === item.id,
             );
             if (inventoryItem) {
               inventoryItem.availableQty =
@@ -171,29 +212,29 @@ exports.manageTransfer = functions.firestore
             siteTotals: {
               totalItemsDelivered: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalDelivered || 0),
-                0
+                0,
               ),
               totalItemsReturned: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalReturned || 0),
-                0
+                0,
               ),
               totalItemsTransferredIn: fromSiteItems.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredIn || 0),
-                0
+                0,
               ),
               totalItemsTransferredOut: fromSiteItems.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredOut || 0),
-                0
+                0,
               ),
               totalOverages: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalOverages || 0),
-                0
+                0,
               ),
               currentAvailableItems: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.availableQty || 0),
-                0
+                0,
               ),
               lastUpdated: FieldValue.serverTimestamp(),
             },
@@ -208,29 +249,29 @@ exports.manageTransfer = functions.firestore
             siteTotals: {
               totalItemsDelivered: toSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalDelivered || 0),
-                0
+                0,
               ),
               totalItemsReturned: toSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalReturned || 0),
-                0
+                0,
               ),
               totalItemsTransferredIn: toSiteItems.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredIn || 0),
-                0
+                0,
               ),
               totalItemsTransferredOut: toSiteItems.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredOut || 0),
-                0
+                0,
               ),
               totalOverages: toSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalOverages || 0),
-                0
+                0,
               ),
               currentAvailableItems: toSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.availableQty || 0),
-                0
+                0,
               ),
               lastUpdated: FieldValue.serverTimestamp(),
             },
@@ -240,14 +281,14 @@ exports.manageTransfer = functions.firestore
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`,
             )
             .set(updatedFromInventory);
           // update the to site document
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`,
             )
             .set(updatedToInventory);
         } else {
@@ -277,7 +318,7 @@ exports.manageTransfer = functions.firestore
           //update the from site inventory totals
           items.forEach((item: any) => {
             const inventoryItem = fromSiteItems.find(
-              (i: any) => i.id === item.id
+              (i: any) => i.id === item.id,
             );
             if (inventoryItem) {
               inventoryItem.availableQty =
@@ -303,29 +344,29 @@ exports.manageTransfer = functions.firestore
             siteTotals: {
               totalItemsDelivered: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalDelivered || 0),
-                0
+                0,
               ),
               totalItemsReturned: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalReturned || 0),
-                0
+                0,
               ),
               totalItemsTransferredIn: fromSiteItems.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredIn || 0),
-                0
+                0,
               ),
               totalItemsTransferredOut: fromSiteItems.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredOut || 0),
-                0
+                0,
               ),
               totalOverages: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.totalOverages || 0),
-                0
+                0,
               ),
               currentAvailableItems: fromSiteItems.reduce(
                 (sum: number, item: any) => sum + (item.availableQty || 0),
-                0
+                0,
               ),
               lastUpdated: FieldValue.serverTimestamp(),
             },
@@ -335,7 +376,7 @@ exports.manageTransfer = functions.firestore
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`,
             )
             .set(updatedFromInventory);
 
@@ -348,29 +389,29 @@ exports.manageTransfer = functions.firestore
             siteTotals: {
               totalItemsDelivered: items.reduce(
                 (sum: number, item: any) => sum + (item.totalDelivered || 0),
-                0
+                0,
               ),
               totalItemsReturned: items.reduce(
                 (sum: number, item: any) => sum + (item.totalReturned || 0),
-                0
+                0,
               ),
               totalItemsTransferredIn: items.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredIn || 0),
-                0
+                0,
               ),
               totalItemsTransferredOut: items.reduce(
                 (sum: number, item: any) =>
                   sum + (item.totalTransferredOut || 0),
-                0
+                0,
               ),
               totalOverages: items.reduce(
                 (sum: number, item: any) => sum + (item.totalOverages || 0),
-                0
+                0,
               ),
               currentAvailableItems: items.reduce(
                 (sum: number, item: any) => sum + (item.availableQty || 0),
-                0
+                0,
               ),
               lastUpdated: FieldValue.serverTimestamp(),
             },
@@ -378,7 +419,7 @@ exports.manageTransfer = functions.firestore
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`,
             )
             .set(updatedInventory);
         }
@@ -396,7 +437,7 @@ exports.manageTransfer = functions.firestore
             transfer.fromSite.name,
             transfer.fromSite.customer.name,
             item.shipmentQty,
-            'Transfer Out'
+            'Transfer Out',
           );
 
           // Log as delivery to destination site
@@ -408,7 +449,7 @@ exports.manageTransfer = functions.firestore
             transfer.toSite.name,
             transfer.toSite.customer.name,
             item.shipmentQty,
-            'Transfer In'
+            'Transfer In',
           );
         });
 
@@ -448,7 +489,7 @@ exports.manageTransfer = functions.firestore
               transferData: transfer,
               notes: `Transfer to ${transfer.toSite.name}`,
             },
-            movementBatch
+            movementBatch,
           );
 
           // Track "Transfer In" movement for destination site
@@ -475,7 +516,7 @@ exports.manageTransfer = functions.firestore
               transferData: transfer,
               notes: `Transfer from ${transfer.fromSite.name}`,
             },
-            movementBatch
+            movementBatch,
           );
         });
 
@@ -513,7 +554,7 @@ exports.manageJobReferenceTransfer = functions.firestore
         const fromSiteInventory = await admin
           .firestore()
           .doc(
-            `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+            `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`,
           )
           .get();
 
@@ -521,7 +562,7 @@ exports.manageJobReferenceTransfer = functions.firestore
         const toSiteInventory = await admin
           .firestore()
           .doc(
-            `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+            `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`,
           )
           .get();
 
@@ -540,7 +581,7 @@ exports.manageJobReferenceTransfer = functions.firestore
           //update the from site inventory totals
           items.forEach((item: any) => {
             const inventoryItem = fromSiteItems.find(
-              (i: any) => i.id === item.id
+              (i: any) => i.id === item.id,
             );
             if (inventoryItem) {
               inventoryItem.availableQty =
@@ -555,7 +596,7 @@ exports.manageJobReferenceTransfer = functions.firestore
           //update the to site inventory totals
           items.forEach((item: any) => {
             const inventoryItem = toSiteItems.find(
-              (i: any) => i.id === item.id
+              (i: any) => i.id === item.id,
             );
             if (inventoryItem) {
               inventoryItem.availableQty =
@@ -585,14 +626,14 @@ exports.manageJobReferenceTransfer = functions.firestore
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`,
             )
             .set(updatedFromInventory);
           // update the to site document
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`,
             )
             .set(updatedToInventory);
         } else {
@@ -610,7 +651,7 @@ exports.manageJobReferenceTransfer = functions.firestore
           //update the from site inventory totals
           items.forEach((item: any) => {
             const inventoryItem = fromSiteItems.find(
-              (i: any) => i.id === item.id
+              (i: any) => i.id === item.id,
             );
             if (inventoryItem) {
               inventoryItem.availableQty =
@@ -634,7 +675,7 @@ exports.manageJobReferenceTransfer = functions.firestore
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.fromSite.id}`,
             )
             .set(updatedFromInventory);
 
@@ -648,7 +689,7 @@ exports.manageJobReferenceTransfer = functions.firestore
           await admin
             .firestore()
             .doc(
-              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`
+              `company/${context.params.companyId}/siteStock/${transfer.toSite.id}`,
             )
             .set(updatedInventory);
         }
@@ -669,7 +710,7 @@ exports.manageJobReferenceTransfer = functions.firestore
             transfer.fromSite.name,
             transfer.fromSite.customer.name,
             item.returnQty,
-            'Job Reference Transfer Out'
+            'Job Reference Transfer Out',
           );
 
           // Log as delivery to destination site
@@ -681,7 +722,7 @@ exports.manageJobReferenceTransfer = functions.firestore
             transfer.toSite.name,
             transfer.toSite.customer.name,
             item.returnQty,
-            'Job Reference Transfer In'
+            'Job Reference Transfer In',
           );
         });
 
@@ -735,7 +776,7 @@ exports.saleInvoiceUpdated = functions.firestore
 
 const updateItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (
@@ -832,7 +873,7 @@ const updateItems = async (
               'Metadata Update',
               bulkUpdate.company?.name || 'System',
               0, // No quantity change
-              'Bulk Update - Metadata'
+              'Bulk Update - Metadata',
             );
           }
 
@@ -847,7 +888,7 @@ const updateItems = async (
               'Yard Quantity Update',
               bulkUpdate.company?.name || 'System',
               qtyDifference,
-              qtyDifference > 0 ? 'Bulk Update - Add' : 'Bulk Update - Remove'
+              qtyDifference > 0 ? 'Bulk Update - Add' : 'Bulk Update - Remove',
             );
           }
         }
@@ -943,27 +984,27 @@ const shipItems = async (context: functions.EventContext, data: any) => {
         siteTotals: {
           totalItemsDelivered: oldInventory.reduce(
             (sum: number, item: any) => sum + (item.totalDelivered || 0),
-            0
+            0,
           ),
           totalItemsReturned: oldInventory.reduce(
             (sum: number, item: any) => sum + (item.totalReturned || 0),
-            0
+            0,
           ),
           totalItemsTransferredIn: oldInventory.reduce(
             (sum: number, item: any) => sum + (item.totalTransferredIn || 0),
-            0
+            0,
           ),
           totalItemsTransferredOut: oldInventory.reduce(
             (sum: number, item: any) => sum + (item.totalTransferredOut || 0),
-            0
+            0,
           ),
           totalOverages: oldInventory.reduce(
             (sum: number, item: any) => sum + (item.totalOverages || 0),
-            0
+            0,
           ),
           currentAvailableItems: oldInventory.reduce(
             (sum: number, item: any) => sum + (item.availableQty || 0),
-            0
+            0,
           ),
           lastUpdated: FieldValue.serverTimestamp(),
         },
@@ -982,7 +1023,7 @@ const shipItems = async (context: functions.EventContext, data: any) => {
         siteTotals: {
           totalItemsDelivered: items.reduce(
             (sum: number, item: any) => sum + (item.totalDelivered || 0),
-            0
+            0,
           ),
           totalItemsReturned: 0,
           totalItemsTransferredIn: 0,
@@ -990,7 +1031,7 @@ const shipItems = async (context: functions.EventContext, data: any) => {
           totalOverages: 0,
           currentAvailableItems: items.reduce(
             (sum: number, item: any) => sum + (item.availableQty || 0),
-            0
+            0,
           ),
           lastUpdated: FieldValue.serverTimestamp(),
         },
@@ -1020,7 +1061,7 @@ const shipItems = async (context: functions.EventContext, data: any) => {
         shipment.site.name,
         shipment.site.customer.name,
         item.availableQty,
-        'Delivery'
+        'Delivery',
       );
     });
 
@@ -1054,7 +1095,7 @@ const shipItems = async (context: functions.EventContext, data: any) => {
             siteData: shipment.site,
             notes: `Delivered ${item.availableQty} ${item.name} to ${shipment.site.name}`,
           },
-          batch
+          batch,
         );
       });
     } else {
@@ -1078,7 +1119,7 @@ const shipItems = async (context: functions.EventContext, data: any) => {
             siteData: shipment.site,
             notes: `Initial delivery of ${item.availableQty} ${item.name} to new site ${shipment.site.name}`,
           },
-          batch
+          batch,
         );
       });
     }
@@ -1095,7 +1136,7 @@ const shipItems = async (context: functions.EventContext, data: any) => {
 
 const returnItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (
@@ -1111,7 +1152,7 @@ const returnItems = async (
       const siteInventory = await admin
         .firestore()
         .doc(
-          `company/${context.params.companyId}/siteStock/${returnData.site.id}`
+          `company/${context.params.companyId}/siteStock/${returnData.site.id}`,
         )
         .get();
       // check if site has inventory
@@ -1190,27 +1231,27 @@ const returnItems = async (
           siteTotals: {
             totalItemsDelivered: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalDelivered || 0),
-              0
+              0,
             ),
             totalItemsReturned: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalReturned || 0),
-              0
+              0,
             ),
             totalItemsTransferredIn: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalTransferredIn || 0),
-              0
+              0,
             ),
             totalItemsTransferredOut: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalTransferredOut || 0),
-              0
+              0,
             ),
             totalOverages: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalOverages || 0),
-              0
+              0,
             ),
             currentAvailableItems: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.availableQty || 0),
-              0
+              0,
             ),
             lastUpdated: FieldValue.serverTimestamp(),
           },
@@ -1219,7 +1260,7 @@ const returnItems = async (
         await admin
           .firestore()
           .doc(
-            `company/${context.params.companyId}/siteStock/${returnData.site.id}`
+            `company/${context.params.companyId}/siteStock/${returnData.site.id}`,
           )
           .set(updatedInventory);
 
@@ -1263,7 +1304,7 @@ const returnItems = async (
             returnData.site.name,
             returnData.site.customer.name,
             item.availableQty - item.excess,
-            'Return'
+            'Return',
           );
         }
 
@@ -1294,7 +1335,7 @@ const returnItems = async (
                 siteData: returnData.site,
                 notes: `Returned ${item.availableQty} ${item.name} from ${returnData.site.name}`,
               },
-              batch
+              batch,
             );
 
             // Track overage if detected
@@ -1317,7 +1358,7 @@ const returnItems = async (
                   siteData: returnData.site,
                   notes: `Overage detected: ${item.excess} ${item.name} returned but not on site`,
                 },
-                batch
+                batch,
               );
             }
           } else {
@@ -1341,7 +1382,7 @@ const returnItems = async (
                 siteData: returnData.site,
                 notes: `Full overage: ${item.availableQty} ${item.name} returned but item not on site`,
               },
-              batch
+              batch,
             );
           }
         });
@@ -1360,7 +1401,7 @@ const returnItems = async (
 
 const reserveItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (
@@ -1390,7 +1431,7 @@ const reserveItems = async (
           shipment.site.name,
           shipment.site.customer.name,
           item.shipmentQty,
-          'Reserve'
+          'Reserve',
         );
       }
 
@@ -1424,7 +1465,7 @@ const reserveItems = async (
           shipment.site.name,
           shipment.site.customer.name,
           item.shipmentQty,
-          'Unreserve'
+          'Unreserve',
         );
       }
 
@@ -1440,7 +1481,7 @@ const reserveItems = async (
 
 const reserveSaleItems = async (
   change: functions.firestore.QueryDocumentSnapshot,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (change.exists) {
@@ -1466,7 +1507,7 @@ const reserveSaleItems = async (
             'Sale Invoice',
             invoice.customer?.name || 'Customer',
             item.sellQty,
-            'Reserve Sale'
+            'Reserve Sale',
           );
         } else {
           logger.warn(`Invalid item data: ${JSON.stringify(item)}`);
@@ -1487,7 +1528,7 @@ const reserveSaleItems = async (
 
 const manageSaleItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     const beforeData = change.before.data();
@@ -1532,7 +1573,7 @@ const manageSaleItems = async (
             'Sale Invoice',
             afterData.customer?.name || 'Customer',
             item.sellQty,
-            'Sale'
+            'Sale',
           );
         } else {
           logger.warn(`Invalid item data: ${JSON.stringify(item)}`);
@@ -1559,7 +1600,7 @@ const manageSaleItems = async (
             'Sale Invoice',
             afterData.customer?.name || 'Customer',
             item.sellQty,
-            'Void Sale'
+            'Void Sale',
           );
         } else {
           logger.warn(`Invalid item data: ${JSON.stringify(item)}`);
@@ -1579,7 +1620,7 @@ const manageSaleItems = async (
 
 const deliveryTransaction = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (
@@ -1673,7 +1714,7 @@ const deliveryTransaction = async (
 
 const adjustmentTransaction = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (
@@ -1682,7 +1723,7 @@ const adjustmentTransaction = async (
       change.after.data().jobReference
     ) {
       const adjustmentDoc = change.after.data();
-      const returnDate = new Date(adjustmentDoc.returnDate);
+      const returnDate = toTimestamp(adjustmentDoc.returnDate);
       // Create the items for the transaction log
       const items = adjustmentDoc.items.map((item: any) => ({
         deliveryLogId: item.id,
@@ -1703,7 +1744,7 @@ const adjustmentTransaction = async (
         returnCode: adjustmentDoc.code,
         returnDate: FieldValue.serverTimestamp(),
         invoiceStart: item.invoiceStart,
-        invoiceEnd: Timestamp.fromDate(returnDate),
+        invoiceEnd: returnDate,
         hireRate: 0,
         jobReference: adjustmentDoc.jobReference,
         transactionType: 'Adjustment',
@@ -1726,7 +1767,7 @@ const adjustmentTransaction = async (
         const delLogItemRef = admin
           .firestore()
           .doc(
-            `company/${context.params.companyId}/transactionLog/${item.deliveryLogId}`
+            `company/${context.params.companyId}/transactionLog/${item.deliveryLogId}`,
           );
         batch.update(delLogItemRef, {
           invoiceQty: FieldValue.increment(-+item.returnQty),
@@ -1750,7 +1791,7 @@ const adjustmentTransaction = async (
 
 const returnTransaction = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (
@@ -1759,7 +1800,7 @@ const returnTransaction = async (
       change.after.data().jobReference
     ) {
       const returnDoc = change.after.data();
-      const returnDate = new Date(returnDoc.returnDate);
+      const returnDate = toTimestamp(returnDoc.returnDate);
 
       // Create the items for the transaction log (regular items)
       const regularItems = returnDoc.items.map((item: any) => ({
@@ -1780,7 +1821,7 @@ const returnTransaction = async (
         returnCode: returnDoc.code,
         returnDate: FieldValue.serverTimestamp(),
         invoiceStart: item.invoiceStart,
-        invoiceEnd: Timestamp.fromDate(returnDate),
+        invoiceEnd: returnDate,
         hireRate: item.hireRate || 0,
         jobReference: item.jobReference,
         transactionType: 'Return',
@@ -1807,8 +1848,8 @@ const returnTransaction = async (
           returnId: returnDoc.id,
           returnCode: returnDoc.code,
           returnDate: FieldValue.serverTimestamp(),
-          invoiceStart: Timestamp.fromDate(returnDate), // Start billing from return date
-          invoiceEnd: Timestamp.fromDate(returnDate), // End immediately for overage
+          invoiceStart: returnDate, // Start billing from return date
+          invoiceEnd: returnDate, // End immediately for overage
           hireRate: item.hireCost || 0,
           jobReference: returnDoc.jobReference, // Use the return's Job Reference
           transactionType: 'Overage Return',
@@ -1838,7 +1879,7 @@ const returnTransaction = async (
         const delLogItemRef = admin
           .firestore()
           .doc(
-            `company/${context.params.companyId}/transactionLog/${item.deliveryLogId}`
+            `company/${context.params.companyId}/transactionLog/${item.deliveryLogId}`,
           );
         batch.update(delLogItemRef, {
           invoiceQty: FieldValue.increment(-+item.returnQty),
@@ -1878,7 +1919,7 @@ const returnTransaction = async (
 const returnTransactionItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
   context: functions.EventContext,
-  isReturn = true
+  isReturn = true,
 ) => {
   try {
     if (
@@ -1891,14 +1932,14 @@ const returnTransactionItems = async (
       const siteInventory = await admin
         .firestore()
         .doc(
-          `company/${context.params.companyId}/siteStock/${returnData.site.id}`
+          `company/${context.params.companyId}/siteStock/${returnData.site.id}`,
         )
         .get();
       // Site stock ref
       const siteStockRef = admin
         .firestore()
         .doc(
-          `company/${context.params.companyId}/siteStock/${returnData.site.id}`
+          `company/${context.params.companyId}/siteStock/${returnData.site.id}`,
         );
       // Prepare a batch to group all updates
       const batch = admin.firestore().batch();
@@ -1984,27 +2025,27 @@ const returnTransactionItems = async (
           siteTotals: {
             totalItemsDelivered: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalDelivered || 0),
-              0
+              0,
             ),
             totalItemsReturned: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalReturned || 0),
-              0
+              0,
             ),
             totalItemsTransferredIn: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalTransferredIn || 0),
-              0
+              0,
             ),
             totalItemsTransferredOut: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalTransferredOut || 0),
-              0
+              0,
             ),
             totalOverages: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.totalOverages || 0),
-              0
+              0,
             ),
             currentAvailableItems: oldInventory.reduce(
               (sum: number, item: any) => sum + (item.availableQty || 0),
-              0
+              0,
             ),
             lastUpdated: FieldValue.serverTimestamp(),
           },
@@ -2045,7 +2086,7 @@ const returnTransactionItems = async (
               `${returnData.site.name}-${item.jobReference} excess`,
               returnData.site.customer.name,
               item.excess,
-              isReturn ? 'Return' : 'Adjustment'
+              isReturn ? 'Return' : 'Adjustment',
             );
           }
 
@@ -2060,7 +2101,7 @@ const returnTransactionItems = async (
             `${returnData.site.name}-${item.jobReference}`,
             returnData.site.customer.name,
             item.availableQty - item.excess,
-            isReturn ? 'Return' : 'Adjustment'
+            isReturn ? 'Return' : 'Adjustment',
           );
         }
       }
@@ -2097,7 +2138,7 @@ const returnTransactionItems = async (
           `${returnData.site.name} excess`,
           returnData.site.customer.name,
           item.shipmentQty,
-          isReturn ? 'Return' : 'Adjustment'
+          isReturn ? 'Return' : 'Adjustment',
         );
       }
 
@@ -2114,12 +2155,12 @@ const returnTransactionItems = async (
 
 const overageReversalTransaction = async (
   change: functions.firestore.QueryDocumentSnapshot,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (change.data()?.isReversal && !change.data()?.skipTransaction) {
       const returnDoc = change.data();
-      const returnDate = new Date(returnDoc.returnDate);
+      const returnDate = toTimestamp(returnDoc.returnDate);
 
       // Create transaction log items for overage items
       const overageItems =
@@ -2140,8 +2181,8 @@ const overageReversalTransaction = async (
           returnId: change.id,
           returnCode: returnDoc.code,
           returnDate: FieldValue.serverTimestamp(),
-          invoiceStart: Timestamp.fromDate(returnDate), // Start billing from return date
-          invoiceEnd: Timestamp.fromDate(returnDate), // End immediately for overage
+          invoiceStart: returnDate, // Start billing from return date
+          invoiceEnd: returnDate, // End immediately for overage
           hireRate: item.hireCost || 0,
           jobReference: returnDoc.jobReference, // Use the return's Job Reference
           transactionType: 'Overage Return Reversal',
@@ -2183,7 +2224,7 @@ const overageReversalTransaction = async (
 
 const approveOverageItems = async (
   change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (
@@ -2201,7 +2242,7 @@ const approveOverageItems = async (
       const siteInventoryRef = admin
         .firestore()
         .doc(
-          `company/${context.params.companyId}/siteStock/${overageData.site.id}`
+          `company/${context.params.companyId}/siteStock/${overageData.site.id}`,
         );
 
       const siteInventoryDoc = await siteInventoryRef.get();
@@ -2237,7 +2278,7 @@ const approveOverageItems = async (
           `${overageData.site.name} excess`,
           overageData.site.customer.name,
           item.shipmentQty,
-          'Return'
+          'Return',
         );
       }
 
@@ -2246,7 +2287,7 @@ const approveOverageItems = async (
         const updatedItems = currentInventory.items.map(
           (inventoryItem: any) => {
             const overageItem = overageData.overageItems.find(
-              (item: any) => item.id === inventoryItem.id
+              (item: any) => item.id === inventoryItem.id,
             );
             if (overageItem) {
               return {
@@ -2258,13 +2299,13 @@ const approveOverageItems = async (
               };
             }
             return inventoryItem;
-          }
+          },
         );
 
         // Add new items for overages that don't exist in inventory
         for (const overageItem of overageData.overageItems) {
           const existsInInventory = currentInventory.items.some(
-            (item: any) => item.id === overageItem.id
+            (item: any) => item.id === overageItem.id,
           );
           if (!existsInInventory) {
             updatedItems.push({
@@ -2292,23 +2333,23 @@ const approveOverageItems = async (
         const updatedSiteTotals = {
           totalItemsDelivered: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalDelivered || 0),
-            0
+            0,
           ),
           totalItemsReturned: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalReturned || 0),
-            0
+            0,
           ),
           totalItemsTransferredIn: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalTransferredIn || 0),
-            0
+            0,
           ),
           totalItemsTransferredOut: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalTransferredOut || 0),
-            0
+            0,
           ),
           totalOverages: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalOverages || 0),
-            0
+            0,
           ),
           lastUpdated: FieldValue.serverTimestamp(),
         };
@@ -2322,7 +2363,7 @@ const approveOverageItems = async (
       // Add site movement tracking for overage approvals
       for (const overageItem of overageData.overageItems) {
         const inventoryItem = currentInventory?.items?.find(
-          (item: any) => item.id === overageItem.id
+          (item: any) => item.id === overageItem.id,
         );
 
         addSiteMovement(
@@ -2349,7 +2390,7 @@ const approveOverageItems = async (
             siteData: overageData.site,
             notes: `Approved overage of ${overageItem.shipmentQty} ${overageItem.name}`,
           },
-          batch
+          batch,
         );
       }
 
@@ -2367,7 +2408,7 @@ const approveOverageItems = async (
 
 const reverseOverageItems = async (
   change: functions.firestore.QueryDocumentSnapshot,
-  context: functions.EventContext
+  context: functions.EventContext,
 ) => {
   try {
     if (change.data().isReversal) {
@@ -2380,7 +2421,7 @@ const reverseOverageItems = async (
       const siteInventoryRef = admin
         .firestore()
         .doc(
-          `company/${context.params.companyId}/siteStock/${overReturnData.site.id}`
+          `company/${context.params.companyId}/siteStock/${overReturnData.site.id}`,
         );
 
       const siteInventoryDoc = await siteInventoryRef.get();
@@ -2416,7 +2457,7 @@ const reverseOverageItems = async (
             `${overReturnData.site.name} reversed`,
             overReturnData.site.customer.name,
             item.returnQty,
-            'Return'
+            'Return',
           );
         }
       }
@@ -2426,12 +2467,12 @@ const reverseOverageItems = async (
         const updatedItems = currentInventory.items.map(
           (inventoryItem: any) => {
             const overageItem = overReturnData.overageItems.find(
-              (item: any) => item.id === inventoryItem.id
+              (item: any) => item.id === inventoryItem.id,
             );
             if (overageItem && overageItem.returnQty > 0) {
               const newTotalOverages = Math.max(
                 0,
-                (inventoryItem.totalOverages || 0) - overageItem.returnQty
+                (inventoryItem.totalOverages || 0) - overageItem.returnQty,
               );
               return {
                 ...inventoryItem,
@@ -2441,30 +2482,30 @@ const reverseOverageItems = async (
               };
             }
             return inventoryItem;
-          }
+          },
         );
 
         // Update site totals
         const updatedSiteTotals = {
           totalItemsDelivered: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalDelivered || 0),
-            0
+            0,
           ),
           totalItemsReturned: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalReturned || 0),
-            0
+            0,
           ),
           totalItemsTransferredIn: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalTransferredIn || 0),
-            0
+            0,
           ),
           totalItemsTransferredOut: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalTransferredOut || 0),
-            0
+            0,
           ),
           totalOverages: updatedItems.reduce(
             (sum: number, item: any) => sum + (item.totalOverages || 0),
-            0
+            0,
           ),
           lastUpdated: FieldValue.serverTimestamp(),
         };
@@ -2479,7 +2520,7 @@ const reverseOverageItems = async (
       for (const overageItem of overReturnData.overageItems) {
         if (overageItem?.returnQty > 0) {
           const inventoryItem = currentInventory?.items?.find(
-            (item: any) => item.id === overageItem.id
+            (item: any) => item.id === overageItem.id,
           );
 
           const previousQty = inventoryItem?.totalOverages || 0;
@@ -2517,7 +2558,7 @@ const reverseOverageItems = async (
               siteData: overReturnData.site,
               notes: `Reversed overage of ${overageItem.returnQty} ${overageItem.name}`,
             },
-            batch
+            batch,
           );
         }
       }
@@ -2536,7 +2577,7 @@ const reverseOverageItems = async (
 
 const transferDeliveryTransaction = async (transfer: any) => {
   try {
-    const transferDate = new Date(transfer.transferDate);
+    const transferDate = toTimestamp(transfer.transferDate);
     // Create the items for the transaction log
     const items = transfer.items.map((item: any) => ({
       ...item,
@@ -2547,8 +2588,8 @@ const transferDeliveryTransaction = async (transfer: any) => {
       returnQty: 0,
       deliveryId: transfer.id,
       deliveryCode: transfer.code,
-      deliveryDate: Timestamp.fromDate(transferDate),
-      invoiceStart: Timestamp.fromDate(transferDate),
+      deliveryDate: transferDate,
+      invoiceStart: transferDate,
       invoiceEnd: null,
       hireRate: 0,
       jobReference: transfer.toJobReference,
@@ -2582,7 +2623,7 @@ const transferDeliveryTransaction = async (transfer: any) => {
 
 const transferReturnTransaction = async (transfer: any) => {
   try {
-    const transferDate = new Date(transfer.transferDate);
+    const transferDate = toTimestamp(transfer.transferDate);
     // Create the items for the transaction log
     const items = transfer.items.map((item: any) => ({
       deliveryLogId: item.id,
@@ -2600,9 +2641,9 @@ const transferReturnTransaction = async (transfer: any) => {
       location: item?.location || '',
       returnId: transfer.id,
       returnCode: transfer.code,
-      returnDate: Timestamp.fromDate(transferDate),
+      returnDate: transferDate,
       invoiceStart: item.invoiceStart,
-      invoiceEnd: Timestamp.fromDate(transferDate),
+      invoiceEnd: transferDate,
       hireRate: item.hireRate || 0,
       jobReference: transfer.fromJobReference,
       transactionType: 'Return',
@@ -2625,7 +2666,7 @@ const transferReturnTransaction = async (transfer: any) => {
       const delLogItemRef = admin
         .firestore()
         .doc(
-          `company/${transfer.company.id}/transactionLog/${item.deliveryLogId}`
+          `company/${transfer.company.id}/transactionLog/${item.deliveryLogId}`,
         );
       batch.update(delLogItemRef, {
         invoiceQty: FieldValue.increment(-+item.returnQty),
@@ -2674,7 +2715,7 @@ interface SiteMovementData {
 const addSiteMovement = async (
   companyId: string,
   movementData: SiteMovementData,
-  batch: admin.firestore.WriteBatch
+  batch: admin.firestore.WriteBatch,
 ) => {
   const movementRef = admin
     .firestore()
@@ -2767,7 +2808,7 @@ const addLog = (
   siteName: string,
   customerName: string,
   qty: number,
-  type: string
+  type: string,
 ) => {
   // Create a new document reference with auto-generated ID
   const itemRef = admin
