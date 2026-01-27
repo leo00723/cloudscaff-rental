@@ -4209,7 +4209,7 @@ export class PdfService {
           'Return Note',
           returnDoc.code,
           returnDoc.site.name,
-          returnDoc.date,
+          returnDoc?.returnDate,
           company.logoUrl.length > 0
             ? company.logoUrl
             : 'assets/icon/default.webp',
