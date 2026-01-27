@@ -3884,6 +3884,30 @@ export class PdfService {
     company: Company,
   ) {
     const items = [];
+    const blankCell = (alignment = 'left') => ({
+      text: '',
+      style: 'h4b',
+      alignment,
+      margin: [0, 8, 0, 8],
+    });
+    const blankRow = () => [
+      blankCell('left'),
+      blankCell('left'),
+      blankCell('left'),
+      blankCell('left'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+      blankCell('center'),
+    ];
     inventory.forEach((item) => {
       items.push([
         { text: item.code, style: 'h4b', alignment: 'left' },
@@ -3908,6 +3932,7 @@ export class PdfService {
         { text: '', style: 'h4b', alignment: 'center' },
       ]);
     });
+    items.push(blankRow(), blankRow());
     const summary = {
       table: {
         // headers are automatically repeated if the table spans over multiple pages
@@ -3942,7 +3967,7 @@ export class PdfService {
             },
             { text: 'Name', style: 'h4b', alignment: 'left' },
             { text: 'Location', style: 'h4b', alignment: 'left' },
-            { text: 'Avail Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Site Avail Qty', style: 'h4b', alignment: 'center' },
             { text: '', style: 'h4b', alignment: 'center' },
             { text: '', style: 'h4b', alignment: 'center' },
             { text: '', style: 'h4b', alignment: 'center' },
