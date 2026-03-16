@@ -108,6 +108,26 @@ export class InvoiceComponent implements OnInit {
     );
   }
 
+  protected billingLabel(item: TransactionItem) {
+    if (item.minHireApplied) {
+      return 'Advance - Min hire applied';
+    }
+
+    if (item.isConsumable || item.isDamageCharge) {
+      return null;
+    }
+
+    if (item.billingMode === 'advance') {
+      return 'Advance';
+    }
+
+    if (item.billingMode === 'prorate') {
+      return 'Prorate';
+    }
+
+    return null;
+  }
+
   async downloadMixed(terms: Term = null, isDraft = true, qrCode = null) {
     const dataUrl = qrCode ? await this.saveAsImage(qrCode) : null;
 
@@ -307,7 +327,9 @@ export class InvoiceComponent implements OnInit {
       if (item.isDamageCharge) {
         item.days = 0;
         item.months = 0;
-        item.total = +(+item.invoiceQty * +item.hireRate).toFixed(2);
+        item.total = +(
+          +item.invoiceQty * +(item.sellingCost || item.hireRate || 0)
+        ).toFixed(2);
         this.invoice.subtotal += item.total;
         return;
       }
@@ -373,7 +395,8 @@ export class InvoiceComponent implements OnInit {
         this.invoice.items.forEach((item) => {
           // Handle damage charges as one-time costs
           if (item.isDamageCharge) {
-            this.invoice.subtotal += +item.invoiceQty * +item.hireRate;
+            this.invoice.subtotal +=
+              +item.invoiceQty * +(item.sellingCost || item.hireRate || 0);
             return;
           }
 

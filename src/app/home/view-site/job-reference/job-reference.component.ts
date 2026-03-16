@@ -191,6 +191,26 @@ export class JobReferenceComponent implements OnInit {
     this.calcTotal();
   }
 
+  protected billingLabel(item: TransactionItem) {
+    if (item.minHireApplied) {
+      return 'Advance - Min hire applied';
+    }
+
+    if (item.isConsumable || item.isDamageCharge) {
+      return null;
+    }
+
+    if (item.billingMode === 'advance') {
+      return 'Advance';
+    }
+
+    if (item.billingMode === 'prorate') {
+      return 'Prorate';
+    }
+
+    return null;
+  }
+
   createInvoice() {
     this.notificationSvc.presentAlertConfirm(async () => {
       try {
@@ -379,7 +399,9 @@ export class JobReferenceComponent implements OnInit {
       if (item.isDamageCharge) {
         item.days = 0;
         item.months = 0;
-        item.total = +(+item.invoiceQty * +item.hireRate).toFixed(2);
+        item.total = +(
+          +item.invoiceQty * +(item.sellingCost || item.hireRate || 0)
+        ).toFixed(2);
         this.jr.subtotal += item.total;
         return;
       }
@@ -403,13 +425,15 @@ export class JobReferenceComponent implements OnInit {
           ? new Date(item.invoiceEnd)
           : null;
 
+      const canUseBillingDateAsEnd = item.transactionType === 'Delivery';
+
       // If Firestore cleared invoiceEnd after an invoice, fall back to billing date.
-      if (!end && billingDate) {
+      if (!end && billingDate && canUseBillingDateAsEnd) {
         end = billingDate;
         item.invoiceEnd = Timestamp.fromDate(billingDate);
       }
 
-      if (billingDate && end && end < billingDate) {
+      if (billingDate && end && end < billingDate && canUseBillingDateAsEnd) {
         end = billingDate;
         item.invoiceEnd = Timestamp.fromDate(billingDate);
       }

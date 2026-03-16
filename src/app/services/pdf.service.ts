@@ -5973,7 +5973,7 @@ export class PdfService {
         alignment: 'center',
       },
       {
-        text: item.name,
+        text: this.getBillingDescription(item),
         style: 'h6',
       },
       {
@@ -6057,7 +6057,7 @@ export class PdfService {
         alignment: 'center',
       },
       {
-        text: item.name,
+        text: this.getBillingDescription(item),
         style: 'h6',
       },
       {
@@ -6242,6 +6242,22 @@ export class PdfService {
         alignment: 'center',
       },
     ];
+  }
+
+  private getBillingDescription(item: TransactionItem) {
+    if (item.minHireApplied) {
+      return `${item.name} (Advance - Min hire applied)`;
+    }
+
+    if (item.billingMode === 'advance') {
+      return `${item.name} (Advance)`;
+    }
+
+    if (item.billingMode === 'prorate') {
+      return `${item.name} (Prorate)`;
+    }
+
+    return item.name;
   }
 
   private createShipmentTable(shipmentItems: InventoryItem[]) {

@@ -35,4 +35,6 @@ export interface TransactionItem {
   isDamageCharge?: boolean;
   isConsumable?: boolean;
   sellingCost?: number;
+  billingMode?: 'advance' | 'prorate';
+  minHireApplied?: boolean;
 }

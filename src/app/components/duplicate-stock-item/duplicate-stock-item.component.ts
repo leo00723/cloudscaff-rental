@@ -55,34 +55,10 @@ export class DuplicateStockItemComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  get crossHireForms() {
-    return this.form.get('crossHire') as FormArray;
-  }
-  addCrossHire() {
-    const crossHire = this.masterSvc.fb().group({
-      company: ['', Validators.required],
-      qty: ['', [Validators.required, Validators.min(0)]],
-      date: ['', [Validators.required]],
-      notes: [''],
-    });
-    this.crossHireForms.push(crossHire);
-  }
-  deleteCrossHire(i: number) {
-    this.masterSvc.notification().presentAlertConfirm(() => {
-      this.crossHireForms.removeAt(i);
-      this.update();
-    });
-  }
-
   //update the totals for a category
   update() {
-    let crossHire = 0;
-    this.crossHireForms.controls.forEach((c) => {
-      crossHire += +c.get('qty').value;
-    });
     const yard = +this.field('yardQty').value;
-    this.field('crossHireQty').setValue(crossHire);
-    this.field('availableQty').setValue(crossHire + yard);
+    this.field('availableQty').setValue(yard);
   }
 
   close() {
@@ -110,9 +86,7 @@ export class DuplicateStockItemComponent implements OnInit {
       this.loading = true;
       try {
         const log = {
-          message: `${this.user.name} added ${
-            this.field('yardQty').value
-          } items to the yard.`,
+          message: `Added ${this.field('yardQty').value} items to Total Qty.`,
           user: this.user,
           date: new Date(),
           status: 'add',
@@ -147,7 +121,7 @@ export class DuplicateStockItemComponent implements OnInit {
         this.inventoryItem.categoryType ? this.inventoryItem.categoryType : '',
       ],
       category: [this.inventoryItem.category || ''],
-
+      location: [this.inventoryItem.location || ''],
       size: [this.inventoryItem.size ? this.inventoryItem.size : ''],
       name: [this.inventoryItem.name, Validators.required],
       hireCost: [
@@ -168,12 +142,12 @@ export class DuplicateStockItemComponent implements OnInit {
       ],
       availableQty: [0, [Validators.required, Validators.min(0)]],
       yardQty: [0, [Validators.required, Validators.min(0)]],
-      crossHireQty: [0, [Validators.min(0)]],
       inUseQty: [0, [Validators.required, Validators.min(0)]],
       inMaintenanceQty: [0, [Validators.min(0)]],
       damagedQty: [0, [Validators.min(0)]],
       lostQty: [0, [Validators.min(0)]],
-      crossHire: this.masterSvc.fb().array([]),
+      type: [this.inventoryItem?.type || ''],
+      supplier: [this.inventoryItem?.supplier || ''],
     });
   }
 }

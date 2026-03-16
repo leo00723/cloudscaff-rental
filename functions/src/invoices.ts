@@ -24,7 +24,10 @@ exports.invoiceCreated = functions.firestore
       });
 
       const newTransactions = mergeTransactionItems(
-        invoice.items.filter((item: any) => item.transactionType === 'Delivery')
+        invoice.items.filter(
+          (item: any) =>
+            item.transactionType === 'Delivery' && !item.isConsumable,
+        ),
       );
 
       newTransactions.forEach((item) => {
@@ -41,6 +44,8 @@ exports.invoiceCreated = functions.firestore
           invoiceEnd: null,
           transactionType: 'Delivery', // Preserve transaction type
           status: 'active',
+          billingMode: 'prorate',
+          minHireApplied: false,
         });
       });
 

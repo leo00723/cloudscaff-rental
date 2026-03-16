@@ -1688,6 +1688,8 @@ const deliveryTransaction = async (
         isConsumable: item.type === 'Consumable',
         sellingCost: item?.sellingCost || 0,
         type: item?.type || '',
+        billingMode: 'advance',
+        minHireApplied: false,
       }));
 
       // Batch the writes for better performance
@@ -1748,6 +1750,7 @@ const adjustmentTransaction = async (
         returnDate: FieldValue.serverTimestamp(),
         invoiceStart: item.invoiceStart,
         invoiceEnd: returnDate,
+        originalInvoiceEnd: item.invoiceEnd || null,
         hireRate: 0,
         jobReference: adjustmentDoc.jobReference,
         transactionType: 'Adjustment',
@@ -1777,7 +1780,7 @@ const adjustmentTransaction = async (
           balanceQty: FieldValue.increment(-+item.returnQty),
           adjustmentTotal: FieldValue.increment(+item.returnQty),
           returnQty: 0,
-          invoiceEnd: null,
+          invoiceEnd: item.originalInvoiceEnd || null,
           status: +item.balanceQty === 0 ? 'completed' : 'active',
         });
       });
@@ -1806,31 +1809,43 @@ const returnTransaction = async (
       const returnDate = toTimestamp(returnDoc.returnDate);
 
       // Create the items for the transaction log (regular items)
-      const regularItems = returnDoc.items.map((item: any) => ({
-        deliveryLogId: item.id,
-        itemId: item.itemId,
-        code: item.code,
-        category: item.category,
-        size: item.size,
-        name: item.name,
-        weight: +item.weight,
-        deliveredQty: +item.deliveredQty,
-        invoiceQty: +item.returnQty,
-        balanceQty: +item.balanceQty - +item.returnQty,
-        returnTotal: +item.returnTotal + +item.returnQty,
-        returnQty: +item.returnQty,
-        location: item?.location || '',
-        returnId: returnDoc.id,
-        returnCode: returnDoc.code,
-        returnDate: FieldValue.serverTimestamp(),
-        invoiceStart: item.invoiceStart,
-        invoiceEnd: returnDate,
-        hireRate: item.hireRate || 0,
-        jobReference: item.jobReference,
-        transactionType: 'Return',
-        siteId: returnDoc.site.id,
-        status: 'active',
-      }));
+      const regularItems = returnDoc.items.map((item: any) => {
+        const originalInvoiceEnd = item.invoiceEnd
+          ? toTimestamp(item.invoiceEnd)
+          : null;
+        const minHireApplied =
+          !!originalInvoiceEnd &&
+          originalInvoiceEnd.toMillis() > returnDate.toMillis();
+
+        return {
+          deliveryLogId: item.id,
+          itemId: item.itemId,
+          code: item.code,
+          category: item.category,
+          size: item.size,
+          name: item.name,
+          weight: +item.weight,
+          deliveredQty: +item.deliveredQty,
+          invoiceQty: +item.returnQty,
+          balanceQty: +item.balanceQty - +item.returnQty,
+          returnTotal: +item.returnTotal + +item.returnQty,
+          returnQty: +item.returnQty,
+          location: item?.location || '',
+          returnId: returnDoc.id,
+          returnCode: returnDoc.code,
+          returnDate: FieldValue.serverTimestamp(),
+          invoiceStart: item.invoiceStart,
+          invoiceEnd: minHireApplied ? originalInvoiceEnd : returnDate,
+          originalInvoiceEnd: item.invoiceEnd || null,
+          hireRate: item.hireRate || 0,
+          jobReference: item.jobReference,
+          transactionType: 'Return',
+          siteId: returnDoc.site.id,
+          status: 'active',
+          billingMode: minHireApplied ? 'advance' : 'prorate',
+          minHireApplied,
+        };
+      });
 
       // Create transaction log items for overage items
       const overageItems =
@@ -1885,12 +1900,15 @@ const returnTransaction = async (
           invoiceStart: returnDate,
           invoiceEnd: returnDate,
           hireRate: item.sellingCost || 0,
+          sellingCost: item.sellingCost || 0,
           jobReference: item.jobReference,
           transactionType: 'Damage',
           siteId: returnDoc.site.id,
           status: 'active',
           isDamageCharge: true,
           total: +(+item.damagedQty * (item.sellingCost || 0)).toFixed(2),
+          billingMode: 'prorate',
+          minHireApplied: false,
         }));
 
       // Combine both regular and overage items
@@ -1921,7 +1939,7 @@ const returnTransaction = async (
           balanceQty: FieldValue.increment(-+item.returnQty),
           returnTotal: FieldValue.increment(+item.returnQty),
           returnQty: 0,
-          invoiceEnd: null,
+          invoiceEnd: item.originalInvoiceEnd || null,
           status: +item.balanceQty === 0 ? 'completed' : 'active',
         });
       });
@@ -2643,6 +2661,8 @@ const transferDeliveryTransaction = async (transfer: any) => {
       transactionType: 'Delivery',
       siteId: transfer.toSite.id,
       status: 'active',
+      billingMode: 'prorate',
+      minHireApplied: false,
     }));
 
     // Batch the writes for better performance
@@ -2672,31 +2692,43 @@ const transferReturnTransaction = async (transfer: any) => {
   try {
     const transferDate = toTimestamp(transfer.transferDate);
     // Create the items for the transaction log
-    const items = transfer.items.map((item: any) => ({
-      deliveryLogId: item.id,
-      itemId: item.itemId,
-      code: item.code,
-      category: item.category,
-      size: item.size,
-      name: item.name,
-      weight: +item.weight,
-      deliveredQty: +item.deliveredQty,
-      invoiceQty: +item.returnQty,
-      balanceQty: +item.balanceQty - +item.returnQty,
-      returnTotal: +item.returnTotal + +item.returnQty,
-      returnQty: +item.returnQty,
-      location: item?.location || '',
-      returnId: transfer.id,
-      returnCode: transfer.code,
-      returnDate: transferDate,
-      invoiceStart: item.invoiceStart,
-      invoiceEnd: transferDate,
-      hireRate: item.hireRate || 0,
-      jobReference: transfer.fromJobReference,
-      transactionType: 'Return',
-      siteId: transfer.fromSite.id,
-      status: 'active',
-    }));
+    const items = transfer.items.map((item: any) => {
+      const originalInvoiceEnd = item.invoiceEnd
+        ? toTimestamp(item.invoiceEnd)
+        : null;
+      const minHireApplied =
+        !!originalInvoiceEnd &&
+        originalInvoiceEnd.toMillis() > transferDate.toMillis();
+
+      return {
+        deliveryLogId: item.id,
+        itemId: item.itemId,
+        code: item.code,
+        category: item.category,
+        size: item.size,
+        name: item.name,
+        weight: +item.weight,
+        deliveredQty: +item.deliveredQty,
+        invoiceQty: +item.returnQty,
+        balanceQty: +item.balanceQty - +item.returnQty,
+        returnTotal: +item.returnTotal + +item.returnQty,
+        returnQty: +item.returnQty,
+        location: item?.location || '',
+        returnId: transfer.id,
+        returnCode: transfer.code,
+        returnDate: transferDate,
+        invoiceStart: item.invoiceStart,
+        invoiceEnd: minHireApplied ? originalInvoiceEnd : transferDate,
+        originalInvoiceEnd: item.invoiceEnd || null,
+        hireRate: item.hireRate || 0,
+        jobReference: transfer.fromJobReference,
+        transactionType: 'Return',
+        siteId: transfer.fromSite.id,
+        status: 'active',
+        billingMode: minHireApplied ? 'advance' : 'prorate',
+        minHireApplied,
+      };
+    });
 
     // Batch the writes for better performance
     const batch = admin.firestore().batch();
@@ -2720,7 +2752,7 @@ const transferReturnTransaction = async (transfer: any) => {
         balanceQty: FieldValue.increment(-+item.returnQty),
         returnTotal: FieldValue.increment(+item.returnQty),
         returnQty: 0,
-        invoiceEnd: null,
+        invoiceEnd: item.originalInvoiceEnd || null,
         status: +item.balanceQty === 0 ? 'completed' : 'active',
       });
     });

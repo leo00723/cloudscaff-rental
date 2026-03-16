@@ -263,7 +263,12 @@
             <td>{{ transaction.code }}</td>
 
             <!-- Description -->
-            <td class="text-start">{{ transaction.name }}</td>
+            <td class="text-start">
+              {{ transaction.name }}
+              <div class="small text-muted" *ngIf="billingLabel(transaction)">
+                {{ billingLabel(transaction) }}
+              </div>
+            </td>
 
             <!-- Unit -->
             <td>EA</td>
@@ -357,7 +362,12 @@
             <td>{{ transaction.code }}</td>
 
             <!-- Description -->
-            <td class="text-start">{{ transaction.name }}</td>
+            <td class="text-start">
+              {{ transaction.name }}
+              <div class="small text-muted" *ngIf="billingLabel(transaction)">
+                {{ billingLabel(transaction) }}
+              </div>
+            </td>
 
             <!-- Unit -->
             <td>EA</td>
@@ -449,7 +459,12 @@
             <td>{{ transaction.code }}</td>
 
             <!-- Description -->
-            <td class="text-start">{{ transaction.name }}</td>
+            <td class="text-start">
+              {{ transaction.name }}
+              <div class="small text-muted" *ngIf="billingLabel(transaction)">
+                {{ billingLabel(transaction) }}
+              </div>
+            </td>
 
             <!-- Unit -->
             <td>EA</td>
@@ -516,7 +531,12 @@
             <td>{{ transaction.code }}</td>
 
             <!-- Description -->
-            <td class="text-start">{{ transaction.name }}</td>
+            <td class="text-start">
+              {{ transaction.name }}
+              <div class="small text-muted" *ngIf="billingLabel(transaction)">
+                {{ billingLabel(transaction) }}
+              </div>
+            </td>
 
             <!-- Unit -->
             <td>EA</td>
