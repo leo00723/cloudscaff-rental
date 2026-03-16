@@ -979,229 +979,88 @@ export class PdfService {
     terms: Term | null,
     isdraft?: boolean,
   ) {
-    const items = [];
-    invoice.estimate.items.forEach((item, i) => {
-      items.push(this.addSaleItem(i, company, item, false));
-    });
+    const items = invoice.estimate?.items || [];
+    const customer = invoice.estimate?.customer;
+    const invoiceTitle = isdraft ? 'INVOICE DRAFT' : 'INVOICE';
+    const invoiceCode = isdraft ? 'Invoice Draft' : invoice.code;
+    const content: any[] = [];
 
-    const summary = {
-      table: {
-        // headers are automatically repeated if the table spans over multiple pages
-        // you can declare how many rows should be treated as headers
-        headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', '*'],
+    content.push(
+      await this.getRentalInvoiceHeaderBlock(
+        invoiceTitle,
+        invoiceCode,
+        invoice,
+        company,
+      ),
+    );
+    content.push(this.getRentalInvoicePartyBlock(customer, company));
 
-        body: [
+    if (invoice.estimate?.scope?.trim()) {
+      content.push({
+        text: invoice.estimate.scope.trim(),
+        style: 'invoiceSmall',
+        margin: [0, 0, 0, 6],
+      });
+    }
+
+    if (items.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Invoice Items'));
+      content.push(
+        this.createInvoiceTable(
           [
-            { text: '#', style: 'h4b', alignment: 'left' },
-            {
-              text: 'Item Code',
-              style: 'h4b',
-              alignment: 'center',
-            },
-            {
-              text: 'Description',
-              style: 'h4b',
-              alignment: 'left',
-            },
-            { text: 'Unit', style: 'h4b', alignment: 'center' },
-            { text: 'Rate', style: 'h4b', alignment: 'center' },
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
             { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Rate', style: 'h4b', alignment: 'center' },
             { text: 'Total', style: 'h4b', alignment: 'right' },
           ],
-          ...items,
-        ],
-      },
-      layout: tLayout,
-    };
+          items.map((item) => this.addSaleInvoiceRow(company, item)),
+          ['auto', '*', 'auto', 'auto', 'auto'],
+        ),
+      );
+    }
+
+    content.push(
+      this.getRentalInvoiceTotalsBlock(
+        {
+          code: invoice.code,
+          subtotal: invoice.estimate?.subtotal || 0,
+          discount: invoice.estimate?.discount || 0,
+          creditTotal: 0,
+          tax: invoice.estimate?.tax || 0,
+          vat: invoice.estimate?.vat || 0,
+          total: invoice.estimate?.total || 0,
+        },
+        company,
+        customer,
+      ),
+    );
+
+    const uploads = await this.addUploads(invoice.estimate?.uploads || []);
+    content.push(...uploads);
+
+    if (terms?.terms?.trim()) {
+      content.push({
+        text: 'Terms & Conditions',
+        style: ['h4b', 'm20'],
+        pageBreak: 'before',
+      });
+      content.push({ text: terms.terms });
+    }
 
     const data = {
-      header: this.getPageNumbers(),
-      footer: await this.getFooter(),
+      footer: this.getRentalInvoiceFooter(),
       info: this.getMetaData(
-        `${company.name}-Invoice-${invoice.estimate.code}`,
+        `${company.name}-Invoice-${invoice.estimate?.code || invoice.code}`,
       ),
-      content: [
-        await this.getBillingHeader(
-          isdraft ? 'Invoice Draft' : 'Invoice',
-          isdraft ? 'Invoice Draft' : invoice.code,
-          invoice.estimate.siteName,
-          isdraft ? invoice.date : invoice.date,
-          company,
-          '',
-          [
-            [
-              { text: 'Job Reference', style: 'h6b' },
-              `${invoice.jobReference || 'N/A'}`,
-              '',
-              '',
-            ],
-          ],
-        ),
-        hr,
-        this.getCompanyInfo(invoice.estimate.customer, company),
-        hr,
-        { text: invoice.estimate.scope },
-        hr,
-        summary,
-        hr,
-        {
-          table: {
-            widths: ['*', '*', '*', '*'],
-
-            body: [
-              [
-                {
-                  text: 'Banking Details',
-                  style: ['h4b'],
-                  alignment: 'left',
-                },
-                '',
-                '',
-                {
-                  text: 'Total Amount',
-                  style: ['h4b'],
-                  alignment: 'right',
-                },
-              ],
-              [
-                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
-                { text: company.bankName, alignment: 'left' },
-                {
-                  text: 'Subtotal:',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.estimate.subtotal,
-                  )}`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-              ],
-              [
-                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
-                { text: company.name, alignment: 'left' },
-                {
-                  text: `Discount (${invoice.estimate.discountPercentage}%):`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `- ${company.currency.symbol} ${this.format(
-                    invoice.estimate.discount,
-                  )}`,
-                  alignment: 'right',
-                  style: 'h6b',
-                },
-              ],
-              [
-                { text: 'Account No:', style: 'h6b', alignment: 'left' },
-                { text: `${company.accountNum}`, alignment: 'left' },
-                {
-                  text: `Contract Total:`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.estimate.subtotal - invoice.estimate.discount,
-                  )}`,
-                  alignment: 'right',
-                  style: 'h6b',
-                },
-              ],
-              [
-                {
-                  text: company.branchCode ? 'Branch:' : '',
-                  style: 'h6b',
-                  alignment: 'left',
-                },
-                {
-                  text: company.branchCode ? company.branchCode : '',
-                  alignment: 'left',
-                },
-                {
-                  text:
-                    company.vat > 0
-                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
-                      : company.salesTax > 0
-                        ? `Tax (${company.salesTax}%):`
-                        : '',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text:
-                    company.vat > 0
-                      ? `${company.currency.symbol} ${this.format(
-                          invoice.estimate.vat,
-                        )}`
-                      : company.salesTax > 0
-                        ? `${company.currency.symbol} ${this.format(
-                            invoice.estimate.tax,
-                          )}`
-                        : '',
-
-                  alignment: 'right',
-                  style: ['h6b', 'mt5'],
-                },
-              ],
-              [
-                {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
-                  style: 'h6b',
-                  alignment: 'left',
-                },
-                {
-                  text: company.swiftCode ? company.swiftCode : '',
-                  alignment: 'left',
-                },
-                {
-                  text: 'Grand Total:',
-                  style: 'h3',
-                  alignment: 'right',
-                  margin: [0, 5],
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.estimate.total,
-                  )}`,
-                  style: 'h3',
-                  alignment: 'right',
-                  margin: [0, 5],
-                },
-              ],
-              // [
-              //   {
-              //     text: 'Grand Total in words:',
-              //     style: 'h4b',
-              //     alignment: 'right',
-              //     colSpan: 3,
-              //   },
-              //   '',
-              //   '',
-              //   {
-              //     text: this.numberToWords(invoice.estimate.total),
-              //     style: 'h4b',
-              //   },
-              // ],
-            ],
-          },
-          layout: 'noBorders',
-        },
-        await this.addUploads(invoice.estimate.uploads),
-        {
-          text: 'Terms & Conditions',
-          style: ['h4b', 'm20'],
-          pageBreak: 'before',
-        },
-        { text: terms ? terms.terms : '' },
-      ],
+      content,
       styles: stylesCS,
-      defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      defaultStyle: {
+        ...defaultCS,
+        lineHeight: 1.25,
+      },
+      pageOrientation: 'portrait',
+      pageMargins: [32, 28, 32, 46],
     };
     return this.generatePdf(data);
   }
@@ -1410,303 +1269,170 @@ export class PdfService {
     terms: Term | null,
     isdraft?: boolean,
   ) {
-    const items = [];
-    const consumableItems = [];
-    const damageItems = [];
+    const estimateSource = (invoice.estimate?.items || []).filter(
+      (item) => item.forInvoice,
+    );
+    const rentalItems = (invoice.items || []).filter(
+      (item) => !item.isDamageCharge && !item.isConsumable,
+    );
+    const consumableItems = (invoice.items || []).filter(
+      (item) => item.isConsumable,
+    );
+    const damageItems = (invoice.items || []).filter(
+      (item) => item.isDamageCharge,
+    );
+    const creditItems = invoice.creditItems || [];
+    const customer = invoice.estimate?.customer || invoice.site?.customer;
+    const invoiceTitle = isdraft ? 'INVOICE DRAFT' : 'INVOICE';
+    const invoiceCode = isdraft ? 'Invoice Draft' : invoice.code;
+    const content: any[] = [];
 
-    invoice.estimate.items
-      .filter((item) => item.forInvoice)
-      .forEach((item, i) => {
-        items.push(this.addRentalItemMixed(company, item));
+    content.push(
+      await this.getRentalInvoiceHeaderBlock(
+        invoiceTitle,
+        invoiceCode,
+        invoice,
+        company,
+      ),
+    );
+    content.push(this.getRentalInvoicePartyBlock(customer, company));
+
+    if (invoice.estimate?.scope?.trim()) {
+      content.push({
+        text: invoice.estimate.scope.trim(),
+        style: 'invoiceSmall',
+        margin: [0, 0, 0, 6],
       });
-
-    invoice.items.forEach((item) => {
-      // Separate items by type
-      if (item.isDamageCharge) {
-        damageItems.push(this.addDamageItem(company, item));
-      } else if (item.isConsumable) {
-        consumableItems.push(this.addConsumableItem(company, item));
-      } else {
-        items.push(this.addRentalItem(company, item, invoice.endDate));
-      }
-    });
-
-    // Define table headers based on customInvoice flag
-    const summaryTableHeaders = [
-      { text: 'Docket', style: 'h4b', alignment: 'left' },
-      { text: 'Item Code', style: 'h4b', alignment: 'center' },
-      { text: 'Description', style: 'h4b', alignment: 'left' },
-      { text: 'Unit', style: 'h4b', alignment: 'center' },
-      { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
-      { text: 'Delivered', style: 'h4b', alignment: 'center' },
-      { text: 'Returned', style: 'h4b', alignment: 'center' },
-      { text: 'Balance', style: 'h4b', alignment: 'center' },
-      { text: 'Start Date', style: 'h4b', alignment: 'center' },
-      { text: 'End Date', style: 'h4b', alignment: 'center' },
-      { text: 'Days', style: 'h4b', alignment: 'center' },
-      { text: 'Months', style: 'h4b', alignment: 'center' },
-      { text: 'Montly Rent Rate', style: 'h4b', alignment: 'center' },
-      { text: 'Total', style: 'h4b', alignment: 'right' },
-    ];
-
-    // Define the table body, filtering out the columns based on customInvoice flag
-
-    const summary = {
-      table: {
-        headerRows: 1,
-        widths: [
-          'auto',
-          'auto',
-          '*',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          'auto',
-          '*',
-          '*',
-        ],
-        body: [summaryTableHeaders, ...items],
-      },
-      layout: tLayout,
-    };
-
-    // Create consumables summary table if there are consumable items
-    let consumableSummary: any = null;
-    if (consumableItems.length > 0) {
-      const consumableHeaders = [
-        { text: 'Docket', style: 'h4b', alignment: 'left' },
-        { text: 'Item Code', style: 'h4b', alignment: 'center' },
-        { text: 'Description', style: 'h4b', alignment: 'left' },
-        { text: 'Unit', style: 'h4b', alignment: 'center' },
-        { text: 'Qty', style: 'h4b', alignment: 'center' },
-        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
-        { text: 'Total', style: 'h4b', alignment: 'right' },
-      ];
-      consumableSummary = {
-        table: {
-          headerRows: 1,
-          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
-          body: [consumableHeaders, ...consumableItems],
-        },
-        layout: tLayout,
-      };
     }
 
-    // Create damages summary table if there are damage items
-    let damageSummary: any = null;
+    if (estimateSource.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Contract Items'));
+      content.push(
+        this.createInvoiceTable(
+          [
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Duration', style: 'h4b', alignment: 'center' },
+            { text: 'Rate', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          estimateSource.map((item) =>
+            this.addEstimateInvoiceRow(company, item),
+          ),
+          ['auto', '*', 'auto', 'auto', 'auto', 'auto'],
+        ),
+      );
+    }
+
+    if (rentalItems.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Rental Items'));
+      content.push(
+        this.createInvoiceTable(
+          [
+            { text: 'Docket', style: 'h4b', alignment: 'left' },
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Hire Period', style: 'h4b', alignment: 'center' },
+            { text: 'Details', style: 'h4b', alignment: 'center' },
+            { text: 'Rate', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          rentalItems.map((item) =>
+            this.addRentalInvoiceRow(company, item, false),
+          ),
+          ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+        ),
+      );
+    }
+
+    if (consumableItems.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Consumables'));
+      content.push(
+        this.createInvoiceTable(
+          [
+            { text: 'Docket', style: 'h4b', alignment: 'left' },
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          consumableItems.map((item) =>
+            this.addConsumableInvoiceRow(company, item, false),
+          ),
+          ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+        ),
+      );
+    }
+
     if (damageItems.length > 0) {
-      const damageHeaders = [
-        { text: 'Docket', style: 'h4b', alignment: 'left' },
-        { text: 'Item Code', style: 'h4b', alignment: 'center' },
-        { text: 'Description', style: 'h4b', alignment: 'left' },
-        { text: 'Unit', style: 'h4b', alignment: 'center' },
-        { text: 'Qty', style: 'h4b', alignment: 'center' },
-        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
-        { text: 'Total', style: 'h4b', alignment: 'right' },
-      ];
-      damageSummary = {
-        table: {
-          headerRows: 1,
-          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
-          body: [damageHeaders, ...damageItems],
-        },
-        layout: tLayout,
-      };
+      content.push(this.getInvoiceSectionHeader('Damage Charges'));
+      content.push(
+        this.createInvoiceTable(
+          [
+            { text: 'Docket', style: 'h4b', alignment: 'left' },
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          damageItems.map((item) =>
+            this.addDamageInvoiceRow(company, item, false),
+          ),
+          ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+        ),
+      );
+    }
+
+    if (creditItems.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Credit Items'));
+      content.push(
+        this.createInvoiceTable(
+          [
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
+          ],
+          creditItems.map((item) => [
+            { text: item.description, style: 'h6' },
+            {
+              text: `-${this.currency(item.total, company.currency?.symbol || '')}`,
+              style: 'h6',
+              alignment: 'right',
+            },
+          ]),
+          ['*', 'auto'],
+        ),
+      );
+    }
+
+    content.push(this.getRentalInvoiceTotalsBlock(invoice, company, customer));
+
+    const uploads = await this.addUploads(invoice.estimate?.uploads || []);
+    content.push(...uploads);
+
+    if (terms?.terms?.trim()) {
+      content.push({
+        text: 'Terms & Conditions',
+        style: ['h4b', 'm20'],
+        pageBreak: 'before',
+      });
+      content.push({ text: terms.terms });
     }
 
     const data = {
-      header: this.getPageNumbers(),
-      footer: await this.getFooter(),
+      footer: this.getRentalInvoiceFooter(),
       info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
-      content: [
-        await this.getBillingHeader(
-          isdraft ? 'Invoice Draft' : 'Invoice',
-          isdraft ? 'Invoice Draft' : invoice.code,
-          invoice.site.name,
-          isdraft ? invoice.date : invoice.date,
-          company,
-          '',
-          [
-            ['', '', '', ''],
-            [
-              { text: 'Job Reference', style: 'h6b' },
-              `${invoice?.jobReference || 'N/A'}`,
-              '',
-              '',
-            ],
-          ],
-        ),
-        hr,
-        this.getCompanyInfo(invoice.estimate.customer, company),
-        hr,
-        { text: 'Invoice Items', style: 'h4b', pageBreak: 'before' },
-        items.length > 0 ? [summary, hr] : [],
-        consumableSummary
-          ? [{ text: 'Consumables', style: 'h4b' }, consumableSummary, hr]
-          : [],
-        damageSummary
-          ? [{ text: 'Damage Charges', style: 'h4b' }, damageSummary, hr]
-          : [],
-        {
-          table: {
-            widths: ['*', '*', '*', '*'],
-
-            body: [
-              [
-                {
-                  text: 'Banking Details',
-                  style: ['h4b'],
-                  alignment: 'left',
-                },
-                '',
-                '',
-                {
-                  text: 'Total Amount',
-                  style: ['h4b'],
-                  alignment: 'right',
-                },
-              ],
-
-              [
-                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
-                { text: company.bankName, alignment: 'left' },
-                {
-                  text: 'Subtotal:',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal,
-                  )}`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-              ],
-              [
-                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
-                { text: company.name, alignment: 'left' },
-                {
-                  text: `Discount:`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `- ${company.currency.symbol} ${this.format(
-                    invoice.discount,
-                  )}`,
-                  alignment: 'right',
-                  style: 'h6b',
-                },
-              ],
-              [
-                { text: 'Account No:', style: 'h6b', alignment: 'left' },
-                { text: `${company.accountNum}`, alignment: 'left' },
-                {
-                  text: `Contract Total:`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal - invoice.discount - invoice.creditTotal,
-                  )}`,
-                  alignment: 'right',
-                  style: 'h6b',
-                },
-              ],
-              [
-                {
-                  text: company.branchCode ? 'Branch:' : '',
-                  style: 'h6b',
-                  alignment: 'left',
-                },
-                {
-                  text: company.branchCode ? company.branchCode : '',
-                  alignment: 'left',
-                },
-                {
-                  text:
-                    company.vat > 0
-                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
-                      : company.salesTax > 0
-                        ? `Tax (${company.salesTax}%):`
-                        : '',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text:
-                    company.vat > 0
-                      ? `${company.currency.symbol} ${this.format(invoice.vat)}`
-                      : company.salesTax > 0
-                        ? `${company.currency.symbol} ${this.format(invoice.tax)}`
-                        : '',
-
-                  alignment: 'right',
-                  style: ['h6b', 'mt5'],
-                },
-              ],
-              [
-                {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
-                  style: 'h6b',
-                  alignment: 'left',
-                },
-                {
-                  text: company.swiftCode ? company.swiftCode : '',
-                  alignment: 'left',
-                },
-                {
-                  text: 'Grand Total:',
-                  style: 'h3',
-                  alignment: 'right',
-                  margin: [0, 5],
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.total,
-                  )}`,
-                  style: 'h3',
-                  alignment: 'right',
-                  margin: [0, 5],
-                },
-              ],
-              // [
-              //   {
-              //     text: 'Grand Total in words:',
-              //     style: 'h4b',
-              //     alignment: 'right',
-              //     colSpan: 3,
-              //   },
-              //   '',
-              //   '',
-              //   {
-              //     text: this.numberToWords(invoice.total),
-              //     style: 'h4b',
-              //   },
-              // ],
-            ],
-          },
-          margin: [0, 10, 0, 0],
-          layout: 'noBorders',
-        },
-        await this.addUploads(invoice.estimate.uploads || []),
-        {
-          text: 'Terms & Conditions',
-          style: ['h4b', 'm20'],
-          pageBreak: 'before',
-        },
-        { text: terms ? terms.terms : '' },
-      ],
+      content,
       styles: stylesCS,
-      defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      defaultStyle: {
+        ...defaultCS,
+        lineHeight: 1.25,
+      },
+      pageOrientation: 'portrait',
+      pageMargins: [32, 28, 32, 46],
     };
     return this.generatePdf(data);
   }
@@ -1718,10 +1444,6 @@ export class PdfService {
     terms: Term | null,
     isdraft?: boolean,
   ) {
-    const estimateItems = [];
-    const items = [];
-    const consumableItems = [];
-    const damageItems = [];
     const mergedItems: TransactionItem[] = [];
     const consumableMergedItems: TransactionItem[] = [];
     const damageMergedItems: TransactionItem[] = [];
@@ -1758,449 +1480,191 @@ export class PdfService {
       }
     });
 
-    if (!invoice.customInvoice) {
-      // If customInvoice is false, include all items
-      invoice.estimate.items.forEach((item, i) => {
-        estimateItems.push(this.addEstimateItem(i, company, item));
-      });
+    const estimateSource = invoice.customInvoice
+      ? (invoice.estimate?.items || []).filter((item) => item.forInvoice)
+      : invoice.estimate?.items || [];
+    const creditItems = invoice.creditItems || [];
+    const customer = invoice.estimate?.customer || invoice.site?.customer;
+    const invoiceTitle = isdraft ? 'INVOICE DRAFT' : 'INVOICE';
+    const invoiceCode = isdraft ? 'Invoice Draft' : invoice.code;
+    const content: any[] = [];
 
-      mergedItems.forEach((item) => {
-        items.push(this.addRentalItem(company, item, invoice.endDate));
-      });
+    content.push(
+      await this.getRentalInvoiceHeaderBlock(
+        invoiceTitle,
+        invoiceCode,
+        invoice,
+        company,
+      ),
+    );
+    content.push(this.getRentalInvoicePartyBlock(customer, company));
 
-      consumableMergedItems.forEach((item) => {
-        consumableItems.push(this.addConsumableItem(company, item));
-      });
-
-      damageMergedItems.forEach((item) => {
-        damageItems.push(this.addDamageItem(company, item));
-      });
-    } else {
-      // If customInvoice is true, filter out items without the forInvoice flag
-      invoice.estimate.items
-        .filter((item) => item.forInvoice)
-        .forEach((item, i) => {
-          estimateItems.push(this.addEstimateItem(i, company, item));
-        });
-
-      mergedItems.forEach((item) => {
-        items.push(this.addRentalItemCustom(item, invoice.endDate));
-      });
-
-      consumableMergedItems.forEach((item) => {
-        consumableItems.push(this.addConsumableItemCustom(item));
-      });
-
-      damageMergedItems.forEach((item) => {
-        damageItems.push(this.addDamageItemCustom(item));
+    if (invoice.estimate?.scope?.trim()) {
+      content.push({
+        text: invoice.estimate.scope.trim(),
+        style: 'invoiceSmall',
+        margin: [0, 0, 0, 6],
       });
     }
-    const estimateSummary = {
-      table: {
-        // headers are automatically repeated if the table spans over multiple pages
-        // you can declare how many rows should be treated as headers
-        headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
 
-        body: [
+    if (invoice.type !== 'Rental' && estimateSource.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Contract Items'));
+      content.push(
+        this.createInvoiceTable(
           [
-            { text: '#', style: 'h4b', alignment: 'left' },
-            {
-              text: 'Item Code',
-              style: 'h4b',
-              alignment: 'center',
-            },
-            {
-              text: 'Description',
-              style: 'h4b',
-              alignment: 'left',
-            },
-            { text: 'Unit', style: 'h4b', alignment: 'center' },
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
             { text: 'Qty', style: 'h4b', alignment: 'center' },
-            { text: 'Duration / Months', style: 'h4b', alignment: 'center' },
-            { text: 'Rent / Months', style: 'h4b', alignment: 'center' },
+            { text: 'Duration', style: 'h4b', alignment: 'center' },
+            { text: 'Rate', style: 'h4b', alignment: 'center' },
             { text: 'Total', style: 'h4b', alignment: 'right' },
           ],
-          ...estimateItems,
-        ],
-      },
-      layout: tLayout,
-    };
-
-    // Define table headers based on customInvoice flag
-    const summaryTableHeaders = invoice.customInvoice
-      ? [
-          { text: 'Docket', style: 'h4b', alignment: 'left' },
-          { text: 'Item Code', style: 'h4b', alignment: 'center' },
-          { text: 'Description', style: 'h4b', alignment: 'left' },
-          { text: 'Unit', style: 'h4b', alignment: 'center' },
-          { text: 'Delivered', style: 'h4b', alignment: 'center' },
-          { text: 'Returned', style: 'h4b', alignment: 'center' },
-          { text: 'Balance', style: 'h4b', alignment: 'center' },
-          { text: 'Start Date', style: 'h4b', alignment: 'center' },
-          { text: 'End Date', style: 'h4b', alignment: 'center' },
-          { text: 'Days', style: 'h4b', alignment: 'center' },
-          { text: 'Months', style: 'h4b', alignment: 'center' },
-        ]
-      : [
-          { text: 'Docket', style: 'h4b', alignment: 'left' },
-          { text: 'Item Code', style: 'h4b', alignment: 'center' },
-          { text: 'Description', style: 'h4b', alignment: 'left' },
-          { text: 'Unit', style: 'h4b', alignment: 'center' },
-          { text: 'Invoice Qty', style: 'h4b', alignment: 'center' },
-          { text: 'Delivered', style: 'h4b', alignment: 'center' },
-          { text: 'Returned', style: 'h4b', alignment: 'center' },
-          { text: 'Balance', style: 'h4b', alignment: 'center' },
-          { text: 'Start Date', style: 'h4b', alignment: 'center' },
-          { text: 'End Date', style: 'h4b', alignment: 'center' },
-          { text: 'Days', style: 'h4b', alignment: 'center' },
-          { text: 'Months', style: 'h4b', alignment: 'center' },
-          { text: 'Monthly Rent Rate', style: 'h4b', alignment: 'center' },
-          { text: 'Total', style: 'h4b', alignment: 'right' },
-        ];
-
-    // Define the table body, filtering out the columns based on customInvoice flag
-
-    const summary = {
-      table: {
-        headerRows: 1,
-        widths: invoice.customInvoice
-          ? [
-              'auto',
-              'auto',
-              '*',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-            ]
-          : [
-              'auto',
-              'auto',
-              '*',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              'auto',
-              '*',
-              'auto',
-            ],
-        body: [summaryTableHeaders, ...items],
-      },
-      layout: tLayout,
-    };
-
-    // Create consumables summary table if there are consumable items
-    let consumableSummary: any = null;
-    if (consumableItems.length > 0) {
-      const consumableHeaders = [
-        { text: 'Docket', style: 'h4b', alignment: 'left' },
-        { text: 'Item Code', style: 'h4b', alignment: 'center' },
-        { text: 'Description', style: 'h4b', alignment: 'left' },
-        { text: 'Unit', style: 'h4b', alignment: 'center' },
-        { text: 'Qty', style: 'h4b', alignment: 'center' },
-        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
-        { text: 'Total', style: 'h4b', alignment: 'right' },
-      ];
-      consumableSummary = {
-        table: {
-          headerRows: 1,
-          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
-          body: [consumableHeaders, ...consumableItems],
-        },
-        layout: tLayout,
-      };
+          estimateSource.map((item) =>
+            this.addEstimateInvoiceRow(company, item),
+          ),
+          ['auto', '*', 'auto', 'auto', 'auto', 'auto'],
+        ),
+      );
     }
 
-    // Create damages summary table if there are damage items
-    let damageSummary: any = null;
-    if (damageItems.length > 0) {
-      const damageHeaders = [
-        { text: 'Docket', style: 'h4b', alignment: 'left' },
-        { text: 'Item Code', style: 'h4b', alignment: 'center' },
-        { text: 'Description', style: 'h4b', alignment: 'left' },
-        { text: 'Unit', style: 'h4b', alignment: 'center' },
-        { text: 'Qty', style: 'h4b', alignment: 'center' },
-        { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
-        { text: 'Total', style: 'h4b', alignment: 'right' },
-      ];
-      damageSummary = {
-        table: {
-          headerRows: 1,
-          widths: ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
-          body: [damageHeaders, ...damageItems],
-        },
-        layout: tLayout,
-      };
+    if (mergedItems.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Rental Items'));
+      content.push(
+        this.createInvoiceTable(
+          invoice.customInvoice
+            ? [
+                { text: 'Docket', style: 'h4b', alignment: 'left' },
+                { text: 'Item', style: 'h4b', alignment: 'left' },
+                { text: 'Description', style: 'h4b', alignment: 'left' },
+                { text: 'Delivered', style: 'h4b', alignment: 'center' },
+                { text: 'Returned', style: 'h4b', alignment: 'center' },
+                { text: 'Balance', style: 'h4b', alignment: 'center' },
+                { text: 'Hire Period', style: 'h4b', alignment: 'center' },
+              ]
+            : [
+                { text: 'Docket', style: 'h4b', alignment: 'left' },
+                { text: 'Item', style: 'h4b', alignment: 'left' },
+                { text: 'Description', style: 'h4b', alignment: 'left' },
+                { text: 'Qty', style: 'h4b', alignment: 'center' },
+                { text: 'Hire Period', style: 'h4b', alignment: 'center' },
+                { text: 'Details', style: 'h4b', alignment: 'center' },
+                { text: 'Rate', style: 'h4b', alignment: 'center' },
+                { text: 'Total', style: 'h4b', alignment: 'right' },
+              ],
+          mergedItems.map((item) =>
+            this.addRentalInvoiceRow(company, item, invoice.customInvoice),
+          ),
+          invoice.customInvoice
+            ? ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto']
+            : ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+        ),
+      );
     }
 
-    const credit = [];
-    invoice.creditItems.forEach((item, i) => {
-      credit.push([
-        {
-          text: i + 1,
-          style: 'h6',
-          alignment: 'center',
-        },
-        {
-          text: item.description,
-          style: 'h6',
-          alignment: 'left',
-        },
-        {
-          text: `-${company.currency.symbol} ${this.format(item.total)}`,
-          style: 'h6',
-          alignment: 'right',
-        },
-      ]);
-    });
+    if (consumableMergedItems.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Consumables'));
+      content.push(
+        this.createInvoiceTable(
+          invoice.customInvoice
+            ? [
+                { text: 'Docket', style: 'h4b', alignment: 'left' },
+                { text: 'Item', style: 'h4b', alignment: 'left' },
+                { text: 'Description', style: 'h4b', alignment: 'left' },
+                { text: 'Unit', style: 'h4b', alignment: 'center' },
+              ]
+            : [
+                { text: 'Docket', style: 'h4b', alignment: 'left' },
+                { text: 'Item', style: 'h4b', alignment: 'left' },
+                { text: 'Description', style: 'h4b', alignment: 'left' },
+                { text: 'Qty', style: 'h4b', alignment: 'center' },
+                { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+                { text: 'Total', style: 'h4b', alignment: 'right' },
+              ],
+          consumableMergedItems.map((item) =>
+            this.addConsumableInvoiceRow(company, item, invoice.customInvoice),
+          ),
+          invoice.customInvoice
+            ? ['auto', 'auto', '*', 'auto']
+            : ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+        ),
+      );
+    }
 
-    const creditSummary = {
-      table: {
-        // headers are automatically repeated if the table spans over multiple pages
-        // you can declare how many rows should be treated as headers
-        headerRows: 1,
-        widths: ['auto', '*', '*'],
+    if (damageMergedItems.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Damage Charges'));
+      content.push(
+        this.createInvoiceTable(
+          invoice.customInvoice
+            ? [
+                { text: 'Docket', style: 'h4b', alignment: 'left' },
+                { text: 'Item', style: 'h4b', alignment: 'left' },
+                { text: 'Description', style: 'h4b', alignment: 'left' },
+                { text: 'Unit', style: 'h4b', alignment: 'center' },
+              ]
+            : [
+                { text: 'Docket', style: 'h4b', alignment: 'left' },
+                { text: 'Item', style: 'h4b', alignment: 'left' },
+                { text: 'Description', style: 'h4b', alignment: 'left' },
+                { text: 'Qty', style: 'h4b', alignment: 'center' },
+                { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
+                { text: 'Total', style: 'h4b', alignment: 'right' },
+              ],
+          damageMergedItems.map((item) =>
+            this.addDamageInvoiceRow(company, item, invoice.customInvoice),
+          ),
+          invoice.customInvoice
+            ? ['auto', 'auto', '*', 'auto']
+            : ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
+        ),
+      );
+    }
 
-        body: [
+    if (creditItems.length > 0) {
+      content.push(this.getInvoiceSectionHeader('Credit Items'));
+      content.push(
+        this.createInvoiceTable(
           [
-            { text: '#', style: 'h4b', alignment: 'center' },
-            {
-              text: 'Description',
-              style: 'h4b',
-              alignment: 'center',
-            },
-            {
-              text: 'Total',
-              style: 'h4b',
-              alignment: 'left',
-            },
+            { text: 'Description', style: 'h4b', alignment: 'left' },
+            { text: 'Total', style: 'h4b', alignment: 'right' },
           ],
-          ...credit,
-        ],
-      },
-      layout: tLayout,
-    };
+          creditItems.map((item) => [
+            { text: item.description, style: 'h6' },
+            {
+              text: `-${this.currency(item.total, company.currency?.symbol || '')}`,
+              style: 'h6',
+              alignment: 'right',
+            },
+          ]),
+          ['*', 'auto'],
+        ),
+      );
+    }
+
+    content.push(this.getRentalInvoiceTotalsBlock(invoice, company, customer));
+
+    const uploads = await this.addUploads(invoice.estimate?.uploads || []);
+    content.push(...uploads);
+
+    if (terms?.terms?.trim()) {
+      content.push({
+        text: 'Terms & Conditions',
+        style: ['h4b', 'm20'],
+        pageBreak: 'before',
+      });
+      content.push({ text: terms.terms });
+    }
 
     const data = {
-      header: this.getPageNumbers(),
-      footer: await this.getFooter(),
+      footer: this.getRentalInvoiceFooter(),
       info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
-      content: [
-        await this.getBillingHeader(
-          isdraft ? 'Invoice Draft' : 'Invoice',
-          isdraft ? 'Invoice Draft' : invoice.code,
-          invoice.site.name,
-          isdraft ? invoice.date : invoice.date,
-          company,
-          '',
-          [
-            ['', '', '', ''],
-            [
-              { text: 'Job Reference', style: 'h6b' },
-              `${invoice?.jobReference || 'N/A'}`,
-              '',
-              '',
-            ],
-          ],
-        ),
-        hr,
-        this.getCompanyInfo(invoice.estimate.customer, company),
-        hr,
-        { text: invoice.estimate.scope },
-
-        invoice.type !== 'Rental' ? [hr, estimateSummary] : [],
-        hr,
-        items.length > 0
-          ? [{ text: 'Rental Items', style: 'h4b' }, summary, hr]
-          : [],
-        consumableSummary
-          ? [{ text: 'Consumables', style: 'h4b' }, consumableSummary, hr]
-          : [],
-        damageSummary
-          ? [{ text: 'Damage Charges', style: 'h4b' }, damageSummary, hr]
-          : [],
-        credit.length > 0
-          ? [{ text: 'Credit Items', style: 'h4b' }, creditSummary, hr]
-          : [],
-        {
-          table: {
-            widths: ['*', '*', '*', '*'],
-
-            body: [
-              [
-                {
-                  text: 'Banking Details',
-                  style: ['h4b'],
-                  alignment: 'left',
-                },
-                '',
-                '',
-                {
-                  text: 'Total Amount',
-                  style: ['h4b'],
-                  alignment: 'right',
-                },
-              ],
-              [
-                '',
-                '',
-                {
-                  text: 'Subtotal:',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal,
-                  )}`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-              ],
-              [
-                { text: 'Bank Name:', style: 'h6b', alignment: 'left' },
-                { text: company.bankName, alignment: 'left' },
-                {
-                  text: 'Credit:',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `-${company.currency.symbol} ${this.format(
-                    invoice.creditTotal,
-                  )}`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-              ],
-              [
-                { text: 'Beneficiary:', style: 'h6b', alignment: 'left' },
-                { text: company.name, alignment: 'left' },
-                {
-                  text: `Discount:`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `- ${company.currency.symbol} ${this.format(
-                    invoice.discount,
-                  )}`,
-                  alignment: 'right',
-                  style: 'h6b',
-                },
-              ],
-              [
-                { text: 'Account No:', style: 'h6b', alignment: 'left' },
-                { text: `${company.accountNum}`, alignment: 'left' },
-                {
-                  text: `Contract Total:`,
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.subtotal - invoice.discount - invoice.creditTotal,
-                  )}`,
-                  alignment: 'right',
-                  style: 'h6b',
-                },
-              ],
-              [
-                {
-                  text: company.branchCode ? 'Branch:' : '',
-                  style: 'h6b',
-                  alignment: 'left',
-                },
-                {
-                  text: company.branchCode ? company.branchCode : '',
-                  alignment: 'left',
-                },
-                {
-                  text:
-                    company.vat > 0
-                      ? `${company?.gst ? 'GST' : 'VAT'} (${company.vat}%):`
-                      : company.salesTax > 0
-                        ? `Tax (${company.salesTax}%):`
-                        : '',
-                  style: 'h6b',
-                  alignment: 'right',
-                },
-                {
-                  text:
-                    company.vat > 0
-                      ? `${company.currency.symbol} ${this.format(invoice.vat)}`
-                      : company.salesTax > 0
-                        ? `${company.currency.symbol} ${this.format(invoice.tax)}`
-                        : '',
-
-                  alignment: 'right',
-                  style: ['h6b', 'mt5'],
-                },
-              ],
-              [
-                {
-                  text: company.swiftCode ? 'SWIFT / BIC Code:' : '',
-                  style: 'h6b',
-                  alignment: 'left',
-                },
-                {
-                  text: company.swiftCode ? company.swiftCode : '',
-                  alignment: 'left',
-                },
-                {
-                  text: 'Grand Total:',
-                  style: 'h3',
-                  alignment: 'right',
-                  margin: [0, 5],
-                },
-                {
-                  text: `${company.currency.symbol} ${this.format(
-                    invoice.total,
-                  )}`,
-                  style: 'h3',
-                  alignment: 'right',
-                  margin: [0, 5],
-                },
-              ],
-              // [
-              //   {
-              //     text: 'Grand Total in words:',
-              //     style: 'h4b',
-              //     alignment: 'right',
-              //     colSpan: 3,
-              //   },
-              //   '',
-              //   '',
-              //   {
-              //     text: this.numberToWords(invoice.total),
-              //     style: 'h4b',
-              //   },
-              // ],
-            ],
-          },
-          layout: 'noBorders',
-        },
-        await this.addUploads(invoice.estimate.uploads || []),
-        {
-          text: 'Terms & Conditions',
-          style: ['h4b', 'm20'],
-          pageBreak: 'before',
-        },
-        { text: terms ? terms.terms : '' },
-      ],
+      content,
       styles: stylesCS,
-      defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      defaultStyle: {
+        ...defaultCS,
+        lineHeight: 1.25,
+      },
+      pageOrientation: 'portrait',
+      pageMargins: [32, 28, 32, 46],
     };
     return this.generatePdf(data);
   }
@@ -5555,10 +5019,15 @@ export class PdfService {
   private async getRentalInvoiceHeaderBlock(
     title: string,
     code: string,
-    invoice: TransactionInvoice,
+    invoice: TransactionInvoice | SaleInvoice,
     company: Company,
   ) {
-    const siteName = invoice.site?.name || invoice.site?.code;
+    const transactionInvoice = invoice as TransactionInvoice;
+    const saleInvoice = invoice as SaleInvoice;
+    const siteName =
+      transactionInvoice.site?.name ||
+      transactionInvoice.site?.code ||
+      saleInvoice.estimate?.siteName;
     const detailRows: any[] = [
       [
         { text: 'Invoice No', style: 'invoiceLabel' },
@@ -5849,6 +5318,38 @@ export class PdfService {
       layout: invoiceTableLayout,
       margin: [0, 0, 0, 10],
     };
+  }
+
+  private addSaleInvoiceRow(company: Company, item: any) {
+    const qty = item.sellQty ?? item.qty ?? 0;
+    const rate = item.sellingCost || 0;
+    const total = item.totalCost ?? item.total ?? +(qty * rate).toFixed(2);
+
+    return [
+      {
+        text: item.code || 'N/A',
+        style: 'h6',
+      },
+      {
+        text: item.name || item.description || 'N/A',
+        style: 'h6',
+      },
+      {
+        text: qty,
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: this.currency(rate, company.currency?.symbol || ''),
+        style: 'h6',
+        alignment: 'center',
+      },
+      {
+        text: this.currency(total, company.currency?.symbol || ''),
+        style: 'h6',
+        alignment: 'right',
+      },
+    ];
   }
 
   private addEstimateInvoiceRow(company: Company, item: any) {
