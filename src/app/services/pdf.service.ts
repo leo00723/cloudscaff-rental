@@ -4343,6 +4343,48 @@ export class PdfService {
     terms: Term | null,
   ) {
     const summary = this.createTransactionReturnTable(returnDoc.items);
+    const damageItems =
+      returnDoc.items?.filter((item) => (item.damagedQty || 0) > 0) || [];
+
+    const damageSection =
+      damageItems.length > 0
+        ? [
+            hr,
+            {
+              text: 'Damaged Items',
+              style: 'h2',
+              alignment: 'left',
+              margin: [0, 10, 0, 5],
+            },
+            {
+              table: {
+                headerRows: 1,
+                widths: ['auto', '*', 'auto'],
+                body: [
+                  [
+                    { text: 'Code', style: 'h5b' },
+                    { text: 'Name', style: 'h5b' },
+                    { text: 'Damaged Qty', style: 'h5b', alignment: 'right' },
+                  ],
+                  ...damageItems.map((item) => {
+                    const qty = +(item.damagedQty || 0);
+                    return [
+                      { text: item.code || 'N/A', style: 'h6' },
+                      { text: item.name || 'N/A', style: 'h6' },
+                      {
+                        text: this.decimalPipe.transform(qty),
+                        style: 'h6',
+                        alignment: 'right',
+                      },
+                    ];
+                  }),
+                ],
+              },
+              layout: tLayout,
+              margin: [0, 5, 0, 10],
+            },
+          ]
+        : [];
 
     // Create overage items table if overage items exist
     const overageSection =
@@ -4460,6 +4502,7 @@ export class PdfService {
           style: 'h3',
           alignment: 'right',
         },
+        ...damageSection,
         ...overageSection, // Add overage section here
         {
           table: {
@@ -5960,7 +6003,7 @@ export class PdfService {
     days = +this.dateDiffPipe.transform(start, end);
 
     const months = +this.format(days / 30);
-    const total = +item.invoiceQty * +item.hireRate * months;
+    const total = +item.invoiceQty * +item.hireRate * days;
     return [
       {
         text: code,

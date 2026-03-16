@@ -590,6 +590,27 @@ export class TransactionReturnComponent implements OnInit, OnDestroy {
             where('jobReference', '==', this.returnDoc?.jobReference),
             orderBy('code', 'asc'),
           ])
+          .pipe(
+            take(1),
+            switchMap((transactions) => {
+              return this.inventoryItems$.pipe(
+                map((inventoryItems) => {
+                  return transactions
+                    .map((transaction) => {
+                      const inventoryItem = inventoryItems.find(
+                        (item) => item.id === transaction.itemId,
+                      );
+                      return {
+                        ...transaction,
+                        sellingCost: inventoryItem?.sellingCost || 0,
+                        type: inventoryItem?.type || '',
+                      };
+                    })
+                    .filter((transaction) => transaction.type !== 'Consumable');
+                }),
+              );
+            }),
+          )
           .subscribe((data) => {
             this.returnDoc.items.forEach((item) => {
               const inventoryItem = data.find((i) => i.id === item.id);
