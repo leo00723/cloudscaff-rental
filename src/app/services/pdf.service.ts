@@ -4461,12 +4461,6 @@ export class PdfService {
           null,
           [
             [
-              { text: 'Site Address', style: 'h6b' },
-              `${returnDoc?.site.name || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
               { text: 'Driver:', style: 'h6b' },
               `${returnDoc?.driverName || 'N/A'}`,
               '',
