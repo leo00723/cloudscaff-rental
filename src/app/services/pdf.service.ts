@@ -35,7 +35,7 @@ import { DateFormatPipe } from '../components/date-format.pipe';
 // Configure the fonts
 (pdfMake as any).vfs = pdfFonts.vfs;
 
-const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388.58 26.87"><defs><style>.cls-1{fill:#fdb515;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><g id="Logo-Full-2" data-name="Logo-Full"><path class="cls-1" d="M151.2.19a2.08,2.08,0,0,1,2.09,2.09h0V20.57a6.24,6.24,0,0,1-6.24,6.24H123.93a6.24,6.24,0,0,1-6.24-6.24V2.22a2.1,2.1,0,0,1,2.09-2.1h0a2.1,2.1,0,0,1,2.1,2.1h0V20.55a2.1,2.1,0,0,0,2.09,2.1h23.09a2.11,2.11,0,0,0,2.1-2.1V2.28A2.09,2.09,0,0,1,151.24.19Z"/><path class="cls-1" d="M270.91,24.78a2.1,2.1,0,0,1-2.09,2.09H241.5a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,241.5.18h27.38A2.09,2.09,0,0,1,271,2.27h0a2.09,2.09,0,0,1-2.09,2.1H241.5a2.08,2.08,0,0,0-2.09,2.06h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.31a2.1,2.1,0,0,1,2.09,2.1Z"/><path class="cls-1" d="M156.89,0H186.3a6.24,6.24,0,0,1,6.24,6.24V20.45a6.24,6.24,0,0,1-6.19,6.29H156.83V22.55H186.3a2.1,2.1,0,0,0,2.09-2.1V6.28a2.1,2.1,0,0,0-2.06-2.13H156.89Z"/><path class="cls-1" d="M317.88,24.79V6.4A2.1,2.1,0,0,1,320,4.3h27.32a2.09,2.09,0,0,0,2.09-2.08h0A2.08,2.08,0,0,0,347.3.13H320a6.24,6.24,0,0,0-6.24,6.24V24.79a2.08,2.08,0,0,0,2.07,2.08h0a2.08,2.08,0,0,0,2.08-2.08Z"/><path class="cls-1" d="M276.6,26.74a2.11,2.11,0,0,1-2.09-2.09V6.36A6.24,6.24,0,0,1,280.75.12h23.14a6.24,6.24,0,0,1,6.23,6.24V24.71A2.09,2.09,0,0,1,308,26.8h0a2.09,2.09,0,0,1-2.09-2.09h0V6.38a2.09,2.09,0,0,0-2.1-2.09h-23a2.09,2.09,0,0,0-2.1,2.09h0V24.65a2.1,2.1,0,0,1-2.09,2.1h0Z"/><rect class="cls-1" x="278.47" y="11.22" width="27.72" height="4.15"/><path class="cls-1" d="M317.21,15.37V11.19h25.85a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.09H317.21Z"/><path class="cls-1" d="M357.09,24.79V6.4a2.11,2.11,0,0,1,2.09-2.1H386.5a2.08,2.08,0,0,0,2.08-2.08h0A2.08,2.08,0,0,0,386.51.13H359.17a6.24,6.24,0,0,0-6.24,6.24V24.79A2.08,2.08,0,0,0,355,26.87h0a2.08,2.08,0,0,0,2.07-2.08Z"/><path class="cls-1" d="M356.42,15.37V11.19h25.85a2.09,2.09,0,0,1,2.1,2.09h0a2.09,2.09,0,0,1-2.1,2.09Z"/><path class="cls-1" d="M208.33,11.19h17.16a6.23,6.23,0,0,1,6.24,6.23v3.12a6.24,6.24,0,0,1-6.19,6.29h-27.4a2.09,2.09,0,0,1-2.09-2.1h0a2.09,2.09,0,0,1,2.09-2.09h27.38a2.1,2.1,0,0,0,2.08-2.1V17.42a2.07,2.07,0,0,0-2.07-2.09h-17.2Z"/><path class="cls-1" d="M219.48,15.37H202.31a6.24,6.24,0,0,1-6.24-6.23V6.42A6.24,6.24,0,0,1,202.31.18h27.38a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.1H202.28a2.09,2.09,0,0,0-2.08,2.09V9.14a2.08,2.08,0,0,0,2.08,2.09h17.16Z"/><rect class="cls-1" x="156.89" y="4.19" width="4.16" height="18.36"/><path class="cls-1" d="M96.38,26.87H84.79a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,84.79.18H96.38V4.37H84.79a2.07,2.07,0,0,0-2.07,2.09h0V20.63a2.08,2.08,0,0,0,2.07,2.05H96.38Z"/><path class="cls-1" d="M96.25.13h11.59a6.24,6.24,0,0,1,6.24,6.24V20.59a6.24,6.24,0,0,1-6.2,6.28H96.25V22.68h11.59a2.1,2.1,0,0,0,2.09-2.09V6.42a2.1,2.1,0,0,0-2.09-2.1H96.25Z"/><path class="cls-1" d="M43.47,2.21v18.4a2.1,2.1,0,0,0,2.11,2.08H72.69a2.1,2.1,0,0,1,2.09,2.1h0a2.09,2.09,0,0,1-2.09,2.08H45.58a6.24,6.24,0,0,1-6.24-6.24V2.21A2.08,2.08,0,0,1,41.42.13h0A2.07,2.07,0,0,1,43.47,2.21Z"/><path class="cls-1" d="M35.65,24.78a2.09,2.09,0,0,1-2.09,2.09H6.24A6.24,6.24,0,0,1,0,20.63V6.42A6.24,6.24,0,0,1,6.24.18H33.62a2.1,2.1,0,0,1,2.09,2.09h0a2.1,2.1,0,0,1-2.09,2.1H6.24A2.08,2.08,0,0,0,4.16,6.44h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.3a2.1,2.1,0,0,1,2.09,2.1Z"/></g></g></g></svg>`;
+const footerlogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388.58 26.87"><defs><style>.cls-1{fill:#ff881a;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Logo-Full"><g id="Logo-Full-2" data-name="Logo-Full"><path class="cls-1" d="M151.2.19a2.08,2.08,0,0,1,2.09,2.09h0V20.57a6.24,6.24,0,0,1-6.24,6.24H123.93a6.24,6.24,0,0,1-6.24-6.24V2.22a2.1,2.1,0,0,1,2.09-2.1h0a2.1,2.1,0,0,1,2.1,2.1h0V20.55a2.1,2.1,0,0,0,2.09,2.1h23.09a2.11,2.11,0,0,0,2.1-2.1V2.28A2.09,2.09,0,0,1,151.24.19Z"/><path class="cls-1" d="M270.91,24.78a2.1,2.1,0,0,1-2.09,2.09H241.5a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,241.5.18h27.38A2.09,2.09,0,0,1,271,2.27h0a2.09,2.09,0,0,1-2.09,2.1H241.5a2.08,2.08,0,0,0-2.09,2.06h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.31a2.1,2.1,0,0,1,2.09,2.1Z"/><path class="cls-1" d="M156.89,0H186.3a6.24,6.24,0,0,1,6.24,6.24V20.45a6.24,6.24,0,0,1-6.19,6.29H156.83V22.55H186.3a2.1,2.1,0,0,0,2.09-2.1V6.28a2.1,2.1,0,0,0-2.06-2.13H156.89Z"/><path class="cls-1" d="M317.88,24.79V6.4A2.1,2.1,0,0,1,320,4.3h27.32a2.09,2.09,0,0,0,2.09-2.08h0A2.08,2.08,0,0,0,347.3.13H320a6.24,6.24,0,0,0-6.24,6.24V24.79a2.08,2.08,0,0,0,2.07,2.08h0a2.08,2.08,0,0,0,2.08-2.08Z"/><path class="cls-1" d="M276.6,26.74a2.11,2.11,0,0,1-2.09-2.09V6.36A6.24,6.24,0,0,1,280.75.12h23.14a6.24,6.24,0,0,1,6.23,6.24V24.71A2.09,2.09,0,0,1,308,26.8h0a2.09,2.09,0,0,1-2.09-2.09h0V6.38a2.09,2.09,0,0,0-2.1-2.09h-23a2.09,2.09,0,0,0-2.1,2.09h0V24.65a2.1,2.1,0,0,1-2.09,2.1h0Z"/><rect class="cls-1" x="278.47" y="11.22" width="27.72" height="4.15"/><path class="cls-1" d="M317.21,15.37V11.19h25.85a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.09H317.21Z"/><path class="cls-1" d="M357.09,24.79V6.4a2.11,2.11,0,0,1,2.09-2.1H386.5a2.08,2.08,0,0,0,2.08-2.08h0A2.08,2.08,0,0,0,386.51.13H359.17a6.24,6.24,0,0,0-6.24,6.24V24.79A2.08,2.08,0,0,0,355,26.87h0a2.08,2.08,0,0,0,2.07-2.08Z"/><path class="cls-1" d="M356.42,15.37V11.19h25.85a2.09,2.09,0,0,1,2.1,2.09h0a2.09,2.09,0,0,1-2.1,2.09Z"/><path class="cls-1" d="M208.33,11.19h17.16a6.23,6.23,0,0,1,6.24,6.23v3.12a6.24,6.24,0,0,1-6.19,6.29h-27.4a2.09,2.09,0,0,1-2.09-2.1h0a2.09,2.09,0,0,1,2.09-2.09h27.38a2.1,2.1,0,0,0,2.08-2.1V17.42a2.07,2.07,0,0,0-2.07-2.09h-17.2Z"/><path class="cls-1" d="M219.48,15.37H202.31a6.24,6.24,0,0,1-6.24-6.23V6.42A6.24,6.24,0,0,1,202.31.18h27.38a2.09,2.09,0,0,1,2.09,2.09h0a2.09,2.09,0,0,1-2.09,2.1H202.28a2.09,2.09,0,0,0-2.08,2.09V9.14a2.08,2.08,0,0,0,2.08,2.09h17.16Z"/><rect class="cls-1" x="156.89" y="4.19" width="4.16" height="18.36"/><path class="cls-1" d="M96.38,26.87H84.79a6.24,6.24,0,0,1-6.24-6.24V6.42A6.24,6.24,0,0,1,84.79.18H96.38V4.37H84.79a2.07,2.07,0,0,0-2.07,2.09h0V20.63a2.08,2.08,0,0,0,2.07,2.05H96.38Z"/><path class="cls-1" d="M96.25.13h11.59a6.24,6.24,0,0,1,6.24,6.24V20.59a6.24,6.24,0,0,1-6.2,6.28H96.25V22.68h11.59a2.1,2.1,0,0,0,2.09-2.09V6.42a2.1,2.1,0,0,0-2.09-2.1H96.25Z"/><path class="cls-1" d="M43.47,2.21v18.4a2.1,2.1,0,0,0,2.11,2.08H72.69a2.1,2.1,0,0,1,2.09,2.1h0a2.09,2.09,0,0,1-2.09,2.08H45.58a6.24,6.24,0,0,1-6.24-6.24V2.21A2.08,2.08,0,0,1,41.42.13h0A2.07,2.07,0,0,1,43.47,2.21Z"/><path class="cls-1" d="M35.65,24.78a2.09,2.09,0,0,1-2.09,2.09H6.24A6.24,6.24,0,0,1,0,20.63V6.42A6.24,6.24,0,0,1,6.24.18H33.62a2.1,2.1,0,0,1,2.09,2.09h0a2.1,2.1,0,0,1-2.09,2.1H6.24A2.08,2.08,0,0,0,4.16,6.44h0V20.59a2.1,2.1,0,0,0,2.1,2.09h27.3a2.1,2.1,0,0,1,2.09,2.1Z"/></g></g></g></svg>`;
 const hr = {
   table: {
     widths: ['100%'],
@@ -67,7 +67,7 @@ const tLayout = {
     i === 0 || i === node.table.body.length ? '#eeeeee' : 'white',
 };
 const invoiceTheme = {
-  accent: '#fdb515',
+  accent: '#ff881a',
   border: '#dcdcdc',
   muted: '#6f6f76',
   panel: '#f7f7f7',
@@ -178,9 +178,10 @@ const stylesCS = {
     color: invoiceTheme.text,
   },
   invoiceSectionTitle: {
-    fontSize: 12,
+    fontSize: 10,
     bold: true,
-    color: 'white',
+    color: invoiceTheme.text,
+    lineHeight: 1,
   },
   invoicePartyLabel: {
     fontSize: 9,
@@ -208,23 +209,23 @@ const stylesCS = {
     color: invoiceTheme.muted,
   },
   invoiceSummaryLabel: {
-    fontSize: 11,
+    fontSize: 10,
     color: invoiceTheme.text,
   },
   invoiceSummaryValue: {
-    fontSize: 11,
+    fontSize: 10,
     bold: true,
     color: invoiceTheme.text,
   },
   invoiceTotalLabel: {
-    fontSize: 14,
+    fontSize: 12,
     bold: true,
-    color: 'white',
+    color: invoiceTheme.text,
   },
   invoiceTotalValue: {
-    fontSize: 16,
+    fontSize: 14,
     bold: true,
-    color: 'white',
+    color: invoiceTheme.text,
   },
   invoiceFooter: {
     fontSize: 9,
@@ -1281,6 +1282,7 @@ export class PdfService {
                 { text: 'Description', style: 'h4b', alignment: 'left' },
                 { text: 'Qty', style: 'h4b', alignment: 'center' },
                 { text: 'Hire Period', style: 'h4b', alignment: 'center' },
+                { text: 'Details', style: 'h4b', alignment: 'center' },
                 { text: 'Rate', style: 'h4b', alignment: 'center' },
                 { text: 'Total', style: 'h4b', alignment: 'right' },
               ],
@@ -1289,7 +1291,7 @@ export class PdfService {
           ),
           invoice.customInvoice
             ? ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto']
-            : ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto'],
+            : ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
         ),
       );
     }
@@ -1377,19 +1379,24 @@ export class PdfService {
 
     const uploads = await this.addUploads(invoice.estimate?.uploads || []);
     content.push(...uploads);
-    content.push({
-      text: 'Terms & Conditions',
-      style: ['h4b', 'm20'],
-      pageBreak: 'before',
-    });
-    content.push({ text: terms ? terms.terms : '' });
+    if (terms?.terms?.trim()) {
+      content.push({
+        text: 'Terms & Conditions',
+        style: ['h4b', 'm20'],
+        pageBreak: 'before',
+      });
+      content.push({ text: terms.terms });
+    }
 
     const data = {
       footer: this.getRentalInvoiceFooter(),
       info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
       content,
       styles: stylesCS,
-      defaultStyle: defaultCS,
+      defaultStyle: {
+        ...defaultCS,
+        lineHeight: 1.25,
+      },
       pageOrientation: 'portrait',
       pageMargins: [32, 28, 32, 46],
     };
@@ -5598,7 +5605,7 @@ export class PdfService {
                     },
                     {
                       stack: companyDetails,
-                      margin: [0, 6, 0, 0],
+                      margin: [0, 4, 0, 0],
                     },
                   ],
                 },
@@ -5608,7 +5615,7 @@ export class PdfService {
                       text: title,
                       style: 'invoiceTitle',
                       alignment: 'right',
-                      margin: [0, 0, 0, 6],
+                      margin: [0, 0, 0, 4],
                     },
                     {
                       table: {
@@ -5643,7 +5650,7 @@ export class PdfService {
             paddingTop: () => 0,
             paddingBottom: () => 0,
           },
-          margin: [0, 8, 0, 10],
+          margin: [0, 4, 0, 6],
         },
       ],
     };
@@ -5686,14 +5693,14 @@ export class PdfService {
         ? {
             text: company.email,
             style: 'invoiceValue',
-            margin: [0, 2, 0, 0],
+            margin: [0, 1, 0, 0],
           }
         : null,
       company.phone
         ? {
             text: company.phone,
             style: 'invoiceValue',
-            margin: [0, 2, 0, 0],
+            margin: [0, 1, 0, 0],
           }
         : null,
     ].filter(Boolean);
@@ -5727,7 +5734,7 @@ export class PdfService {
         paddingTop: () => 0,
         paddingBottom: () => 0,
       },
-      margin: [0, 0, 0, 10],
+      margin: [0, 0, 0, 6],
     };
   }
 
@@ -5758,13 +5765,13 @@ export class PdfService {
 
     if (entity?.email) {
       stack.push({
-        text: isCompany ? `Email: ${entity.email}` : entity.email,
+        text: entity.email,
         style: 'invoiceSmall',
         margin: [0, 0, 0, 4],
       });
     }
 
-    if (entity?.phone && !isCompany) {
+    if (entity?.phone) {
       stack.push({
         text: entity.phone,
         style: 'invoiceSmall',
@@ -5774,7 +5781,7 @@ export class PdfService {
 
     if (address) {
       stack.push({
-        text: isCompany ? `Address: ${address}` : address,
+        text: address,
         style: 'invoiceSmall',
         margin: [0, 0, 0, 4],
       });
@@ -5825,10 +5832,10 @@ export class PdfService {
       layout: {
         paddingLeft: () => 12,
         paddingRight: () => 12,
-        paddingTop: () => 6,
-        paddingBottom: () => 6,
+        paddingTop: () => 2,
+        paddingBottom: () => 2,
       },
-      margin: [0, 0, 0, 6],
+      margin: [0, 0, 0, 3],
     };
   }
 
@@ -5840,7 +5847,7 @@ export class PdfService {
         body: [headers, ...rows],
       },
       layout: invoiceTableLayout,
-      margin: [0, 0, 0, 12],
+      margin: [0, 0, 0, 10],
     };
   }
 
@@ -5898,13 +5905,6 @@ export class PdfService {
       { text: this.getBillingDescription(item), style: 'h6' },
     ];
 
-    if (item.balanceQty !== undefined && item.balanceQty !== null) {
-      descriptionStack.push({
-        text: `Balance: ${item.balanceQty} units`,
-        style: 'invoiceMuted',
-      });
-    }
-
     if (isCustomInvoice) {
       return [
         {
@@ -5955,6 +5955,7 @@ export class PdfService {
         alignment: 'center',
       },
       this.getHirePeriodCell(start, end, days),
+      this.getRentalInvoiceDetailsCell(item.balanceQty, days),
       {
         text: this.currency(item.hireRate, company.currency?.symbol || ''),
         style: 'h6',
@@ -6101,18 +6102,17 @@ export class PdfService {
         : 'N/A';
 
     return {
-      stack: [
-        {
-          text: period,
-          style: 'h6',
-          alignment: 'center',
-        },
-        {
-          text: `(${days || 0} ${days === 1 ? 'Day' : 'Days'})`,
-          style: 'invoiceMuted',
-          alignment: 'center',
-        },
-      ],
+      text: period,
+      style: 'h6',
+      alignment: 'center',
+    };
+  }
+
+  private getRentalInvoiceDetailsCell(balanceQty: number, days: number) {
+    return {
+      text: `${days || 0} ${days === 1 ? 'Day' : 'Days'}`,
+      style: 'h6',
+      alignment: 'center',
     };
   }
 
@@ -6127,15 +6127,25 @@ export class PdfService {
         'Subtotal:',
         this.currency(invoice.subtotal, currencySymbol),
       ),
-      this.getAmountSummaryRow(
-        'Discount:',
-        `-${this.currency(invoice.discount, currencySymbol)}`,
-      ),
-      this.getAmountSummaryRow(
-        'Credit Applied:',
-        `-${this.currency(invoice.creditTotal, currencySymbol)}`,
-      ),
     ];
+
+    if (+invoice.discount !== 0) {
+      amountRows.push(
+        this.getAmountSummaryRow(
+          'Discount:',
+          `-${this.currency(invoice.discount, currencySymbol)}`,
+        ),
+      );
+    }
+
+    if (+invoice.creditTotal !== 0) {
+      amountRows.push(
+        this.getAmountSummaryRow(
+          'Credit Applied:',
+          `-${this.currency(invoice.creditTotal, currencySymbol)}`,
+        ),
+      );
+    }
 
     if (company.salesTax > 0) {
       amountRows.push(
@@ -6191,20 +6201,21 @@ export class PdfService {
     );
 
     return {
+      unbreakable: true,
       table: {
-        widths: ['*', 220],
+        widths: ['*', 190],
         body: [
           [
             {
               stack: [
-                { text: 'Payment Details', style: 'invoicePartyTitle' },
+                this.getInvoiceSectionHeader('Payment Details'),
                 {
                   table: {
                     widths: ['auto', '*'],
                     body: paymentRows,
                   },
                   layout: 'noBorders',
-                  margin: [0, 2, 0, 0],
+                  margin: [0, 1, 0, 0],
                 },
               ],
             },
@@ -6217,10 +6228,10 @@ export class PdfService {
                 hLineWidth: (i) => (i === 0 ? 0 : 0.8),
                 hLineColor: () => invoiceTheme.border,
                 vLineWidth: () => 0,
-                paddingLeft: () => 12,
-                paddingRight: () => 12,
-                paddingTop: () => 9,
-                paddingBottom: () => 9,
+                paddingLeft: () => 8,
+                paddingRight: () => 8,
+                paddingTop: () => 5,
+                paddingBottom: () => 5,
               },
             },
           ],
@@ -6229,12 +6240,12 @@ export class PdfService {
       layout: {
         hLineWidth: () => 0,
         vLineWidth: () => 0,
-        paddingLeft: (i) => (i === 0 ? 0 : 20),
+        paddingLeft: (i) => (i === 0 ? 0 : 14),
         paddingRight: () => 0,
         paddingTop: () => 0,
         paddingBottom: () => 0,
       },
-      margin: [0, 4, 0, 10],
+      margin: [0, 2, 0, 8],
     };
   }
 
@@ -6261,12 +6272,12 @@ export class PdfService {
       {
         text: `${label}:`,
         style: 'invoiceSmallBold',
-        margin: [0, 0, 8, 4],
+        margin: [0, 0, 8, 2],
       },
       {
         text: value,
         style: 'invoiceSmall',
-        margin: [0, 0, 0, 4],
+        margin: [0, 0, 0, 2],
       },
     ];
   }
