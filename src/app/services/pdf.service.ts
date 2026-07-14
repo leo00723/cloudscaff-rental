@@ -3333,211 +3333,121 @@ export class PdfService {
     const summary = this.createTransactionReturnTable(returnDoc.items);
     const damageItems =
       returnDoc.items?.filter((item) => (item.damagedQty || 0) > 0) || [];
-
-    const damageSection =
-      damageItems.length > 0
-        ? [
-            hr,
-            {
-              text: 'Damaged Items',
-              style: 'h2',
-              alignment: 'left',
-              margin: [0, 10, 0, 5],
-            },
-            {
-              table: {
-                headerRows: 1,
-                widths: ['auto', '*', 'auto'],
-                body: [
-                  [
-                    { text: 'Code', style: 'h5b' },
-                    { text: 'Name', style: 'h5b' },
-                    { text: 'Damaged Qty', style: 'h5b', alignment: 'right' },
-                  ],
-                  ...damageItems.map((item) => {
-                    const qty = +(item.damagedQty || 0);
-                    return [
-                      { text: item.code || 'N/A', style: 'h6' },
-                      { text: item.name || 'N/A', style: 'h6' },
-                      {
-                        text: this.decimalPipe.transform(qty),
-                        style: 'h6',
-                        alignment: 'right',
-                      },
-                    ];
-                  }),
-                ],
-              },
-              layout: tLayout,
-              margin: [0, 5, 0, 10],
-            },
-          ]
-        : [];
-
-    // Create overage items table if overage items exist
-    const overageSection =
-      returnDoc.overageItems && returnDoc.overageItems.length > 0
-        ? [
-            hr,
-            {
-              text: 'Overage Items',
-              style: 'h2',
-              alignment: 'left',
-              margin: [0, 10, 0, 5],
-            },
-            {
-              table: {
-                headerRows: 1,
-                widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
-                body: [
-                  // Header row
-                  [
-                    { text: 'Code', style: 'h5b' },
-                    { text: 'Name', style: 'h5b' },
-                    { text: 'Category', style: 'h5b' },
-                    { text: 'Size', style: 'h5b' },
-                    { text: 'Location', style: 'h5b' },
-                    { text: 'Overage Qty', style: 'h5b' },
-                    { text: 'Weight (kg)', style: 'h5b' },
-                  ],
-                  // Data rows
-                  ...returnDoc.overageItems.map((item) => [
-                    { text: item.code || 'N/A', style: 'h6' },
-                    { text: item.name || 'N/A', style: 'h6' },
-                    { text: item.category || 'N/A', style: 'h6' },
-                    { text: item.size || 'N/A', style: 'h6' },
-                    { text: item.location || 'N/A', style: 'h6' },
-                    {
-                      text: item.shipmentQty?.toString() || '0',
-                      style: 'h6',
-                      alignment: 'right',
-                    },
-                    {
-                      text: item.weight?.toString() || '0',
-                      style: 'h6',
-                      alignment: 'right',
-                    },
-                  ]),
-                ],
-              },
-              layout: tLayout,
-              margin: [0, 5, 0, 10],
-            },
-            {
-              text: `Total Overage Weight: ${returnDoc.overageItems
-                .reduce((sum, item) => sum + (item.weight || 0), 0)
-                .toFixed(2)} kg`,
-              style: 'h4',
-              alignment: 'right',
-              margin: [0, 5, 0, 0],
-            },
-          ]
-        : [];
-
-    const data = {
-      footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
-      content: [
-        await this.getHeader(
-          'Return Note',
-          returnDoc.code,
-          returnDoc.site.name,
-          returnDoc?.returnDate,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
-          null,
-          [
-            [
-              { text: 'Driver:', style: 'h6b' },
-              `${returnDoc?.driverName || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'Driver Contact:', style: 'h6b' },
-              `${returnDoc?.driverNo || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'Vehicle Reg:', style: 'h6b' },
-              `${returnDoc?.vehicleReg || 'N/A'}`,
-              '',
-              '',
-            ],
-          ],
-        ),
-        hr,
-        this.getCompanyInfo(company, returnDoc.site.customer),
-        hr,
-        summary,
-        hr,
-        {
-          text: `Total Weight : ${this.weightPipe.transform(
+    const overageItems = returnDoc.overageItems || [];
+    const content: any[] = [
+      await this.getLogisticsHeaderBlock('RETURN NOTE', company, [
+        ['Docket Reference', returnDoc.code || 'N/A'],
+        ['Site Address', returnDoc.site?.name || 'N/A'],
+        ['Date Issued', this.toDate(returnDoc.returnDate)],
+        ['Driver', returnDoc.driverName || 'N/A'],
+        ['Driver Contact', returnDoc.driverNo || 'N/A'],
+        ['Vehicle Reg', returnDoc.vehicleReg || 'N/A'],
+      ]),
+      this.getDeliveryPartyBlock(company, returnDoc.site.customer),
+      this.getInvoiceSectionHeader('Returned Items'),
+      summary,
+      this.getLogisticsSummaryBlock([
+        [
+          'Total Weight',
+          this.weightPipe.transform(
             returnDoc.items,
             false,
             false,
             false,
             true,
-          )}`,
-          style: 'h3',
-          alignment: 'right',
-        },
-        ...damageSection,
-        ...overageSection, // Add overage section here
-        {
-          table: {
-            // headers are automatically repeated if the table spans over multiple pages
-            // you can declare how many rows should be treated as headers
-            headerRows: 1,
-            widths: ['*'],
-            body: [
-              [
-                {
-                  text: 'Return Processed By: ',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-              [
-                {
-                  text: 'Name:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-              [
-                {
-                  text: 'Date:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-              [
-                {
-                  text: 'Sign:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-              [
-                {
-                  text: 'I have confirmed all quantities returned are correct:',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-              ],
-            ],
-          },
-          layout: tLayout,
-        },
+          ),
+        ],
+      ]),
+    ];
 
-        await this.addUploads(returnDoc.uploads),
-      ],
+    if (damageItems.length > 0) {
+      content.push(
+        this.getInvoiceSectionHeader('Damaged Items'),
+        this.createInvoiceTable(
+          [
+            { text: 'Code', style: 'h5b' },
+            { text: 'Name', style: 'h5b' },
+            { text: 'Damaged Qty', style: 'h5b', alignment: 'right' },
+          ],
+          damageItems.map((item) => [
+            { text: item.code || 'N/A', style: 'h6' },
+            { text: item.name || 'N/A', style: 'h6' },
+            {
+              text: this.decimalPipe.transform(+(item.damagedQty || 0)),
+              style: 'h6',
+              alignment: 'right',
+            },
+          ]),
+          ['auto', '*', 'auto'],
+        ),
+      );
+    }
+
+    if (overageItems.length > 0) {
+      content.push(
+        this.getInvoiceSectionHeader('Overage Items'),
+        this.createInvoiceTable(
+          [
+            { text: 'Code', style: 'h5b' },
+            { text: 'Name', style: 'h5b' },
+            { text: 'Category', style: 'h5b' },
+            { text: 'Size', style: 'h5b' },
+            { text: 'Location', style: 'h5b' },
+            { text: 'Overage Qty', style: 'h5b' },
+            { text: 'Weight (kg)', style: 'h5b' },
+          ],
+          overageItems.map((item) => [
+            { text: item.code || 'N/A', style: 'h6' },
+            { text: item.name || 'N/A', style: 'h6' },
+            { text: item.category || 'N/A', style: 'h6' },
+            { text: item.size || 'N/A', style: 'h6' },
+            { text: item.location || 'N/A', style: 'h6' },
+            {
+              text: item.shipmentQty?.toString() || '0',
+              style: 'h6',
+              alignment: 'right',
+            },
+            {
+              text: item.weight?.toString() || '0',
+              style: 'h6',
+              alignment: 'right',
+            },
+          ]),
+          ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+        ),
+        this.getLogisticsSummaryBlock([
+          [
+            'Total Overage Weight',
+            `${overageItems
+              .reduce((sum, item) => sum + (item.weight || 0), 0)
+              .toFixed(2)} kg`,
+          ],
+        ]),
+      );
+    }
+
+    content.push(
+      this.getInvoiceSectionHeader('Return Confirmation'),
+      this.getDocumentConfirmationBlock(
+        'Return Processed By:',
+        'I have confirmed all quantities returned are correct:',
+      ),
+    );
+
+    const uploads = await this.addUploads(returnDoc.uploads);
+    content.push(...uploads);
+
+    const data = {
+      footer: this.getRentalInvoiceFooter(),
+      info: this.getMetaData(`${company.name}-Return-${returnDoc.code}`),
+      content,
       styles: stylesCS,
-      defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      defaultStyle: {
+        ...defaultCS,
+        lineHeight: 1.25,
+      },
+      pageOrientation: 'portrait',
+      pageMargins: [32, 28, 32, 46],
     };
     return this.generatePdf(data);
   }
@@ -3548,104 +3458,64 @@ export class PdfService {
     terms: Term | null,
   ) {
     const summary = this.createTransactionReturnTable(transferDoc.items);
-
-    const data = {
-      footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Transfer-${transferDoc.code}`),
-      content: [
-        await this.getHeader(
-          'Transfer Note',
-          transferDoc.code,
-          transferDoc.fromSite?.code || 'N/A',
-          transferDoc.date,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
-          null,
-          [
-            [
-              { text: 'Transfer Date', style: 'h6b' },
-              `${
-                transferDoc?.transferDate
-                  ? transferDoc.transferDate.seconds
-                    ? new Date(
-                        transferDoc.transferDate.seconds * 1000,
-                      ).toLocaleDateString()
-                    : new Date(transferDoc.transferDate).toLocaleDateString()
-                  : 'N/A'
-              }`,
-              '',
-              '',
-            ],
-            [
-              { text: 'From Job Reference:', style: 'h6b' },
-              `${transferDoc?.fromJobReference || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'To Job Reference:', style: 'h6b' },
-              `${transferDoc?.toJobReference || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'Created By:', style: 'h6b' },
-              `${transferDoc?.createdByName || 'N/A'}`,
-              '',
-              '',
-            ],
-          ],
-        ),
-        hr,
-        this.getCompanyInfo(
-          transferDoc.toSite?.customer,
-          transferDoc.fromSite?.customer,
-        ),
-
-        hr,
-        { text: transferDoc.notes || '', style: 'h6', margin: [0, 10, 0, 10] },
-        hr,
-        summary,
-        hr,
-        {
-          text: `Total Weight : ${this.weightPipe.transform(
+    const transferDate = transferDoc?.transferDate
+      ? transferDoc.transferDate.seconds
+        ? new Date(
+            transferDoc.transferDate.seconds * 1000,
+          ).toLocaleDateString()
+        : new Date(transferDoc.transferDate).toLocaleDateString()
+      : 'N/A';
+    const content: any[] = [
+      await this.getLogisticsHeaderBlock('TRANSFER NOTE', company, [
+        ['Docket Reference', transferDoc.code || 'N/A'],
+        ['Site Address', transferDoc.fromSite?.code || 'N/A'],
+        ['Date Issued', this.toDate(transferDoc.date)],
+        ['Transfer Date', transferDate],
+        ['From Job Reference', transferDoc.fromJobReference || 'N/A'],
+        ['To Job Reference', transferDoc.toJobReference || 'N/A'],
+        ['Created By', transferDoc.createdByName || 'N/A'],
+      ]),
+      this.getDeliveryPartyBlock(
+        transferDoc.toSite?.customer,
+        transferDoc.fromSite?.customer,
+      ),
+      this.getInvoiceSectionHeader('Transfer Notes'),
+      {
+        text: transferDoc.notes || '',
+        style: 'invoiceSmall',
+        margin: [8, 2, 8, 10],
+      },
+      this.getInvoiceSectionHeader('Transferred Items'),
+      summary,
+      this.getLogisticsSummaryBlock([
+        ['Status', transferDoc.status || 'N/A'],
+        [
+          'Total Weight',
+          this.weightPipe.transform(
             transferDoc.items,
             false,
             false,
             false,
             true,
-          )}`,
-          style: 'h3',
-          alignment: 'right',
-        },
-        {
-          table: {
-            headerRows: 1,
-            widths: ['*', 'auto'],
-            body: [
-              [
-                {
-                  text: 'Status',
-                  style: 'h4b',
-                  alignment: 'left',
-                },
-                {
-                  text: transferDoc.status,
-                  style: 'h4b',
-                  alignment: 'center',
-                },
-              ],
-            ],
-          },
-          layout: tLayout,
-        },
+          ),
+        ],
+      ]),
+    ];
 
-        await this.addUploads(transferDoc.uploads),
-      ],
+    const uploads = await this.addUploads(transferDoc.uploads);
+    content.push(...uploads);
+
+    const data = {
+      footer: this.getRentalInvoiceFooter(),
+      info: this.getMetaData(`${company.name}-Transfer-${transferDoc.code}`),
+      content,
       styles: stylesCS,
-      defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      defaultStyle: {
+        ...defaultCS,
+        lineHeight: 1.25,
+      },
+      pageOrientation: 'portrait',
+      pageMargins: [32, 28, 32, 46],
     };
     return this.generatePdf(data);
   }
@@ -4970,10 +4840,88 @@ export class PdfService {
     };
   }
 
-  private getDeliveryPartyBlock(customer: Customer, company: Company) {
+  private async getLogisticsHeaderBlock(
+    title: string,
+    company: Company,
+    details: Array<[string, any]>,
+  ) {
+    return {
+      stack: [
+        {
+          table: {
+            widths: ['*', 240],
+            body: [
+              [
+                {
+                  stack: [
+                    await this.getInvoiceLogoNode(company),
+                    {
+                      stack: this.getInvoiceContactLines(company),
+                      margin: [0, 4, 0, 0],
+                    },
+                  ],
+                },
+                {
+                  stack: [
+                    {
+                      text: title,
+                      style: 'invoiceTitle',
+                      alignment: 'right',
+                      margin: [0, 0, 0, 4],
+                    },
+                    {
+                      table: {
+                        widths: [92, '*'],
+                        body: details.map(([label, value]) => [
+                          { text: label, style: 'invoiceLabel' },
+                          {
+                            text: value ?? 'N/A',
+                            style: 'invoiceValue',
+                            alignment: 'right',
+                          },
+                        ]),
+                      },
+                      layout: 'noBorders',
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        {
+          table: {
+            widths: ['*'],
+            body: [
+              [
+                {
+                  text: '',
+                  fillColor: invoiceTheme.accent,
+                  border: [false, false, false, false],
+                },
+              ],
+            ],
+          },
+          layout: {
+            paddingLeft: () => 0,
+            paddingRight: () => 0,
+            paddingTop: () => 0,
+            paddingBottom: () => 0,
+          },
+          margin: [0, 4, 0, 8],
+        },
+      ],
+    };
+  }
+
+  private getDeliveryPartyBlock(
+    customer?: Customer | Company,
+    company?: Customer | Company,
+  ) {
     const partyStack = (
       title: string,
-      entity: Customer | Company,
+      entity?: Customer | Company,
     ): any[] => [
       { text: title, style: 'invoicePartyLabel' },
       {
@@ -4985,7 +4933,7 @@ export class PdfService {
         ['Email', entity?.email || 'N/A'],
         ['Contact No', entity?.phone || 'N/A'],
         ['ABN', entity?.abnNumber || 'N/A'],
-        ['Address', this.getAddress(entity) || 'N/A'],
+        ['Address', entity ? this.getAddress(entity) || 'N/A' : 'N/A'],
       ].map(([label, value]) => ({
         text: [
           { text: `${label}: `, bold: true },
@@ -5016,6 +4964,65 @@ export class PdfService {
         paddingTop: () => 0,
         paddingBottom: () => 0,
       },
+      margin: [0, 0, 0, 10],
+    };
+  }
+
+  private getLogisticsSummaryBlock(rows: Array<[string, any]>) {
+    return {
+      table: {
+        widths: ['*', 'auto'],
+        body: rows.map(([label, value], index) => [
+          {
+            text: label,
+            style:
+              index === rows.length - 1
+                ? 'invoiceTotalLabel'
+                : 'invoiceSummaryLabel',
+          },
+          {
+            text: value ?? 'N/A',
+            style:
+              index === rows.length - 1
+                ? 'invoiceTotalValue'
+                : 'invoiceSummaryValue',
+            alignment: 'right',
+          },
+        ]),
+      },
+      layout: {
+        hLineWidth: (i) => (i > 0 ? 0.8 : 0),
+        hLineColor: () => invoiceTheme.border,
+        vLineWidth: () => 0,
+        paddingLeft: () => 10,
+        paddingRight: () => 10,
+        paddingTop: () => 6,
+        paddingBottom: () => 6,
+        fillColor: () => invoiceTheme.panel,
+      },
+      margin: [280, 0, 0, 12],
+    };
+  }
+
+  private getDocumentConfirmationBlock(title: string, confirmation: string) {
+    return {
+      table: {
+        widths: ['*'],
+        body: [
+          [{ text: title, style: 'invoiceSmallBold' }],
+          [{ text: 'Name:', style: 'invoiceSmallBold' }],
+          [{ text: 'Date:', style: 'invoiceSmallBold' }],
+          [
+            {
+              text: 'Sign:',
+              style: 'invoiceSmallBold',
+              margin: [0, 0, 0, 22],
+            },
+          ],
+          [{ text: confirmation, style: 'invoiceSmallBold' }],
+        ],
+      },
+      layout: invoiceTableLayout,
       margin: [0, 0, 0, 10],
     };
   }
@@ -6400,21 +6407,21 @@ export class PdfService {
     const items = [];
     transactionItems.forEach((item, i) => {
       items.push([
-        { text: i + 1, style: 'h4b', alignment: 'left' },
-        { text: item.code, style: 'h4b', alignment: 'left' },
+        { text: i + 1, style: 'h6', alignment: 'left' },
+        { text: item.code, style: 'h6', alignment: 'left' },
         {
           text: item.category,
-          style: 'h4b',
+          style: 'h6',
           alignment: 'left',
         },
-        { text: item.size, style: 'h4b', alignment: 'center' },
-        { text: item.name, style: 'h4b', alignment: 'left' },
-        { text: item.returnQty, style: 'h4b', alignment: 'center' },
+        { text: item.size, style: 'h6', alignment: 'center' },
+        { text: item.name, style: 'h6', alignment: 'left' },
+        { text: item.returnQty, style: 'h6', alignment: 'center' },
         {
           text: this.decimalPipe.transform(
             (+item?.weight || 0) * (+item?.returnQty || 0),
           ),
-          style: 'h4b',
+          style: 'h6',
           alignment: 'center',
         },
       ]);
@@ -6443,7 +6450,8 @@ export class PdfService {
           ...items,
         ],
       },
-      layout: tLayout,
+      layout: invoiceTableLayout,
+      margin: [0, 0, 0, 10],
     };
 
     return summary;
