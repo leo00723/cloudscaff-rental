@@ -363,9 +363,12 @@ export class JobReferenceComponent implements OnInit {
       creditItems: [],
       creditTotal: 0,
     };
-    const pdf = isBasic
-      ? await this.pdfSvc.rentalInvoiceMerged(invoice, this.company, null, true)
-      : await this.pdfSvc.rentalInvoice(invoice, this.company, null, true);
+    const pdf = await this.pdfSvc.rentalInvoice(
+      invoice,
+      this.company,
+      null,
+      true,
+    );
     this.pdfSvc.handlePdf(pdf, this.jr.code);
   }
   async downloadMixedDraft() {

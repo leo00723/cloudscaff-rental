@@ -25,6 +25,7 @@ export interface Company {
   measurement?: UnitData;
   name?: string;
   needsSetup?: boolean;
+  notes?: string;
   phone?: string;
   rep?: string;
   abnNumber?: string;

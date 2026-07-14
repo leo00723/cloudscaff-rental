@@ -1242,7 +1242,6 @@ export class PdfService {
       content.push({
         text: 'Terms & Conditions',
         style: ['h4b', 'm20'],
-        pageBreak: 'before',
       });
       content.push({ text: terms.terms });
     }
@@ -1417,239 +1416,6 @@ export class PdfService {
       content.push({
         text: 'Terms & Conditions',
         style: ['h4b', 'm20'],
-        pageBreak: 'before',
-      });
-      content.push({ text: terms.terms });
-    }
-
-    const data = {
-      footer: this.getRentalInvoiceFooter(),
-      info: this.getMetaData(`${company.name}-Invoice-${invoice.code}`),
-      content,
-      styles: stylesCS,
-      defaultStyle: {
-        ...defaultCS,
-        lineHeight: 1.25,
-      },
-      pageOrientation: 'portrait',
-      pageMargins: [32, 28, 32, 46],
-    };
-    return this.generatePdf(data);
-  }
-
-  // INVOICE RENTAL MERGED PDF
-  async rentalInvoiceMerged(
-    invoice: TransactionInvoice,
-    company: Company,
-    terms: Term | null,
-    isdraft?: boolean,
-  ) {
-    const mergedItems: TransactionItem[] = [];
-    const consumableMergedItems: TransactionItem[] = [];
-    const damageMergedItems: TransactionItem[] = [];
-
-    // Iterate over each item in the list and separate by type
-    invoice.items.forEach((item) => {
-      // Determine which array to use based on item type
-      let targetArray = mergedItems;
-      if (item.isDamageCharge) {
-        targetArray = damageMergedItems;
-      } else if (item.isConsumable) {
-        targetArray = consumableMergedItems;
-      }
-
-      // Try to find an existing item in the target array with the same `itemId` and `invoiceStart`
-      const existingItem = targetArray.find(
-        (mergedItem) =>
-          mergedItem.itemId === item.itemId &&
-          mergedItem.invoiceStart.toDate().toDateString() ===
-            item.invoiceStart.toDate().toDateString() &&
-          item.transactionType !== 'Return',
-      );
-
-      if (existingItem) {
-        // If the item exists, merge the quantities
-        existingItem.deliveryCode.concat(item.deliveryCode);
-        existingItem.invoiceQty += item.invoiceQty;
-        existingItem.deliveredQty += item.deliveredQty;
-        existingItem.returnTotal += item.returnTotal;
-        existingItem.balanceQty += item.balanceQty;
-      } else {
-        // If no matching item is found, add the current item as is
-        targetArray.push({ ...item });
-      }
-    });
-
-    const estimateSource = invoice.customInvoice
-      ? (invoice.estimate?.items || []).filter((item) => item.forInvoice)
-      : invoice.estimate?.items || [];
-    const creditItems = invoice.creditItems || [];
-    const customer = invoice.estimate?.customer || invoice.site?.customer;
-    const invoiceTitle = isdraft ? 'INVOICE DRAFT' : 'INVOICE';
-    const invoiceCode = isdraft ? 'Invoice Draft' : invoice.code;
-    const content: any[] = [];
-
-    content.push(
-      await this.getRentalInvoiceHeaderBlock(
-        invoiceTitle,
-        invoiceCode,
-        invoice,
-        company,
-      ),
-    );
-    content.push(this.getRentalInvoicePartyBlock(customer, company));
-
-    if (invoice.estimate?.scope?.trim()) {
-      content.push({
-        text: invoice.estimate.scope.trim(),
-        style: 'invoiceSmall',
-        margin: [0, 0, 0, 6],
-      });
-    }
-
-    if (invoice.type !== 'Rental' && estimateSource.length > 0) {
-      content.push(this.getInvoiceSectionHeader('Contract Items'));
-      content.push(
-        this.createInvoiceTable(
-          [
-            { text: 'Item', style: 'h4b', alignment: 'left' },
-            { text: 'Description', style: 'h4b', alignment: 'left' },
-            { text: 'Qty', style: 'h4b', alignment: 'center' },
-            { text: 'Duration', style: 'h4b', alignment: 'center' },
-            { text: 'Rate', style: 'h4b', alignment: 'center' },
-            { text: 'Total', style: 'h4b', alignment: 'right' },
-          ],
-          estimateSource.map((item) =>
-            this.addEstimateInvoiceRow(company, item),
-          ),
-          ['auto', '*', 'auto', 'auto', 'auto', 'auto'],
-        ),
-      );
-    }
-
-    if (mergedItems.length > 0) {
-      content.push(this.getInvoiceSectionHeader('Rental Items'));
-      content.push(
-        this.createInvoiceTable(
-          invoice.customInvoice
-            ? [
-                { text: 'Docket', style: 'h4b', alignment: 'left' },
-                { text: 'Item', style: 'h4b', alignment: 'left' },
-                { text: 'Description', style: 'h4b', alignment: 'left' },
-                { text: 'Delivered', style: 'h4b', alignment: 'center' },
-                { text: 'Returned', style: 'h4b', alignment: 'center' },
-                { text: 'Balance', style: 'h4b', alignment: 'center' },
-                { text: 'Hire Period', style: 'h4b', alignment: 'center' },
-              ]
-            : [
-                { text: 'Docket', style: 'h4b', alignment: 'left' },
-                { text: 'Item', style: 'h4b', alignment: 'left' },
-                { text: 'Description', style: 'h4b', alignment: 'left' },
-                { text: 'Qty', style: 'h4b', alignment: 'center' },
-                { text: 'Hire Period', style: 'h4b', alignment: 'center' },
-                { text: 'Details', style: 'h4b', alignment: 'center' },
-                { text: 'Rate', style: 'h4b', alignment: 'center' },
-                { text: 'Total', style: 'h4b', alignment: 'right' },
-              ],
-          mergedItems.map((item) =>
-            this.addRentalInvoiceRow(company, item, invoice.customInvoice),
-          ),
-          invoice.customInvoice
-            ? ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto']
-            : ['auto', 'auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
-        ),
-      );
-    }
-
-    if (consumableMergedItems.length > 0) {
-      content.push(this.getInvoiceSectionHeader('Consumables'));
-      content.push(
-        this.createInvoiceTable(
-          invoice.customInvoice
-            ? [
-                { text: 'Docket', style: 'h4b', alignment: 'left' },
-                { text: 'Item', style: 'h4b', alignment: 'left' },
-                { text: 'Description', style: 'h4b', alignment: 'left' },
-                { text: 'Unit', style: 'h4b', alignment: 'center' },
-              ]
-            : [
-                { text: 'Docket', style: 'h4b', alignment: 'left' },
-                { text: 'Item', style: 'h4b', alignment: 'left' },
-                { text: 'Description', style: 'h4b', alignment: 'left' },
-                { text: 'Qty', style: 'h4b', alignment: 'center' },
-                { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
-                { text: 'Total', style: 'h4b', alignment: 'right' },
-              ],
-          consumableMergedItems.map((item) =>
-            this.addConsumableInvoiceRow(company, item, invoice.customInvoice),
-          ),
-          invoice.customInvoice
-            ? ['auto', 'auto', '*', 'auto']
-            : ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
-        ),
-      );
-    }
-
-    if (damageMergedItems.length > 0) {
-      content.push(this.getInvoiceSectionHeader('Damage Charges'));
-      content.push(
-        this.createInvoiceTable(
-          invoice.customInvoice
-            ? [
-                { text: 'Docket', style: 'h4b', alignment: 'left' },
-                { text: 'Item', style: 'h4b', alignment: 'left' },
-                { text: 'Description', style: 'h4b', alignment: 'left' },
-                { text: 'Unit', style: 'h4b', alignment: 'center' },
-              ]
-            : [
-                { text: 'Docket', style: 'h4b', alignment: 'left' },
-                { text: 'Item', style: 'h4b', alignment: 'left' },
-                { text: 'Description', style: 'h4b', alignment: 'left' },
-                { text: 'Qty', style: 'h4b', alignment: 'center' },
-                { text: 'Unit Cost', style: 'h4b', alignment: 'center' },
-                { text: 'Total', style: 'h4b', alignment: 'right' },
-              ],
-          damageMergedItems.map((item) =>
-            this.addDamageInvoiceRow(company, item, invoice.customInvoice),
-          ),
-          invoice.customInvoice
-            ? ['auto', 'auto', '*', 'auto']
-            : ['auto', 'auto', '*', 'auto', 'auto', 'auto'],
-        ),
-      );
-    }
-
-    if (creditItems.length > 0) {
-      content.push(this.getInvoiceSectionHeader('Credit Items'));
-      content.push(
-        this.createInvoiceTable(
-          [
-            { text: 'Description', style: 'h4b', alignment: 'left' },
-            { text: 'Total', style: 'h4b', alignment: 'right' },
-          ],
-          creditItems.map((item) => [
-            { text: item.description, style: 'h6' },
-            {
-              text: `-${this.currency(item.total, company.currency?.symbol || '')}`,
-              style: 'h6',
-              alignment: 'right',
-            },
-          ]),
-          ['*', 'auto'],
-        ),
-      );
-    }
-
-    content.push(this.getRentalInvoiceTotalsBlock(invoice, company, customer));
-
-    const uploads = await this.addUploads(invoice.estimate?.uploads || []);
-    content.push(...uploads);
-
-    if (terms?.terms?.trim()) {
-      content.push({
-        text: 'Terms & Conditions',
-        style: ['h4b', 'm20'],
-        pageBreak: 'before',
       });
       content.push({ text: terms.terms });
     }
@@ -5136,7 +4902,7 @@ export class PdfService {
             1,
             true,
           ),
-          fit: [42, 42],
+          fit: [150, 150],
         };
       } catch (error) {
         console.error('Unable to load company logo for invoice', error);
@@ -5700,6 +5466,10 @@ export class PdfService {
     paymentRows.push(
       this.getDetailRow('Payment Reference', invoice.code || 'N/A'),
     );
+
+    if (company.notes) {
+      paymentRows.push(this.getDetailRow('Note', company.notes));
+    }
 
     return {
       unbreakable: true,
