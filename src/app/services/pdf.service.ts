@@ -2341,151 +2341,117 @@ export class PdfService {
         expectedDeliveryDate = this.dateFormatPipe.transform(delivery.endDate);
       }
     }
-    const data = {
-      footer: await this.getFooter(),
-      info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
-      content: [
-        {
-          text: `Expected Delivery Date: ${
-            expectedDeliveryDate
-              ? this.datePipe.transform(expectedDeliveryDate, 'longDate')
-              : 'N/A'
-          }`,
-          style: ['h4b'],
-        },
-        await this.getHeader(
-          `Delivery Note - JR - ${delivery.jobReference}`,
-          delivery.code,
-          delivery.site.name,
-          delivery.date,
-          company.logoUrl.length > 0
-            ? company.logoUrl
-            : 'assets/icon/default.webp',
-          null,
-          [
+    const content: any[] = [
+      await this.getDeliveryHeaderBlock(
+        delivery,
+        company,
+        expectedDeliveryDate,
+      ),
+      this.getDeliveryPartyBlock(delivery.site.customer, company),
+      this.getDeliveryContactBlock(delivery),
+      this.getInvoiceSectionHeader('Project Notes'),
+      {
+        text: delivery.notes || 'N/A',
+        style: 'invoiceSmall',
+        margin: [8, 2, 8, 10],
+      },
+      this.getInvoiceSectionHeader('Delivered Items'),
+      summary,
+      {
+        table: {
+          widths: ['*', 'auto'],
+          body: [
             [
-              { text: 'Job Reference:', style: 'h6b' },
-              `${delivery?.jobReference || 'N/A'}`,
-              '',
-              '',
+              { text: 'Total Items', style: 'invoiceSummaryLabel' },
+              {
+                text: this.decimalPipe.transform(itemCount),
+                style: 'invoiceSummaryValue',
+                alignment: 'right',
+              },
             ],
             [
-              { text: 'Site Main Contact:', style: 'h6b' },
-              `${delivery?.companyRepName || 'N/A'}
-          ${delivery?.companyRepEmail || 'N/A'}
-          ${delivery?.companyRepContact || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'Site Foreman:', style: 'h6b' },
-              `${delivery?.customerRepName || 'N/A'}
-          ${delivery?.customerRepEmail || 'N/A'}
-          ${delivery?.customerRepContact || 'N/A'}`,
-              '',
-              '',
-            ],
-            [
-              { text: 'Created By:', style: 'h6b' },
-              `${delivery?.createdByName || 'N/A'}`,
-              '',
-              '',
+              { text: 'Total Weight', style: 'invoiceTotalLabel' },
+              {
+                text: this.weightPipe.transform(delivery.items, true),
+                style: 'invoiceTotalValue',
+                alignment: 'right',
+              },
             ],
           ],
-        ),
-        hr,
-        this.getCompanyInfo(delivery.site.customer, company),
-        hr,
-        {
-          text: 'Project Notes',
-          style: ['h4b'],
         },
-        { text: delivery.notes },
-        hr,
-        summary,
-        hr,
-        {
-          text: `Total Items: ${itemCount}`,
-          style: 'h3',
-          alignment: 'right',
+        layout: {
+          hLineWidth: (i) => (i === 1 ? 0.8 : 0),
+          hLineColor: () => invoiceTheme.border,
+          vLineWidth: () => 0,
+          paddingLeft: () => 10,
+          paddingRight: () => 10,
+          paddingTop: () => 6,
+          paddingBottom: () => 6,
+          fillColor: () => invoiceTheme.panel,
         },
-        {
-          text: `Total Weight: ${this.weightPipe.transform(
-            delivery.items,
-            true,
-          )}`,
-          style: 'h3',
-          alignment: 'right',
-        },
-        ...(delivery.status !== 'received'
-          ? [
-              {
-                table: {
-                  // headers are automatically repeated if the table spans over multiple pages
-                  // you can declare how many rows should be treated as headers
-                  headerRows: 1,
-                  widths: ['*', '*'],
-                  body: [
-                    [
-                      {
-                        text: 'Order received by Company: ',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                      {
-                        text: 'Order delivered by Company:',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                    ],
-                    [
-                      {
-                        text: 'Name:',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                      {
-                        text: 'Name:',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                    ],
-                    [
-                      {
-                        text: 'Date:',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                      {
-                        text: 'Date:',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                    ],
-                    [
-                      {
-                        text: 'Sign:',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                      {
-                        text: 'Sign:',
-                        style: 'h4b',
-                        alignment: 'left',
-                      },
-                    ],
+        margin: [280, 0, 0, 12],
+      },
+      ...(delivery.status !== 'received'
+        ? [
+            this.getInvoiceSectionHeader('Delivery Confirmation'),
+            {
+              table: {
+                headerRows: 1,
+                widths: ['*', '*'],
+                body: [
+                  [
+                    {
+                      text: 'Order received by Company:',
+                      style: 'invoiceSmallBold',
+                    },
+                    {
+                      text: 'Order delivered by Company:',
+                      style: 'invoiceSmallBold',
+                    },
                   ],
-                },
-                layout: tLayout,
+                  [
+                    { text: 'Name:', style: 'invoiceSmallBold' },
+                    { text: 'Name:', style: 'invoiceSmallBold' },
+                  ],
+                  [
+                    { text: 'Date:', style: 'invoiceSmallBold' },
+                    { text: 'Date:', style: 'invoiceSmallBold' },
+                  ],
+                  [
+                    {
+                      text: 'Sign:',
+                      style: 'invoiceSmallBold',
+                      margin: [0, 0, 0, 22],
+                    },
+                    {
+                      text: 'Sign:',
+                      style: 'invoiceSmallBold',
+                      margin: [0, 0, 0, 22],
+                    },
+                  ],
+                ],
               },
-            ]
-          : []),
+              layout: invoiceTableLayout,
+              margin: [0, 0, 0, 10],
+            },
+          ]
+        : []),
+    ];
 
-        await this.addUploads(delivery.uploads),
-      ],
+    const uploads = await this.addUploads(delivery.uploads);
+    content.push(...uploads);
+
+    const data = {
+      footer: this.getRentalInvoiceFooter(),
+      info: this.getMetaData(`${company.name}-Delivery-${delivery.code}`),
+      content,
       styles: stylesCS,
-      defaultStyle: defaultCS,
-      // pageOrientation: 'landscape',
+      defaultStyle: {
+        ...defaultCS,
+        lineHeight: 1.25,
+      },
+      pageOrientation: 'portrait',
+      pageMargins: [32, 28, 32, 46],
     };
     return this.generatePdf(data);
   }
@@ -4891,6 +4857,213 @@ export class PdfService {
     };
   }
 
+  private async getDeliveryHeaderBlock(
+    delivery: Delivery,
+    company: Company,
+    expectedDeliveryDate: Date | null,
+  ) {
+    const detailRows = [
+      [
+        { text: 'Docket Reference', style: 'invoiceLabel' },
+        {
+          text: delivery.code || 'N/A',
+          style: 'invoiceValue',
+          alignment: 'right',
+        },
+      ],
+      [
+        { text: 'Job Reference', style: 'invoiceLabel' },
+        {
+          text: delivery.jobReference || 'N/A',
+          style: 'invoiceValue',
+          alignment: 'right',
+        },
+      ],
+      [
+        { text: 'Site Address', style: 'invoiceLabel' },
+        {
+          text: delivery.site?.name || 'N/A',
+          style: 'invoiceValue',
+          alignment: 'right',
+        },
+      ],
+      [
+        { text: 'Date Issued', style: 'invoiceLabel' },
+        {
+          text: this.toDate(delivery.date),
+          style: 'invoiceValue',
+          alignment: 'right',
+        },
+      ],
+      [
+        { text: 'Expected Delivery', style: 'invoiceLabel' },
+        {
+          text: expectedDeliveryDate
+            ? this.datePipe.transform(expectedDeliveryDate, 'longDate')
+            : 'N/A',
+          style: 'invoiceValue',
+          alignment: 'right',
+        },
+      ],
+    ];
+
+    return {
+      stack: [
+        {
+          table: {
+            widths: ['*', 240],
+            body: [
+              [
+                {
+                  stack: [
+                    await this.getInvoiceLogoNode(company),
+                    {
+                      stack: this.getInvoiceContactLines(company),
+                      margin: [0, 4, 0, 0],
+                    },
+                  ],
+                },
+                {
+                  stack: [
+                    {
+                      text: 'DELIVERY NOTE',
+                      style: 'invoiceTitle',
+                      alignment: 'right',
+                      margin: [0, 0, 0, 4],
+                    },
+                    {
+                      table: {
+                        widths: [92, '*'],
+                        body: detailRows,
+                      },
+                      layout: 'noBorders',
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+          layout: 'noBorders',
+        },
+        {
+          table: {
+            widths: ['*'],
+            body: [
+              [
+                {
+                  text: '',
+                  fillColor: invoiceTheme.accent,
+                  border: [false, false, false, false],
+                },
+              ],
+            ],
+          },
+          layout: {
+            paddingLeft: () => 0,
+            paddingRight: () => 0,
+            paddingTop: () => 0,
+            paddingBottom: () => 0,
+          },
+          margin: [0, 4, 0, 8],
+        },
+      ],
+    };
+  }
+
+  private getDeliveryPartyBlock(customer: Customer, company: Company) {
+    const partyStack = (
+      title: string,
+      entity: Customer | Company,
+    ): any[] => [
+      { text: title, style: 'invoicePartyLabel' },
+      {
+        text: entity?.name || 'N/A',
+        style: 'invoicePartyTitle',
+      },
+      ...[
+        ['Representative', entity?.rep || 'N/A'],
+        ['Email', entity?.email || 'N/A'],
+        ['Contact No', entity?.phone || 'N/A'],
+        ['ABN', entity?.abnNumber || 'N/A'],
+        ['Address', this.getAddress(entity) || 'N/A'],
+      ].map(([label, value]) => ({
+        text: [
+          { text: `${label}: `, bold: true },
+          { text: value },
+        ],
+        style: 'invoiceSmall',
+        margin: [0, 0, 0, 3],
+      })),
+    ];
+
+    return {
+      table: {
+        widths: ['*', '*'],
+        body: [
+          [
+            { stack: partyStack('TO', customer) },
+            { stack: partyStack('FROM', company) },
+          ],
+        ],
+      },
+      layout: {
+        hLineWidth: () => 0,
+        vLineWidth: (i) => (i === 1 ? 0.8 : 0),
+        vLineColor: () => invoiceTheme.border,
+        paddingLeft: (i) => (i === 0 ? 0 : 18),
+        paddingRight: (i, node) =>
+          i === node.table.widths.length - 1 ? 0 : 18,
+        paddingTop: () => 0,
+        paddingBottom: () => 0,
+      },
+      margin: [0, 0, 0, 10],
+    };
+  }
+
+  private getDeliveryContactBlock(delivery: Delivery) {
+    const contactStack = (title: string, values: any[]) => ({
+      stack: [
+        { text: title, style: 'invoicePartyLabel' },
+        ...values.map((value) => ({
+          text: value || 'N/A',
+          style: 'invoiceSmall',
+          margin: [0, 0, 0, 3],
+        })),
+      ],
+      fillColor: invoiceTheme.panel,
+    });
+
+    return {
+      table: {
+        widths: ['*', '*', '*'],
+        body: [
+          [
+            contactStack('SITE MAIN CONTACT', [
+              delivery.companyRepName,
+              delivery.companyRepEmail,
+              delivery.companyRepContact,
+            ]),
+            contactStack('SITE FOREMAN', [
+              delivery.customerRepName,
+              delivery.customerRepEmail,
+              delivery.customerRepContact,
+            ]),
+            contactStack('CREATED BY', [delivery.createdByName]),
+          ],
+        ],
+      },
+      layout: {
+        hLineWidth: () => 0,
+        vLineWidth: () => 0,
+        paddingLeft: () => 10,
+        paddingRight: () => 10,
+        paddingTop: () => 8,
+        paddingBottom: () => 8,
+      },
+      margin: [0, 0, 0, 10],
+    };
+  }
+
   private async getInvoiceLogoNode(company: Company) {
     if (company.logoUrl) {
       try {
@@ -6173,21 +6346,21 @@ export class PdfService {
     const items = [];
     shipmentItems.forEach((item, i) => {
       items.push([
-        { text: i + 1, style: 'h4b', alignment: 'left' },
-        { text: item.code, style: 'h4b', alignment: 'left' },
+        { text: i + 1, style: 'h6', alignment: 'left' },
+        { text: item.code, style: 'h6', alignment: 'left' },
         {
           text: item.category,
-          style: 'h4b',
+          style: 'h6',
           alignment: 'left',
         },
         // { text: item.size, style: 'h4b', alignment: 'center' },
-        { text: item.name, style: 'h4b', alignment: 'left' },
-        { text: item.shipmentQty, style: 'h4b', alignment: 'center' },
+        { text: item.name, style: 'h6', alignment: 'left' },
+        { text: item.shipmentQty, style: 'h6', alignment: 'center' },
         {
           text: this.decimalPipe.transform(
             (+item?.weight || 0) * (+item?.shipmentQty || 0),
           ),
-          style: 'h4b',
+          style: 'h6',
           alignment: 'center',
         },
       ]);
@@ -6216,7 +6389,8 @@ export class PdfService {
           ...items,
         ],
       },
-      layout: tLayout,
+      layout: invoiceTableLayout,
+      margin: [0, 0, 0, 10],
     };
 
     return summary;

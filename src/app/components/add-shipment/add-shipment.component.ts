@@ -519,10 +519,14 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
         if (inventoryItem) {
           inventoryItem.shipmentQty = +item.shipmentQty;
           inventoryItem.checked = item.checked || false;
+          this.checkError(inventoryItem);
         }
-        this.checkError(inventoryItem);
       });
       this.items = items;
+      // A picklist only contains its selected shipment items. Once it becomes
+      // editable again, rebuild the backup from the full inventory list so the
+      // next save does not overwrite edits with the stale picklist-only list.
+      this.itemBackup = null;
     } else {
       this.items = this.shipment.items;
     }
