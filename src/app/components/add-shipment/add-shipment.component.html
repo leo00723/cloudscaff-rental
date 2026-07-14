@@ -566,7 +566,7 @@
       <ion-item>
         <ion-label>Total weight</ion-label>
         <ion-label slot="end">
-          {{ shipment.items ? (shipment.items | weight : true) : [] }}
+          {{ shipment.items ? (shipment.items | weight: true) : [] }}
         </ion-label>
       </ion-item>
       <ion-item>
@@ -578,7 +578,7 @@
       <ion-item>
         <ion-label>Weekly Hire</ion-label>
         <ion-label slot="end">
-          {{ shipment.items | cost : true }}
+          {{ shipment.items | cost: true }}
         </ion-label>
       </ion-item>
     </ion-col>
@@ -704,7 +704,7 @@
       color="warning"
       fill="solid"
     >
-      Update
+      {{ shipment.status === "pending" ? "Save" : "Edit" }}
     </ion-button>
 
     <ion-button
