@@ -114,7 +114,7 @@ export class InvoiceComponent implements OnInit {
     return null;
   }
 
-  async downloadMixed(terms: Term = null, isDraft = true) {
+  async downloadDetailed(terms: Term = null, isDraft = true) {
     const pdf = await this.pdfSvc.mixedInvoice(
       this.invoice,
       this.company,
@@ -127,21 +127,8 @@ export class InvoiceComponent implements OnInit {
     );
   }
 
-  async downloadDetailed(terms: Term = null, isDraft = true) {
-    const pdf = await this.pdfSvc.rentalInvoice(
-      this.invoice,
-      this.company,
-      terms,
-      isDraft,
-    );
-    await this.pdfSvc.handlePdf(
-      pdf,
-      `${this.company.name}-${this.invoice.site.code}-${this.invoice.code}`,
-    );
-  }
-
   async downloadBasic(terms: Term = null, isDraft = true) {
-    const pdf = await this.pdfSvc.rentalInvoiceMerged(
+    const pdf = await this.pdfSvc.rentalInvoice(
       this.invoice,
       this.company,
       terms,

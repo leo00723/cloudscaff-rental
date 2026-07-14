@@ -31,7 +31,7 @@
     <ion-col size="12" class="text-end">
       <ion-chip
         size="small"
-        (click)="downloadDraft(true)"
+        (click)="downloadDraft()"
         color="warning"
         *ngIf="!saving && form.valid"
       >
@@ -39,19 +39,11 @@
       </ion-chip>
       <ion-chip
         size="small"
-        (click)="downloadDraft()"
-        color="warning"
-        *ngIf="!saving && form.valid"
-      >
-        Detailed Invoice Draft
-      </ion-chip>
-      <ion-chip
-        size="small"
         (click)="downloadMixedDraft()"
         color="warning"
         *ngIf="!saving && form.valid && jr.mixedInvoice"
       >
-        Mixed Invoice Draft
+        Detailed Invoice Draft
       </ion-chip>
     </ion-col>
   </ion-row>

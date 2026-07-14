@@ -43,10 +43,7 @@
       </ion-text>
     </ion-col>
     <ion-col size="12" class="text-end">
-      <ng-container *ngIf="terms$ | async as terms; else noTerms">
-        <ion-chip size="small" (click)="downloadBasic()" color="warning">
-          Basic Invoice Draft
-        </ion-chip>
+      <ng-container *ngIf="terms$ | async as terms">
         <ion-chip
           size="small"
           (click)="downloadBasic(terms, false)"
@@ -54,9 +51,6 @@
           color="tertiary"
         >
           Basic Invoice
-        </ion-chip>
-        <ion-chip size="small" (click)="downloadDetailed()" color="warning">
-          Detailed Invoice Draft
         </ion-chip>
         <ion-chip
           size="small"
@@ -66,65 +60,7 @@
         >
           Detailed Invoice
         </ion-chip>
-        <ion-chip
-          *ngIf="invoice.mixedInvoice"
-          size="small"
-          (click)="downloadMixed()"
-          color="warning"
-        >
-          Mixed Invoice Draft
-        </ion-chip>
-        <ion-chip
-          *ngIf="invoice.mixedInvoice"
-          size="small"
-          (click)="downloadMixed(terms, false)"
-          fill="clear"
-          color="tertiary"
-        >
-          Mixed Invoice
-        </ion-chip>
       </ng-container>
-      <ng-template #noTerms>
-        <ion-chip size="small" (click)="downloadBasic()" color="warning">
-          Basic Invoice Draft
-        </ion-chip>
-        <ion-chip
-          size="small"
-          (click)="downloadBasic(null, false)"
-          fill="clear"
-          color="tertiary"
-        >
-          Basic Invoice
-        </ion-chip>
-        <ion-chip size="small" (click)="downloadDetailed()" color="warning">
-          Detailed Invoice Draft
-        </ion-chip>
-        <ion-chip
-          size="small"
-          (click)="downloadDetailed(null, false)"
-          fill="clear"
-          color="primary"
-        >
-          Detailed Invoice
-        </ion-chip>
-        <ion-chip
-          *ngIf="invoice.mixedInvoice"
-          size="small"
-          (click)="downloadMixed()"
-          color="warning"
-        >
-          Mixed Invoice Draft
-        </ion-chip>
-        <ion-chip
-          *ngIf="invoice.mixedInvoice"
-          size="small"
-          (click)="downloadMixed(null, false)"
-          fill="clear"
-          color="primary"
-        >
-          Mixed Invoice
-        </ion-chip>
-      </ng-template>
     </ion-col>
   </ion-row>
 
