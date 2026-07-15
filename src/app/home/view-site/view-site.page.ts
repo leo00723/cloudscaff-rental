@@ -1186,11 +1186,19 @@ export class ViewSitePage implements OnInit, OnDestroy {
             items[key].totalDelivered += item.deliveredQty || 0;
             break;
           case 'Return':
-          case 'Overage Return':
             const returnDate = this.formatDate(item.returnDate);
             if (returnDate) {
               items[key].returnMovements[returnDate] =
                 (items[key].returnMovements[returnDate] || 0) +
+                (item.returnQty || 0);
+            }
+            items[key].totalReturned += item.returnQty || 0;
+            break;
+          case 'Overage Return':
+            const overageReturnDate = this.formatDate(item.returnDate);
+            if (overageReturnDate) {
+              items[key].returnMovements[overageReturnDate] =
+                (items[key].returnMovements[overageReturnDate] || 0) +
                 (item.returnQty || 0);
             }
             items[key].totalOverReturned += item.returnQty || 0;
