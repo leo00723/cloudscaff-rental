@@ -358,14 +358,6 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
     if (!this.shipment.date) {
       this.shipment.date = new Date();
     }
-    const companyCopy = { ...this.company };
-    companyCopy.rep = this.shipment.companyRepName;
-    companyCopy.email = this.shipment.companyRepEmail;
-    companyCopy.phone = this.shipment.companyRepContact;
-
-    this.shipment.site.customer.rep = this.shipment.customerRepName;
-    this.shipment.site.customer.email = this.shipment.customerRepEmail;
-    this.shipment.site.customer.phone = this.shipment.customerRepContact;
 
     const loader = await this.loadingCtrl.create({
       message: 'Please wait',
@@ -388,7 +380,7 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
       }
       const pdf = await this.masterSvc
         .pdf()
-        .delivery(this.shipment, companyCopy, null);
+        .delivery(this.shipment, this.company, null);
       this.masterSvc.pdf().handlePdf(pdf, this.shipment.code);
     } catch (error) {
       console.error('Error in downloading PDF:', error);

@@ -2329,6 +2329,18 @@ export class PdfService {
       (acc, item) => acc + item.shipmentQty,
       0,
     );
+    const deliveryCompany = {
+      ...company,
+      rep: delivery.companyRepName || company.rep,
+    };
+    const deliveryCustomer = delivery.site?.customer
+      ? {
+          ...delivery.site.customer,
+          rep: delivery.customerRepName || delivery.site.customer.rep,
+          email: delivery.customerRepEmail || delivery.site.customer.email,
+          phone: delivery.customerRepContact || delivery.site.customer.phone,
+        }
+      : undefined;
     // Handle DD-MM-YYYY format
     let expectedDeliveryDate = null;
     if (delivery?.endDate) {
@@ -2347,7 +2359,7 @@ export class PdfService {
         company,
         expectedDeliveryDate,
       ),
-      this.getDeliveryPartyBlock(delivery.site.customer, company),
+      this.getDeliveryPartyBlock(deliveryCustomer, deliveryCompany),
       this.getDeliveryContactBlock(delivery),
       this.getInvoiceSectionHeader('Project Notes'),
       {
