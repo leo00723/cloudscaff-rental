@@ -23,6 +23,8 @@ exports.checkUsers = accounts.checkUsers;
 //export shipment functions to firebase
 
 exports.manageBulkUpdate = inventory.manageBulkUpdate;
+exports.syncTransactionTypeOnStockItemUpdate =
+  inventory.syncTransactionTypeOnStockItemUpdate;
 exports.manageSplitDelivery = inventory.manageSplitDelivery;
 exports.manageShipment = inventory.manageShipment;
 exports.manageBillableShipment = inventory.manageBillableShipment;

@@ -45,6 +45,150 @@ const toTimestamp = (date: any): Timestamp => {
   return Timestamp.now();
 };
 
+exports.syncTransactionTypeOnStockItemUpdate = functions.firestore
+  .document('company/{companyId}/stockItems/{itemId}')
+  .onUpdate(async (change, context) => {
+    const previousType = change.before.data().type || '';
+    const currentType = change.after.data().type || '';
+
+    if (previousType === currentType) {
+      return null;
+    }
+
+    const transactions = await admin
+      .firestore()
+      .collection(`company/${context.params.companyId}/transactionLog`)
+      .where('itemId', '==', context.params.itemId)
+      .get();
+
+    if (transactions.empty) {
+      logger.info(
+        `No transactions found for stock item ${context.params.itemId}`,
+      );
+      return null;
+    }
+
+    const stockItem = change.after.data();
+    const isConsumable = currentType === 'Consumable';
+    const batchSize = 450;
+    let updatedTransactions = 0;
+    const jobReferenceMinHire = new Map<string, number>();
+    const transactionUpdates: {
+      ref: admin.firestore.DocumentReference;
+      data: Record<string, any>;
+    }[] = [];
+
+    for (const transaction of transactions.docs) {
+      const transactionData = transaction.data();
+
+      // Only active delivery transactions drive the current job-reference bill.
+      // Completed records are invoice history and must not be rewritten.
+      if (
+        transactionData.status !== 'active' ||
+        transactionData.transactionType !== 'Delivery' ||
+        transactionData.isDamageCharge
+      ) {
+        continue;
+      }
+
+      const deliveredQty = Number(transactionData.deliveredQty || 0);
+      const returnTotal = Number(transactionData.returnTotal || 0);
+      const adjustmentTotal = Number(transactionData.adjustmentTotal || 0);
+      const balanceQty = Math.max(
+        deliveredQty - returnTotal - adjustmentTotal,
+        0,
+      );
+      const invoiceQty = balanceQty;
+      const invoiceStart = toTimestamp(
+        transactionData.invoiceStart || transactionData.deliveryDate,
+      );
+      const sellingCost = Number(stockItem.sellingCost || 0);
+
+      if (isConsumable) {
+        transactionUpdates.push({
+          ref: transaction.ref,
+          data: {
+            type: currentType,
+            isConsumable: true,
+            sellingCost,
+            hireRate: 0,
+            deliveredQty,
+            invoiceQty,
+            balanceQty: 0,
+            invoiceStart,
+            invoiceEnd: invoiceStart,
+            days: 0,
+            months: 0,
+            total: +(invoiceQty * sellingCost).toFixed(2),
+            minHireApplied: false,
+          },
+        });
+        continue;
+      }
+
+      const jobReferenceKey = `${transactionData.siteId || ''}:${
+        transactionData.jobReference || ''
+      }`;
+      let minHire = jobReferenceMinHire.get(jobReferenceKey);
+
+      if (minHire === undefined) {
+        const jobReferences = await admin
+          .firestore()
+          .collection(`company/${context.params.companyId}/jobReferences`)
+          .where('site.id', '==', transactionData.siteId)
+          .where('jobReference', '==', transactionData.jobReference)
+          .limit(1)
+          .get();
+
+        minHire = Math.max(
+          Number(jobReferences.docs[0]?.data()?.minHire || 1),
+          1,
+        );
+        jobReferenceMinHire.set(jobReferenceKey, minHire);
+      }
+
+      const invoiceEndDate = invoiceStart.toDate();
+      invoiceEndDate.setUTCDate(invoiceEndDate.getUTCDate() + (minHire - 1));
+      const hireRate = Number(stockItem.hireCost || 0);
+
+      transactionUpdates.push({
+        ref: transaction.ref,
+        data: {
+          type: currentType,
+          isConsumable: false,
+          sellingCost,
+          hireRate,
+          deliveredQty,
+          invoiceQty,
+          balanceQty,
+          invoiceStart,
+          invoiceEnd: Timestamp.fromDate(invoiceEndDate),
+          days: minHire,
+          months: +(minHire / 30).toFixed(2),
+          total: +(invoiceQty * hireRate * minHire).toFixed(2),
+          billingMode: 'advance',
+          minHireApplied: false,
+          status: balanceQty > 0 ? 'active' : 'completed',
+        },
+      });
+    }
+
+    for (let index = 0; index < transactionUpdates.length; index += batchSize) {
+      const batch = admin.firestore().batch();
+      const updates = transactionUpdates.slice(index, index + batchSize);
+
+      updates.forEach((update) => batch.update(update.ref, update.data));
+      await batch.commit();
+      updatedTransactions += updates.length;
+    }
+
+    logger.info(
+      `Updated ${updatedTransactions} transactions for stock item ${context.params.itemId} from ${previousType} to ${currentType}`,
+    );
+
+    return null;
+  });
+
 exports.manageBulkUpdate = functions.firestore
   .document('company/{companyId}/bulkUpdates/{bulkUpdateId}')
   .onUpdate(async (change, context) => {
@@ -825,6 +969,7 @@ const updateItems = async (
           'replacementCost',
           'location',
           'lowPercentage',
+          'type',
         ];
 
         metadataFields.forEach((field) => {
