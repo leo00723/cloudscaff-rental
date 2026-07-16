@@ -15,6 +15,17 @@ import { environment } from 'src/environments/environment';
 export class AppComponent implements OnInit, OnDestroy {
   @Select() user$: Observable<User>;
   private subs = new Subscription();
+  private readonly disableNumberInputWheel = (event: WheelEvent): void => {
+    const numberInput = event
+      .composedPath()
+      .find(
+        (element): element is HTMLInputElement =>
+          element instanceof HTMLInputElement && element.type === 'number'
+      );
+
+    numberInput?.blur();
+  };
+
   constructor(private updates: SwUpdate, private masterSvc: MasterService) {
     if (environment.production) {
       this.splash();
@@ -33,9 +44,14 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    document.addEventListener('wheel', this.disableNumberInputWheel, {
+      capture: true,
+      passive: true,
+    });
     this.init();
   }
   ngOnDestroy(): void {
+    document.removeEventListener('wheel', this.disableNumberInputWheel, true);
     this.subs.unsubscribe();
   }
   init() {
