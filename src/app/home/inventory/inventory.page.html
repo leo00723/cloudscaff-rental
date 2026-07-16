@@ -203,11 +203,19 @@
         </ion-chip>
         <ion-chip
           type="button"
+          color="tertiary"
+          class="me-2"
+          (click)="downloadCountSheet(items)"
+        >
+          Count Sheet
+        </ion-chip>
+        <!-- <ion-chip
+          type="button"
           color="success"
           class="me-2"
           (click)="bulkAdd = true"
           >Bulk Update</ion-chip
-        >
+        > -->
         <ion-chip type="button" color="success" (click)="importing = true">
           Import Inventory
         </ion-chip>

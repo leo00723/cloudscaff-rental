@@ -4288,6 +4288,210 @@ export class PdfService {
     return this.generatePdf(data);
   }
 
+  async inventoryCountSheet(
+    inventory: InventoryItem[],
+    company: Company,
+  ) {
+    const blankCell = (alignment = 'center') => ({
+      text: '',
+      style: 'h4b',
+      alignment,
+      margin: [0, 8, 0, 8],
+    });
+    const blankRow = () => [
+      blankCell('left'),
+      blankCell('left'),
+      blankCell('left'),
+      blankCell('left'),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+    ];
+    const items = inventory.map((item) => [
+      { text: item.code || '', style: 'h4b', alignment: 'left' },
+      { text: item.category || '', style: 'h4b', alignment: 'left' },
+      { text: item.name || '', style: 'h4b', alignment: 'left' },
+      {
+        text: item.location || 'Main Yard',
+        style: 'h4b',
+        alignment: 'left',
+      },
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+      blankCell(),
+    ]);
+    items.push(blankRow(), blankRow());
+
+    const damageRows = Array.from({ length: 4 }, () => [
+      blankCell('left'),
+      blankCell('left'),
+      blankCell(),
+      blankCell('left'),
+    ]);
+    const damageSection = {
+      table: {
+        headerRows: 2,
+        widths: ['auto', '*', 'auto', '*'],
+        body: [
+          [
+            {
+              text: 'Damage / Writeoffs',
+              style: 'h4b',
+              alignment: 'left',
+              colSpan: 4,
+            },
+            {},
+            {},
+            {},
+          ],
+          [
+            { text: 'Cost', style: 'h4b', alignment: 'left' },
+            { text: 'Item', style: 'h4b', alignment: 'left' },
+            { text: 'Qty', style: 'h4b', alignment: 'center' },
+            {
+              text: 'Details of damage',
+              style: 'h4b',
+              alignment: 'left',
+            },
+          ],
+          ...damageRows,
+        ],
+      },
+      layout: tLayout,
+      margin: [0, 12, 0, 0],
+    };
+    const summary = {
+      table: {
+        headerRows: 1,
+        widths: [
+          'auto',
+          'auto',
+          'auto',
+          'auto',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+          '*',
+        ],
+        body: [
+          [
+            { text: 'Code', style: 'h4b', alignment: 'left' },
+            { text: 'Category', style: 'h4b', alignment: 'left' },
+            { text: 'Name', style: 'h4b', alignment: 'left' },
+            { text: 'Location', style: 'h4b', alignment: 'left' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+            { text: '', style: 'h4b', alignment: 'center' },
+          ],
+          ...items,
+        ],
+      },
+      layout: tLayout,
+    };
+    const data = {
+      footer: await this.getFooter(),
+      content: [
+        await this.getHeader(
+          'Inventory Count Sheet',
+          company.name,
+          'All Locations',
+          new Date(),
+          company.logoUrl?.length > 0
+            ? company.logoUrl
+            : 'assets/icon/default.webp',
+          null,
+          [],
+        ),
+        hr,
+        summary,
+        hr,
+        {
+          table: {
+            headerRows: 1,
+            widths: ['*'],
+            body: [
+              [
+                {
+                  text: 'Inventory Counted By: ',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Name:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Date:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'Sign:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+              [
+                {
+                  text: 'I have confirmed all inventory quantities counted are correct:',
+                  style: 'h4b',
+                  alignment: 'left',
+                },
+              ],
+            ],
+          },
+          layout: tLayout,
+        },
+        hr,
+        damageSection,
+      ],
+      styles: stylesCS,
+      defaultStyle: defaultCS,
+      pageOrientation: 'landscape',
+      pageMargins: [15, 40, 15, 40],
+    };
+
+    return this.generatePdf(data);
+  }
+
   // UTILITY FUNCTIONS
 
   async generatePdf(data) {

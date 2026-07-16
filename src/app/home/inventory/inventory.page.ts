@@ -98,7 +98,7 @@ export class InventoryPage implements OnInit {
 
   constructor(
     private masterSvc: MasterService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
   ) {
     const page = Number(this.activatedRoute.snapshot.queryParamMap.get('page'));
     this.active = page >= 1 && page <= 6 ? page : 1;
@@ -185,16 +185,19 @@ export class InventoryPage implements OnInit {
   downloadMasterList(items: InventoryItem[]) {
     this.masterSvc.notification().presentAlertConfirm(async () => {
       // Group the items by location
-      const groupedItems = items.reduce((acc, item) => {
-        // Use "Unknown Location" for items without a location
-        const locationKey = item.location || 'Main Yard';
+      const groupedItems = items.reduce(
+        (acc, item) => {
+          // Use "Unknown Location" for items without a location
+          const locationKey = item.location || 'Main Yard';
 
-        if (!acc[locationKey]) {
-          acc[locationKey] = [];
-        }
-        acc[locationKey].push(item);
-        return acc;
-      }, {} as { [key: string]: InventoryItem[] });
+          if (!acc[locationKey]) {
+            acc[locationKey] = [];
+          }
+          acc[locationKey].push(item);
+          return acc;
+        },
+        {} as { [key: string]: InventoryItem[] },
+      );
 
       const locations = Object.keys(groupedItems);
 
@@ -211,7 +214,7 @@ export class InventoryPage implements OnInit {
             .masterInventoryList(
               groupedItems[location],
               location,
-              this.company
+              this.company,
             );
 
           await this.masterSvc
@@ -220,15 +223,37 @@ export class InventoryPage implements OnInit {
               pdf,
               `${this.company.name.replace(
                 /[.\s]+/g,
-                ''
-              )}-Inventory-Masterlist-${location}-${new Date().toDateString()}`
+                '',
+              )}-Inventory-Masterlist-${location}-${new Date().toDateString()}`,
             );
         } catch (error) {
           console.error(
             `Error generating or handling PDF for location ${location}:`,
-            error
+            error,
           );
         }
+      }
+    });
+  }
+
+  downloadCountSheet(items: InventoryItem[]) {
+    this.masterSvc.notification().presentAlertConfirm(async () => {
+      try {
+        const pdf = await this.masterSvc
+          .pdf()
+          .inventoryCountSheet(items, this.company);
+
+        await this.masterSvc
+          .pdf()
+          .handlePdf(
+            pdf,
+            `${this.company.name.replace(
+              /[.\s]+/g,
+              '',
+            )}-Inventory-Count-Sheet-${new Date().toDateString()}`,
+          );
+      } catch (error) {
+        console.error('Error generating inventory count sheet:', error);
       }
     });
   }
@@ -346,7 +371,7 @@ export class InventoryPage implements OnInit {
         totalQty: item?.yardQty,
         availableQty: this.calcPipe.transform(item),
         editQty: 0,
-      }))
+      })),
     );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'list');
@@ -362,7 +387,7 @@ export class InventoryPage implements OnInit {
         .getCollectionFiltered(`company/${company.id}/siteStock`, [
           where('ids', '!=', []),
         ])
-        .pipe(take(1))
+        .pipe(take(1)),
     );
 
     // Create a matrix that includes site and item data
@@ -387,7 +412,7 @@ export class InventoryPage implements OnInit {
       item: any;
       site: string;
       availableQty: number;
-    }[]
+    }[],
   ) {
     // Create a unique list of sites
     const sites = [...new Set(matrix.map((row) => row.site))];
@@ -442,7 +467,7 @@ export class InventoryPage implements OnInit {
       // Calculate total weight for this item across all sites
       const totalItemWeight = quantities.reduce(
         (sum, qty) => sum + qty * item.weight,
-        0
+        0,
       );
 
       return [
@@ -462,7 +487,7 @@ export class InventoryPage implements OnInit {
         const itemWeight = parseFloat(row[3]) || 0; // Weight is at index 3
         const siteQty = parseFloat(row[5 + siteIndex]) || 0; // Site quantities start at index 5
         return total + itemWeight * siteQty;
-      }, 0)
+      }, 0),
     );
 
     // Add a totals row
@@ -508,7 +533,7 @@ export class InventoryPage implements OnInit {
 
   getAvailableQty(itemId: string, siteId: string): number {
     const cell = this.matrix.find(
-      (m) => m.itemId === itemId && m.siteId === siteId
+      (m) => m.itemId === itemId && m.siteId === siteId,
     );
     return cell ? cell.availableQty : 0;
   }
@@ -559,15 +584,15 @@ export class InventoryPage implements OnInit {
         `company/${company.id}/siteStock`,
         'ids',
         'array-contains',
-        item.id
+        item.id,
       )
       .pipe(
         map((data) =>
           data.map((doc) => {
             const single = doc.items.find((i: any) => i.id === item.id);
             return { site: doc.site, item: single };
-          })
-        )
+          }),
+        ),
       );
     const modal = await this.masterSvc.modal().create({
       component: ViewStockLocationsComponent,
@@ -585,7 +610,7 @@ export class InventoryPage implements OnInit {
       .edit()
       .getCollectionFiltered(
         `company/${company.id}/stockItems/${item.id}/log`,
-        [orderBy('date', 'desc')]
+        [orderBy('date', 'desc')],
       );
 
     const modal = await this.masterSvc.modal().create({
@@ -633,7 +658,7 @@ export class InventoryPage implements OnInit {
               delete item.log;
             });
             return items;
-          })
+          }),
         ),
       },
       cssClass: 'fullscreen',
@@ -655,7 +680,7 @@ export class InventoryPage implements OnInit {
               delete item.log;
             });
             return items;
-          })
+          }),
         ),
         value: shipment,
       },
@@ -686,7 +711,7 @@ export class InventoryPage implements OnInit {
               delete item.log;
             });
             return items;
-          })
+          }),
         ),
       },
       cssClass: 'fullscreen',
@@ -709,7 +734,7 @@ export class InventoryPage implements OnInit {
               delete item.log;
             });
             return items;
-          })
+          }),
         ),
       },
       showBackdrop: false,
@@ -733,7 +758,7 @@ export class InventoryPage implements OnInit {
               delete item.log;
             });
             return items;
-          })
+          }),
         ),
       },
       showBackdrop: false,
@@ -876,7 +901,7 @@ export class InventoryPage implements OnInit {
                       `company/${company}/stockItems`,
                       this.masterSvc
                         .edit()
-                        .createUID(`company/${company}/stockItems`)
+                        .createUID(`company/${company}/stockItems`),
                     );
                   batch.set(doc, item);
                 } catch (error) {
@@ -899,7 +924,7 @@ export class InventoryPage implements OnInit {
             for (let i = 0; i < result.data.length; i += chunkSize) {
               await processChunk(
                 i,
-                Math.min(i + chunkSize, result.data.length)
+                Math.min(i + chunkSize, result.data.length),
               );
               // Use setTimeout to yield to the browser's event loop
               await new Promise((resolve) => setTimeout(resolve, 0));
@@ -938,7 +963,7 @@ export class InventoryPage implements OnInit {
         .getCollectionOrdered(
           `company/${this.company.id}/stockItems`,
           'code',
-          'asc'
+          'asc',
         );
 
       // Bulk updates
@@ -980,7 +1005,7 @@ export class InventoryPage implements OnInit {
           '==',
           'pending',
           'code',
-          'asc'
+          'asc',
         );
       this.picklistShipments$ = this.masterSvc
         .edit()
@@ -990,7 +1015,7 @@ export class InventoryPage implements OnInit {
           '==',
           'picklist',
           'code',
-          'asc'
+          'asc',
         );
       this.docketShipments$ = this.masterSvc
         .edit()
@@ -1000,7 +1025,7 @@ export class InventoryPage implements OnInit {
           '==',
           'docket',
           'code',
-          'asc'
+          'asc',
         );
       this.reservedShipments$ = this.masterSvc
         .edit()
@@ -1010,7 +1035,7 @@ export class InventoryPage implements OnInit {
           '==',
           'reserved',
           'code',
-          'asc'
+          'asc',
         );
       this.voidShipments$ = this.masterSvc
         .edit()
@@ -1020,7 +1045,7 @@ export class InventoryPage implements OnInit {
           '==',
           'void',
           'code',
-          'asc'
+          'asc',
         );
 
       // transfers
@@ -1032,7 +1057,7 @@ export class InventoryPage implements OnInit {
           '==',
           'sent',
           'code',
-          'asc'
+          'asc',
         );
       this.pendingTransfers$ = this.masterSvc
         .edit()
@@ -1042,7 +1067,7 @@ export class InventoryPage implements OnInit {
           '==',
           'pending',
           'code',
-          'asc'
+          'asc',
         );
       // requests
       this.requests$ = this.masterSvc
@@ -1053,7 +1078,7 @@ export class InventoryPage implements OnInit {
           '==',
           'approved',
           'code',
-          'asc'
+          'asc',
         );
       this.submittedRequests$ = this.masterSvc
         .edit()
@@ -1063,7 +1088,7 @@ export class InventoryPage implements OnInit {
           '==',
           'submitted',
           'code',
-          'asc'
+          'asc',
         );
       this.partialRequests$ = this.masterSvc
         .edit()
@@ -1073,7 +1098,7 @@ export class InventoryPage implements OnInit {
           '==',
           'partial shipment',
           'code',
-          'asc'
+          'asc',
         );
       // returns
       this.returns$ = this.masterSvc
@@ -1090,7 +1115,7 @@ export class InventoryPage implements OnInit {
           '==',
           'submitted',
           'code',
-          'desc'
+          'desc',
         );
       this.outboundReturns$ = this.masterSvc
         .edit()
@@ -1106,7 +1131,7 @@ export class InventoryPage implements OnInit {
           '==',
           'void',
           'code',
-          'desc'
+          'desc',
         );
       this.openOverReturns$ = this.masterSvc
         .edit()
