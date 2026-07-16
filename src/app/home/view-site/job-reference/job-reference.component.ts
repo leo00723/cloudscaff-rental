@@ -215,6 +215,7 @@ export class JobReferenceComponent implements OnInit {
     this.notificationSvc.presentAlertConfirm(async () => {
       try {
         this.saving = true;
+        const invoiceDate = new Date();
         const invoice: TransactionInvoice = {
           ...this.jr,
           ...this.form.value,
@@ -222,7 +223,7 @@ export class JobReferenceComponent implements OnInit {
           items: this.transactions,
           createdBy: this.user.id,
           createdByName: this.user.name,
-          date: new Date(),
+          date: invoiceDate,
           poId: this.jr.id,
           creditItems: [],
           creditTotal: 0,
@@ -242,6 +243,7 @@ export class JobReferenceComponent implements OnInit {
           `company/${this.company.id}/jobReferences`,
           this.jr.id,
           {
+            lastInvoiceDate: invoiceDate,
             lastInvoiceTotal: this.jr.total,
           },
         );

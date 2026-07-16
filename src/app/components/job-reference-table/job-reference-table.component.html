@@ -53,6 +53,18 @@
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
+    *ngIf="showLastInvoiceDate"
+    name="Last Invoice"
+    prop="lastInvoiceDate"
+  >
+    <ng-template let-value="value" ngx-datatable-cell-template>
+      <ng-container *ngIf="value; else noInvoice">
+        {{ value | dateFormat | date: "dd MMM yyyy" }}
+      </ng-container>
+      <ng-template #noInvoice>—</ng-template>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
     name="Created By"
     prop="createdByName"
   ></ngx-datatable-column>

@@ -22,6 +22,7 @@ import { JobReference } from 'src/app/models/jr.model';
 export class JobReferenceTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<JobReference>();
+  @Input() showLastInvoiceDate = true;
   @Input() set value(data: Observable<JobReference[]>) {
     this.temp$ = data;
     this.data$ = data;
@@ -70,6 +71,8 @@ export class JobReferenceTableComponent {
             (item.site?.customer?.name &&
               item.site.customer.name.toLowerCase().includes(val)) ||
             (item.date && item.date.toString().toLowerCase().includes(val)) ||
+            (item.lastInvoiceDate &&
+              item.lastInvoiceDate.toString().toLowerCase().includes(val)) ||
             (item.createdByName &&
               item.createdByName.toLowerCase().includes(val)) ||
             !val

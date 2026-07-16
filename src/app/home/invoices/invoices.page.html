@@ -40,6 +40,7 @@
           <div class="ion-padding" slot="content">
             <app-job-reference-table
               [value]="rentalInvoices$"
+              [showLastInvoiceDate]="false"
               *ngIf="rentalInvoices$ | async else loading"
               (selectedItem)="viewRentalInvoice($event)"
             ></app-job-reference-table>
@@ -52,6 +53,7 @@
           <div class="ion-padding" slot="content">
             <app-job-reference-table
               [value]="sentRentalInvoices$"
+              [showLastInvoiceDate]="false"
               *ngIf="sentRentalInvoices$ | async else loading"
               (selectedItem)="viewRentalInvoice($event)"
             ></app-job-reference-table>
