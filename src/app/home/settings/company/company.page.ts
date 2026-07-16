@@ -37,6 +37,7 @@ export class CompanyPage implements OnDestroy {
     rep: '',
     email: '',
     phone: '',
+    pdfAccentColor: '#ff881a',
     address: '',
     suburb: '',
     city: '',
@@ -170,6 +171,10 @@ export class CompanyPage implements OnDestroy {
           rep: [this.company.rep],
           email: [this.company.email, [Validators.required, Validators.email]],
           phone: [this.company.phone, Validators.required],
+          pdfAccentColor: [
+            this.company.pdfAccentColor || '#ff881a',
+            [Validators.required, Validators.pattern(/^#[0-9A-Fa-f]{6}$/)],
+          ],
           address: [this.company.address, Validators.required],
           suburb: [this.company.suburb],
           city: [this.company.city, Validators.required],

@@ -50,6 +50,29 @@
               ></app-img-upload>
             </ion-col>
             <ion-col size="12">
+              <ion-text>
+                <h6>Document Accent Color</h6>
+              </ion-text>
+              <ion-item mode="ios" class="rounded-3 mb-3">
+                <ion-label>
+                  PDF accent
+                  <p>{{ field('pdfAccentColor').value | uppercase }}</p>
+                </ion-label>
+                <input
+                  type="color"
+                  formControlName="pdfAccentColor"
+                  aria-label="PDF accent color"
+                  style="width: 48px; height: 36px; border: 0; background: none"
+                />
+              </ion-item>
+              <ion-text color="medium">
+                <p>
+                  Used for headings, highlights, and branding across generated
+                  PDFs.
+                </p>
+              </ion-text>
+            </ion-col>
+            <ion-col size="12">
               <app-input-reactive
                 title="Business Name"
                 placeholder="Cloudscaff Scaffold Management"
@@ -428,6 +451,23 @@
                   icon="cloud-upload-outline"
                   (res)="uploadImage($event, 'subheader')"
                 ></app-img-upload>
+              </ion-col>
+              <ion-col size="12">
+                <ion-text>
+                  <h6>Document Accent Color</h6>
+                </ion-text>
+                <ion-item mode="ios" class="rounded-3 mb-3">
+                  <ion-label>
+                    PDF accent
+                    <p>{{ field('pdfAccentColor').value | uppercase }}</p>
+                  </ion-label>
+                  <input
+                    type="color"
+                    formControlName="pdfAccentColor"
+                    aria-label="PDF accent color"
+                    style="width: 48px; height: 36px; border: 0; background: none"
+                  />
+                </ion-item>
               </ion-col>
               <ion-col size="12">
                 <app-input-reactive

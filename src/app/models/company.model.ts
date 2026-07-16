@@ -27,6 +27,7 @@ export interface Company {
   needsSetup?: boolean;
   notes?: string;
   phone?: string;
+  pdfAccentColor?: string;
   rep?: string;
   abnNumber?: string;
   removeBilling?: boolean;

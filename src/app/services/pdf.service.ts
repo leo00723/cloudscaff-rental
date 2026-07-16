@@ -53,18 +53,15 @@ const hr = {
   },
 };
 const tLayout = {
-  hLineWidth: () => 1,
-  hLineColor: () => '#ccc',
-  vLineWidth: () => 1,
-  vLineColor: () => '#ccc',
-  // hLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
-  // vLineStyle: function (i, node) { return {dash: { length: 10, space: 4 }}; },
-  paddingLeft: () => 6,
-  paddingRight: () => 6,
-  paddingTop: () => 4,
-  paddingBottom: () => 1,
-  fillColor: (i, node) =>
-    i === 0 || i === node.table.body.length ? '#eeeeee' : 'white',
+  hLineWidth: () => 0.8,
+  hLineColor: () => '#dcdcdc',
+  vLineWidth: () => 0.8,
+  vLineColor: () => '#dcdcdc',
+  paddingLeft: () => 8,
+  paddingRight: () => 8,
+  paddingTop: () => 7,
+  paddingBottom: () => 7,
+  fillColor: (i) => (i === 0 ? '#f3f3f3' : 'white'),
 };
 const invoiceTheme = {
   accent: '#ff881a',
@@ -239,8 +236,6 @@ const defaultCS = {
   // alignment: 'justify'
 };
 
-const defaultSubHeader =
-  'https://placehold.co/1122x80?text=Billing+Header+Placeholder&font=roboto';
 @Injectable({
   providedIn: 'root',
 })
@@ -516,7 +511,7 @@ export class PdfService {
       defaultStyle: defaultCS,
       pageOrientation: 'landscape',
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // ESTIMATE RENTAL PDF
@@ -745,7 +740,7 @@ export class PdfService {
       defaultStyle: defaultCS,
       pageOrientation: 'landscape',
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // ESTIMATE RENTAL PDF
@@ -969,7 +964,7 @@ export class PdfService {
       defaultStyle: defaultCS,
       pageOrientation: 'landscape',
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // INVOICE RENTAL PDF
@@ -1062,7 +1057,7 @@ export class PdfService {
       pageOrientation: 'portrait',
       pageMargins: [32, 28, 32, 46],
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // INVOICE RENTAL PDF
@@ -1258,7 +1253,7 @@ export class PdfService {
       pageOrientation: 'portrait',
       pageMargins: [32, 28, 32, 46],
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // INVOICE RENTAL PDF
@@ -1432,7 +1427,7 @@ export class PdfService {
       pageOrientation: 'portrait',
       pageMargins: [32, 28, 32, 46],
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // INSPECTION PDF
@@ -1714,7 +1709,7 @@ export class PdfService {
       styles: stylesCS,
       defaultStyle: defaultCS,
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // HANDOVER PDF
@@ -2035,7 +2030,7 @@ export class PdfService {
       styles: stylesCS,
       defaultStyle: defaultCS,
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // HANDOVER PDF
@@ -2319,7 +2314,7 @@ export class PdfService {
       styles: stylesCS,
       defaultStyle: defaultCS,
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // DELIVERY INVENTORY PDF
@@ -2465,7 +2460,7 @@ export class PdfService {
       pageOrientation: 'portrait',
       pageMargins: [32, 28, 32, 46],
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // SITE INVENTORY PDF
@@ -2531,7 +2526,7 @@ export class PdfService {
       styles: stylesCS,
       defaultStyle: defaultCS,
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // INVENTORY MATRIX PDF
@@ -2639,7 +2634,7 @@ export class PdfService {
     };
 
     // Generate the PDF
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // SITE INVENTORY PDF
@@ -2755,7 +2750,7 @@ export class PdfService {
       defaultStyle: defaultCS,
       pageOrientation: 'landscape',
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // STOCK LOCATIONS PDF
@@ -2912,7 +2907,7 @@ export class PdfService {
       defaultStyle: defaultCS,
     };
 
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // DELIVERY PICKLIST PDF
@@ -3101,7 +3096,7 @@ export class PdfService {
       styles: stylesCS,
       defaultStyle: defaultCS,
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // RETURN PICKLIST PDF
@@ -3333,7 +3328,7 @@ export class PdfService {
       defaultStyle: defaultCS,
       pageOrientation: 'landscape',
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // RETURN INVENTORY PDF
@@ -3461,7 +3456,7 @@ export class PdfService {
       pageOrientation: 'portrait',
       pageMargins: [32, 28, 32, 46],
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   async transferDoc(
@@ -3529,7 +3524,7 @@ export class PdfService {
       pageOrientation: 'portrait',
       pageMargins: [32, 28, 32, 46],
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   async overReturnDoc(
@@ -3797,7 +3792,7 @@ export class PdfService {
       defaultStyle: defaultCS,
       pageOrientation: 'landscape',
     };
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   async overReturnedItemsReport(
@@ -4141,7 +4136,7 @@ export class PdfService {
       pageOrientation: 'landscape',
     };
 
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   async masterInventoryList(
@@ -4285,7 +4280,7 @@ export class PdfService {
       pageMargins: [15, 40, 15, 40], // [left, top, right, bottom]
     };
 
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   async inventoryCountSheet(
@@ -4489,14 +4484,77 @@ export class PdfService {
       pageMargins: [15, 40, 15, 40],
     };
 
-    return this.generatePdf(data);
+    return this.generatePdf(data, company);
   }
 
   // UTILITY FUNCTIONS
 
-  async generatePdf(data) {
+  async generatePdf(data, company?: Company) {
+    const documentCompany =
+      company || this.store.selectSnapshot(CompanyState.company);
+    const accentColor = this.getPdfAccentColor(documentCompany);
+    this.applyPdfTheme(data, accentColor);
     return pdfMake.createPdf(data);
   }
+
+  private getPdfAccentColor(company?: Company) {
+    const color = company?.pdfAccentColor || invoiceTheme.accent;
+    return /^#[0-9a-f]{6}$/i.test(color) ? color : invoiceTheme.accent;
+  }
+
+  private applyPdfTheme(data: any, accentColor: string) {
+    const themeNode = (node: any): any => {
+      if (Array.isArray(node)) {
+        node.forEach(themeNode);
+        return node;
+      }
+
+      if (!node || typeof node !== 'object') {
+        return node;
+      }
+
+      Object.keys(node).forEach((key) => {
+        const value = node[key];
+        if (typeof value === 'string') {
+          node[key] = value.replace(
+            new RegExp(invoiceTheme.accent, 'gi'),
+            accentColor,
+          );
+        } else if (typeof value !== 'function') {
+          themeNode(value);
+        }
+      });
+
+      if (
+        typeof node.fillColor === 'string' &&
+        node.fillColor.toLowerCase() === accentColor.toLowerCase() &&
+        node.text
+      ) {
+        node.color = this.getContrastColor(accentColor);
+      }
+
+      return node;
+    };
+
+    themeNode(data);
+
+    ['header', 'footer', 'background'].forEach((property) => {
+      const renderer = data[property];
+      if (typeof renderer === 'function') {
+        data[property] = (...args: any[]) =>
+          themeNode(renderer(...args));
+      }
+    });
+  }
+
+  private getContrastColor(color: string) {
+    const red = parseInt(color.slice(1, 3), 16);
+    const green = parseInt(color.slice(3, 5), 16);
+    const blue = parseInt(color.slice(5, 7), 16);
+    const luminance = (red * 299 + green * 587 + blue * 114) / 1000;
+    return luminance >= 150 ? invoiceTheme.text : '#ffffff';
+  }
+
   private async getHeader(
     title: string,
     code: string,
@@ -4506,53 +4564,32 @@ export class PdfService {
     link?: string,
     data?: any,
   ) {
-    const linkData = link
-      ? [
-          { text: 'View Online:', style: 'h6b' },
-          {
-            text: 'Click here to view online',
-            style: ['h6b', { color: 'blue' }],
-            link,
-          },
-          '',
-          '',
-        ]
-      : ['', '', '', ''];
+    const company =
+      this.store.selectSnapshot(CompanyState.company) ||
+      ({ logoUrl: url } as Company);
+    const details: Array<[string, any]> = [
+      ['Docket Reference', code || 'N/A'],
+      ['Site Address', siteName || 'N/A'],
+      ...(data || []).map((row) => [
+        String(row?.[0]?.text || '').replace(/:$/, ''),
+        row?.[1] ?? 'N/A',
+      ]),
+      ['Date Issued', this.toDate(date)],
+    ];
 
-    const header = {
-      style: 'tableExample',
-      table: {
-        widths: ['*', '*', '*', '*'],
+    if (link) {
+      details.push([
+        'View Online',
+        {
+          text: 'Click here to view online',
+          link,
+          color: 'blue',
+          decoration: 'underline',
+        },
+      ]);
+    }
 
-        body: [
-          [
-            { text: title, style: 'header', colSpan: 2 },
-            '',
-
-            {
-              colSpan: 2,
-              rowSpan: 5,
-              width: 100,
-              image: await this.getBase64ImageFromURL(url, 400, 300, 0.8),
-              alignment: 'right',
-            },
-            '',
-          ],
-          [{ text: 'Docket Reference:', style: 'h6b' }, `${code}`, '', ''],
-          [{ text: 'Site Address:', style: 'h6b' }, `${siteName}`, '', ''],
-          ...data,
-          [
-            { text: 'Date Issued:', style: 'h6b' },
-            `${this.toDate(date)}`,
-            '',
-            '',
-          ],
-          linkData,
-        ],
-      },
-      layout: 'noBorders',
-    };
-    return header;
+    return this.getLogisticsHeaderBlock(title.toUpperCase(), company, details);
   }
   private async getBillingHeader(
     title: string,
@@ -4563,57 +4600,29 @@ export class PdfService {
     link?: string,
     data?: any,
   ) {
-    const linkData = link
-      ? [
-          { text: 'View Online:', style: 'h6b' },
-          {
-            text: 'Click here to view online',
-            style: ['h6b', { color: 'blue' }],
-            link,
-          },
-          '',
-          '',
-        ]
-      : ['', '', '', ''];
+    const details: Array<[string, any]> = [
+      ...(data || []).map((row) => [
+        String(row?.[0]?.text || '').replace(/:$/, ''),
+        row?.[1] ?? 'N/A',
+      ]),
+      ['Code', code || 'N/A'],
+      ['Site Address', siteName || 'N/A'],
+      ['Date Issued', this.toDate(date)],
+    ];
 
-    const header = {
-      style: 'tableExample',
-      table: {
-        widths: ['*', '*', '*', '*'],
+    if (link) {
+      details.push([
+        'View Online',
+        {
+          text: 'Click here to view online',
+          link,
+          color: 'blue',
+          decoration: 'underline',
+        },
+      ]);
+    }
 
-        body: [
-          [
-            {
-              fit: [760, 200],
-              image: await this.getBase64ImageFromURL(
-                company.subHeaderUrl || defaultSubHeader,
-                760,
-                200,
-                0.8,
-              ),
-              colSpan: 4,
-            },
-            '',
-            '',
-            '',
-          ],
-
-          [{ text: title, style: 'header', colSpan: 2 }, '', '', ''],
-          ...data,
-          [{ text: 'Code:', style: 'h6b' }, `${code}`, '', ''],
-          [{ text: 'Site Address:', style: 'h6b' }, `${siteName}`, '', ''],
-          [
-            { text: 'Date Issued:', style: 'h6b' },
-            `${this.toDate(date)}`,
-            '',
-            '',
-          ],
-          linkData,
-        ],
-      },
-      layout: 'noBorders',
-    };
-    return header;
+    return this.getLogisticsHeaderBlock(title.toUpperCase(), company, details);
   }
 
   private getCompanyInfo(
@@ -5090,11 +5099,17 @@ export class PdfService {
                         widths: [92, '*'],
                         body: details.map(([label, value]) => [
                           { text: label, style: 'invoiceLabel' },
-                          {
-                            text: value ?? 'N/A',
-                            style: 'invoiceValue',
-                            alignment: 'right',
-                          },
+                          value && typeof value === 'object'
+                            ? {
+                                ...value,
+                                style: value.style || 'invoiceValue',
+                                alignment: value.alignment || 'right',
+                              }
+                            : {
+                                text: value ?? 'N/A',
+                                style: 'invoiceValue',
+                                alignment: 'right',
+                              },
                         ]),
                       },
                       layout: 'noBorders',
@@ -6768,34 +6783,66 @@ export class PdfService {
     const companyState = this.store.selectSnapshot(CompanyState.company);
     const removeBranding = companyState?.removeBranding || false;
     const replaceBranding = companyState?.replaceBranding || null;
-    const footerCS = [];
-    if (removeBranding) {
-      return footerCS;
-    } else if (replaceBranding) {
-      footerCS.push([
-        {
-          image: await this.getBase64ImageFromURL(
+    const replacementImage =
+      replaceBranding && !removeBranding
+        ? await this.getBase64ImageFromURL(
             replaceBranding,
             300,
             200,
             0.8,
-          ),
-          width: 100,
-          alignment: 'right',
-          margin: [0, -10, 20, 0],
-        },
-      ]);
-    } else if (!removeBranding && !replaceBranding && companyState) {
-      footerCS.push([
+          )
+        : null;
+
+    return (currentPage, pageCount) => ({
+      margin: [40, 0, 40, 18],
+      stack: [
         {
-          svg: footerlogo,
-          width: 150,
-          alignment: 'right',
-          margin: [0, 5, 20, 0],
+          canvas: [
+            {
+              type: 'line',
+              x1: 0,
+              y1: 0,
+              x2: 515,
+              y2: 0,
+              lineWidth: 1,
+              lineColor: invoiceTheme.border,
+            },
+          ],
         },
-      ]);
-    }
-    return footerCS;
+        {
+          columns: [
+            removeBranding
+              ? { text: '' }
+              : replacementImage
+                ? {
+                    image: replacementImage,
+                    fit: [100, 22],
+                  }
+                : {
+                    text: [
+                      { text: 'Powered by ', style: 'invoiceFooter' },
+                      {
+                        text: 'CLOUDSCAFF',
+                        style: 'invoiceFooter',
+                        bold: true,
+                        color: invoiceTheme.accent,
+                      },
+                      {
+                        text: ' Asset Management Software',
+                        style: 'invoiceFooter',
+                      },
+                    ],
+                  },
+            {
+              text: `Page ${currentPage} of ${pageCount}`,
+              style: 'invoiceFooter',
+              alignment: 'right',
+            },
+          ],
+          margin: [0, 8, 0, 0],
+        },
+      ],
+    });
   }
 
   private getPageNumbers() {
