@@ -79,6 +79,27 @@ export class InvoiceComponent implements OnInit {
     this.calcTotal();
   }
 
+  async markAsSent() {
+    this.notificationSvc.presentAlertConfirm(async () => {
+      this.invoice.status = 'sent';
+      try {
+        await this.editSvc.updateDoc(
+          `company/${this.company.id}/transactionInvoices`,
+          this.invoice.id,
+          { status: 'sent' },
+        );
+        this.notificationSvc.toast('Invoice marked as sent', 'success');
+        this.close();
+      } catch (error) {
+        console.log(error);
+        this.notificationSvc.toast(
+          'something went wrong saving the invoice, Please check internet connection.',
+          'danger',
+        );
+      }
+    });
+  }
+
   updateJobReferenceEstimate(estimate: EstimateV2) {
     this.invoice.estimate = estimate;
     this.calcTotal();

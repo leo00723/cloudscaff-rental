@@ -27,11 +27,37 @@
 <ion-content class="ion-padding">
   <ng-container [ngSwitch]="active" *ngIf="company$ | async as company">
     <ng-container *ngSwitchCase="'rental'">
-      <app-job-reference-table
-        [value]="rentalInvoices$"
-        *ngIf="rentalInvoices$ | async else loading"
-        (selectedItem)="viewRentalInvoice($event)"
-      ></app-job-reference-table>
+      <ion-accordion-group
+        mode="ios"
+        class="rounded-lg overflow-hidden"
+        [multiple]="true"
+        [value]="['pending']"
+      >
+        <ion-accordion value="pending">
+          <ion-item slot="header" color="light">
+            <ion-label color="primary">Pending</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-job-reference-table
+              [value]="rentalInvoices$"
+              *ngIf="rentalInvoices$ | async else loading"
+              (selectedItem)="viewRentalInvoice($event)"
+            ></app-job-reference-table>
+          </div>
+        </ion-accordion>
+        <ion-accordion value="sent">
+          <ion-item slot="header" color="light">
+            <ion-label color="success">Sent </ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <app-job-reference-table
+              [value]="sentRentalInvoices$"
+              *ngIf="sentRentalInvoices$ | async else loading"
+              (selectedItem)="viewRentalInvoice($event)"
+            ></app-job-reference-table>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
     </ng-container>
     <ng-container *ngSwitchCase="'sale'">
       <app-invoice-table

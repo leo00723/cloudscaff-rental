@@ -22,6 +22,7 @@ export class InvoicesPage implements OnInit {
   @Select() company$: Observable<Company>;
   saleInvoices$: Observable<SaleInvoice[]>;
   rentalInvoices$: Observable<TransactionInvoice[]>;
+  sentRentalInvoices$: Observable<TransactionInvoice[]>;
   active = 'rental';
 
   constructor(private masterSvc: MasterService) {}
@@ -69,11 +70,18 @@ export class InvoicesPage implements OnInit {
         this.rentalInvoices$ = this.masterSvc
           .edit()
           .getCollectionFiltered(`company/${id}/transactionInvoices`, [
+            where('status', '==', 'pending'),
+            orderBy('code', 'desc'),
+          ]) as Observable<any[]>;
+        this.sentRentalInvoices$ = this.masterSvc
+          .edit()
+          .getCollectionFiltered(`company/${id}/transactionInvoices`, [
+            where('status', '==', 'sent'),
             orderBy('code', 'desc'),
           ]) as Observable<any[]>;
       } else {
         this.masterSvc.log(
-          '-----------------------try invoices----------------------'
+          '-----------------------try invoices----------------------',
         );
         this.init();
       }

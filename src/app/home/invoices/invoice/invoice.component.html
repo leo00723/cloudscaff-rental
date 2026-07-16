@@ -672,3 +672,19 @@
     </table>
   </div>
 </ion-content>
+
+<ion-footer *ngIf="invoice.status === 'pending'">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button
+        class="text-capitalize"
+        color="success"
+        fill="solid"
+        shape="round"
+        (click)="markAsSent()"
+      >
+        Mark as Sent
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
