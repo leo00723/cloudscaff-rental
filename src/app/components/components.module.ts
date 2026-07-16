@@ -91,6 +91,8 @@ import { JobReferenceCustomItemComponent } from './job-reference-custom-item/job
 import { InventoryMovementComponent } from './inventory-movement/inventory-movement.component';
 import { AlertPipe } from './alert.pipe';
 import { CostPipe } from './cost.pipe';
+import { JobReferenceComponent } from '../home/view-site/job-reference/job-reference.component';
+import { JobReferenceFormComponent } from '../home/view-site/job-reference-form/job-reference-form.component';
 
 const COMPONENTS = [
   AddHandoverComponent,
@@ -138,6 +140,8 @@ const COMPONENTS = [
   MultiuploaderComponent,
   NotificationsComponent,
   JobReferenceCustomItemComponent,
+  JobReferenceComponent,
+  JobReferenceFormComponent,
   JobReferenceSummaryComponent,
   JobReferenceRentalSummaryComponent,
   JobReferenceTableComponent,

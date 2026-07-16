@@ -65,8 +65,9 @@ export class JobReferenceTableComponent {
             (item.code && item.code.toLowerCase().includes(val)) ||
             (item.jobReference &&
               item.jobReference.toLowerCase().includes(val)) ||
-            (item.site.name && item.site.name.toLowerCase().includes(val)) ||
-            (item.site.customer.name &&
+            (item.site?.name &&
+              item.site.name.toLowerCase().includes(val)) ||
+            (item.site?.customer?.name &&
               item.site.customer.name.toLowerCase().includes(val)) ||
             (item.date && item.date.toString().toLowerCase().includes(val)) ||
             (item.createdByName &&

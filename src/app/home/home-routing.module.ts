@@ -69,6 +69,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'job-references',
+        loadChildren: () =>
+          import('./job-references/job-references.module').then(
+            (m) => m.JobReferencesPageModule
+          ),
+      },
+      {
         path: 'sites',
         loadChildren: () =>
           import('./sites/sites.module').then((m) => m.SitesPageModule),

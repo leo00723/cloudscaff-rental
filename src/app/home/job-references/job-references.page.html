@@ -1,0 +1,28 @@
+<app-header title="Pending Job References"></app-header>
+
+<ion-content class="ion-padding">
+  <ng-container *ngIf="jobReferences$ | async as jobReferences; else loading">
+    <app-job-reference-table
+      *ngIf="jobReferences.length; else empty"
+      [value]="jobReferences$"
+      (selectedItem)="viewJobReference($event)"
+    ></app-job-reference-table>
+
+    <ng-template #empty>
+      <app-page-placeholder
+        title="No Pending Job References"
+        subtitle="Pending job references from every site will appear here."
+        (clicked)="viewSites()"
+      ></app-page-placeholder>
+    </ng-template>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="ion-padding">
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+      <app-skeleton-text></app-skeleton-text>
+    </div>
+  </ng-template>
+</ion-content>

@@ -40,6 +40,12 @@ export class HomePage implements OnDestroy {
       url: '/dashboard/invoices',
       icon: 'receipt-outline',
     },
+    {
+      title: 'Job References',
+      permission: 'Job References',
+      url: '/dashboard/job-references',
+      icon: 'document-text-outline',
+    },
     // {
     //   title: 'Instructions',
     //   permission: 'Instructions',
