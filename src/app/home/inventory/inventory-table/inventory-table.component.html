@@ -167,7 +167,7 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ value | number : "0.2-2" }}{{ company?.mass?.symbol }}
+      {{ value | number: "0.2-2" }}{{ company?.mass?.symbol }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -176,7 +176,7 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" ngx-datatable-cell-template>
-      {{ +row.yardQty * +row.weight | number : "0.2-2"
+      {{ +row.yardQty * +row.weight | number: "0.2-2"
       }}{{ company?.mass?.symbol }}
     </ng-template>
   </ngx-datatable-column>
@@ -187,7 +187,7 @@
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
+      {{ company?.currency?.symbol }}{{ value | number: "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -196,7 +196,7 @@
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
+      {{ company?.currency?.symbol }}{{ value | number: "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -205,7 +205,7 @@
     headerClass="text-end"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      {{ company?.currency?.symbol }}{{ value | number : "0.2-2" }}
+      {{ company?.currency?.symbol }}{{ value | number: "0.2-2" }}
     </ng-template>
   </ngx-datatable-column>
   <ngx-datatable-column
@@ -214,7 +214,11 @@
     headerClass="text-center"
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-      <ion-badge mode="ios" color="tertiary">{{ value }}</ion-badge>
+      <ion-badge
+        mode="ios"
+        color="{{ value === 'Component' ? 'tertiary' : 'primary' }}"
+        >{{ value }}</ion-badge
+      >
     </ng-template>
   </ngx-datatable-column>
 </ngx-datatable>
