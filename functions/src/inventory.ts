@@ -2801,7 +2801,6 @@ const transferDeliveryTransaction = async (transfer: any) => {
       deliveryDate: transferDate,
       invoiceStart: transferDate,
       invoiceEnd: null,
-      hireRate: 0,
       jobReference: transfer.toJobReference,
       transactionType: 'Delivery',
       siteId: transfer.toSite.id,
