@@ -5798,6 +5798,16 @@ export class PdfService {
       );
     }
 
+    amountRows.push(
+      this.getAmountSummaryRow(
+        'Invoice Total:',
+        this.currency(
+          +(+(invoice.subtotal || 0) - +(invoice.discount || 0)).toFixed(2),
+          currencySymbol,
+        ),
+      ),
+    );
+
     if (+invoice.creditTotal !== 0) {
       amountRows.push(
         this.getAmountSummaryRow(
@@ -5847,12 +5857,12 @@ export class PdfService {
       this.getDetailRow('Account Name', company.name || 'N/A'),
     ];
 
-    if (company.accountNum) {
-      paymentRows.push(this.getDetailRow('Account Number', company.accountNum));
-    }
-
     if (company.branchCode) {
       paymentRows.push(this.getDetailRow('BSB', company.branchCode));
+    }
+
+    if (company.accountNum) {
+      paymentRows.push(this.getDetailRow('Account Number', company.accountNum));
     }
 
     if (company.swiftCode) {
