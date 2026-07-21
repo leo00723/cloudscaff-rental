@@ -73,4 +73,16 @@
     name="Created By"
     prop="createdByName"
   ></ngx-datatable-column>
+  <ngx-datatable-column
+    name="Total"
+    prop="total"
+    cellClass="text-end my-auto"
+    headerClass="text-end"
+  >
+    <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+      <ion-badge color="success" mode="ios">
+        {{ value | number: "0.2-2" }}
+      </ion-badge>
+    </ng-template>
+  </ngx-datatable-column>
 </ngx-datatable>
