@@ -11,7 +11,7 @@ import {
   SelectionType,
   SortType,
 } from '@swimlane/ngx-datatable';
-import { map, Observable } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { JobReference } from 'src/app/models/jr.model';
 
 @Component({
@@ -25,18 +25,15 @@ export class JobReferenceTableComponent {
   @Input() showLastInvoiceDate = true;
   @Input() showEndDate = false;
   @Input() set value(data: Observable<JobReference[]>) {
-    this.temp$ = data;
     this.data$ = data;
+    this.setDisplayedData(data);
   }
   data$: Observable<JobReference[]>;
   temp$: Observable<JobReference[]>;
+  totalInvoiced$: Observable<number>;
   sortType = SortType;
   selectionType = SelectionType;
   selected = [];
-
-  constructor() {
-    this.temp$ = this.data$;
-  }
 
   onSelect({ selected }) {
     this.selectedItem.emit(selected[0]);
@@ -60,26 +57,40 @@ export class JobReferenceTableComponent {
   updateFilter(event: any) {
     const val = event.detail.value.toString().toLowerCase();
 
-    this.temp$ = this.data$.pipe(
-      map((items) =>
-        items.filter(
-          (item) =>
-            (item.code && item.code.toLowerCase().includes(val)) ||
-            (item.jobReference &&
-              item.jobReference.toLowerCase().includes(val)) ||
-            (item.site?.name && item.site.name.toLowerCase().includes(val)) ||
-            (item.site?.customer?.name &&
-              item.site.customer.name.toLowerCase().includes(val)) ||
-            (item.date && item.date.toString().toLowerCase().includes(val)) ||
-            (item.lastInvoiceDate &&
-              item.lastInvoiceDate.toString().toLowerCase().includes(val)) ||
-            (item.createdByName &&
-              item.createdByName.toLowerCase().includes(val)) ||
-            !val,
+    this.setDisplayedData(
+      this.data$.pipe(
+        map((items) =>
+          items.filter(
+            (item) =>
+              (item.code && item.code.toLowerCase().includes(val)) ||
+              (item.jobReference &&
+                item.jobReference.toLowerCase().includes(val)) ||
+              (item.site?.name && item.site.name.toLowerCase().includes(val)) ||
+              (item.site?.customer?.name &&
+                item.site.customer.name.toLowerCase().includes(val)) ||
+              (item.date && item.date.toString().toLowerCase().includes(val)) ||
+              (item.lastInvoiceDate &&
+                item.lastInvoiceDate.toString().toLowerCase().includes(val)) ||
+              (item.createdByName &&
+                item.createdByName.toLowerCase().includes(val)) ||
+              !val,
+          ),
         ),
       ),
     );
 
     this.table.offset = 0;
+  }
+
+  private setDisplayedData(data: Observable<JobReference[]>) {
+    this.temp$ = data.pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    this.totalInvoiced$ = this.temp$.pipe(
+      map((rows) =>
+        rows.reduce(
+          (total, item) => total + (Number(item.total) || 0),
+          0,
+        ),
+      ),
+    );
   }
 }
