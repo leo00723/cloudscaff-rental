@@ -23,6 +23,7 @@ export class JobReferenceTableComponent {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Output() selectedItem = new EventEmitter<JobReference>();
   @Input() showLastInvoiceDate = true;
+  @Input() showEndDate = false;
   @Input() set value(data: Observable<JobReference[]>) {
     this.temp$ = data;
     this.data$ = data;
@@ -66,8 +67,7 @@ export class JobReferenceTableComponent {
             (item.code && item.code.toLowerCase().includes(val)) ||
             (item.jobReference &&
               item.jobReference.toLowerCase().includes(val)) ||
-            (item.site?.name &&
-              item.site.name.toLowerCase().includes(val)) ||
+            (item.site?.name && item.site.name.toLowerCase().includes(val)) ||
             (item.site?.customer?.name &&
               item.site.customer.name.toLowerCase().includes(val)) ||
             (item.date && item.date.toString().toLowerCase().includes(val)) ||
@@ -75,9 +75,9 @@ export class JobReferenceTableComponent {
               item.lastInvoiceDate.toString().toLowerCase().includes(val)) ||
             (item.createdByName &&
               item.createdByName.toLowerCase().includes(val)) ||
-            !val
-        )
-      )
+            !val,
+        ),
+      ),
     );
 
     this.table.offset = 0;

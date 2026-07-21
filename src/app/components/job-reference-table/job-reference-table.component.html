@@ -52,7 +52,7 @@
       {{ value | dateFormat | date: "dd MMM yyyy" }}
     </ng-template>
   </ngx-datatable-column>
-  <ngx-datatable-column name="Billing Date" prop="endDate">
+  <ngx-datatable-column name="Billing Date" prop="endDate" *ngIf="showEndDate">
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       {{ value | dateFormat | date: "dd MMM yyyy" }}
     </ng-template>

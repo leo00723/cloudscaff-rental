@@ -39,6 +39,7 @@
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-job-reference-table
+              [showEndDate]="true"
               [value]="rentalInvoices$"
               [showLastInvoiceDate]="false"
               *ngIf="rentalInvoices$ | async else loading"
@@ -52,6 +53,7 @@
           </ion-item>
           <div class="ion-padding" slot="content">
             <app-job-reference-table
+              [showEndDate]="true"
               [value]="sentRentalInvoices$"
               [showLastInvoiceDate]="false"
               *ngIf="sentRentalInvoices$ | async else loading"
