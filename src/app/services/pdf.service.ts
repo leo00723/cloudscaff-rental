@@ -422,7 +422,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.branchCode ? 'Branch:' : '',
+                  text: company.branchCode ? 'BSB:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
@@ -651,7 +651,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.branchCode ? 'Branch:' : '',
+                  text: company.branchCode ? 'BSB:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
@@ -875,7 +875,7 @@ export class PdfService {
               ],
               [
                 {
-                  text: company.branchCode ? 'Branch:' : '',
+                  text: company.branchCode ? 'BSB:' : '',
                   style: 'h6b',
                   alignment: 'left',
                 },
@@ -3356,13 +3356,7 @@ export class PdfService {
       this.getLogisticsSummaryBlock([
         [
           'Total Weight',
-          this.weightPipe.transform(
-            returnDoc.items,
-            false,
-            false,
-            false,
-            true,
-          ),
+          this.weightPipe.transform(returnDoc.items, false, false, false, true),
         ],
       ]),
     ];
@@ -3467,9 +3461,7 @@ export class PdfService {
     const summary = this.createTransactionReturnTable(transferDoc.items);
     const transferDate = transferDoc?.transferDate
       ? transferDoc.transferDate.seconds
-        ? new Date(
-            transferDoc.transferDate.seconds * 1000,
-          ).toLocaleDateString()
+        ? new Date(transferDoc.transferDate.seconds * 1000).toLocaleDateString()
         : new Date(transferDoc.transferDate).toLocaleDateString()
       : 'N/A';
     const content: any[] = [
@@ -4283,10 +4275,7 @@ export class PdfService {
     return this.generatePdf(data, company);
   }
 
-  async inventoryCountSheet(
-    inventory: InventoryItem[],
-    company: Company,
-  ) {
+  async inventoryCountSheet(inventory: InventoryItem[], company: Company) {
     const blankCell = (alignment = 'center') => ({
       text: '',
       style: 'h4b',
@@ -4541,8 +4530,7 @@ export class PdfService {
     ['header', 'footer', 'background'].forEach((property) => {
       const renderer = data[property];
       if (typeof renderer === 'function') {
-        data[property] = (...args: any[]) =>
-          themeNode(renderer(...args));
+        data[property] = (...args: any[]) => themeNode(renderer(...args));
       }
     });
   }
@@ -5150,10 +5138,7 @@ export class PdfService {
     customer?: Customer | Company,
     company?: Customer | Company,
   ) {
-    const partyStack = (
-      title: string,
-      entity?: Customer | Company,
-    ): any[] => [
+    const partyStack = (title: string, entity?: Customer | Company): any[] => [
       { text: title, style: 'invoicePartyLabel' },
       {
         text: entity?.name || 'N/A',
@@ -5166,10 +5151,7 @@ export class PdfService {
         ['ABN', entity?.abnNumber || 'N/A'],
         ['Address', entity ? this.getAddress(entity) || 'N/A' : 'N/A'],
       ].map(([label, value]) => ({
-        text: [
-          { text: `${label}: `, bold: true },
-          { text: value },
-        ],
+        text: [{ text: `${label}: `, bold: true }, { text: value }],
         style: 'invoiceSmall',
         margin: [0, 0, 0, 3],
       })),
@@ -5863,11 +5845,14 @@ export class PdfService {
       this.getDetailRow('Payment Terms', this.getPaymentTermsText(customer)),
       this.getDetailRow('Bank', company.bankName || 'N/A'),
       this.getDetailRow('Account Name', company.name || 'N/A'),
-      this.getDetailRow('Account Number', company.accountNum || 'N/A'),
     ];
 
+    if (company.accountNum) {
+      paymentRows.push(this.getDetailRow('Account Number', company.accountNum));
+    }
+
     if (company.branchCode) {
-      paymentRows.push(this.getDetailRow('Branch', company.branchCode));
+      paymentRows.push(this.getDetailRow('BSB', company.branchCode));
     }
 
     if (company.swiftCode) {
@@ -6785,12 +6770,7 @@ export class PdfService {
     const replaceBranding = companyState?.replaceBranding || null;
     const replacementImage =
       replaceBranding && !removeBranding
-        ? await this.getBase64ImageFromURL(
-            replaceBranding,
-            300,
-            200,
-            0.8,
-          )
+        ? await this.getBase64ImageFromURL(replaceBranding, 300, 200, 0.8)
         : null;
 
     return (currentPage, pageCount) => ({
