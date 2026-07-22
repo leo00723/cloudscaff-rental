@@ -3337,7 +3337,7 @@ export class PdfService {
     company: Company,
     terms: Term | null,
   ) {
-    const summary = this.createTransactionReturnTable(returnDoc.items);
+    const summary = this.createTransactionReturnTable(returnDoc.items, false);
     const damageItems =
       returnDoc.items?.filter((item) => (item.damagedQty || 0) > 0) || [];
     const overageItems = returnDoc.overageItems || [];
@@ -3392,7 +3392,6 @@ export class PdfService {
             { text: 'Code', style: 'h5b' },
             { text: 'Name', style: 'h5b' },
             { text: 'Category', style: 'h5b' },
-            { text: 'Size', style: 'h5b' },
             { text: 'Location', style: 'h5b' },
             { text: 'Overage Qty', style: 'h5b' },
             { text: 'Weight (kg)', style: 'h5b' },
@@ -3401,7 +3400,6 @@ export class PdfService {
             { text: item.code || 'N/A', style: 'h6' },
             { text: item.name || 'N/A', style: 'h6' },
             { text: item.category || 'N/A', style: 'h6' },
-            { text: item.size || 'N/A', style: 'h6' },
             { text: item.location || 'N/A', style: 'h6' },
             {
               text: item.shipmentQty?.toString() || '0',
@@ -3414,7 +3412,7 @@ export class PdfService {
               alignment: 'right',
             },
           ]),
-          ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto'],
+          ['auto', '*', 'auto', 'auto', 'auto', 'auto'],
         ),
         this.getLogisticsSummaryBlock([
           [
@@ -6629,7 +6627,10 @@ export class PdfService {
     return summary;
   }
 
-  private createTransactionReturnTable(transactionItems: TransactionItem[]) {
+  private createTransactionReturnTable(
+    transactionItems: TransactionItem[],
+    includeSize = true,
+  ) {
     const items = [];
     transactionItems.forEach((item, i) => {
       items.push([
@@ -6640,7 +6641,9 @@ export class PdfService {
           style: 'h6',
           alignment: 'left',
         },
-        { text: item.size, style: 'h6', alignment: 'center' },
+        ...(includeSize
+          ? [{ text: item.size, style: 'h6', alignment: 'center' }]
+          : []),
         { text: item.name, style: 'h6', alignment: 'left' },
         { text: item.returnQty, style: 'h6', alignment: 'center' },
         {
@@ -6657,7 +6660,9 @@ export class PdfService {
         // headers are automatically repeated if the table spans over multiple pages
         // you can declare how many rows should be treated as headers
         headerRows: 1,
-        widths: ['auto', 'auto', '*', 'auto', '*', 'auto', 'auto'],
+        widths: includeSize
+          ? ['auto', 'auto', '*', 'auto', '*', 'auto', 'auto']
+          : ['auto', 'auto', '*', '*', 'auto', 'auto'],
 
         body: [
           [
@@ -6668,7 +6673,9 @@ export class PdfService {
               style: 'h4b',
               alignment: 'left',
             },
-            { text: 'Size', style: 'h4b', alignment: 'center' },
+            ...(includeSize
+              ? [{ text: 'Size', style: 'h4b', alignment: 'center' }]
+              : []),
             { text: 'Name', style: 'h4b', alignment: 'left' },
             { text: 'Item Qty', style: 'h4b', alignment: 'center' },
             { text: 'Weight', style: 'h4b', alignment: 'center' },
