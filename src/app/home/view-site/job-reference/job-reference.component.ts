@@ -243,7 +243,9 @@ export class JobReferenceComponent implements OnInit {
           `company/${this.company.id}/jobReferences`,
           this.jr.id,
           {
-            lastBillingDate: invoice.endDate,
+            lastBillingDate: this.parseDdMmYyyyDate(
+              this.field('endDate').value,
+            ),
             lastInvoiceDate: invoiceDate,
             lastInvoiceTotal: this.jr.total,
           },
