@@ -3,6 +3,7 @@
 <ion-content class="ion-padding">
   <ng-container *ngIf="jobReferences$ | async as jobReferences; else loading">
     <app-job-reference-table
+      [showBillingDate]="true"
       *ngIf="jobReferences.length; else empty"
       [value]="jobReferences$"
       (selectedItem)="viewJobReference($event)"

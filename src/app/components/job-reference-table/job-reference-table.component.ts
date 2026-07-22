@@ -24,6 +24,7 @@ export class JobReferenceTableComponent {
   @Output() selectedItem = new EventEmitter<JobReference>();
   @Input() showLastInvoiceDate = true;
   @Input() showEndDate = false;
+  @Input() showBillingDate = false;
   @Input() set value(data: Observable<JobReference[]>) {
     this.data$ = data;
     this.setDisplayedData(data);
@@ -86,10 +87,7 @@ export class JobReferenceTableComponent {
     this.temp$ = data.pipe(shareReplay({ bufferSize: 1, refCount: true }));
     this.totalInvoiced$ = this.temp$.pipe(
       map((rows) =>
-        rows.reduce(
-          (total, item) => total + (Number(item.total) || 0),
-          0,
-        ),
+        rows.reduce((total, item) => total + (Number(item.total) || 0), 0),
       ),
     );
   }
