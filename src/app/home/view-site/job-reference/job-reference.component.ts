@@ -243,6 +243,7 @@ export class JobReferenceComponent implements OnInit {
           `company/${this.company.id}/jobReferences`,
           this.jr.id,
           {
+            lastBillingDate: invoice.endDate,
             lastInvoiceDate: invoiceDate,
             lastInvoiceTotal: this.jr.total,
           },
