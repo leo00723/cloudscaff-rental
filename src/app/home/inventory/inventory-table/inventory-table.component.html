@@ -108,7 +108,9 @@
   >
     <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
       <ion-badge mode="ios" color="tertiary">
-        {{ row.yardQty > 0 ? (row.inUseQty / row.yardQty | number) : 0 }}%
+        {{
+          row.yardQty > 0 ? ((row.inUseQty / row.yardQty) * 100 | number) : 0
+        }}%
       </ion-badge>
     </ng-template>
   </ngx-datatable-column>
