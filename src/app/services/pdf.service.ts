@@ -160,7 +160,7 @@ const stylesCS = {
     margin: [20, 0, 0, 0],
   },
   invoiceTitle: {
-    fontSize: 24,
+    fontSize: 18,
     bold: true,
     color: invoiceTheme.text,
     letterSpacing: 1,
@@ -3001,7 +3001,7 @@ export class PdfService {
         {
           text: `Expected Delivery Date: ${
             expectedDeliveryDate
-              ? this.datePipe.transform(expectedDeliveryDate, 'longDate')
+              ? this.datePipe.transform(expectedDeliveryDate, 'EEE d MMM y')
               : 'N/A'
           }`,
           style: ['h4b'],
@@ -4980,7 +4980,7 @@ export class PdfService {
         { text: 'Expected Delivery', style: 'invoiceLabel' },
         {
           text: expectedDeliveryDate
-            ? this.datePipe.transform(expectedDeliveryDate, 'longDate')
+            ? this.datePipe.transform(expectedDeliveryDate, 'EEE d MMM y')
             : 'N/A',
           style: 'invoiceValue',
           alignment: 'right',
