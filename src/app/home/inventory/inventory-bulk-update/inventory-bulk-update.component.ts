@@ -127,7 +127,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly masterSvc: MasterService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
   ) {
     this.initializeUserAndCompany();
     this.setupSearchDebounce();
@@ -164,7 +164,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
   // Track by function for ngFor performance
   trackByFn: TrackByFunction<InventoryItem> = (
     index: number,
-    item: InventoryItem
+    item: InventoryItem,
   ) => item.id || index;
 
   // Event handlers
@@ -196,7 +196,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
 
     if (this.numericFields.has(field)) {
       updatedItem[field as keyof InventoryItem] = this.parseNumericValue(
-        value
+        value,
       ) as any;
     } else {
       updatedItem[field as keyof InventoryItem] = value as any;
@@ -225,7 +225,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
           .edit()
           .addDocument(
             `company/${this.company.id}/bulkUpdates`,
-            this.state.bulkUpdate
+            this.state.bulkUpdate,
           );
 
         this.showSuccessMessage('Document created successfully');
@@ -233,7 +233,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
       } catch (error) {
         this.handleError(
           'Something went wrong creating document. Please try again!',
-          error
+          error,
         );
       } finally {
         this.setLoading(false);
@@ -254,14 +254,14 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
           .updateDoc(
             `company/${this.company.id}/bulkUpdates`,
             this.state.bulkUpdate.id,
-            this.state.bulkUpdate
+            this.state.bulkUpdate,
           );
 
         this.showSuccessMessage('Document updated successfully');
       } catch (error) {
         this.handleError(
           'Something went wrong updating the document. Please try again!',
-          error
+          error,
         );
       } finally {
         this.setLoading(false);
@@ -286,14 +286,14 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
           .updateDoc(
             `company/${this.company.id}/bulkUpdates`,
             this.state.bulkUpdate.id,
-            approvedRequest
+            approvedRequest,
           );
 
         this.masterSvc.modal().dismiss(true, 'approved');
       } catch (error) {
         this.handleError(
           'Something went wrong approving document. Please try again!',
-          error
+          error,
         );
       } finally {
         this.setLoading(false);
@@ -319,14 +319,14 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
           .updateDoc(
             `company/${this.company.id}/bulkUpdates`,
             this.state.bulkUpdate.id,
-            reversedRequest
+            reversedRequest,
           );
 
         this.masterSvc.modal().dismiss(true, 'approved');
       } catch (error) {
         this.handleError(
           'Something went wrong reversing document. Please try again!',
-          error
+          error,
         );
       } finally {
         this.setLoading(false);
@@ -424,7 +424,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
 
   get shouldShowUploads(): boolean {
     return Boolean(
-      this.state.bulkUpdate.uploads && this.state.bulkUpdate.uploads.length > 0
+      this.state.bulkUpdate.uploads && this.state.bulkUpdate.uploads.length > 0,
     );
   }
 
@@ -464,14 +464,13 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
         this.masterSvc
           .edit()
           .getCollectionFiltered(`company/${this.company.id}/stockItems`, [
-            orderBy('category', 'asc'),
+            orderBy('code', 'asc'),
             orderBy('name', 'asc'),
-            orderBy('size', 'asc'),
           ])
           .pipe(
             take(1),
-            map((data) => data.map((item) => this.cleanInventoryItem(item)))
-          )
+            map((data) => data.map((item) => this.cleanInventoryItem(item))),
+          ),
       );
 
       this.inventoryItems$.next(items);
@@ -507,7 +506,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
       this.state.items = [...this.state.itemBackup];
     } else {
       this.state.items = this.state.itemBackup.filter((item) =>
-        this.searchInItem(item, searchTerm)
+        this.searchInItem(item, searchTerm),
       );
     }
 
@@ -525,7 +524,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
       'type',
     ];
     return searchableFields.some((field) =>
-      item[field]?.toString().toLowerCase().includes(searchTerm)
+      item[field]?.toString().toLowerCase().includes(searchTerm),
     );
   }
 
@@ -558,7 +557,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
     if (this.state.bulkUpdate.items?.length) {
       this.state.bulkUpdate.items.forEach((savedItem) => {
         const inventoryItem = stockItems.find(
-          (item) => item.id === savedItem.id
+          (item) => item.id === savedItem.id,
         );
         if (inventoryItem) {
           this.updateInventoryItemWithSavedData(inventoryItem, savedItem);
@@ -571,7 +570,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
 
   private updateInventoryItemWithSavedData(
     inventoryItem: any,
-    savedItem: InventoryItem
+    savedItem: InventoryItem,
   ): void {
     const fieldsToUpdate: (keyof InventoryItem)[] = [
       'code',
@@ -621,7 +620,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
 
   private updateItem(updatedItem: InventoryItem): void {
     const index = this.state.items.findIndex(
-      (item) => item.id === updatedItem.id
+      (item) => item.id === updatedItem.id,
     );
     if (index !== -1) {
       this.state.items[index] = updatedItem;
@@ -629,7 +628,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
       // Also update backup if it exists
       if (this.state.itemBackup.length > 0) {
         const backupIndex = this.state.itemBackup.findIndex(
-          (item) => item.id === updatedItem.id
+          (item) => item.id === updatedItem.id,
         );
         if (backupIndex !== -1) {
           this.state.itemBackup[backupIndex] = updatedItem;
@@ -723,7 +722,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
         .generateDocCodeAtomic(
           this.company.id,
           this.bulkUpdate.type === 'Cycle Count' ? 'CC' : 'BU',
-          'totalBulkUpdates'
+          'totalBulkUpdates',
         )
     ).code;
   }
@@ -758,7 +757,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
         .edit()
         .addDocument(
           `company/${this.company.id}/bulkUpdates`,
-          this.state.bulkUpdate
+          this.state.bulkUpdate,
         );
 
       this.state.bulkUpdate.id = doc.id;
@@ -768,7 +767,7 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.handleError(
         'Something went wrong creating document. Please try again!',
-        error
+        error,
       );
     } finally {
       this.setLoading(false);
@@ -792,12 +791,12 @@ export class InventoryBulkUpdateComponent implements OnInit, OnDestroy {
         .updateDoc(
           `company/${this.company.id}/bulkUpdates`,
           this.state.bulkUpdate.id,
-          this.state.bulkUpdate
+          this.state.bulkUpdate,
         );
     } catch (error) {
       this.handleError(
         'Something went wrong updating the document. Please try again!',
-        error
+        error,
       );
     } finally {
       this.setLoading(false);

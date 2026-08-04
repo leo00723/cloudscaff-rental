@@ -28,17 +28,16 @@ export class RepurposeInventoryComponent implements OnInit {
     this.inventoryItems$ = this.masterSvc
       .edit()
       .getCollectionFiltered(`company/${this.company.id}/stockItems`, [
-        orderBy('category', 'asc'),
+        orderBy('code', 'asc'),
         orderBy('name', 'asc'),
-        orderBy('size', 'asc'),
       ])
       .pipe(
         map((items) =>
           items.map((item) => ({
             ...item,
             search: `${item.category} - ${item.size} - ${item.name}`,
-          }))
-        )
+          })),
+        ),
       );
   }
   ngOnInit(): void {}
@@ -72,7 +71,7 @@ export class RepurposeInventoryComponent implements OnInit {
         .toast(
           'You cannot remove more items than your Available Quantity',
           'danger',
-          5000
+          5000,
         );
     } else {
       item.damagedQty = damagedQty - removeQty;
@@ -99,12 +98,12 @@ export class RepurposeInventoryComponent implements OnInit {
       this.removeYardQty(
         donar,
         this.qty,
-        `Damaged items sent to ${recipient.search}`
+        `Damaged items sent to ${recipient.search}`,
       );
       this.addYardQty(
         recipient,
         this.qty,
-        `Damaged items received from ${donar.category} - ${donar.size} - ${donar.name}`
+        `Damaged items received from ${donar.category} - ${donar.size} - ${donar.name}`,
       );
       this.company = this.masterSvc
         .store()
