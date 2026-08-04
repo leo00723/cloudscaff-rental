@@ -3326,7 +3326,7 @@ export class PdfService {
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
     };
     return this.generatePdf(data, company);
   }
@@ -3780,7 +3780,7 @@ export class PdfService {
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
     };
     return this.generatePdf(data, company);
   }
@@ -4467,7 +4467,7 @@ export class PdfService {
       ],
       styles: stylesCS,
       defaultStyle: defaultCS,
-      pageOrientation: 'landscape',
+      pageOrientation: 'portrait',
       pageMargins: [15, 40, 15, 40],
     };
 
