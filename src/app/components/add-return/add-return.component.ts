@@ -337,6 +337,37 @@ export class AddReturnComponent implements OnInit, OnDestroy {
     this.returnDoc.uploads.push(...newFiles);
   }
 
+  async setUploads(uploads) {
+    this.returnDoc.uploads
+      ? this.returnDoc.uploads.push(...uploads)
+      : (this.returnDoc.uploads = [...uploads]);
+
+    if (!this.isEdit || !this.returnDoc.id) {
+      return;
+    }
+
+    try {
+      await this.masterSvc
+        .edit()
+        .updateDoc(
+          `company/${this.company.id}/returns`,
+          this.returnDoc.id,
+          { uploads: this.returnDoc.uploads }
+        );
+      this.masterSvc
+        .notification()
+        .toast('Files uploaded successfully', 'success');
+    } catch (error) {
+      console.log(error);
+      this.masterSvc
+        .notification()
+        .toast(
+          'Something went wrong uploading files. Please try again.',
+          'danger'
+        );
+    }
+  }
+
   async downloadPdf() {
     if (!this.returnDoc.date) {
       this.returnDoc.date = new Date();

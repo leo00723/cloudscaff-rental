@@ -418,15 +418,11 @@
         </ion-col>
       </ion-row>
       <ion-row class="card-outline mb-3" *ngIf="field('site').value">
-        <ion-col
-          size="12"
-          *ngIf="
-            returnDoc.status !== 'sent' &&
-            returnDoc.status !== 'void' &&
-            returnDoc.status !== 'received'
-          "
-        >
-          <app-multiuploader></app-multiuploader>
+        <ion-col size="12">
+          <app-multiuploader
+            [autoupload]="true"
+            (uploaded)="setUploads($event)"
+          ></app-multiuploader>
         </ion-col>
         <ion-col size="12">
           <app-title-block> Uploaded Files </app-title-block>
