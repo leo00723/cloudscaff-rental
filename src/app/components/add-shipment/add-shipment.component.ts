@@ -114,12 +114,10 @@ export class AddShipmentComponent implements OnInit, OnDestroy {
   }
 
   checkError(item: InventoryItem) {
-    const totalQty = item.availableQty ? item.availableQty : 0;
-    const inUseQty = item.inUseQty ? item.inUseQty : 0;
-    const damaged = item.damagedQty ? item.damagedQty : 0;
-    const maintenance = item.inMaintenanceQty ? item.inMaintenanceQty : 0;
-    // const lost = item.lostQty ? item.lostQty : 0;
-    const availableQty = totalQty - inUseQty - damaged - maintenance;
+    // Keep validation in sync with the availability shown in the inventory
+    // table. `availableQty` is a stored value and may be stale or already net
+    // of deductions, while CalculatePipe derives the current quantity.
+    const availableQty = this.calcPipe.transform(item);
     if (item.shipmentQty > availableQty || item.shipmentQty < 0) {
       item.error = true;
       this.error = true;
