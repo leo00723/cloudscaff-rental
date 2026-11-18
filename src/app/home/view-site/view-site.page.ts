@@ -570,13 +570,13 @@ export class ViewSitePage implements OnInit, OnDestroy {
     ]);
 
     // Combine all transaction data (same as downloadHistoryExcel)
-    const allData = [
+    const allData = await this.excludeInvoiceDeliveries([
       ...deliveryData,
       ...adjustmentData,
       ...returnData,
       ...overageData,
       ...reversalData,
-    ];
+    ], company.id, site.id);
 
     // Use the same consolidation logic as downloadHistoryExcel
     const consolidatedItemsData = this.consolidateItemDataPDF(
@@ -617,7 +617,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
         .pipe(take(1))
     );
 
-    // Get all transaction types (excluding transfers as they are detected from delivery/return pairs)
+    // Transfers are included through their delivery and return movements.
     const [
       deliveryData,
       adjustmentData,
@@ -672,18 +672,45 @@ export class ViewSitePage implements OnInit, OnDestroy {
       ),
     ]);
 
-    // Combine all transaction data (excluding transfers to avoid double counting)
-    const allData = [
+    // Combine all inventory movements.
+    const allData = await this.excludeInvoiceDeliveries([
       ...deliveryData,
       ...adjustmentData,
       ...returnData,
       ...overageData,
       ...reversalData,
-    ];
+    ], company.id, site.id);
 
     // Generate Excel file
     await this.generateExcelHistory(allData, site, stockItems);
     this.loading.dismiss();
+  }
+
+  private async excludeInvoiceDeliveries(
+    transactions: any[],
+    companyId: string,
+    siteId: string
+  ): Promise<any[]> {
+    const invoices: TransactionInvoice[] = await lastValueFrom(
+      this.masterSvc.edit().getCollectionFiltered(
+        `company/${companyId}/transactionInvoices`,
+        [where('site.id', '==', siteId)]
+      ).pipe(take(1))
+    );
+    return this.filterInventoryMovements(transactions, invoices);
+  }
+
+  private filterInventoryMovements(
+    transactions: any[],
+    invoices: TransactionInvoice[]
+  ): any[] {
+    // invoiceCreated writes billing carry-forwards as Delivery rows with the
+    // invoice code. They retain the original deliveryId/date/quantity, so those
+    // fields cannot distinguish billing renewals from physical stock movements.
+    const invoiceCodes = new Set(invoices.map(invoice => invoice.code).filter(Boolean));
+    return transactions.filter(item =>
+      item.transactionType !== 'Delivery' || !invoiceCodes.has(item.deliveryCode)
+    );
   }
 
   async saveAsImage(parent: any, site: string) {
@@ -743,16 +770,14 @@ export class ViewSitePage implements OnInit, OnDestroy {
       }`,
     ]);
 
+    // Adjustments are signed reductions and belong in the return columns.
     // Get all unique delivery and return dates
     const deliveryDates = [
       ...new Set(
         allData
           .filter(
             (item) =>
-              (item.transactionType === 'Delivery' && item.deliveryDate) ||
-              (item.transactionType === 'Adjustment' &&
-                item.returnDate &&
-                (item.adjustmentTotal || item.returnQty || 0) > 0)
+              item.transactionType === 'Delivery' && item.deliveryDate
           )
           .map((item) => this.formatDate(item.deliveryDate || item.returnDate))
           .filter((date) => date)
@@ -768,9 +793,7 @@ export class ViewSitePage implements OnInit, OnDestroy {
                 item.transactionType === 'Overage Return' ||
                 item.transactionType === 'Overage Return Reversal') &&
                 item.returnDate) ||
-              (item.transactionType === 'Adjustment' &&
-                item.returnDate &&
-                (item.adjustmentTotal || item.returnQty || 0) < 0)
+              (item.transactionType === 'Adjustment' && item.returnDate)
           )
           .map((item) => this.formatDate(item.returnDate))
           .filter((date) => date)
@@ -956,137 +979,10 @@ export class ViewSitePage implements OnInit, OnDestroy {
     allData: any[],
     stockItems: InventoryItem[]
   ): any {
-    const items = {};
-
-    // Create a lookup map for stockItems by code for efficient weight mapping
-    const stockItemsMap = new Map();
-    stockItems.forEach((stockItem) => {
-      stockItemsMap.set(stockItem.code, stockItem);
+    const items = this.consolidateItemDataPDF(allData, stockItems);
+    Object.values(items).forEach((item: any) => {
+      item.totalReturned += item.totalOverReturned + item.totalAdjusted;
     });
-
-    // First, identify transfer transactions by matching delivery and return codes
-    const transferCodes = new Set();
-    const deliveryTransactions = allData.filter(
-      (item) => item.transactionType === 'Delivery'
-    );
-    const returnTransactions = allData.filter(
-      (item) => item.transactionType === 'Return'
-    );
-
-    // Find matching delivery and return codes (indicating same-site transfers)
-    deliveryTransactions.forEach((delivery) => {
-      const matchingReturn = returnTransactions.find(
-        (returnItem) =>
-          returnItem.returnCode === delivery.deliveryCode &&
-          returnItem.itemId === delivery.itemId
-      );
-      if (matchingReturn) {
-        transferCodes.add(delivery.deliveryCode);
-      }
-    });
-
-    // Sort data by date to ensure we get the latest balance
-    const sortedData = allData.sort((a, b) => {
-      const dateA = a.deliveryDate || a.returnDate;
-      const dateB = b.deliveryDate || b.returnDate;
-      return this.getTimestamp(dateA) - this.getTimestamp(dateB);
-    });
-
-    sortedData.forEach((item) => {
-      const key = item.code;
-
-      if (!items[key]) {
-        // Get weight from stockItems lookup, fallback to transaction item weight
-        const masterStockItem = stockItemsMap.get(item.code);
-        const weight = masterStockItem?.weight || item.weight;
-
-        items[key] = {
-          code: item.code,
-          name: item.name,
-          currentBalance: 0,
-          totalDelivered: 0,
-          totalReturned: 0,
-          deliveryMovements: {},
-          returnMovements: {},
-          location: item.location,
-          category: item.category,
-          size: item.size,
-          weight,
-        };
-      }
-
-      // Update other fields with latest values
-      items[key].location = item.location || items[key].location;
-      // Update weight from stockItems if available
-      const stockItem = stockItemsMap.get(item.code);
-      if (stockItem?.weight) {
-        items[key].weight = stockItem.weight;
-      } else if (item.weight) {
-        items[key].weight = item.weight;
-      }
-
-      // Check if this is a same-site transfer
-      const isTransfer =
-        (item.transactionType === 'Delivery' &&
-          transferCodes.has(item.deliveryCode)) ||
-        (item.transactionType === 'Return' &&
-          transferCodes.has(item.returnCode));
-
-      // Skip same-site transfers to avoid double counting
-      if (!isTransfer) {
-        // Track movements by date and accumulate totals
-        switch (item.transactionType) {
-          case 'Delivery':
-            const deliveryDate = this.formatDate(item.deliveryDate);
-            if (deliveryDate) {
-              items[key].deliveryMovements[deliveryDate] =
-                (items[key].deliveryMovements[deliveryDate] || 0) +
-                (item.deliveredQty || 0);
-            }
-            items[key].totalDelivered += item.deliveredQty || 0;
-            break;
-          case 'Return':
-          case 'Overage Return':
-            const returnDate = this.formatDate(item.returnDate);
-            if (returnDate) {
-              items[key].returnMovements[returnDate] =
-                (items[key].returnMovements[returnDate] || 0) +
-                (item.returnQty || 0);
-            }
-            items[key].totalReturned += item.returnQty || 0;
-            break;
-          case 'Overage Return Reversal':
-            const reversalDate = this.formatDate(item.returnDate);
-            if (reversalDate) {
-              items[key].returnMovements[reversalDate] =
-                (items[key].returnMovements[reversalDate] || 0) -
-                (item.returnQty || 0);
-            }
-            items[key].totalReturned -= item.returnQty || 0; // Subtract reversal
-            break;
-          case 'Adjustment':
-            const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
-            const adjustmentDate = this.formatDate(item.returnDate);
-
-            // Treat adjustments as returns (they reduce inventory)
-            if (adjustmentDate) {
-              items[key].returnMovements[adjustmentDate] =
-                (items[key].returnMovements[adjustmentDate] || 0) +
-                Math.abs(adjustmentQty);
-            }
-            items[key].totalReturned += Math.abs(adjustmentQty);
-            break;
-        }
-      }
-    });
-
-    // Calculate the current balance for each item
-    Object.keys(items).forEach((key) => {
-      // Simple calculation: Balance = Delivered - Returned
-      items[key].currentBalance =
-        items[key].totalDelivered - items[key].totalReturned;
-    });
-
     return items;
   }
 
@@ -1102,29 +998,8 @@ export class ViewSitePage implements OnInit, OnDestroy {
       stockItemsMap.set(stockItem.code, stockItem);
     });
 
-    // First, identify transfer transactions by matching delivery and return codes
-    const transferCodes = new Set();
-    const deliveryTransactions = allData.filter(
-      (item) => item.transactionType === 'Delivery'
-    );
-    const returnTransactions = allData.filter(
-      (item) => item.transactionType === 'Return'
-    );
-
-    // Find matching delivery and return codes (indicating same-site transfers)
-    deliveryTransactions.forEach((delivery) => {
-      const matchingReturn = returnTransactions.find(
-        (returnItem) =>
-          returnItem.returnCode === delivery.deliveryCode &&
-          returnItem.itemId === delivery.itemId
-      );
-      if (matchingReturn) {
-        transferCodes.add(delivery.deliveryCode);
-      }
-    });
-
     // Sort data by date to ensure we get the latest balance
-    const sortedData = allData.sort((a, b) => {
+    const sortedData = [...allData].sort((a, b) => {
       const dateA = a.deliveryDate || a.returnDate;
       const dateB = b.deliveryDate || b.returnDate;
       return this.getTimestamp(dateA) - this.getTimestamp(dateB);
@@ -1165,66 +1040,59 @@ export class ViewSitePage implements OnInit, OnDestroy {
         items[key].weight = item.weight;
       }
 
-      // Check if this is a same-site transfer
-      const isTransfer =
-        (item.transactionType === 'Delivery' &&
-          transferCodes.has(item.deliveryCode)) ||
-        (item.transactionType === 'Return' &&
-          transferCodes.has(item.returnCode));
+      // Count each movement. Same-site transfers cancel as a delivery and return;
+      // matching by a document code can incorrectly discard other item movements.
+      switch (item.transactionType) {
+        case 'Delivery':
+          const deliveryDate = this.formatDate(item.deliveryDate);
+          if (deliveryDate) {
+            items[key].deliveryMovements[deliveryDate] =
+              (items[key].deliveryMovements[deliveryDate] || 0) +
+              (Number(item.deliveredQty) || 0);
+          }
+          items[key].totalDelivered += Number(item.deliveredQty) || 0;
+          break;
+        case 'Return':
+          const returnDate = this.formatDate(item.returnDate);
+          if (returnDate) {
+            items[key].returnMovements[returnDate] =
+              (items[key].returnMovements[returnDate] || 0) +
+              (Number(item.returnQty) || 0);
+          }
+          items[key].totalReturned += Number(item.returnQty) || 0;
+          break;
+        case 'Overage Return':
+          const overageReturnDate = this.formatDate(item.returnDate);
+          if (overageReturnDate) {
+            items[key].returnMovements[overageReturnDate] =
+              (items[key].returnMovements[overageReturnDate] || 0) +
+              (Number(item.returnQty) || 0);
+          }
+          items[key].totalOverReturned += Number(item.returnQty) || 0;
+          break;
+        case 'Overage Return Reversal':
+          const reversalDate = this.formatDate(item.returnDate);
+          if (reversalDate) {
+            items[key].returnMovements[reversalDate] =
+              (items[key].returnMovements[reversalDate] || 0) -
+              (Number(item.returnQty) || 0);
+          }
+          items[key].totalOverReturned -= Number(item.returnQty) || 0; // Subtract reversal
+          break;
+        case 'Adjustment':
+          // adjustmentTotal is cumulative on the source delivery. returnQty is
+          // the signed quantity of this individual adjustment (including zero).
+          const adjustmentQty = Number(item.returnQty ?? item.adjustmentTotal ?? 0) || 0;
+          const adjustmentDate = this.formatDate(item.returnDate);
 
-      // Skip same-site transfers to avoid double counting
-      if (!isTransfer) {
-        // Track movements by date and accumulate totals
-        switch (item.transactionType) {
-          case 'Delivery':
-            const deliveryDate = this.formatDate(item.deliveryDate);
-            if (deliveryDate) {
-              items[key].deliveryMovements[deliveryDate] =
-                (items[key].deliveryMovements[deliveryDate] || 0) +
-                (item.deliveredQty || 0);
-            }
-            items[key].totalDelivered += item.deliveredQty || 0;
-            break;
-          case 'Return':
-            const returnDate = this.formatDate(item.returnDate);
-            if (returnDate) {
-              items[key].returnMovements[returnDate] =
-                (items[key].returnMovements[returnDate] || 0) +
-                (item.returnQty || 0);
-            }
-            items[key].totalReturned += item.returnQty || 0;
-            break;
-          case 'Overage Return':
-            const overageReturnDate = this.formatDate(item.returnDate);
-            if (overageReturnDate) {
-              items[key].returnMovements[overageReturnDate] =
-                (items[key].returnMovements[overageReturnDate] || 0) +
-                (item.returnQty || 0);
-            }
-            items[key].totalOverReturned += item.returnQty || 0;
-            break;
-          case 'Overage Return Reversal':
-            const reversalDate = this.formatDate(item.returnDate);
-            if (reversalDate) {
-              items[key].returnMovements[reversalDate] =
-                (items[key].returnMovements[reversalDate] || 0) -
-                (item.returnQty || 0);
-            }
-            items[key].totalOverReturned -= item.returnQty || 0; // Subtract reversal
-            break;
-          case 'Adjustment':
-            const adjustmentQty = item.adjustmentTotal || item.returnQty || 0;
-            const adjustmentDate = this.formatDate(item.returnDate);
-
-            // Treat adjustments as returns (they reduce inventory)
-            if (adjustmentDate) {
-              items[key].returnMovements[adjustmentDate] =
-                (items[key].returnMovements[adjustmentDate] || 0) +
-                Math.abs(adjustmentQty);
-            }
-            items[key].totalAdjusted += Math.abs(adjustmentQty);
-            break;
-        }
+          // Treat adjustments as returns (they reduce inventory)
+          if (adjustmentDate) {
+            items[key].returnMovements[adjustmentDate] =
+              (items[key].returnMovements[adjustmentDate] || 0) +
+              adjustmentQty;
+          }
+          items[key].totalAdjusted += adjustmentQty;
+          break;
       }
     });
 
