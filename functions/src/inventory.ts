@@ -2791,6 +2791,10 @@ const transferDeliveryTransaction = async (transfer: any) => {
     // Create the items for the transaction log
     const items = transfer.items.map((item: any) => ({
       ...item,
+      // A transfer is a real stock movement, even when its source is an
+      // invoice carry-forward. Do not inherit billing-only export metadata.
+      isBillingCarryForward: false,
+      sourceInvoiceId: null,
       deliveredQty: +item.returnQty,
       invoiceQty: +item.returnQty,
       balanceQty: +item.returnQty,

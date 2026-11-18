@@ -709,7 +709,8 @@ export class ViewSitePage implements OnInit, OnDestroy {
     // fields cannot distinguish billing renewals from physical stock movements.
     const invoiceCodes = new Set(invoices.map(invoice => invoice.code).filter(Boolean));
     return transactions.filter(item =>
-      item.transactionType !== 'Delivery' || !invoiceCodes.has(item.deliveryCode)
+      item.transactionType !== 'Delivery' ||
+        (!item.isBillingCarryForward && !invoiceCodes.has(item.deliveryCode))
     );
   }
 
@@ -770,119 +771,35 @@ export class ViewSitePage implements OnInit, OnDestroy {
       }`,
     ]);
 
-    // Adjustments are signed reductions and belong in the return columns.
-    // Get all unique delivery and return dates
-    const deliveryDates = [
-      ...new Set(
-        allData
-          .filter(
-            (item) =>
-              item.transactionType === 'Delivery' && item.deliveryDate
-          )
-          .map((item) => this.formatDate(item.deliveryDate || item.returnDate))
-          .filter((date) => date)
-      ),
-    ].sort();
-
-    const returnDates = [
-      ...new Set(
-        allData
-          .filter(
-            (item) =>
-              ((item.transactionType === 'Return' ||
-                item.transactionType === 'Overage Return' ||
-                item.transactionType === 'Overage Return Reversal') &&
-                item.returnDate) ||
-              (item.transactionType === 'Adjustment' && item.returnDate)
-          )
-          .map((item) => this.formatDate(item.returnDate))
-          .filter((date) => date)
-      ),
-    ].sort();
-
-    // Create table headers - Row 4
-    const headers = [
-      'SL NO',
-      'Item Code',
-      'Description',
-      'Weight (kg)',
+    // Keep one column per document, including distinct movements on the same day.
+    // Sort raw timestamps, since formatted day/month strings do not sort by date.
+    const columns = this.getExcelMovementColumns(allData).map(column => ({
+      ...column,
+      quantities: this.consolidateItemData(column.items, stockItems),
+    }));
+    const deliveryColumns = columns.filter(column => column.isDelivery);
+    const returnColumns = columns.filter(column => !column.isDelivery);
+    worksheetData.push([
+      'SL NO', 'Item Code', 'Description', 'Weight (kg)',
       'Total Balance In Project',
-    ];
-
-    // Add delivery date columns
-    deliveryDates.forEach((date) => {
-      headers.push(date);
-    });
-
-    headers.push('Delivered to Project');
-
-    // Add return date columns
-    returnDates.forEach((date) => {
-      headers.push(date);
-    });
-
-    headers.push('Total Returned from Project');
-
-    worksheetData.push(headers);
-
-    // Create reference row - Row 5
-    const referenceRow = ['Reference', '', '', '', ''];
-
-    // Add delivery codes for each delivery date
-    deliveryDates.forEach((date) => {
-      const deliveryForDate = allData
-        .filter(
-          (item) =>
-            item.transactionType === 'Delivery' &&
-            this.formatDate(item.deliveryDate) === date
-        )
-        .map((item) => item.deliveryCode)
-        .filter((code, index, self) => code && self.indexOf(code) === index)
-        .join(', ');
-      referenceRow.push(deliveryForDate);
-    });
-
-    referenceRow.push(''); // Empty cell for "Delivered to Project"
-
-    // Add return codes for each return date
-    returnDates.forEach((date) => {
-      const returnForDate = allData
-        .filter(
-          (item) =>
-            (item.transactionType === 'Return' ||
-              item.transactionType === 'Overage Return') &&
-            this.formatDate(item.returnDate) === date
-        )
-        .map((item) => item.returnCode)
-        .filter((code, index, self) => code && self.indexOf(code) === index)
-        .join(', ');
-
-      const adjustmentForDate = allData
-        .filter(
-          (item) =>
-            item.transactionType === 'Adjustment' &&
-            this.formatDate(item.returnDate) === date
-        )
-        .map((item) => item.adjustmentCode || item.returnCode)
-        .filter((code, index, self) => code && self.indexOf(code) === index)
-        .join(', ');
-
-      const combinedCodes = [returnForDate, adjustmentForDate]
-        .filter((code) => code)
-        .join(', ');
-
-      referenceRow.push(combinedCodes);
-    });
-
-    referenceRow.push(''); // Empty cell for "Total Returned To Company"
-
-    worksheetData.push(referenceRow);
+      ...deliveryColumns.map(column => column.date),
+      'Delivered to Project',
+      ...returnColumns.map(column => column.date),
+      'Total Returned from Project',
+    ]);
+    worksheetData.push([
+      'Reference', '', '', '', '',
+      ...deliveryColumns.map(column => column.reference),
+      '',
+      ...returnColumns.map(column => column.reference),
+      '',
+    ]);
 
     // Process items data
     const itemsData = this.consolidateItemData(allData, stockItems);
     let slNo = 1;
 
-    Object.values(itemsData).forEach((item: any) => {
+    Object.entries(itemsData).forEach(([key, item]: [string, any]) => {
       const row = [
         slNo++,
         item.code,
@@ -891,18 +808,12 @@ export class ViewSitePage implements OnInit, OnDestroy {
         item.currentBalance || 0,
       ];
 
-      // Add quantities for each delivery date
-      deliveryDates.forEach((date) => {
-        const qtyForDate = item.deliveryMovements[date] || 0;
-        row.push(qtyForDate || '');
+      deliveryColumns.forEach(column => {
+        row.push(column.quantities[key]?.totalDelivered || '');
       });
-
       row.push(item.totalDelivered || 0);
-
-      // Add quantities for each return date
-      returnDates.forEach((date) => {
-        const qtyForDate = item.returnMovements[date] || 0;
-        row.push(qtyForDate || '');
+      returnColumns.forEach(column => {
+        row.push(column.quantities[key]?.totalReturned || '');
       });
 
       row.push(item.totalReturned || 0);
@@ -923,14 +834,14 @@ export class ViewSitePage implements OnInit, OnDestroy {
     ];
 
     // Add widths for delivery date columns
-    deliveryDates.forEach(() => {
+    deliveryColumns.forEach(() => {
       columnWidths.push({ wch: 12 });
     });
 
     columnWidths.push({ wch: 18 }); // Delivered to Project
 
     // Add widths for return date columns
-    returnDates.forEach(() => {
+    returnColumns.forEach(() => {
       columnWidths.push({ wch: 12 });
     });
 
@@ -975,6 +886,50 @@ export class ViewSitePage implements OnInit, OnDestroy {
     XLSX.writeFile(workbook, fileName);
   }
 
+  private getExcelMovementColumns(allData: any[]): any[] {
+    const columns = new Map<string, any>();
+    allData.forEach((item, index) => {
+      const isDelivery = item.transactionType === 'Delivery';
+      if (!isDelivery && ![
+        'Return', 'Overage Return', 'Overage Return Reversal', 'Adjustment',
+      ].includes(item.transactionType)) {
+        return;
+      }
+      const date = isDelivery ? item.deliveryDate : item.returnDate;
+      const timestamp = this.getTimestamp(date);
+      const reference = isDelivery
+        ? item.deliveryCode
+        : item.adjustmentCode || item.returnCode;
+      const documentId = isDelivery ? item.deliveryId : item.returnId;
+      const kind = isDelivery ? 'delivery'
+        : item.transactionType === 'Adjustment' ? 'adjustment' : 'return';
+      // Regular and overage lines of a single return belong to the same column.
+      // Anonymous legacy rows stay separate instead of merging all of one day.
+      const identity = documentId ? ['id', documentId]
+        : reference ? ['reference', reference] : ['row', item.id || index];
+      const key = JSON.stringify([kind, ...identity]);
+      if (!columns.has(key)) {
+        columns.set(key, {
+          isDelivery,
+          timestamp: Number.isFinite(timestamp) && date ? timestamp : Infinity,
+          date: this.formatDate(date) || 'N/A',
+          reference: reference || '',
+          items: [],
+        });
+      }
+      const column = columns.get(key);
+      column.items.push(item);
+      // A document's lines can receive slightly different server timestamps.
+      if (date && Number.isFinite(timestamp) && timestamp < column.timestamp) {
+        column.timestamp = timestamp;
+        column.date = this.formatDate(date) || 'N/A';
+      }
+    });
+    return [...columns.values()].sort((a, b) =>
+      (a.timestamp - b.timestamp) || a.reference.localeCompare(b.reference)
+    );
+  }
+
   private consolidateItemData(
     allData: any[],
     stockItems: InventoryItem[]
@@ -990,32 +945,29 @@ export class ViewSitePage implements OnInit, OnDestroy {
     allData: any[],
     stockItems: InventoryItem[]
   ): any {
-    const items = {};
-
-    // Create a lookup map for stockItems by code for efficient weight mapping
-    const stockItemsMap = new Map();
-    stockItems.forEach((stockItem) => {
-      stockItemsMap.set(stockItem.code, stockItem);
-    });
-
-    // Sort data by date to ensure we get the latest balance
-    const sortedData = [...allData].sort((a, b) => {
-      const dateA = a.deliveryDate || a.returnDate;
-      const dateB = b.deliveryDate || b.returnDate;
-      return this.getTimestamp(dateA) - this.getTimestamp(dateB);
-    });
+    const items = Object.create(null);
+    // transactionLog.itemId points to stockItems.id. Codes can change over time.
+    const stockItemsById = new Map(stockItems.filter(item => item.id).map(item => [item.id, item]));
+    const stockItemsByCode = new Map(stockItems.map(item => [item.code, item]));
+    const movementDate = (item: any) => item.transactionType === 'Delivery'
+      ? item.deliveryDate
+      : item.returnDate;
+    const sortedData = [...allData].sort((a, b) =>
+      this.getTimestamp(movementDate(a)) - this.getTimestamp(movementDate(b))
+    );
 
     sortedData.forEach((item) => {
-      const key = item.code;
+      // Only legacy rows without itemId fall back to a code lookup. Never use a
+      // reused code to associate a known ID with a different catalogue item.
+      const stockItem = item.itemId
+        ? stockItemsById.get(item.itemId)
+        : stockItemsByCode.get(item.code);
+      const itemId = item.itemId || stockItem?.id;
+      const key = itemId ? `id:${itemId}` : `legacy-code:${item.code}`;
 
       if (!items[key]) {
-        // Get weight from stockItems lookup, fallback to transaction item weight
-        const masterStockItem = stockItemsMap.get(item.code);
-        const weight = masterStockItem?.weight || item.weight;
-
         items[key] = {
-          code: item.code,
-          name: item.name,
+          id: itemId,
           currentBalance: 0,
           totalDelivered: 0,
           totalReturned: 0,
@@ -1023,22 +975,16 @@ export class ViewSitePage implements OnInit, OnDestroy {
           totalOverReturned: 0,
           deliveryMovements: {},
           returnMovements: {},
-          location: item.location,
-          category: item.category,
-          size: item.size,
-          weight,
         };
       }
 
-      // Update other fields with latest values
+      // Prefer current catalogue details; if deleted, use the latest movement.
+      items[key].code = stockItem?.code ?? item.code ?? items[key].code;
+      items[key].name = stockItem?.name ?? item.name ?? items[key].name;
+      items[key].weight = stockItem?.weight ?? item.weight ?? items[key].weight;
+      items[key].category = stockItem?.category ?? item.category ?? items[key].category;
+      items[key].size = stockItem?.size ?? item.size ?? items[key].size;
       items[key].location = item.location || items[key].location;
-      // Update weight from stockItems if available
-      const stockItem = stockItemsMap.get(item.code);
-      if (stockItem?.weight) {
-        items[key].weight = stockItem.weight;
-      } else if (item.weight) {
-        items[key].weight = item.weight;
-      }
 
       // Count each movement. Same-site transfers cancel as a delivery and return;
       // matching by a document code can incorrectly discard other item movements.
